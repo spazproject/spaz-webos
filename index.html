@@ -5,15 +5,34 @@
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
 <head>
 	<title>Dreadnaught</title>
-	<script src="spazcore/vendors/json2.js" type="text/javascript" charset="utf-8"></script>
+		
+	<!-- Load libs required for SpazCore -->
 	<script src="spazcore/vendors/jquery-1.2.6.js" type="text/javascript" charset="utf-8"></script>
-	
-	<script src="spazcore/libs/spaztwit.js" type="text/javascript" charset="utf-8"></script>
-	
-	<script src="/usr/lib/luna/framework/luna.js" type="text/javascript" x-luna-version="1"></script>
-	<script src="app/assistants/stage-assistant.js" type="text/javascript"></script>
-	<script src="app/assistants/timeline-assistant.js" type="text/javascript" charset="utf-8"></script>
+	<script src="spazcore/vendors/json2.js" type="text/javascript" charset="utf-8"></script>
+	<script src="spazcore/vendors/webtoolkit.base64.js" type="text/javascript" charset="utf-8"></script>
 
+		
+	<!-- Load SC first  -->
+	<script src="spazcore/libs/spazcore.js" type="text/javascript" charset="utf-8"></script>
+	
+	<!-- Load SC helpers -->
+	<script src="spazcore/helpers/datetime.js" type="text/javascript" charset="utf-8"></script>
+	<script src="spazcore/helpers/javascript.js" type="text/javascript" charset="utf-8"></script>
+	<script src="spazcore/helpers/json.js" type="text/javascript" charset="utf-8"></script>
+	<script src="spazcore/helpers/string.js" type="text/javascript" charset="utf-8"></script>
+	<script src="spazcore/helpers/sys.js" type="text/javascript" charset="utf-8"></script>
+	<script src="spazcore/helpers/xml.js" type="text/javascript" charset="utf-8"></script>
+
+	
+	<!-- Load SC Twitter library -->
+	<script src="spazcore/libs/spaztwit.js" type="text/javascript" charset="utf-8"></script>
+
+	<!-- Load the Luna Framework -->
+	<script src="/usr/lib/luna/framework/luna.js" type="text/javascript" x-luna-version="1"></script>
+	
+	<!-- Load assistants -->
+	<script src="app/assistants/stage-assistant.js" type="text/javascript"></script>
+	<script src="app/assistants/friends-timeline-assistant.js" type="text/javascript" charset="utf-8"></script>
 
 
 	<!-- application stylesheet should come in after the one loaded by the framework -->

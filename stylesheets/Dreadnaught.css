@@ -7,3 +7,62 @@
 	right:0px;
 	z-index:10;
 }
+
+
+/*
+	the .even and .odd classes are really only used in the timelines, but 
+	they're usedful and probably could be reused elsewhere.
+*/
+div.timeline-entry:nth-of-type(odd), .odd {
+	background-color: #FFFFEE;
+	border-top-color: #999966;
+	background-image: url('images/entry-odd-bg.png');
+	background-repeat: repeat-x;
+}
+div.timeline-entry:nth-of-type(even), .even {
+	background-color: #EEEEFF;
+	border-top-color: #666699;
+	background-image: url('images/entry-even-bg.png');
+	background-repeat: repeat-x;
+}
+
+
+/*************************************************
+	Timeline entries are... entries in the timelines
+*/
+div.timeline-entry {
+	padding: 10px 5px;
+	border-top-width: medium;
+	border-top-style: solid;
+	border-top-color: #999966;
+	clear:both;
+	overflow:hidden;
+}
+	/*
+		Entries that are replies directed at the user
+	*/
+	div.timeline-entry.reply {
+		background-color: #EEEEAA;
+		background-image: none;
+	}
+	/*
+		Entries that are direct messages to the user
+	*/
+	div.timeline-entry.dm {
+		background-color: #EEAAAA;
+		background-image: none;
+	}
+
+	div.timeline-entry .user {
+		width:48px;
+		float:left;
+	}
+	
+	div.timeline-entry .status-text {
+		margin-left:64px;
+		font-size:.8em;
+	}
+	
+	
+
+	
