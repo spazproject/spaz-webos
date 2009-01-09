@@ -1,0 +1,8 @@
+{
+	"title": "dreadnaught",
+	"type": "web",
+	"main": "index.html",
+	"id": "com.funkatron.app.dreadnaught",
+	"icon": "icon.png"
+}
+
