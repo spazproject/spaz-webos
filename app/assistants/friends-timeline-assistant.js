@@ -16,6 +16,7 @@ FriendsTimelineAssistant.prototype.setup = function() {
 			jQuery.each( tweets, function() {
 				this.text = sch.autolink(this.text);
 				this.text = sch.autolinkTwitter(this.text);
+				this.relative_time = sch.getRelativeTime(this.created_at);
 			});
 		
 			var content = Luna.View.render({
@@ -29,7 +30,7 @@ FriendsTimelineAssistant.prototype.setup = function() {
 	);
 
 
-	var twit = new scTwit('xxxx', 'xxxx');	
+	var twit = new scTwit('funkatron', 'blueb3rryp1e');	
 	twit.getFriendsTimeline(0, 200);
 	
 	
