@@ -1,9 +1,14 @@
 /* Put Application specific CSS here. */
 
-BODY, .palm-scene {
-	background-color: #EEEEFF;
-	background-image: url('../images/theme/entry-even-bg.png');
-	background-repeat: repeat-x;
+BODY, .palm-scene, #luna-scene-friends-timeline-scene-scroller {
+	background-color: transparent !important;
+	
+}
+
+BODY {
+	
+	background: -webkit-gradient(linear, 100% 0, 0 100%, from(#000), to(#333)) !important;
+	-webkit-background-size:480px !important;
 }
 
 
@@ -13,6 +18,21 @@ a:link {
 	cursor:pointer;
 }
 
+div.view-menu {
+	background-image: none !important;
+	background-color: rgba(50,50,14,.7) !important;
+	background: -webkit-gradient(linear, 100% 0, 0 0, from(rgba(256,256,256,.2)), to(rgba(50,50,14,.7))) !important;
+	border-bottom:2px solid rgba(50,50,14,.7);
+	height:48px;
+}
+
+div.command-menu {
+	background-image: none !important;
+	background-color: rgba(50,50,14,.4) !important;
+	border-top:2px solid rgba(0,0,0,.4);
+	height:48px;
+
+}
 
 #menu {
 	position:relative;
@@ -30,13 +50,13 @@ a:link {
 */
 div.timeline-entry:nth-of-type(odd), div.timeline-entry:first-of-type, .odd {
 	background-color: #FFFFEE;
-	border-top-color: #999966;
+	border-color: #999966;
 	background-image: url('../images/theme/entry-odd-bg.png');
 	background-repeat: repeat-x;
 }
 div.timeline-entry:nth-of-type(even), .even {
 	background-color: #EEEEFF;
-	border-top-color: #666699;
+	border-color: #666699;
 	background-image: url('../images/theme/entry-even-bg.png');
 	background-repeat: repeat-x;
 }
@@ -47,20 +67,18 @@ div.timeline-entry:nth-of-type(even), .even {
 	Timeline entries are... entries in the timelines
 */
 div.timeline-entry {
-	padding: 10px 5px;
-	border-top-width: 2px;
-	border-top-style: solid;
-	border-top-color: #999966;
+	padding: 10px 7px;
+	border-width: 2px;
+	border-style: solid;
+	border-color: transparent !important;
 	clear:both;
 	overflow:hidden;
 	min-height:64px;
+	color:#333;
+/*	-webkit-border-radius:10px;*/
+	margin:0 0px 6px;
+	-webkit-box-shadow:0px 1px 5px #000;
 }
-
-	div.timeline-entry:last-of-type {
-		border-bottom-color: #666699;
-		border-bottom-width: 2px;
-		border-bottom-style: solid;
-	}
 	
 	/*
 		Entries that are replies directed at the user
@@ -76,6 +94,23 @@ div.timeline-entry {
 		background-color: #EEAAAA;
 		background-image: none;
 	}
+	
+	div.timeline-entry.new {
+		color:#000;
+		border-color: #32320e;
+		padding: 8px 1px;
+		
+	}
+		div.timeline-entry.new:nth-of-type(odd) {
+			background-color: #fefbd9;
+			background-image: url('../images/theme/entry-odd-new-bg.png');
+			background-repeat: repeat-x;
+		}
+		div.timeline-entry.new:nth-of-type(even) {
+			background-color: #dcdff7;
+			background-image: url('../images/theme/entry-even-new-bg.png');
+			background-repeat: repeat-x;
+		}
 
 	div.timeline-entry .user {
 		width:48px;
@@ -88,27 +123,34 @@ div.timeline-entry {
 			width:48px;
 			height:48px;
 			border:2px double #333;
-			background-color:#FFFFFF;
 			-webkit-box-shadow:0px 1px 5px #333;
-			background-image:url('images/userimg-bg.png');
+			background-image:url('../images/theme/details-image-generic.png');
 			opacity:.9;
 		}
 	
 	div.timeline-entry .status {
 		margin-left:64px;
 	}
-		div.timeline-entry .status .text {
+		div.timeline-entry .status .screen-name {
 			font-size:11pt;
+			font-weight:bold;
+			font-variant: uppercase;
+			font-family:"Coconut Condensed";
+			margin-bottom:.2em;
+			text-shadow: 0px 1px 5px #666;
+		}
+		div.timeline-entry .status .text {
+			font-size:10pt;
 			line-height:130%;
 		}
 	div.timeline-entry .meta {
-		margin-top:.3em;
+		margin-top:.2em;
 		font-size:8pt;
 		font-weight:bold;
 		text-transform:uppercase;
 		font-family:"Coconut Condensed";
 		text-align:right;
-		color:#666;
+		color:#444;
 	}
 	
 

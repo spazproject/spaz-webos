@@ -1,8 +1,9 @@
-<div class="timeline-entry" data-status-id="#{id}" data-user-id="#{user.id}">
+<div class="timeline-entry new" data-status-id="#{id}" data-user-id="#{user.id}" data-user-screen_name="#{user.screen_name}">
 	<div class="user">
 		<img src="#{user.profile_image_url}" title="#{user.screen_name}" />
 	</div>
 	<div class="status">
+		<div class="screen-name">#{user.screen_name}</div>
 	 	<div class="text">
 			#{text}
 		</div>

@@ -142,7 +142,6 @@ SpazTwit.prototype.getPublicTimeline = function() {
         'beforeSend':function(xhr){
 			alert("beforesend");
         },
-        'processData':false,
         'type':"GET",
         'url':url,
         'data':data// ,
