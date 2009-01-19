@@ -1,8 +1,9 @@
 function StageAssistant () {
-	sc.app.twit = new scTwit('funkatron', 'blueb3rryp1e');
-	sc.app.lastFriendsTimelineId = 1;
+	// sc.app.twit = new scTwit('dreadnaughttest', 'perlsucks');
+	sc.app.twit = new scTwit(); // username and password will be provided by login scene
 }
 
 StageAssistant.prototype.setup = function() {
-	this.controller.pushScene('friends-timeline');
+	this.controller.pushScene('login');
+
 }

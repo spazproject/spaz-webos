@@ -1,0 +1,40 @@
+Scenes:
+	Stage => App
+	Scene => page in App
+
+* Login/splash
+	* Trends retrieval
+		* link to search
+	* 
+* Timeline
+	* Combined timeline
+		* Filters: just replies, direct messages
+		* fix padding discrepancy b/t new and not-new messages
+	* Popup post panel
+		* in reply to
+		* charcount & limit
+	* Search
+* Message Detail
+* User Detail
+
+* Preferences
+* Following/Followers list
+
+
+* Notifications
+	* banner on new posts
+
+
+* Posting
+* Preferences
+	* 
+	
+	
+SpazTwit
+	* add event for "no new messages" so view can do any necessary updates
+	
+	
+	
+
+	
+	

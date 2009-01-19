@@ -1,4 +1,4 @@
-<div class="timeline-entry new" data-status-id="#{id}" data-user-id="#{user.id}" data-user-screen_name="#{user.screen_name}">
+<div class="timeline-entry new" data-status-id="#{id}" data-user-id="#{user.id}" data-user-screen_name="#{user.screen_name}" data-timestamp="#{created_at_unixtime}">
 	<div class="user">
 		<img src="#{user.profile_image_url}" title="#{user.screen_name}" />
 	</div>
@@ -7,7 +7,7 @@
 	 	<div class="text">
 			#{text}
 		</div>
-		<div class="meta"><span class="date">#{relative_time}</span></div>  
+		<div class="meta"><span class="date" data-created_at="#{created_at}">#{relative_time}</span></div>  
 	</div>
 </div>
 

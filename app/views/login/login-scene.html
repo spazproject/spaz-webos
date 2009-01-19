@@ -1,9 +1,60 @@
-<div id="login-screen">
-	
-	<div x-luna-element="TextField" name="username"></div>
-	<div x-luna-element="PasswordField" name="password"></div>
-	<div x-luna-element="Button" id="login-button">Login</div>
-	
-	
-	
+
+<div id="login-scene">
+
+	<div id="main" class="palm-hasheader">
+		<div class="palm-header left" id="main-hdr">
+		  Dreadnaught:Home
+		</div>
+	</div>
+
+
+	<div id="show-login-button" class="spaz-drawer-header closed">Log-in &#x2192;</div>
+
+	<div id="login-panel" class='spaz-drawer'><!-- </div> -->
+
+		<div class='palm-row' id="username-row">
+			<div class="palm-row-wrapper">
+				<div class="textfield-group" x-luna-focus-highlight="true">
+					<div class="title">
+						<div class="label">
+							username
+						</div>
+						<div id="username" name="username" x-luna-element="TextField"></div>
+					</div>
+				</div>
+			</div>
+			<div class="palm-row-wrapper">
+				<div class="textfield-group" x-luna-focus-highlight="true">
+					<div class="title">
+						<div class="label">
+							password
+						</div>
+						<div id="password" name="password" x-luna-element="PasswordField"></div>
+					</div>
+				</div>
+			</div>
+		</div>
+
+		<button class="palm-button" id="login-button">Login</button>
+	</div>
+
+	<div id="show-search-button" class="spaz-drawer-header closed">Search Twitter &#x2192;</div>
+
+	<div id="search-panel" class='spaz-drawer'>
+		Nothing here yet!
+		
+	</div>
+
+	<div id="show-trends-button" class="spaz-drawer-header closed">Current Trends &#x2192;</div>
+
+	<div id="trends-panel" class='spaz-drawer'>
+		Nothing here yet!
+		
+	</div>
+
+	<div id="status-panel">
+		<div x-luna-element="Spinner" id="activity-spinner"></div>
+		<span id="status-label"></span>
+	</div>
+
 </div>
