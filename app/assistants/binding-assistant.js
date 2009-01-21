@@ -9,7 +9,7 @@ function BindingAssistant() {
 			version: 1, //Version number used for the HTML5 database. (optional, defaults to 1)	
 			//displayName: "demoDB", //Name that would be used in user interface that the user sees regarding this database. Not currently used. (optional, defaults to name)
 		    //estimatedSize: 200000, //Estimated size for this database. (optional, no default)
-			replace: false //A truthy value for replace will cause any existing data for this depot to be discarded and a new,
+			replace: true //A truthy value for replace will cause any existing data for this depot to be discarded and a new,
 	};
 
 	
@@ -28,9 +28,9 @@ BindingAssistant.prototype.setup = function() {
 			'id': Base64.encode(sch.getTimeAsInt().toString()),
 			'name':'bear'
 		}
-	}, null, this.dbFailure);
+	}, undefined, this.dbSuccess.bind(this), this.dbFailure.bind(this));
 	
-	this.demoDepot.getMultiple('bucket1', 'test_entry_key', this.dbSuccess, this.dbFailure);
+	this.demoDepot.getMultiple('bucket1', null, 10, 0, this.dbSuccess, this.dbFailure);
 		
 	/* use Luna.View.render to render view templates and add them to the scene, if needed. */
 	
@@ -41,10 +41,11 @@ BindingAssistant.prototype.setup = function() {
 
 
 BindingAssistant.prototype.dbSuccess = function(obj) {
-	dump(JSON.stringify(obj));
+	console.log("dbSuccess:");
+	console.dir(obj);
 };
 BindingAssistant.prototype.dbFailure = function(msg) {
-	dump(msg);
+	console.log("dbFailure:"+msg);
 };
 
 BindingAssistant.prototype.activate = function(event) {

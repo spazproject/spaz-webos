@@ -6,6 +6,7 @@ function LoginAssistant(argFromPusher) {
 }
 
 LoginAssistant.prototype.setup = function() {
+		
 	/* this function is for setup tasks that have to happen when the scene is first created */
 	
 	/*
@@ -157,7 +158,7 @@ LoginAssistant.prototype.handleLogin = function(event) {
 	/**
 	 * - Get username and password from text fields
 	 * - initialize sc.app.twit
-	 * - swap to friends-timeline scene
+	 * - swap to my-timeline scene
 	 * 	
 	 */
 	if (this.model && this.model.username && this.model.password) {
@@ -181,7 +182,7 @@ LoginAssistant.prototype.handleLogin = function(event) {
 				@todo Save username and password as encrypted vals
 			*/
 
-			Luna.Controller.stageController.swapScene("friends-timeline", e.data.thisAssistant);
+			Luna.Controller.stageController.pushScene("my-timeline");
 		});
 		
 		/*
@@ -275,12 +276,16 @@ LoginAssistant.prototype.propertyChanged = function(event) {
 LoginAssistant.prototype.activate = function(event) {
 	/* put in event handlers here that should only be in effect when this scene is active. For
 	   example, key handlers that are observing the document */
+		// 
+		// console.log('getScenes()');
+		// console.dir(Luna.Controller.stageController.getScenes());
 }
 
 
 LoginAssistant.prototype.deactivate = function(event) {
 	/* remove any event handlers you added in activate and do any other cleanup that should happen before
 	   this scene is popped or another scene is pushed on top */
+	
 	this.model.username = '';
 	this.model.password = '';
 	this.controller.modelChanged( this.model );
