@@ -1,6 +1,6 @@
 /* Put Application specific CSS here. */
 
-BODY, .palm-scene, #luna-scene-my-timeline-scene-scroller {
+BODY, .palm-scene {
 	background-color: transparent !important;
 	
 }
@@ -10,6 +10,15 @@ BODY {
 	-webkit-background-size:480px !important;
 }
 
+div.palm-menu-fade {
+	background-image: none !important;
+	background: -webkit-gradient(linear, left top, left bottom, from(rgba(16,16,0,.8)), to(rgba(51,51,0,.8))) !important;
+/*	background-color: rgba(51,51,00,.7) !important;*/
+
+	border-bottom:2px solid #222200;
+	-webkit-box-shadow:0px 1px 10px #000;
+}
+
 
 a:link {
 	color:#333399;
@@ -17,18 +26,18 @@ a:link {
 	cursor:pointer;
 }
 
-div.view-menu {
+/*div.view-menu {
 	background-image: none !important;
-c	height:48px;
-}
+	height:48px;
+}*/
 
-div.command-menu {
+/*div.command-menu {
 	background-image: none !important;
 	background-color: rgba(50,50,14,.4) !important;
 	border-top:2px solid rgba(0,0,0,.4);
 	height:48px;
 
-}
+}*/
 
 #menu {
 	position:relative;
@@ -232,28 +241,26 @@ div.spaz-drawer {
 /*
 	User detail styles
 */
+#user-detail-container {
+	background-image: url(../images/theme/bg-user-detail.png);
+	background-attachment: fixed;
+}
+
+
 #user-detail {
-	width:100%;
 	padding: 10px 7px;
 	clear:both;
 	overflow:hidden;
-	color:#CCC;
+	color:#000;
 	margin:0 0px 6px;
-	-webkit-box-shadow:0px 1px 5px #000;
 /*	background-color: rgba(50,50,14,.9) !important;*/
-	background: -webkit-gradient(linear, 100% 0, 0 0, from(rgba(90,90,90,.8)), to(rgba(50,50,14,.9))) !important;
-	border-bottom:2px solid rgba(50,50,14,.7);
-	border-top:   2px solid rgba(50,50,14,.7);
-	margin-bottom:20px;
-	position:fixed;
-	height:120px;
 }
 
 	#user-detail-image {
 		float:left;
 		width:48px;
 		height:48px;
-		border:2px double #CCC;
+		border:2px double #333;
 		-webkit-box-shadow:0px 1px 5px #000;
 		background-image:url('../images/theme/details-image-generic.png');
 		opacity:.9;
@@ -261,12 +268,12 @@ div.spaz-drawer {
 	}
 	
 	#user-detail-info {
-		margin-left:64px;
+		margin-left: 64px;
+		margin-right:10px;
 	}
 		#user-detail-name {
 			font-size:14pt;
 /*			font-weight:bold;*/
-			color:white;
 		}
         #user-detail-location, #user-detail-homepage {
 			font-size:10pt;
@@ -286,19 +293,24 @@ div.spaz-drawer {
 			font-size:10pt;
 			margin-left:5px;
 		}
+
+	#user-detail-actions {
+		background-color:rgba(0,0,0,.2);
+		border-top: 3px solid #333300;
+	}
 		
-#user-timeline {
-	margin-top:150px;
-}
-	#user-timeline div.timeline-entry {
-		min-height:24px;
+	#user-timeline {
+		margin-top:150px;
 	}
-	#user-timeline .user {
-		display:none;
-	}
-	#user-timeline .status {
-		margin-left:0px;
-	}
+		#user-timeline div.timeline-entry {
+			min-height:24px;
+		}
+		#user-timeline .user {
+			display:none;
+		}
+		#user-timeline .status {
+			margin-left:0px;
+		}
 
 
 
@@ -346,4 +358,101 @@ div.spaz-drawer {
 	
 		#post-panel-counter-number {}
 		
-		
+
+/*
+	misc
+*/
+div.spaz-view-menu-spacer {
+	height:38px;
+}
+
+#activity-spinner {
+	position:absolute;
+	right:5px;
+	top:  38pxpx;
+}
+
+div.spaz-view-menu-container {
+	top:0px;
+	height: 38px;
+	z-index:11001;
+	position:fixed;	
+	width:  100%;
+	background-color:rgba(0,0,0,1);
+	-webkit-box-shadow:0px 1px 5px #000;
+
+}
+
+	div.spaz-view-menu {
+		top: 6px;
+		left:5px;
+		position:relative;
+/*		border:1px solid yellow;*/
+	
+	}
+		div.spaz-view-menu-label {
+			-webkit-border-image: url(../images/theme/spaz-viewmenu-label-bg.png) 2 0 2 5;
+			height:19px;
+			color:white;
+			font-size:14px;
+			font-weight:bold;
+			text-transform: uppercase;
+			float:left;
+			padding:0px;
+			margin-right: -3px;
+			min-width:225px;
+		}
+			div.spaz-view-menu-label-text { 
+				position:relative;
+				top: 3px;
+				left:7px;
+			}
+	
+		div.spaz-view-menu-separator {
+			background-image: url(../images/theme/spaz-viewmenu-separator.png);
+			height:24px;
+			width:  1px;
+			float:left;
+			padding:0px;
+			margin: 0px;
+
+		}
+		div.spaz-view-menu-button {
+			-webkit-border-image: url(../images/theme/spaz-viewmenu-button-bg.png) 2 5 2 0;
+			border-color:yellow;
+			height:19px;
+			width: 25px;
+			float:left;
+			padding:0;
+			margin-left: -3px;
+			text-align:center;
+		}
+
+
+div.spaz-button-group {
+	margin:15px 0px;
+}
+	div.spaz-button-wide {
+		height: 17px;
+		margin:5px 8px;
+		background-color: rgba(51,51,51,.8);
+		padding: 8px 16px;
+		color:  #FFECCD;
+		font-family:"Coconut Condensed";
+		font-size:12pt;
+		-khtml-border-radius:16px;
+		background-image: url(../images/theme/triangle-right.png);
+		background-repeat: no-repeat;
+		background-position: 95% center;
+	
+	}
+	
+	
+#spaz-activity-spinner {
+	z-index:11002;
+	position:absolute;
+	top:9px;
+	right:10px;
+	background-repeat: no-repeat;
+	background-position: center;
+}

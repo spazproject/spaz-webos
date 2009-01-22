@@ -4,10 +4,8 @@ function StageAssistant () {
 }
 
 StageAssistant.prototype.setup = function() {
+	// this.controller.pushScene('login');
 	this.controller.pushScene('my-timeline');
-	// this.controller.pushScene('user-detail', {
-	// 	userid:'funkatron'
-	// });
-	// 
+	// this.controller.pushScene('user-detail', 'funkatron');
 
 }

@@ -1,5 +1,6 @@
 {
 	"title": "dreadnaught",
+	"version": 0.1,
 	"type": "web",
 	"main": "index.html",
 	"id": "com.funkatron.app.dreadnaught",

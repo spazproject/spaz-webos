@@ -8,7 +8,39 @@ var scene_helpers = {}
  */
 scene_helpers.addCommonSceneMethods = function(assistant) {
 	
-	assistant.setupCommonMenus = function() {
+	
+	/**
+	 * opts is an object with key:val pairs, like so
+	 * {
+	 *	viewMenuLabel:'My Timeline';
+	 *	switchMenuLabel:'View';
+	 * } 
+	 */
+	assistant.setupCommonMenus = function(opts) {
+		
+		if (opts.viewMenuItems) {
+			var viewMenuItems = opts.viewMenuItems;
+		} else {
+			var viewMenuItems = [{ items:
+				[
+					{label: $L(opts.viewMenuLabel), command:'scroll-top'},
+					{label: $L('Show me'), iconPath:'images/theme/menu-icon-triangle-down.png', submenu:'filter-menu'}
+				]
+			}];
+		}
+		
+		/*
+			View menu at top of screen
+		*/
+		this.viewMenuModel = {
+			label: $L(opts.viewMenuLabel), 
+			items: viewMenuItems,
+		};
+		this.controller.setupWidget(Luna.Menu.viewMenu, undefined, this.viewMenuModel);
+		
+		
+
+
 		/*
 			Command menu at bottom of screen
 		*/
@@ -16,46 +48,57 @@ scene_helpers.addCommonSceneMethods = function(assistant) {
 			visible:true,
 			items: [
 				{label:$L('Compose'), icon:'compose', command:'compose', shortcut:'N'},
+				{label:$L('Search'), icon:'search', command:'search', shortcut:'S'},
 				{},
-				{label:$L('Top'), 	 command:'scroll-top', shortcut:'U'},
-				{label:$L('Bottom'), command:'scroll-bottom', shortcut:'D'},
+				{},
 				{label:$L('Update'), icon:'sync', command:'refresh', shortcut:'R'}
 			]
 		};
-
-		/*
-			View menu at top of screen
-		*/
-		this.viewMenuModel = {
-			label: $L('My Timeline'), 
-			items: [
-					{label: $L('My Timeline')}, {},
-					{label: $L('View'), iconPath:'images/tab-icon-replies.png', submenu:'switch-menu'}
-			]
-		};
-
 		this.controller.setupWidget(Luna.Menu.commandMenu, undefined, this.cmdMenuModel);
-		this.controller.setupWidget(Luna.Menu.viewMenu, undefined, this.viewMenuModel);
 
 
-
-		/*
-			Popup menu for SwitchView
-		*/
-		this.switchMenuModel = {
-			label: $L('Views'),
+		this.timelineFilterMenuModel = {
 			items: [
-					{label:'Home/Login',	 		secondaryIconPath:'', command:'home'}, 
-					{label:'Friends',	 			secondaryIconPath:'', command:'my-timeline'}, 
-	                {label:$L('Replies'),			secondaryIconPath:'images/tab-icon-replies.png', command:'replies-timeline'}, 
-	                {label:$L('Direct Messages'),	secondaryIconPath:'send', command:'direct-messages'}, 
-	                {label:$L('Search Twitter'),	secondaryIconPath:'search', command:'search-twitter'},
-	                {label:$L('Manage Followers'),	secondaryIconPath:'make-vip', command:'followers-following'}
+					{label:$L('Show All Messages'),		secondaryIconPath:'', command:'home'}, 
+					{label:$L('Replies and Direct Messages'),			secondaryIconPath:'', command:'replies-timeline'}, 
+					{label:$L('Just Replies'),			secondaryIconPath:'', command:'replies-timeline'}, 
+					{label:$L('Just Direct Messages'),	secondaryIconPath:'', command:'direct-messages'}, 
 			]
 		};
 
 		// Set up submenu widget that was wired into the viewMenu above
-		this.controller.setupWidget("switch-menu", undefined, this.switchMenuModel);
+		this.controller.setupWidget("filter-menu", undefined, this.timelineFilterMenuModel);
+
+
+		/*
+			Spinner
+		*/
+		this.spinnerModel = {
+			'spinning':false
+		}
+		this.controller.setupWidget('spaz-activity-spinner', {
+				property: 'spinning'
+			},
+			this.spinnerModel
+		);
+		
+		// /*
+		// 			Popup menu for SwitchView
+		// 		*/
+		// 		this.switchMenuModel = {
+		// 			label: $L(opts.switchMenuLabel),
+		// 			items: [
+		// 					{label:'Home/Login',	 		secondaryIconPath:'', command:'home'}, 
+		// 					{label:'Friends',	 			secondaryIconPath:'', command:'my-timeline'}, 
+		// 	                {label:$L('Replies'),			secondaryIconPath:'images/tab-icon-replies.png', command:'replies-timeline'}, 
+		// 	                {label:$L('Direct Messages'),	secondaryIconPath:'send', command:'direct-messages'}, 
+		// 	                {label:$L('Search Twitter'),	secondaryIconPath:'search', command:'search-twitter'},
+		// 	                {label:$L('Manage Followers'),	secondaryIconPath:'make-vip', command:'followers-following'}
+		// 			]
+		// 		};
+		// 
+		// 		// Set up submenu widget that was wired into the viewMenu above
+		// 		this.controller.setupWidget("switch-menu", undefined, this.switchMenuModel);
 	};
 
 
@@ -127,7 +170,7 @@ scene_helpers.addCommonSceneMethods = function(assistant) {
 
 
 
-	assistant.addPopupPost = function(event) {
+	assistant.addPostPopup = function(event) {
 		var itemhtml = Luna.View.render({object: null, template: 'shared/post-popup'});
 		jQuery('#post-popup-container').html(itemhtml);
 		Luna.Event.listen($('post-send-button'), 'luna-tap', this.sendPost.bind(this));
@@ -135,13 +178,14 @@ scene_helpers.addCommonSceneMethods = function(assistant) {
 	}
 
 
-	assistant.removePopupPost = function(event) {
+	assistant.removePostPopup = function(event) {
 		Luna.Event.stopListening($('post-send-button'), 'luna-tap', this.sendPost); 
 		Luna.Event.stopListening($('post-cancel-button'), 'luna-tap', this.sendPost);
 	}
 
 
 	assistant.sendPost = function(event) {
+		this.spinnerOn();
 		var status = jQuery('#post-panel-textarea').val();
 
 		if (status.length > 0) {
@@ -163,16 +207,17 @@ scene_helpers.addCommonSceneMethods = function(assistant) {
 		/*
 			Render the new tweets as a collection (speed increase, I suspect)
 		*/
-		var itemhtml = Luna.View.render({object: data, template: 'my-timeline/tweet'});
+		var itemhtml = Luna.View.render({object: data, template: 'shared/tweet'});
 
 		/*
 			prepend the rendered markup to the timeline, so it shows on top
 		*/
 		jQuery('#my-timeline').prepend(itemhtml);
+		this.spinnerOff();
 
 	}
 	assistant.reportFailedPost = function(event) {
-
+		this.spinnerOff();
 	}
 
 
@@ -184,10 +229,25 @@ scene_helpers.addCommonSceneMethods = function(assistant) {
 		jQuery('#post-panel-textarea').focus();
 	}
 	
-	
-	
-	assistant.loadUserDetail = function(userid) {
-		
+
+	/**
+	 * turn the spinner on, and optionally set the message
+	 * @param {string} message 
+	 */
+	assistant.spinnerOn = function(message) {
+		this.spinnerModel.spinning = true;
+		this.controller.modelChanged( this.spinnerModel );
 	}
+
+	/**
+	 * Turns off the spinner. does NOT hide the status panel. Optionally sets message
+	 * @param {string} message
+	 */
+	assistant.spinnerOff = function(message) {
+		this.spinnerModel.spinning = false;
+		this.controller.modelChanged( this.spinnerModel );
+	}
+	
+
 	
 }

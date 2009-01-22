@@ -22,7 +22,10 @@ function UserDetailAssistant(argFromPusher) {
 
 UserDetailAssistant.prototype.setup = function() {
 	
-	this.setupCommonMenus();
+	this.setupCommonMenus({
+		viewMenuLabel:'User Detail',
+		switchMenuLabel:'View'
+	});
 
 	this.scroller = this.controller.getSceneScroller();
 	
@@ -33,8 +36,11 @@ UserDetailAssistant.prototype.setup = function() {
 	
 	/* setup widgets here */
 	
+	
+	
 	/* add event handlers to listen to events from widgets */
 }
+
 
 UserDetailAssistant.prototype.activate = function(event) {
 	/* put in event handlers here that should only be in effect when this scene is active. For
@@ -76,19 +82,15 @@ UserDetailAssistant.prototype.activate = function(event) {
 			Update relative dates
 		*/
 		sch.updateRelativeTimes('#user-timeline>div.timeline-entry>.status>.meta>.date', 'data-created_at');
-		
+		e.data.thisAssistant.spinnerOff();
 	});
+	
+	this.spinnerOn();
 	sc.app.twit.getUserTimeline(this.userid);
 }
 
 
-UserDetailAssistant.prototype.getUserData = function() {
-	
-}
 
-UserDetailAssistant.prototype.onUserData = function(e) {
-	
-};
 
 
 UserDetailAssistant.prototype.deactivate = function(event) {

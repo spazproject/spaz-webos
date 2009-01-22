@@ -11,12 +11,15 @@ function MyTimelineAssistant(argFromPusher) {
 MyTimelineAssistant.prototype.setup = function() {
 	/* this function is for setup tasks that have to happen when the scene is first created */
 
-	this.setupCommonMenus();
+	this.setupCommonMenus({
+		viewMenuLabel:'My Timeline',
+		switchMenuLabel:'View'
+	});
 
 	this.scroller = this.controller.getSceneScroller();
 
 	
-
+	
 	
 	
 	/* setup widgets here */
@@ -29,12 +32,18 @@ MyTimelineAssistant.prototype.setup = function() {
 	/*
 		jQuery is used to listen to events from SpazTwit library
 	*/
+	jQuery().bind('error_user_timeline_data', { thisAssistant:this }, function(e, response) {
+		console.log('error_user_timeline_data - response:');
+		console.dir(response);
+		e.data.thisAssistant.spinnerOff();
+	});
+	
 	jQuery().bind('new_friends_timeline_data', { thisAssistant:this }, function(e, tweets) {
-
+		
 		/*
 			If there are new tweets, process them
 		*/
-		if (tweets.length>0) {
+		if (tweets && tweets.length>0) {
 			
 			/*
 				reverse the tweets for collection rendering (faster)
@@ -75,6 +84,8 @@ MyTimelineAssistant.prototype.setup = function() {
 			Update relative dates
 		*/
 		sch.updateRelativeTimes('div.timeline-entry>.status>.meta>.date', 'data-created_at');
+		
+		e.data.thisAssistant.spinnerOff();
 	});
 
 	
@@ -84,13 +95,14 @@ MyTimelineAssistant.prototype.setup = function() {
 	*/
 	jQuery().bind('update_succeeded', { thisAssistant:this }, function(e, data) {
 		e.data.thisAssistant.renderSuccessfulPost(e, data);
+		e.data.thisAssistant.spinnerOff();
 	});
 	
 	/*
 		if update fails
 	*/
 	jQuery().bind('update_failed', { thisAssistant:this }, function(e, data) {
-		
+		e.data.thisAssistant.spinnerOff();
 	});
 
 }
@@ -107,7 +119,7 @@ MyTimelineAssistant.prototype.activate = function(event) {
 	*/
 	this.getData();
 	
-	this.addPopupPost();
+	this.addPostPopup();
 	
 	$('my-timeline').observe(Luna.Event.tap, function(e) {
 		
@@ -128,7 +140,7 @@ MyTimelineAssistant.prototype.deactivate = function(event) {
 	/* remove any event handlers you added in activate and do any other cleanup that should happen before
 	   this scene is popped or another scene is pushed on top */
 	
-	this.removePopupPost();
+	this.removePostPopup();
 }
 
 MyTimelineAssistant.prototype.cleanup = function(event) {
@@ -138,6 +150,7 @@ MyTimelineAssistant.prototype.cleanup = function(event) {
 
 
 MyTimelineAssistant.prototype.getData = function() {
+	this.spinnerOn();
 	sc.helpers.markAllAsRead('#my-timeline>div.timeline-entry');
 	sc.app.twit.getFriendsTimeline();
 };

@@ -3,9 +3,15 @@ function MessageDetailAssistant() {
 	   additional parameters (after the scene name) that were passed to pushScene. The reference
 	   to the scene controller (this.controller) has not be established yet, so any initialization
 	   that needs the scene controller should be done in the setup function below. */
+	scene_helpers.addCommonSceneMethods(this);
 }
 
 MessageDetailAssistant.prototype.setup = function() {
+	this.setupCommonMenus({
+		viewMenuLabel:'Message Detail',
+		switchMenuLabel:'View'
+	})
+	
 	/* this function is for setup tasks that have to happen when the scene is first created */
 		
 	/* use Luna.View.render to render view templates and add them to the scene, if needed. */

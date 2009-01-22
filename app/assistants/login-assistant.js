@@ -209,7 +209,6 @@ LoginAssistant.prototype.handleLogin = function(event) {
 	}
 	
 	
-	
 }
 
 

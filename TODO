@@ -10,6 +10,7 @@ Scenes:
 	* Combined timeline
 		* Filters: just replies, direct messages
 		* fix padding discrepancy b/t new and not-new messages
+		* turn off spinner after request is done, even if no new items
 	* Popup post panel
 		* in reply to
 		* charcount & limit
