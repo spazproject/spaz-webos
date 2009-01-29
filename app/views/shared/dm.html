@@ -1,0 +1,13 @@
+<div class="timeline-entry new" data-status-id="#{id}" data-user-id="#{sender.id}" data-user-screen_name="#{sender.screen_name}" data-timestamp="#{created_at_unixtime}">
+	<div class="user" data-user-id="#{sender.id}" data-user-screen_name="#{sender.screen_name}">
+		<img src="#{sender.profile_image_url}" title="#{sender.screen_name}" />
+	</div>
+	<div class="status">
+		<div class="screen-name">#{sender.screen_name}</div>
+	 	<div class="text">
+			#{text}
+		</div>
+		<div class="meta" data-status-id="#{id}"><span class="date" data-created_at="#{created_at}">#{relative_time}</span> &#x2192;</div>  
+	</div>
+</div>
+
