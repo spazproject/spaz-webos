@@ -150,6 +150,12 @@ SearchTwitterAssistant.prototype.setup = function() {
 
 SearchTwitterAssistant.prototype.search = function(e) {
 	console.log("search called");
+	
+	/*
+		clear any existing results
+	*/
+	jQuery('#search-timeline').empty();
+	
 	if (sch.isString(e)) {
 		console.dir(e);
 		sc.app.twit.search(e);
@@ -163,18 +169,36 @@ SearchTwitterAssistant.prototype.search = function(e) {
 SearchTwitterAssistant.prototype.activate = function(event) {
 	/* put in event handlers here that should only be in effect when this scene is active. For
 	   example, key handlers that are observing the document */
+	console.log('getScenes()');
+	console.dir(Luna.Controller.stageController.getScenes());
+	console.log('activeScene()');
+	console.dir(Luna.Controller.stageController.activeScene());
+	console.log('topScene()');
+	console.dir(Luna.Controller.stageController.topScene());
+	console.log('isChildWindow()');
+	console.dir(Luna.Controller.stageController.isChildWindow());
+	
+	if (event && event.searchterm) {
+		this.passedSearch = event.searchterm;
+	}
+	
+	
 	if (this.passedSearch) {
 		this.searchBoxModel.value = this.passedSearch;
 		this.controller.modelChanged(this.searchBoxModel);
 		this.search(this.passedSearch);
 		this.passedSearch = null; // eliminate this so it isn't used anymore
 	}
+	
+	this.addPostPopup();
 }
 
 
 SearchTwitterAssistant.prototype.deactivate = function(event) {
 	/* remove any event handlers you added in activate and do any other cleanup that should happen before
 	   this scene is popped or another scene is pushed on top */
+	
+	this.removePostPopup();
 }
 
 SearchTwitterAssistant.prototype.cleanup = function(event) {

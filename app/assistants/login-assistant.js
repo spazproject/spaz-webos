@@ -3,18 +3,33 @@ function LoginAssistant(argFromPusher) {
 	   additional parameters (after the scene name) that were passed to pushScene. The reference
 	   to the scene controller (this.controller) has not be established yet, so any initialization
 	   that needs the scene controller should be done in the setup function below. */
+	
+	scene_helpers.addCommonSceneMethods(this);
 }
 
 LoginAssistant.prototype.setup = function() {
 		
 	/* this function is for setup tasks that have to happen when the scene is first created */
 	
+	// this.setupCommonMenus({
+	// 	viewMenuItems: [
+	// 		{},
+	// 		{label:$L('Dreadnaught'), command:'scroll-top'},
+	// 		{}
+	// 	],
+	// 	cmdMenuItems: [{}]
+	// });
+
+	this.scroller = this.controller.getSceneScroller();
+	
+	
 	/*
 		Initialize the model
 	*/
 	this.model = {
 		'username':'',
-		'password':''
+		'password':'',
+		'search':''
 	};
 	
 	this.spinnerModel = {
@@ -26,13 +41,13 @@ LoginAssistant.prototype.setup = function() {
 	 * Panels that use jQuery (but listen with Luna)
 	 */
 	$('login-panel').hide();
-	Luna.Event.listen($('show-login-button'), 'luna-tap', this.toggleLoginPanel.bind(this));
+	Luna.Event.listen($('show-login-button'), Luna.Event.tap, this.toggleLoginPanel.bind(this));
 
 	$('search-panel').hide();
-	Luna.Event.listen($('show-search-button'), 'luna-tap', this.toggleSearchPanel.bind(this));
+	Luna.Event.listen($('show-search-button'), Luna.Event.tap, this.toggleSearchPanel.bind(this));
 
 	$('trends-panel').hide();
-	Luna.Event.listen($('show-trends-button'), 'luna-tap', this.toggleTrendsPanel.bind(this));
+	Luna.Event.listen($('show-trends-button'), Luna.Event.tap, this.toggleTrendsPanel.bind(this));
 	
 	
 	/**
@@ -70,12 +85,28 @@ LoginAssistant.prototype.setup = function() {
 		this.model
     );
 	
+	/*
+		Search
+	*/
+	this.controller.setupWidget('search',
+	    this.atts = {
+	        hintText: 'enter search terms',
+	        label: "search terms",
+			enterSubmits: true,
+			modelProperty:		'search',
+			changeOnKeyPress: true, 
+			focusMode:		Luna.Widget.focusSelectMode,
+			multiline:		false,
+		},
+		this.model
+    );
+	
 	
 	/*
 		Spinner
 	*/
 	this.controller.setupWidget('activity-spinner', {
-			property: 'spinning'
+			property: 'spinning',
 		},
 		this.spinnerModel
 	);	
@@ -83,9 +114,17 @@ LoginAssistant.prototype.setup = function() {
 	/*
 		Listen for taps on login button and status panel popup
 	*/
-	Luna.Event.listen($('login-button'), 'luna-tap', this.handleLogin.bind(this));
-	Luna.Event.listen($('status-panel'), 'luna-tap', this.hideStatusPanel.bind(this));
+	Luna.Event.listen($('login-button'), Luna.Event.tap, this.handleLogin.bind(this));
+	Luna.Event.listen($('search-button'), Luna.Event.tap, this.handleSearch.bind(this));
+	Luna.Event.listen($('status-panel'), Luna.Event.tap, this.hideStatusPanel.bind(this));
 	
+	/*
+		listen for trends data updates
+	*/
+	jQuery().bind('new_trends_data', {thisAssistant:this}, function(e, trends) {
+		var trendshtml = Luna.View.render({'collection':trends, template:'login/trend-item'});
+		jQuery('#trends-list').html(trendshtml);
+	});
 	
 }
 
@@ -140,6 +179,8 @@ LoginAssistant.prototype.toggleTrendsPanel = function(event) {
 									.removeClass('open')
 									.addClass('closed');
 	} else {
+		sc.app.twit.getTrends();
+		
 		jQuery('#trends-panel').slideDown('fast');
 		jQuery('#show-trends-button').html('Current Trends &#x2193;')
 									.removeClass('closed')
@@ -168,38 +209,6 @@ LoginAssistant.prototype.handleLogin = function(event) {
 		*/
 		this.spinnerOn('Logging-in');
 
-		/*
-			What to do if we succeed
-			Note that we pass the assistant object as data into the closure
-		*/				
-		jQuery().one('verify_credentials_succeeded', {'thisAssistant':this}, function(e) {
-			sc.app.twit.setCredentials(e.data.thisAssistant.model.username, e.data.thisAssistant.model.password);
-			sc.app.lastFriendsTimelineId = 1;
-			
-			e.data.thisAssistant.spinnerOff('');
-			
-			/*
-				@todo Save username and password as encrypted vals
-			*/
-
-			Luna.Controller.stageController.pushScene("my-timeline");
-		});
-		
-		/*
-			What to do if we fail
-		*/
-		jQuery().one('verify_credentials_failed', {'thisAssistant':this}, function(e) {
-			
-			
-			/*
-				If we return to this scene from another
-				and fail the login, e.data.thisAssistant will not have
-				its controller property. WHY?
-			*/
-			
-			e.data.thisAssistant.spinnerOff('Login failed!');
-		});
-		
 		
 		/*
 			now verify credentials against the Twitter API
@@ -209,6 +218,15 @@ LoginAssistant.prototype.handleLogin = function(event) {
 	}
 	
 	
+}
+
+
+LoginAssistant.prototype.handleSearch = function(event) {
+	if (this.model && this.model.search) {
+		this.findAndSwap("search-twitter", {
+			searchterm:this.model.search
+		});
+	}
 }
 
 
@@ -276,8 +294,49 @@ LoginAssistant.prototype.activate = function(event) {
 	/* put in event handlers here that should only be in effect when this scene is active. For
 	   example, key handlers that are observing the document */
 		// 
-		// console.log('getScenes()');
-		// console.dir(Luna.Controller.stageController.getScenes());
+	console.log('getScenes()');
+	console.dir(Luna.Controller.stageController.getScenes());
+	console.log('activeScene()');
+	console.dir(Luna.Controller.stageController.activeScene());
+	console.log('topScene()');
+	console.dir(Luna.Controller.stageController.topScene());
+
+
+	/*
+		What to do if we succeed
+		Note that we pass the assistant object as data into the closure
+	*/				
+	jQuery().bind('verify_credentials_succeeded', {'thisAssistant':this}, function(e) {
+		sc.app.twit.setCredentials(e.data.thisAssistant.model.username, e.data.thisAssistant.model.password);
+		sc.app.lastFriendsTimelineId = 1;
+		
+		e.data.thisAssistant.spinnerOff('');
+		
+		/*
+			@todo Save username and password as encrypted vals
+		*/
+
+		// Luna.Controller.stageController.swapScene("my-timeline", this);
+		e.data.thisAssistant.findAndSwap("my-timeline", this);
+	});
+	
+	/*
+		What to do if we fail
+	*/
+	jQuery().bind('verify_credentials_failed', {'thisAssistant':this}, function(e) {
+		
+		
+		/*
+			If we return to this scene from another
+			and fail the login, e.data.thisAssistant will not have
+			its controller property. WHY?
+		*/
+		
+		e.data.thisAssistant.spinnerOff('Login failed!');
+	});
+	
+
+
 }
 
 
@@ -289,6 +348,9 @@ LoginAssistant.prototype.deactivate = function(event) {
 	this.model.password = '';
 	this.controller.modelChanged( this.model );
 	this.hideStatusPanel();
+	
+	jQuery().unbind('verify_credentials_succeeded');
+	jQuery().unbind('verify_credentials_failed');
 	
 }
 

@@ -41,15 +41,26 @@
 	<div id="show-search-button" class="spaz-drawer-header closed">Search Twitter &#x2192;</div>
 
 	<div id="search-panel" class='spaz-drawer'>
-		Nothing here yet!
+		<div class='palm-row' id="search-row">
+			<div class="palm-row-wrapper">
+				<div class="textfield-group" x-luna-focus-highlight="true">
+					<div class="title">
+						<div class="label">
+							search terms
+						</div>
+						<div id="search" name="search" x-luna-element="TextField"></div>
+					</div>
+				</div>
+			</div>
+		</div>
+		<button class="palm-button" id="search-button">Search</button>
 		
 	</div>
 
 	<div id="show-trends-button" class="spaz-drawer-header closed">Current Trends &#x2192;</div>
 
 	<div id="trends-panel" class='spaz-drawer'>
-		Nothing here yet!
-		
+		<div id="trends-list" class="spaz-button-group"></div>
 	</div>
 
 	<div id="status-panel">

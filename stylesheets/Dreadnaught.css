@@ -49,28 +49,16 @@ a:link {
 
 
 
-/*
-	the .even and .odd classes are really only used in the timelines, but 
-	they're usedful and probably could be reused elsewhere.
-*/
-div.timeline-entry:nth-of-type(odd), div.timeline-entry:first-of-type, .odd {
-	background-color: #FFFFEE;
-	border-color: #999966;
-	background-image: url('../images/theme/entry-odd-bg.png');
-	background-repeat: repeat-x;
-}
-div.timeline-entry:nth-of-type(even), .even {
-	background-color: #EEEEFF;
-	border-color: #666699;
-	background-image: url('../images/theme/entry-even-bg.png');
-	background-repeat: repeat-x;
-}
+
 
 
 
 /*************************************************
 	Timeline entries are... entries in the timelines
 */
+
+
+
 div.timeline-entry {
 	padding: 10px 7px;
 	border-width: 2px;
@@ -84,20 +72,39 @@ div.timeline-entry {
 	margin:0 0px 6px;
 	-webkit-box-shadow:0px 1px 5px #000;
 }
+
+	/*
+		the .even and .odd classes are really only used in the timelines, but 
+		they're usedful and probably could be reused elsewhere.
+	*/
+	div.timeline-entry:nth-of-type(odd), .odd {
+		background-color: #FFFFEE;
+		border-color: #999966;
+		background-image: url('../images/theme/entry-odd-bg.png');
+		background-repeat: repeat-x;
+	}
+	div.timeline-entry:nth-of-type(even), .even {
+		background-color: #EEEEFF;
+		border-color: #666699;
+		background-image: url('../images/theme/entry-even-bg.png');
+		background-repeat: repeat-x;
+	}
 	
 	/*
 		Entries that are replies directed at the user
 	*/
-	div.timeline-entry.reply {
-		background-color: #EEEEAA;
-		background-image: none;
+	div.timeline-entry.reply:nth-of-type(odd),
+	div.timeline-entry.reply:nth-of-type(even) {
+		background-color: #EEEEAA !important;
+		background-image: none !important;
 	}
 	/*
 		Entries that are direct messages to the user
 	*/
-	div.timeline-entry.dm {
-		background-color: #EEAAAA;
-		background-image: none;
+	div.timeline-entry.dm:nth-of-type(odd),
+	div.timeline-entry.dm:nth-of-type(even) {
+		background-color: #EEAAAA !important;
+		background-image: none !important;
 	}
 	
 	div.timeline-entry.new {
@@ -141,16 +148,17 @@ div.timeline-entry {
 			font-weight:bold;
 			font-variant: uppercase;
 			font-family:"Coconut Condensed";
-			margin-bottom:.2em;
+			margin-bottom: .2em;
 			text-shadow: 0px 1px 5px #666;
 		}
 		div.timeline-entry .status .text {
 			font-size:10pt;
 			line-height:140%;
 		}
-		div.timeline-entry .status .text a:link,
-		div.timeline-entry .status .text a:visited,
-		div.timeline-entry .status .text a:active {
+		.status .text a:link,
+		.status .text a:visited,
+		.status .text a:active,
+		.status .text .clickable {
 			color:#ffffcc;
 			background-color:rgba(32,32,32,.5);
 			-webkit-border-radius:6pt;
@@ -158,15 +166,27 @@ div.timeline-entry {
 			text-decoration:none;
 /*			font-size:90%;*/
 		}
-	div.timeline-entry .meta {
-		margin-top:.2em;
+			.status .text a:active,
+			.status .text .clickable:active {
+				background-color:rgba(0,0,0,.7);
+			}
+	div.timeline-entry .status .meta {
+		margin-top:.8em;
 		font-size:8pt;
 		font-weight:bold;
 		text-transform:uppercase;
 		font-family:"Coconut Condensed";
 		text-align:right;
-		color:#444;
+		color:#444444;
+		-webkit-border-top-right-radius:6pt;
+		-webkit-border-bottom-right-radius:6pt;
+		padding:2pt 4pt 2pt 6pt;
+		background: -webkit-gradient(linear, left top, right top, from(rgba(153,153,102,0)), to(rgba(153,153,102,.5)));
 	}
+			div.timeline-entry .status .meta:active {
+				color:#FFFFCC;
+				background: -webkit-gradient(linear, left top, right top, from(rgba(34,34,0,0)), to(rgba(34,34,0,.5)));
+			}
 	
 /*
 	login scene stuff
@@ -193,20 +213,23 @@ div.timeline-entry {
 		vertical-align: -10%;
 	}
 
-	#login-scene .palm-row .label {
+	.palm-row .label {
 		color:#9BB8CF;
 		text-shadow: #999 0 1px 5px;
 	}
 	
-	#login-scene .palm-row .truncating-text {
+	.palm-row .truncating-text {
 		color:#FFF;
 	}
-		#login-scene .palm-row .focused input[type='text'] {
+		.palm-row .focused input[type='text'] {
 			color:#000;
 		}
 	
 
-
+	#trends-list {}
+	#trends-list>li {
+		
+	}
 
 /*
 	simple styling widgets
@@ -239,16 +262,107 @@ div.spaz-drawer {
 
 
 /*
+	Message detail styles
+*/
+.message-detail-scene {
+	background-image: url(../images/theme/bg-message-detail.png);
+	background-attachment: fixed;
+	min-height:480px;
+}
+
+#message-detail-container {
+	background-attachment: fixed;
+	padding:8px 8px;
+}
+
+
+#message-detail {
+	padding: 10px 0px;
+	clear:both;
+	overflow:hidden;
+	color:#000;
+/*	background-color: rgba(50,50,14,.9) !important;*/
+}
+
+	#message-detail-image {
+		float:left;
+		width:48px;
+		height:48px;
+		border:2px double #333;
+		-webkit-box-shadow:0px 1px 5px #000;
+		background-image:url('../images/theme/details-image-generic.png');
+		opacity:.9;
+		display:block;
+	}
+	
+	#message-detail .status {
+		margin-left: 64px;
+		margin-right:10px;
+	}
+		#message-detail .status .screen_name {
+			font-size:14pt;
+		}
+		#message-detail .status .text {
+			margin-top:.3em;
+			line-height:130%;
+			font-size:10pt;
+			margin-left:5px;
+		}
+
+		#message-detail .status .meta {
+			margin-left:-64px;
+			clear:both;
+		}
+
+        #message-detail .status .meta .date,
+        #message-detail .status .meta .source,
+        #message-detail .status .meta .in-reply-to {
+			font-size:10pt;
+			font-weight:bold;
+			font-family:"Coconut Condensed";
+			display:inline-block;
+			color:#ffffcc;
+			background-color:rgba(32,32,32,.7);
+			-webkit-border-radius:6pt;
+			padding:2pt 5pt;
+			text-decoration:none;
+			margin-left:2px;
+		}
+
+
+	#message-detail-actions {
+		margin:8px 8px;
+		left:0px;
+		right:0px;
+		background-color:rgba(0,0,0,.2);
+		border-top: 3px solid #333300;
+		border-bottom: 3px solid #333300;
+		padding:0 0 5px 0;
+	}
+		
+
+
+
+
+/*
 	User detail styles
 */
-#user-detail-container {
+
+.user-detail-scene {
 	background-image: url(../images/theme/bg-user-detail.png);
 	background-attachment: fixed;
+	min-height:480px;
+
+}
+
+
+#user-detail-container {
+	padding:8px 8px;
 }
 
 
 #user-detail {
-	padding: 10px 7px;
+	padding: 10px 0px;
 	clear:both;
 	overflow:hidden;
 	color:#000;
@@ -266,7 +380,7 @@ div.spaz-drawer {
 		opacity:.9;
 		display:block;
 	}
-	
+
 	#user-detail-info {
 		margin-left: 64px;
 		margin-right:10px;
@@ -295,12 +409,12 @@ div.spaz-drawer {
 		}
 
 	#user-detail-actions {
+		margin:8px 8px;
 		background-color:rgba(0,0,0,.2);
 		border-top: 3px solid #333300;
 	}
-		
+
 	#user-timeline {
-		margin-top:150px;
 	}
 		#user-timeline div.timeline-entry {
 			min-height:24px;
@@ -311,6 +425,11 @@ div.spaz-drawer {
 		#user-timeline .status {
 			margin-left:0px;
 		}
+
+
+
+
+
 
 
 
@@ -355,8 +474,13 @@ div.spaz-drawer {
 		font-family:"Coconut Condensed";
 		font-size:10pt;
 	}
-	
-		#post-panel-counter-number {}
+		#post-panel-counter.over-limit {
+			color:#990000;
+		}
+		
+		#post-panel-counter-number {
+			font-weight:bold;
+		}
 		
 
 /*

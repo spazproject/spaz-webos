@@ -18,10 +18,10 @@
 	
 	<div id="message-detail-actions">
 		<div class="spaz-button-group">
-			<div class="spaz-button-wide" id="message-detail-action-reply" data-status-id="#{id}">@Reply to this message</div>
+			<div class="spaz-button-wide" id="message-detail-action-reply" data-status-id="#{id}" data-screen_name="#{user.screen_name}">@Reply to this message</div>
 			<div class="spaz-button-wide" id="message-detail-action-retweet" data-status-id="#{id}">ReTweet this message</div>
-			<div class="spaz-button-wide" id="message-detail-action-dm" data-message-id="#{user.id}">Direct message this user</div>
-			<div class="spaz-button-wide" id="message-detail-action-favorite" data-status-id="#{id}">Add as favorite</div>
+			<div class="spaz-button-wide" id="message-detail-action-dm" data-screen_name="#{user.screen_name}">Direct message this user</div>
+			<div class="spaz-button-wide" id="message-detail-action-favorite" data-status-id="#{id}" data-screen_name="#{user.screen_name}">Add as favorite</div>
 		</div>
 
 	</div>

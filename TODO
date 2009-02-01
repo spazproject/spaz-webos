@@ -3,39 +3,48 @@ Scenes:
 	Scene => page in App
 
 * Login/splash
-	* Trends retrieval
-		* link to search
-	* 
 * Timeline
 	* Combined timeline
-		* Filters: just replies, direct messages
-		* fix padding discrepancy b/t new and not-new messages
-		* turn off spinner after request is done, even if no new items
-	* Popup post panel
-		* in reply to
-		* charcount & limit
-	* Search
+		* change spinner to not use complex widget system
+		* add parsing of #hashtags and point them to search
+		* new user posts don't get added correctly b/c of processing_opts 
+		* dupes still seem to get through in some cases on combined timeline (replies only?)
 * Message Detail
+	* parse links, usernames, hashtags
+	* reveal IRT message if exists
+	* buttons
+		* reply-to
+		* add fav
+		* send as dm (DONE)
+		* retweet
 * User Detail
-
+	* parse links, usernames, hashtags
+	* make buttons functional
+		* View recent posts (DONE)
+			* change template for this view and display inline (DONE)
+		* Search for user (DONE)
+		* send reply (DONE)
+		* send dm (DONE)
+		* Follow
+		* block
+* Search
 * Preferences
 * Following/Followers list
-
 
 * Notifications
 	* banner on new posts
 
-
 * Posting
+	* in reply to
+	* hook up char counter (DONE)
+	* disable post button when over char limit
+	* hide IRT line unless invoked
+	* People Picker widget to integrate with contacts?
+	* posting a dm returns the last "regular" message and prepends it to the timeline (even if dupe)
+
 * Preferences
-	* 
-	
+	* prefs need to be loaded from and saved to Luna.Depot
 	
 SpazTwit
 	* add event for "no new messages" so view can do any necessary updates
-	
-	
-	
-
-	
-	
+	* complete min_age limits on refresh, and "force refresh" functionality

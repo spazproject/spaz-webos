@@ -9,16 +9,42 @@ function MyTimelineAssistant(argFromPusher) {
 
 
 MyTimelineAssistant.prototype.setup = function() {
+	
+	// alert('MyTimelineAssistant.prototype.setup');
+	
 	/* this function is for setup tasks that have to happen when the scene is first created */
 
 	this.setupCommonMenus({
-		viewMenuLabel:'My Timeline',
-		switchMenuLabel:'View'
+		viewMenuItems: [
+			{
+				items: [
+					{label:$L('My Timeline'), command:'scroll-top'},
+					{label: $L('Filter timeline'), iconPath:'images/theme/menu-icon-triangle-down.png', submenu:'filter-menu'},
+				]
+			},
+			{
+				items: [
+					{label:$L('Compose'),  icon:'compose', command:'compose', shortcut:'N'},
+					{label:$L('Update'),   icon:'sync', command:'refresh', shortcut:'R'}					
+				]
+			}
+			
+		],
+		cmdMenuItems: [{ items:
+			[
+				{},
+				{label:$L('Home'),        command:'home', shortcut:'H'},
+				{label:$L('My Timeline'), icon:'conversation', command:'my-timeline', shortcut:'T', disabled:true},
+				{label:$L('Search'),      icon:'search', command:'search', shortcut:'S'},
+				{label:$L('Followers'),   command:'followers', shortcut:'L'},
+				{}
+			]
+		}]
 	});
 
 	this.scroller = this.controller.getSceneScroller();
 
-	
+
 	
 	
 	
@@ -29,6 +55,31 @@ MyTimelineAssistant.prototype.setup = function() {
 	
 	/* add event handlers to listen to events from widgets */
 
+
+}
+
+
+
+MyTimelineAssistant.prototype.activate = function(event) {
+	/* put in event handlers here that should only be in effect when this scene is active. For
+	   example, key handlers that are observing the document */
+	
+	// alert('MyTimelineAssistant.prototype.activate');
+	
+	console.log('getScenes()');
+	console.dir(Luna.Controller.stageController.getScenes());
+	console.log('activeScene()');
+	console.dir(Luna.Controller.stageController.activeScene());
+	console.log('topScene()');
+	console.dir(Luna.Controller.stageController.topScene());
+	console.log('isChildWindow()');
+	console.dir(Luna.Controller.stageController.isChildWindow());
+	
+	
+	
+	this.addPostPopup();
+
+
 	/*
 		jQuery is used to listen to events from SpazTwit library
 	*/
@@ -38,38 +89,64 @@ MyTimelineAssistant.prototype.setup = function() {
 		e.data.thisAssistant.spinnerOff();
 	});
 	
-	jQuery().bind('new_friends_timeline_data', { thisAssistant:this }, function(e, tweets) {
+	// jQuery().bind('new_friends_timeline_data', { thisAssistant:this }, function(e, tweets) {
+		
+	/*
+		Get combined timeline data
+	*/
+	jQuery().bind('new_combined_timeline_data', { thisAssistant:this }, function(e, tweets) {
 		
 		/*
 			If there are new tweets, process them
 		*/
 		if (tweets && tweets.length>0) {
-			
-			/*
-				reverse the tweets for collection rendering (faster)
-			*/
+
 			var rendertweets = tweets;
-			rendertweets.reverse();
 			
 			jQuery.each( rendertweets, function() {
-				console.dir(this)
+				// console.dir(this)
 				this.text = sch.autolink(this.text);
-				this.text = sch.autolinkTwitter(this.text);
+				this.text = sch.autolinkTwitter(this.text, '<span class="username clickable" data-user-screen_name="#username#">@#username#</span>');
+				
+				/*
+					Render the tweet
+				*/
+				if (this.SC_is_dm) {
+					var itemhtml = Luna.View.render({object: this, template: 'shared/dm'});
+				} else {
+					var itemhtml = Luna.View.render({object: this, template: 'shared/tweet'});
+				}
+				
+				/*
+					make jQuery obj
+				*/
+				var jqitem = jQuery(itemhtml);
+				
+				/*
+					attach data object to item html
+				*/
+				jqitem.data('item', this);
+				
+				if (this.SC_is_reply) {
+					jqitem.addClass('reply');
+				}
+				
+				if (this.SC_is_dm) {
+					jqitem.addClass('dm');
+				}
+				
+				dump(jqitem.attr('class'))
+				
+				// dump(this.user.screen_name +" is from "+ this.SC_timeline_from);
+				
+				/*
+					put item on timeline
+				*/
+				jQuery('#my-timeline').prepend(jqitem);
 			});
 			
-			/*
-				Render the new tweets as a collection (speed increase, I suspect)
-			*/
-			var itemhtml = Luna.View.render({collection: rendertweets, template: 'shared/tweet'});
 			
-			/*
-				prepend the rendered markup to the timeline, so it shows on top
-			*/
-			jQuery('#my-timeline').prepend(itemhtml);
-			
-			e.data.thisAssistant.scroller.palm.revealElement(
-				jQuery('#my-timeline>div.timeline-entry.new:last').get()
-			);				
+			e.data.thisAssistant.scrollToNew();
 			
 		} else {
 			Luna.log("no new tweets");
@@ -78,12 +155,17 @@ MyTimelineAssistant.prototype.setup = function() {
 		/*
 			remove extra items
 		*/
-		sch.removeExtraElements('#my-timeline>div.timeline-entry', 150);
+		sch.removeExtraElements('#my-timeline>div.timeline-entry', 300);
 
 		/*
 			Update relative dates
 		*/
 		sch.updateRelativeTimes('div.timeline-entry>.status>.meta>.date', 'data-created_at');
+		
+		/*
+			re-apply filtering
+		*/
+		e.data.thisAssistant.filterTimeline();
 		
 		e.data.thisAssistant.spinnerOff();
 	});
@@ -104,34 +186,47 @@ MyTimelineAssistant.prototype.setup = function() {
 	jQuery().bind('update_failed', { thisAssistant:this }, function(e, data) {
 		e.data.thisAssistant.spinnerOff();
 	});
-
-}
-
-
-
-MyTimelineAssistant.prototype.activate = function(event) {
-	/* put in event handlers here that should only be in effect when this scene is active. For
-	   example, key handlers that are observing the document */
 	
+	
+	/*
+		listen for clicks on user avatars
+		Note that these will hear clicks across all active scenes, not just
+		this one.
+	*/
+	jQuery('div.timeline-entry>.user').live(Luna.Event.tap, function(e) {
+		var userid = jQuery(this).attr('data-user-screen_name');
+		Luna.Controller.stageController.pushScene('user-detail', userid);
+	});
+	
+	jQuery('.username.clickable').live(Luna.Event.tap, function(e) {
+		var userid = jQuery(this).attr('data-user-screen_name');
+		Luna.Controller.stageController.pushScene('user-detail', userid);
+	});
+
+	jQuery('div.timeline-entry>.status>.meta').live(Luna.Event.tap, function(e) {
+		var statusid = jQuery(this).attr('data-status-id');
+		Luna.Controller.stageController.pushScene('message-detail', statusid);
+	});
+	
+	
+	/*
+		the "hold" event might be a little too short, and interfere with normal clicks, so not using
+	*/
+	// jQuery('#my-timeline>div.timeline-entry').live(Luna.Event.hold, function(e) {
+	// 	var statusid = jQuery(this).attr('data-status-id');
+	// 	Luna.Controller.stageController.pushScene('message-detail', statusid);
+	// });
+
+
 	
 	/*
 		Make request to Twitter
 	*/
 	this.getData();
 	
-	this.addPostPopup();
+
 	
-	$('my-timeline').observe(Luna.Event.tap, function(e) {
-		
-		console.dir(e.findElement('#my-timeline>div.timeline-entry>.user'));
-		
-		var el;
-		if (el = e.findElement('#my-timeline>div.timeline-entry>.user')) {
-			var userid = el.readAttribute('data-user-screen_name');
-			Luna.Controller.stageController.pushScene('user-detail', userid);
-		}
-		
-	});
+
 	
 }
 
@@ -140,7 +235,18 @@ MyTimelineAssistant.prototype.deactivate = function(event) {
 	/* remove any event handlers you added in activate and do any other cleanup that should happen before
 	   this scene is popped or another scene is pushed on top */
 	
+	// alert('MyTimelineAssistant.prototype.deactivate');
+	
 	this.removePostPopup();
+	
+	jQuery().unbind('error_user_timeline_data');
+	jQuery().unbind('new_combined_timeline_data');
+	jQuery().unbind('update_succeeded');
+	jQuery().unbind('update_failed');
+	
+	jQuery('div.timeline-entry>.user').die(Luna.Event.tap);
+	jQuery('.username.clickable').die(Luna.Event.tap);
+	jQuery('div.timeline-entry>.status>.meta').die(Luna.Event.tap);
 }
 
 MyTimelineAssistant.prototype.cleanup = function(event) {
@@ -152,6 +258,14 @@ MyTimelineAssistant.prototype.cleanup = function(event) {
 MyTimelineAssistant.prototype.getData = function() {
 	this.spinnerOn();
 	sc.helpers.markAllAsRead('#my-timeline>div.timeline-entry');
-	sc.app.twit.getFriendsTimeline();
+	
+	// /*
+	// 	this is just to avoid network requests
+	// */
+	// jQuery.getJSON('user_timeline.json', function(data, textStatus) {
+	// 	jQuery().trigger('new_friends_timeline_data', [data]);
+	// });
+	
+	sc.app.twit.getCombinedTimeline();
 };
 

@@ -51,6 +51,16 @@ ManageFollowersAssistant.prototype.setup = function() {
 ManageFollowersAssistant.prototype.activate = function(event) {
 	/* put in event handlers here that should only be in effect when this scene is active. For
 	   example, key handlers that are observing the document */
+	console.log('getScenes()');
+	console.dir(Luna.Controller.stageController.getScenes());
+	console.log('activeScene()');
+	console.dir(Luna.Controller.stageController.activeScene());
+	console.log('topScene()');
+	console.dir(Luna.Controller.stageController.topScene());
+	console.log('isChildWindow()');
+	console.dir(Luna.Controller.stageController.isChildWindow());
+	
+
 }
 
 

@@ -1,9 +1,9 @@
 {
 	"title": "dreadnaught",
-	"version": 0.1,
+	"version": 0.2,
 	"type": "web",
 	"main": "index.html",
-	"id": "com.funkatron.app.dreadnaught",
+	"id": "com.funkatron.app.spaz",
 	"icon": "icon.png"
 }
 
