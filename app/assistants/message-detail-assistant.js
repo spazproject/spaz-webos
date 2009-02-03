@@ -82,7 +82,9 @@ MessageDetailAssistant.prototype.activate = function(event) {
 		// thisA.prepReply(jQuery(this).attr('data-screen_name'));
 	});
 	jQuery('#message-detail-actions #message-detail-action-retweet').live(Luna.Event.tap, function(e) {
-		Luna.Controller.notYetImplemented();
+		// var thisA = Luna.Controller.stageController.activeScene();
+		thisA.prepRetweet(thisA.statusobj);
+		// Luna.Controller.notYetImplemented();
 	});
 	jQuery('#message-detail-actions #message-detail-action-dm').live(Luna.Event.tap, function(e) {
 		thisA.prepDirectMessage(jQuery(this).attr('data-screen_name'));
@@ -121,16 +123,16 @@ MessageDetailAssistant.prototype.processStatusReturn = function(e, statusobj) {
 
 	console.dir(e.data.thisAssistant);
 
-	this.statusobj = statusobj;
-	this.statusRetrieved = false;
+	e.data.thisAssistant.statusobj = statusobj;
+	e.data.thisAssistant.statusRetrieved = false;
 
 	console.log('message data:');
-	console.dir(this.statusobj);
+	console.dir(e.data.thisAssistant.statusobj);
 	
-	this.statusobj.text = sch.autolink(this.statusobj.text);
-	this.statusobj.text = sch.autolinkTwitter(this.statusobj.text, '<span class="username clickable" data-user-screen_name="#username#">@#username#</span>');
+	e.data.thisAssistant.statusobj.text = sch.autolink(e.data.thisAssistant.statusobj.text);
+	e.data.thisAssistant.statusobj.text = sch.autolinkTwitter(e.data.thisAssistant.statusobj.text, '<span class="username clickable" data-user-screen_name="#username#">@#username#</span>');
 	
-	var itemhtml = Luna.View.render({object:this.statusobj, template: 'message-detail/message-detail'});
+	var itemhtml = Luna.View.render({object:e.data.thisAssistant.statusobj, template: 'message-detail/message-detail'});
 	jQuery('#message-detail').html(itemhtml);
 	
 	sch.updateRelativeTimes('#message-detail .status>.meta>.date', 'data-created_at');

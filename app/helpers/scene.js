@@ -4,7 +4,8 @@
 var scene_helpers = {}
 
 /**
- * This adds a number of  
+ * This adds a number of common scene methods to the passed scene assistant
+ * @param {object} assistant a scene assistant
  */
 scene_helpers.addCommonSceneMethods = function(assistant) {
 	
@@ -421,12 +422,10 @@ scene_helpers.addCommonSceneMethods = function(assistant) {
 	};
 
 	
-	assistant.prepRetweet = function(entryid) {
+	assistant.prepRetweet = function(entryobj) {
 		this.showPostPanel();
-		var timelineid = assistant.selectedTab.id.replace(/tab-/, 'timeline-');
-		var entry = $('#'+timelineid+'-'+entryid);
-		var text = entry.children('.entry-text').text();
-		var screenname = entry.children('.entry-user-screenname').text();
+		var text = entryobj.text;
+		var screenname = entryobj.user.screen_name;
 
 		var rtstr = 'RT @' + screenname + ': '+text+'';
 
