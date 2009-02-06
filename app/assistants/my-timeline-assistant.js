@@ -269,3 +269,6 @@ MyTimelineAssistant.prototype.getData = function() {
 	sc.app.twit.getCombinedTimeline();
 };
 
+MyTimelineAssistant.prototype.refresh = function() {
+	this.getData();
+};

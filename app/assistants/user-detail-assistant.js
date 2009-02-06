@@ -132,9 +132,12 @@ UserDetailAssistant.prototype.activate = function(event) {
 	jQuery('#user-detail-actions #search-user').live(Luna.Event.tap, function(e) {
 		var screen_name = jQuery(this).attr('data-screen_name');
 		console.log("searching for '"+screen_name+"'");
-		thisA.findAndSwap("search-twitter", {
-			'searchterm': 'from:'+screen_name+' OR to:'+screen_name
-		});
+		
+		thisA.searchFor('from:'+screen_name+' OR to:'+screen_name);
+		
+		// thisA.findAndSwap("search-twitter", {
+		// 	'searchterm': 'from:'+screen_name+' OR to:'+screen_name
+		// });
 	});
 	jQuery('#user-detail-actions #reply-to-user').live(Luna.Event.tap, function(e) {
 		console.log(jQuery(this).attr('id'));

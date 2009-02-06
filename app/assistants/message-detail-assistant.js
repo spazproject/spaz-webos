@@ -78,13 +78,12 @@ MessageDetailAssistant.prototype.activate = function(event) {
 	var thisA = this;
 
 	jQuery('#message-detail-actions #message-detail-action-reply').live(Luna.Event.tap, function(e) {
-		Luna.Controller.notYetImplemented();
-		// thisA.prepReply(jQuery(this).attr('data-screen_name'));
+		var screen_name = jQuery(this).attr('data-screen_name');
+		var in_reply_to = jQuery(this).attr('data-status-id');
+		thisA.prepReply(screen_name, in_reply_to);
 	});
 	jQuery('#message-detail-actions #message-detail-action-retweet').live(Luna.Event.tap, function(e) {
-		// var thisA = Luna.Controller.stageController.activeScene();
 		thisA.prepRetweet(thisA.statusobj);
-		// Luna.Controller.notYetImplemented();
 	});
 	jQuery('#message-detail-actions #message-detail-action-dm').live(Luna.Event.tap, function(e) {
 		thisA.prepDirectMessage(jQuery(this).attr('data-screen_name'));

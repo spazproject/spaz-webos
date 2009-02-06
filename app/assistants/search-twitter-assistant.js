@@ -75,6 +75,62 @@ SearchTwitterAssistant.prototype.setup = function() {
 	/* add event handlers to listen to events from widgets */
 	Luna.Event.listen($('search-twitter-textfield'), Luna.Event.propertyChange, this.search.bind(this));
 	
+
+	
+}
+
+SearchTwitterAssistant.prototype.search = function(e) {
+	console.log("search called");
+	
+	/*
+		clear any existing results
+	*/
+	jQuery('#search-timeline').empty();
+	
+	this.spinnerOn();
+	
+	if (sch.isString(e)) {
+		console.dir(e);
+		sc.app.twit.search(e);
+	} else {
+		console.dir(e);
+		sc.app.twit.search(e.value);		
+	}
+}
+
+
+SearchTwitterAssistant.prototype.refresh = function() {
+	this.search(this.searchBoxModel.value);
+};
+
+
+SearchTwitterAssistant.prototype.activate = function(event) {
+	/* put in event handlers here that should only be in effect when this scene is active. For
+	   example, key handlers that are observing the document */
+	console.log('getScenes()');
+	console.dir(Luna.Controller.stageController.getScenes());
+	console.log('activeScene()');
+	console.dir(Luna.Controller.stageController.activeScene());
+	console.log('topScene()');
+	console.dir(Luna.Controller.stageController.topScene());
+	console.log('isChildWindow()');
+	console.dir(Luna.Controller.stageController.isChildWindow());
+	
+	if (event && event.searchterm) {
+		this.passedSearch = event.searchterm;
+	}
+	
+	
+	if (this.passedSearch) {
+		this.searchBoxModel.value = this.passedSearch;
+		this.controller.modelChanged(this.searchBoxModel);
+		this.search(this.passedSearch);
+		this.passedSearch = null; // eliminate this so it isn't used anymore
+	}
+	
+	this.addPostPopup();
+	
+	
 	jQuery().bind('new_search_timeline_data', { thisAssistant:this }, function(e, tweets) {
 
 		console.dir(e.data.thisAssistant);
@@ -121,7 +177,7 @@ SearchTwitterAssistant.prototype.setup = function() {
 			Update relative dates
 		*/
 		sch.updateRelativeTimes('#search-timeline>div.timeline-entry>.status>.meta>.date', 'data-created_at');
-		// e.data.thisAssistant.spinnerOff();
+		e.data.thisAssistant.spinnerOff();
 
 		
 	});
@@ -145,58 +201,20 @@ SearchTwitterAssistant.prototype.setup = function() {
 		var statusid = jQuery(this).attr('data-status-id');
 		Luna.Controller.stageController.pushScene('message-detail', statusid);
 	});
-	
-}
-
-SearchTwitterAssistant.prototype.search = function(e) {
-	console.log("search called");
-	
-	/*
-		clear any existing results
-	*/
-	jQuery('#search-timeline').empty();
-	
-	if (sch.isString(e)) {
-		console.dir(e);
-		sc.app.twit.search(e);
-	} else {
-		console.dir(e);
-		sc.app.twit.search(e.value);		
-	}
-}
-
-
-SearchTwitterAssistant.prototype.activate = function(event) {
-	/* put in event handlers here that should only be in effect when this scene is active. For
-	   example, key handlers that are observing the document */
-	console.log('getScenes()');
-	console.dir(Luna.Controller.stageController.getScenes());
-	console.log('activeScene()');
-	console.dir(Luna.Controller.stageController.activeScene());
-	console.log('topScene()');
-	console.dir(Luna.Controller.stageController.topScene());
-	console.log('isChildWindow()');
-	console.dir(Luna.Controller.stageController.isChildWindow());
-	
-	if (event && event.searchterm) {
-		this.passedSearch = event.searchterm;
-	}
-	
-	
-	if (this.passedSearch) {
-		this.searchBoxModel.value = this.passedSearch;
-		this.controller.modelChanged(this.searchBoxModel);
-		this.search(this.passedSearch);
-		this.passedSearch = null; // eliminate this so it isn't used anymore
-	}
-	
-	this.addPostPopup();
 }
 
 
 SearchTwitterAssistant.prototype.deactivate = function(event) {
 	/* remove any event handlers you added in activate and do any other cleanup that should happen before
 	   this scene is popped or another scene is pushed on top */
+	
+	Luna.Event.stopListening($('search-twitter-textfield'), Luna.Event.propertyChange, this.search);
+	
+	jQuery().unbind('new_search_timeline_data');
+	
+	jQuery('div.timeline-entry>.user').die(Luna.Event.tap);
+	jQuery('.username.clickable').die(Luna.Event.tap);
+	jQuery('div.timeline-entry>.status>.meta').die(Luna.Event.tap);
 	
 	this.removePostPopup();
 }

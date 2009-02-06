@@ -60,17 +60,17 @@ a:link {
 
 
 div.timeline-entry {
-	padding: 10px 7px;
-	border-width: 2px;
+	padding: 6px 3px;
+	border-width: 1px;
 	border-style: solid;
 	border-color: transparent !important;
 	clear:both;
 	overflow:hidden;
 	min-height:64px;
 	color:#333;
-/*	-webkit-border-radius:10px;*/
-	margin:0 0px 6px;
-	-webkit-box-shadow:0px 1px 5px #000;
+/*	-webkit-border-radius:8px;*/
+	margin:0;
+	-webkit-box-shadow:0px 0px 5px #000;
 }
 
 	/*
@@ -110,7 +110,7 @@ div.timeline-entry {
 	div.timeline-entry.new {
 		color:#000;
 		border-color: #32320e;
-		padding: 10px 7px;
+/*		padding: 10px 7px;*/
 		
 	}
 		div.timeline-entry.new:nth-of-type(odd) {
@@ -171,7 +171,7 @@ div.timeline-entry {
 				background-color:rgba(0,0,0,.7);
 			}
 	div.timeline-entry .status .meta {
-		margin-top:.8em;
+		margin-top:2px;
 		font-size:8pt;
 		font-weight:bold;
 		text-transform:uppercase;
@@ -493,7 +493,7 @@ div.spaz-view-menu-spacer {
 #activity-spinner {
 	position:absolute;
 	right:5px;
-	top:  38pxpx;
+	top:  38px;
 }
 
 div.spaz-view-menu-container {
@@ -572,11 +572,46 @@ div.spaz-button-group {
 	}
 	
 	
-#spaz-activity-spinner {
+.spaz-activity-spinner {
 	z-index:11002;
-	position:absolute;
-	top:9px;
-	right:10px;
+	width:auto;
+/*	height:auto;*/
+	right:5px;
+	left: 5px;
+	top:150px;
+	bottom:150px;
 	background-repeat: no-repeat;
-	background-position: center;
+	background-position: center center;
+	position:fixed;
+	background-color: rgba(0,0,0,.7);
+	-khtml-border-radius:14px;
+	height:  24px;
+	padding: 6px 0px 0px 35px;
+	display:block;
+	color:  rgba(255,255,255,.7);
+	font-family:"Coconut Condensed";
+	font-size:12pt;
+	
 }
+
+
+div.progress-panel {
+	height: 17px;
+	margin:5px 8px;
+	background-color: rgba(0,0,0,.8);
+	padding: 8px 16px;
+	-khtml-border-radius:16px;
+}
+	div.progress-panel span.progress-panel-spinner {
+		position:relative;
+		top:5px;
+		left:15px;
+		display:block;
+	}
+	div.progress-panel span.progress-panel-label {
+		margin-left:1em;
+		color:  #FFFFFF;
+		font-family:"Coconut Condensed";
+		font-size:12pt;
+
+	}

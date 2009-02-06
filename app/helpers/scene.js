@@ -9,7 +9,9 @@ var scene_helpers = {}
  */
 scene_helpers.addCommonSceneMethods = function(assistant) {
 	
-	
+	/**
+	 * We might move this outside of the "assistant.XXX" namespace 
+	 */
 	assistant.findAndSwap = function(targetScene, returnValue) {
 		/*
 			initialize
@@ -45,6 +47,10 @@ scene_helpers.addCommonSceneMethods = function(assistant) {
 	 * } 
 	 */
 	assistant.setupCommonMenus = function(opts) {
+		
+		if (!this.scroller) {
+			this.scroller = this.controller.getSceneScroller();
+		}
 		
 		if (opts.viewMenuItems) {
 			var viewMenuItems = opts.viewMenuItems;
@@ -102,6 +108,9 @@ scene_helpers.addCommonSceneMethods = function(assistant) {
 			visible:true,
 			items: cmdMenuItems
 		};
+		
+		
+		
 		this.controller.setupWidget(Luna.Menu.commandMenu, undefined, this.cmdMenuModel);
 
 
@@ -117,43 +126,33 @@ scene_helpers.addCommonSceneMethods = function(assistant) {
 		// Set up submenu widget that was wired into the viewMenu above
 		this.controller.setupWidget("filter-menu", undefined, this.timelineFilterMenuModel);
 
-
+		
 		/*
 			Spinner
 		*/
+		
+		/*
+			This gets the sceneName before it's defined
+		*/
+		var spinner_id = this.scroller.id.replace(/luna-scene-([a-z_-]+)-scene-scroller/gi, "$1")+'-spinner';
+		
 		this.spinnerModel = {
 			'spinning':false
 		}
-		this.controller.setupWidget('spaz-activity-spinner', {
+		this.controller.setupWidget(spinner_id, {
 				property: 'spinning'
 			},
 			this.spinnerModel
 		);
-		
-		// /*
-		// 			Popup menu for SwitchView
-		// 		*/
-		// 		this.switchMenuModel = {
-		// 			label: $L(opts.switchMenuLabel),
-		// 			items: [
-		// 					{label:'Home/Login',	 		secondaryIconPath:'', command:'home'}, 
-		// 					{label:'Friends',	 			secondaryIconPath:'', command:'my-timeline'}, 
-		// 	                {label:$L('Replies'),			secondaryIconPath:'images/tab-icon-replies.png', command:'replies-timeline'}, 
-		// 	                {label:$L('Direct Messages'),	secondaryIconPath:'send', command:'direct-messages'}, 
-		// 	                {label:$L('Search Twitter'),	secondaryIconPath:'search', command:'search-twitter'},
-		// 	                {label:$L('Manage Followers'),	secondaryIconPath:'make-vip', command:'followers-following'}
-		// 			]
-		// 		};
-		// 
-		// 		// Set up submenu widget that was wired into the viewMenu above
-		// 		this.controller.setupWidget("switch-menu", undefined, this.switchMenuModel);
+
 	};
 
 
 
 
-	// This is where commands from the viewMenu (and our submenu wired into it) are handled.
-	// if you have a viewMenu with commands as we do, you need to define one of these in your assistant
+	/**
+	 *  
+	 */
 	assistant.handleCommand = function(event){
 		if (event.type == Luna.Event.command) {
 			switch (event.command) {
@@ -226,7 +225,7 @@ scene_helpers.addCommonSceneMethods = function(assistant) {
 					This would refresh the current view
 				*/
 				case 'refresh':
-					this.getData();
+					this.refresh(); // need to have a "refresh" method defined for each scene asst
 					break;
 
 
@@ -236,6 +235,9 @@ scene_helpers.addCommonSceneMethods = function(assistant) {
 	}
 	
 	
+	/**
+	 *  
+	 */
 	assistant.scrollToTop = function() {
 		if (!this.scroller) {
 			this.scroller = this.controller.getSceneScroller();
@@ -243,6 +245,9 @@ scene_helpers.addCommonSceneMethods = function(assistant) {
 		this.scroller.palm.revealElement(jQuery('.timeline>div.timeline-entry:first', this.scroller).get());
 	};
 	
+	/**
+	 *  
+	 */
 	assistant.scrollToBottom = function() {
 		if (!this.scroller) {
 			this.scroller = this.controller.getSceneScroller();
@@ -251,6 +256,9 @@ scene_helpers.addCommonSceneMethods = function(assistant) {
 		
 	};
 	
+	/**
+	 *  
+	 */
 	assistant.scrollToNew = function() {
 		if (!this.scroller) {
 			this.scroller = this.controller.getSceneScroller();
@@ -260,6 +268,9 @@ scene_helpers.addCommonSceneMethods = function(assistant) {
 	};
 
 
+	/**
+	 *  
+	 */
 	assistant.filterTimeline = function(command) {
 		
 		if (!command) {
@@ -291,6 +302,9 @@ scene_helpers.addCommonSceneMethods = function(assistant) {
 	
 	
 
+	/**
+	 *  
+	 */
 	assistant.addPostPopup = function(event) {
 		/*
 			add a container within the current scene
@@ -308,25 +322,45 @@ scene_helpers.addCommonSceneMethods = function(assistant) {
 		jQuery('#post-popup-container', scroll_el).html(itemhtml);
 		
 		Luna.Event.listen($('post-send-button'), Luna.Event.tap, this.sendPost.bind(this));
-		Luna.Event.listen($('post-cancel-button'), Luna.Event.tap, this.hidePostPanel.bind(this));
+		Luna.Event.listen($('post-cancel-button'), Luna.Event.tap, this.cancelPost.bind(this));
+
 		
-		jQuery('#post-panel-textarea').bind('keyup', {thisA:this}, this._updateCharCount);
-		jQuery('#post-panel-textarea').bind('keydown', {thisA:this}, this._updateCharCount);
-		jQuery('#post-panel-textarea').bind('blur', {thisA:this}, this._updateCharCount);
-		jQuery('#post-panel-textarea').bind('focus', {thisA:this}, this._updateCharCount);
+		// var thisA = this; // use for closures below
+		// 		
+		// jQuery('#post-panel-textarea').bind('keyup',   function(e) {
+		// 	thisA._updateCharCount();
+		// });
+		// jQuery('#post-panel-textarea').bind('keydown', function(e) {
+		// 	thisA._updateCharCount();
+		// });
+		// jQuery('#post-panel-textarea').bind('blur',    function(e) {
+		// 	thisA._updateCharCount();
+		// });
+		// jQuery('#post-panel-textarea').bind('focus',   function(e) {
+		// 	thisA._updateCharCount();
+		// });
+		// 		
+		// jQuery('#post-panel-irt-dismiss').bind(Luna.Event.tap, function(e) {
+		// 	thisA.clearPostIRT();
+		// });
 		
 		
 	}
 
 
+	/**
+	 *  
+	 */
 	assistant.removePostPopup = function(event) {
 		Luna.Event.stopListening($('post-send-button'), Luna.Event.tap, this.sendPost); 
-		Luna.Event.stopListening($('post-cancel-button'), Luna.Event.tap, this.sendPost);
+		Luna.Event.stopListening($('post-cancel-button'), Luna.Event.tap, this.cancelPost);
 		
-		jQuery('#post-panel-textarea').unbind('keyup', this._updateCharCount);
-		jQuery('#post-panel-textarea').unbind('keydown', this._updateCharCount);
-		jQuery('#post-panel-textarea').unbind('blur', this._updateCharCount);
-		jQuery('#post-panel-textarea').unbind('focus', this._updateCharCount);
+		jQuery('#post-panel-textarea').unbind('keyup');
+		jQuery('#post-panel-textarea').unbind('keydown');
+		jQuery('#post-panel-textarea').unbind('blur');
+		jQuery('#post-panel-textarea').unbind('focus');
+		
+		jQuery('#post-panel-irt-dismiss').unbind(Luna.Event.tap);
 		
 		
 		/*
@@ -341,29 +375,51 @@ scene_helpers.addCommonSceneMethods = function(assistant) {
 	}
 
 
+	/**
+	 * this hides and clears the post panel
+	 */
+	assistant.cancelPost = function() {
+		this.hidePostPanel();
+		this.clearPostPanel();
+	};
+
+
+	/**
+	 *  
+	 */
 	assistant.hidePostPanel = function(event) {
-		jQuery('#palm-dialog-box.post-panel').fadeOut('fast');
+		jQuery('#palm-dialog-box.post-panel', this.controller.getSceneScroller()).fadeOut('fast');
 		
 	}
+
+	assistant.clearPostPanel = function() {
+		this.clearPostIRT();
+		jQuery('#post-panel-textarea', this.controller.getSceneScroller()).val('');
+		this._updateCharCount();
+	};
+
+	/**
+	 *  
+	 */
 	assistant.showPostPanel = function(event) {
-		jQuery('#palm-dialog-box.post-panel').fadeIn('fast');
-		jQuery('#post-panel-textarea').focus();
+		jQuery('#palm-dialog-box.post-panel', this.controller.getSceneScroller()).fadeIn('fast');
+		jQuery('#post-panel-textarea', this.controller.getSceneScroller()).focus();
 	}
 	
 	/**
 	 * @private 
 	 */
 	assistant._updateCharCount = function() {
-		var charcount = (140 - jQuery('#post-panel-textarea').val().length);
-		jQuery('#post-panel-counter-number').text(charcount.toString());
+		var charcount = (140 - jQuery('#post-panel-textarea', this.controller.getSceneScroller()).val().length);
+		jQuery('#post-panel-counter-number', this.controller.getSceneScroller()).text(charcount.toString());
 		if (charcount < 0) {
-			jQuery('#post-panel-counter').addClass('over-limit');
+			jQuery('#post-panel-counter', this.controller.getSceneScroller()).addClass('over-limit');
 			/*
 				disable post send button
 			*/
 			//post-send-button
 		} else {
-			jQuery('#post-panel-counter').removeClass('over-limit');
+			jQuery('#post-panel-counter', this.controller.getSceneScroller()).removeClass('over-limit');
 			/*
 				enable post send button
 			*/
@@ -372,29 +428,43 @@ scene_helpers.addCommonSceneMethods = function(assistant) {
 
 
 
+	/**
+	 *  
+	 */
 	assistant.sendPost = function(event) {
 		this.spinnerOn();
 		var status = jQuery('#post-panel-textarea').val();
 
 		if (status.length > 0) {
-			sc.app.twit.update(status, null, null);
+			
+			var in_reply_to = parseInt(jQuery('#post-panel-irt-message', this.controller.getSceneScroller()).attr('data-status-id'));
+			
+			if (in_reply_to > 0) {
+				sc.app.twit.update(status, null, in_reply_to);
+			} else {
+				sc.app.twit.update(status, null, null);
+			}
+			
 			this.hidePostPanel(event);
+			this.clearPostPanel(event);
+			
 		}
 	}
+	
+	
 
+	/**
+	 *  
+	 */
 	assistant.renderSuccessfulPost = function(event, data) {
 		if (sch.isArray(data)) {
 			data = data[0];
 		}
 
-
 		data.text = sch.autolink(data.text);
 		data.text = sch.autolinkTwitter(data.text);
 		console.dir(data);
 
-		/*
-			Render the new tweets as a collection (speed increase, I suspect)
-		*/
 		var itemhtml = Luna.View.render({object: data, template: 'shared/tweet'});
 
 		/*
@@ -406,11 +476,17 @@ scene_helpers.addCommonSceneMethods = function(assistant) {
 	}
 	
 	
+	/**
+	 *  
+	 */
 	assistant.reportFailedPost = function(event) {
 		this.spinnerOff();
 	}
 	
 	
+	/**
+	 *  
+	 */
 	assistant.prepMessage = function() {
 		this.showPostPanel();
 		var eb = jQuery('#post-panel-textarea', this.controller.getSceneScroller());
@@ -422,9 +498,12 @@ scene_helpers.addCommonSceneMethods = function(assistant) {
 	};
 
 	
+	/**
+	 *  
+	 */
 	assistant.prepRetweet = function(entryobj) {
 		this.showPostPanel();
-		var text = entryobj.text;
+		var text = entryobj.SC_text_raw;
 		var screenname = entryobj.user.screen_name;
 
 		var rtstr = 'RT @' + screenname + ': '+text+'';
@@ -442,6 +521,9 @@ scene_helpers.addCommonSceneMethods = function(assistant) {
 
 	};
 
+	/**
+	 *  
+	 */
 	assistant.prepDirectMessage = function(username) {
 		this.showPostPanel();
 	    var eb = jQuery('#post-panel-textarea', this.controller.getSceneScroller());
@@ -458,6 +540,11 @@ scene_helpers.addCommonSceneMethods = function(assistant) {
 
 	};
 
+
+
+	/**
+	 *  
+	 */
 	assistant.prepPhotoPost = function(url) {
 	    
 		this.showPostPanel();
@@ -475,8 +562,13 @@ scene_helpers.addCommonSceneMethods = function(assistant) {
 
 	}
 
-	assistant.prepReply = function(username) {
-		this.showPostPanel();    
+
+
+	/**
+	 *  
+	 */
+	assistant.prepReply = function(username, status_id) {
+		this.showPostPanel();
 	
 		var eb = jQuery('#post-panel-textarea', this.controller.getSceneScroller());
 	    eb.focus();
@@ -501,9 +593,54 @@ scene_helpers.addCommonSceneMethods = function(assistant) {
 	        eb[0].setSelectionRange(newText.length, newText.length);
 	    }
 		
+		if (status_id) {
+			// get the status text
+			this.setPostIRT(status_id, this.statusobj)
+		} else {
+			
+		}
+		
 		this._updateCharCount();
 	};
 
+
+
+	/**
+	 *  
+	 */
+	assistant.setPostIRT = function(status_id, statusobj) {
+		if (statusobj && statusobj.SC_text_raw) {
+			var status_text = statusobj.SC_text_raw;
+		} else {
+			var status_text = 'status #'+status_id;
+		}
+		
+		// update the GUI stuff
+		jQuery('#post-panel-irt-message', this.controller.getSceneScroller())
+			.html(status_text)
+			.attr('data-status-id', status_id);
+		jQuery('#post-panel-irt', this.controller.getSceneScroller()).slideDown('fast');
+	};
+	
+
+	/**
+	 *  
+	 */
+	assistant.clearPostIRT = function() {
+		jQuery('#post-panel-irt', this.controller.getSceneScroller()).slideUp('fast');
+		jQuery('#post-panel-irt-message').html('').attr('data-status-id', '0');
+	};
+
+
+
+	/**
+	 * 
+	 */
+	assistant.searchFor = function(terms) {
+		this.findAndSwap("search-twitter", {
+			'searchterm': terms
+		});
+	}
 
 
 
@@ -512,8 +649,13 @@ scene_helpers.addCommonSceneMethods = function(assistant) {
 	 * @param {string} message 
 	 */
 	assistant.spinnerOn = function(message) {
-		// this.spinnerModel.spinning = true;
-		// this.controller.modelChanged( this.spinnerModel );
+
+		var thisA = this;
+		jQuery('div.spaz-activity-spinner', this.controller.getSceneScroller()).html('Loading').fadeIn('fast', function() {
+			thisA.spinnerModel.spinning = true;
+			thisA.controller.modelChanged( thisA.spinnerModel );
+		});
+		
 	}
 
 	/**
@@ -521,9 +663,64 @@ scene_helpers.addCommonSceneMethods = function(assistant) {
 	 * @param {string} message
 	 */
 	assistant.spinnerOff = function(message) {
-		// this.spinnerModel.spinning = false;
-		// this.controller.modelChanged( this.spinnerModel );
+		var thisA = this;
+		jQuery('div.spaz-activity-spinner', this.controller.getSceneScroller()).html('Loading').fadeOut('fast', function() {
+			thisA.spinnerModel.spinning = false;
+			thisA.controller.modelChanged( thisA.spinnerModel );
+		});
 	}
+	
+	
+	/**
+	 *  
+	 */
+	assistant.showInlineSpinner = function(container, message) {
+		/*
+			remove any existing
+		*/
+		jQuery('.progress-panel', container).remove(); 
+		
+		var html = '<div class="progress-panel" style="display:none"> \
+			<img src="images/theme/loading.gif" class="progress-panel-spinner" /> \
+			<span class="progress-panel-label">'+message+'</span> \
+		</div>'
+		jQuery(container).prepend(html);
+		jQuery('.progress-panel', container).slideDown('fast');
+		// jQuery('.progress-panel', container).fadeIn('fast');
+		
+	};
+
+	/**
+	 *  
+	 */
+	assistant.stopInlineSpinner = function(container, message) {
+		// jQuery('.progress-panel', container).fadeOut('fast');
+		jQuery('.progress-panel-spinner', container).fadeOut('fast');
+		jQuery('.progress-panel-label', container).html(message);
+	};
+
+
+	/**
+	 *  
+	 */
+	assistant.startInlineSpinner = function(container, message) {
+		// jQuery('.progress-panel', container).fadeOut('fast');
+		jQuery('.progress-panel-spinner', container).fadeIn('fast');
+		jQuery('.progress-panel-label', container).html(message);
+	};
+
+
+	/**
+	 *  
+	 */
+	assistant.hideInlineSpinner = function(container, message) {
+		// jQuery('.progress-panel', container).fadeOut('fast');
+		jQuery('.progress-panel', container).slideUp('fast', function() {
+			jQuery(this).remove();
+		});
+		
+	};
+	
 	
 
 	

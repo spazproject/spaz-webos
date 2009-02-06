@@ -122,19 +122,23 @@ LoginAssistant.prototype.setup = function() {
 		listen for trends data updates
 	*/
 	jQuery().bind('new_trends_data', {thisAssistant:this}, function(e, trends) {
+		e.data.thisAssistant.hideInlineSpinner('#trends-list');
+		
 		var trendshtml = Luna.View.render({'collection':trends, template:'login/trend-item'});
-		jQuery('#trends-list').html(trendshtml);
+		
+		jQuery('#trends-list .trend-item').remove();
+		jQuery('#trends-list').append(trendshtml);
+		jQuery('#trends-list .trend-item').fadeIn(500);
 	});
+	
+	
 	
 }
 
 
 
 LoginAssistant.prototype.toggleLoginPanel = function(event) {
-	
-	/*
-		We like animating with jQuery, but can't use it to grab Luna events
-	*/
+
 	if (jQuery('#login-panel').is(':visible')) {
 		jQuery('#login-panel').slideUp('fast');
 		jQuery('#show-login-button').html('Login &#x2192;')
@@ -151,9 +155,6 @@ LoginAssistant.prototype.toggleLoginPanel = function(event) {
 
 LoginAssistant.prototype.toggleSearchPanel = function(event) {
 	
-	/*
-		We like animating with jQuery, but can't use it to grab Luna events
-	*/
 	if (jQuery('#search-panel').is(':visible')) {
 		jQuery('#search-panel').slideUp('fast');
 		jQuery('#show-search-button').html('Search Twitter &#x2192;')
@@ -169,10 +170,7 @@ LoginAssistant.prototype.toggleSearchPanel = function(event) {
 	
 }
 LoginAssistant.prototype.toggleTrendsPanel = function(event) {
-	
-	/*
-		We like animating with jQuery, but can't use it to grab Luna events
-	*/
+
 	if (jQuery('#trends-panel').is(':visible')) {
 		jQuery('#trends-panel').slideUp('fast');
 		jQuery('#show-trends-button').html('Current Trends &#x2192;')
@@ -181,7 +179,10 @@ LoginAssistant.prototype.toggleTrendsPanel = function(event) {
 	} else {
 		sc.app.twit.getTrends();
 		
-		jQuery('#trends-panel').slideDown('fast');
+		var thisA = this;
+		jQuery('#trends-panel').slideDown('fast', function() {
+			thisA.showInlineSpinner('#trends-list', 'Loading…');
+		});
 		jQuery('#show-trends-button').html('Current Trends &#x2193;')
 									.removeClass('closed')
 									.addClass('open');
@@ -207,7 +208,7 @@ LoginAssistant.prototype.handleLogin = function(event) {
 		/*
 			Turn on the spinner and set the message
 		*/
-		this.spinnerOn('Logging-in');
+		this.showInlineSpinner('#spinner-container', 'Logging-in');
 
 		
 		/*
@@ -302,6 +303,14 @@ LoginAssistant.prototype.activate = function(event) {
 	console.dir(Luna.Controller.stageController.topScene());
 
 
+	var thisA = this;
+
+	jQuery('.trend-item').live(Luna.Event.tap, function() {
+		var term = jQuery(this).attr('data-searchterm');
+		thisA.searchFor(term);
+	});
+
+
 	/*
 		What to do if we succeed
 		Note that we pass the assistant object as data into the closure
@@ -310,7 +319,7 @@ LoginAssistant.prototype.activate = function(event) {
 		sc.app.twit.setCredentials(e.data.thisAssistant.model.username, e.data.thisAssistant.model.password);
 		sc.app.lastFriendsTimelineId = 1;
 		
-		e.data.thisAssistant.spinnerOff('');
+		e.data.thisAssistant.hideInlineSpinner('#spinner-container');
 		
 		/*
 			@todo Save username and password as encrypted vals
@@ -332,7 +341,7 @@ LoginAssistant.prototype.activate = function(event) {
 			its controller property. WHY?
 		*/
 		
-		e.data.thisAssistant.spinnerOff('Login failed!');
+		e.data.thisAssistant.stopInlineSpinner('#spinner-container', 'Login failed!');
 	});
 	
 
@@ -351,6 +360,8 @@ LoginAssistant.prototype.deactivate = function(event) {
 	
 	jQuery().unbind('verify_credentials_succeeded');
 	jQuery().unbind('verify_credentials_failed');
+	
+	jQuery('.trend-item').die(Luna.Event.tap);
 	
 }
 
