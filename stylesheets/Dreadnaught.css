@@ -418,12 +418,16 @@ div.spaz-drawer {
 	}
 		#user-timeline div.timeline-entry {
 			min-height:24px;
+			
 		}
 		#user-timeline .user {
 			display:none;
 		}
 		#user-timeline .status {
 			margin-left:0px;
+		}
+		#user-timeline .status .screen-name {
+			display:none;
 		}
 
 

@@ -131,6 +131,8 @@ SearchTwitterAssistant.prototype.activate = function(event) {
 	this.addPostPopup();
 	
 	
+	var thisA = this; // for closures below
+	
 	jQuery().bind('new_search_timeline_data', { thisAssistant:this }, function(e, tweets) {
 
 		console.dir(e.data.thisAssistant);
@@ -145,8 +147,7 @@ SearchTwitterAssistant.prototype.activate = function(event) {
 
 		jQuery.each( rendertweets, function() {
 			console.dir(this)
-			this.text = sch.autolink(this.text);
-			this.text = sch.autolinkTwitter(this.text);
+			this.text = makeItemsClickable(this.text);
 			
 			var itemhtml = Luna.View.render({object: this, template: 'search-twitter/search-item'});
 			
@@ -187,17 +188,22 @@ SearchTwitterAssistant.prototype.activate = function(event) {
 		Note that these will hear clicks across all active scenes, not just
 		this one.
 	*/
-	jQuery('div.timeline-entry>.user').live(Luna.Event.tap, function(e) {
+	jQuery('div.timeline-entry>.user', this.scroller).live(Luna.Event.tap, function(e) {
 		var userid = jQuery(this).attr('data-user-screen_name');
 		Luna.Controller.stageController.pushScene('user-detail', userid);
 	});
 	
-	jQuery('.username.clickable').live(Luna.Event.tap, function(e) {
+	jQuery('.username.clickable', this.scroller).live(Luna.Event.tap, function(e) {
 		var userid = jQuery(this).attr('data-user-screen_name');
 		Luna.Controller.stageController.pushScene('user-detail', userid);
 	});
 
-	jQuery('div.timeline-entry>.status>.meta').live(Luna.Event.tap, function(e) {
+	jQuery('.hashtag.clickable', this.scroller).live(Luna.Event.tap, function(e) {
+		var hashtag = jQuery(this).attr('data-hashtag');
+		thisA.searchFor('#'+hashtag);
+	});
+
+	jQuery('div.timeline-entry>.status>.meta', this.scroller).live(Luna.Event.tap, function(e) {
 		var statusid = jQuery(this).attr('data-status-id');
 		Luna.Controller.stageController.pushScene('message-detail', statusid);
 	});
@@ -212,9 +218,10 @@ SearchTwitterAssistant.prototype.deactivate = function(event) {
 	
 	jQuery().unbind('new_search_timeline_data');
 	
-	jQuery('div.timeline-entry>.user').die(Luna.Event.tap);
-	jQuery('.username.clickable').die(Luna.Event.tap);
-	jQuery('div.timeline-entry>.status>.meta').die(Luna.Event.tap);
+	jQuery('div.timeline-entry>.user', this.scroller).die(Luna.Event.tap);
+	jQuery('.username.clickable', this.scroller).die(Luna.Event.tap);
+	jQuery('.hashtag.clickable', this.scroller).die(Luna.Event.tap);
+	jQuery('div.timeline-entry>.status>.meta', this.scroller).die(Luna.Event.tap);
 	
 	this.removePostPopup();
 }

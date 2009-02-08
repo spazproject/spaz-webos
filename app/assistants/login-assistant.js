@@ -224,7 +224,7 @@ LoginAssistant.prototype.handleLogin = function(event) {
 
 LoginAssistant.prototype.handleSearch = function(event) {
 	if (this.model && this.model.search) {
-		this.findAndSwap("search-twitter", {
+		findAndSwapScene("search-twitter", {
 			searchterm:this.model.search
 		});
 	}
@@ -326,7 +326,7 @@ LoginAssistant.prototype.activate = function(event) {
 		*/
 
 		// Luna.Controller.stageController.swapScene("my-timeline", this);
-		e.data.thisAssistant.findAndSwap("my-timeline", this);
+		findAndSwapScene("my-timeline", this);
 	});
 	
 	/*

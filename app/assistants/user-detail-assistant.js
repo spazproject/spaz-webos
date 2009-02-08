@@ -78,8 +78,7 @@ UserDetailAssistant.prototype.setup = function() {
 
 		jQuery.each( rendertweets, function() {
 			console.dir(this)
-			this.text = sch.autolink(this.text);
-			this.text = sch.autolinkTwitter(this.text);
+			this.text = makeItemsClickable(this.text);
 		});
 
 		/*
@@ -123,37 +122,53 @@ UserDetailAssistant.prototype.activate = function(event) {
 	
 	
 
-	var thisA = this;
+	var thisA = this; // for closures
 
-	jQuery('#user-detail-actions #view-user-posts').live(Luna.Event.tap, function(e) {
+	jQuery('#user-detail-actions #view-user-posts', this.scroller).live(Luna.Event.tap, function(e) {
 		console.log(jQuery(this).attr('id'));
 		jQuery('#user-timeline').slideToggle('500');
 	});
-	jQuery('#user-detail-actions #search-user').live(Luna.Event.tap, function(e) {
+	jQuery('#user-detail-actions #search-user', this.scroller).live(Luna.Event.tap, function(e) {
 		var screen_name = jQuery(this).attr('data-screen_name');
 		console.log("searching for '"+screen_name+"'");
 		
 		thisA.searchFor('from:'+screen_name+' OR to:'+screen_name);
 		
-		// thisA.findAndSwap("search-twitter", {
+		// findAndSwapScene("search-twitter", {
 		// 	'searchterm': 'from:'+screen_name+' OR to:'+screen_name
 		// });
 	});
-	jQuery('#user-detail-actions #reply-to-user').live(Luna.Event.tap, function(e) {
+	jQuery('#user-detail-actions #reply-to-user', this.scroller).live(Luna.Event.tap, function(e) {
 		console.log(jQuery(this).attr('id'));
 		thisA.prepReply(jQuery(this).attr('data-screen_name'));
 	});
-	jQuery('#user-detail-actions #dm-user').live(Luna.Event.tap, function(e) {
+	jQuery('#user-detail-actions #dm-user', this.scroller).live(Luna.Event.tap, function(e) {
 		console.log(jQuery(this).attr('id'));
 		thisA.prepDirectMessage(jQuery(this).attr('data-screen_name'));
 	});
-	jQuery('#user-detail-actions #follow-user').live(Luna.Event.tap, function(e) {
+	jQuery('#user-detail-actions #follow-user', this.scroller).live(Luna.Event.tap, function(e) {
 		console.log(jQuery(this).attr('id'));
 		Luna.Controller.notYetImplemented();
 	});
-	jQuery('#user-detail-actions #block-user').live(Luna.Event.tap, function(e) {
+	jQuery('#user-detail-actions #block-user', this.scroller).live(Luna.Event.tap, function(e) {
 		console.log(jQuery(this).attr('id'));
 		Luna.Controller.notYetImplemented();
+	});
+
+
+	jQuery('.username.clickable', this.scroller).live(Luna.Event.tap, function(e) {
+		var userid = jQuery(this).attr('data-user-screen_name');
+		Luna.Controller.stageController.pushScene('user-detail', userid);
+	});
+
+	jQuery('.hashtag.clickable', this.scroller).live(Luna.Event.tap, function(e) {
+		var hashtag = jQuery(this).attr('data-hashtag');
+		thisA.searchFor('#'+hashtag);
+	});
+
+	jQuery('div.timeline-entry>.status>.meta', this.scroller).live(Luna.Event.tap, function(e) {
+		var statusid = jQuery(this).attr('data-status-id');
+		Luna.Controller.stageController.pushScene('message-detail', statusid);
 	});
 
 	if (!this.userRetrieved) {
@@ -179,12 +194,16 @@ UserDetailAssistant.prototype.deactivate = function(event) {
 	/*
 		We have to unbind our event listeners or weird/bad things happen
 	*/
-	jQuery('#user-detail-actions #view-user-posts').die(Luna.Event.tap);
-	jQuery('#user-detail-actions #search-user').die(Luna.Event.tap);
-	jQuery('#user-detail-actions #reply-to-user').die(Luna.Event.tap);
-	jQuery('#user-detail-actions #dm-user').die(Luna.Event.tap);
-	jQuery('#user-detail-actions #follow-user').die(Luna.Event.tap);
-	jQuery('#user-detail-actions #block-user').die(Luna.Event.tap);
+	jQuery('#user-detail-actions #view-user-posts', this.scroller).die(Luna.Event.tap);
+	jQuery('#user-detail-actions #search-user', this.scroller).die(Luna.Event.tap);
+	jQuery('#user-detail-actions #reply-to-user', this.scroller).die(Luna.Event.tap);
+	jQuery('#user-detail-actions #dm-user', this.scroller).die(Luna.Event.tap);
+	jQuery('#user-detail-actions #follow-user', this.scroller).die(Luna.Event.tap);
+	jQuery('#user-detail-actions #block-user', this.scroller).die(Luna.Event.tap);
+	
+	jQuery('.username.clickable', this.scroller).die(Luna.Event.tap);
+	jQuery('.hashtag.clickable', this.scroller).die(Luna.Event.tap);
+	jQuery('div.timeline-entry>.status>.meta', this.scroller).die(Luna.Event.tap);
 }
 
 UserDetailAssistant.prototype.cleanup = function(event) {

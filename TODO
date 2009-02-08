@@ -28,6 +28,7 @@ Scenes:
 		* Follow
 		* block
 * Search
+	* search items passed in with single-quotes don't display in textbox properly
 * Preferences
 * Following/Followers list
 

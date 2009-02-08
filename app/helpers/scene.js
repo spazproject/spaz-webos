@@ -9,36 +9,7 @@ var scene_helpers = {}
  */
 scene_helpers.addCommonSceneMethods = function(assistant) {
 	
-	/**
-	 * We might move this outside of the "assistant.XXX" namespace 
-	 */
-	assistant.findAndSwap = function(targetScene, returnValue) {
-		/*
-			initialize
-		*/
-		var scene_exists = false;
-		
-		/*
-			get an array of existing scenes
-		*/
-		var scenes = Luna.Controller.stageController.getScenes();
-		
 
-		for (var k=0; k<scenes.length; k++) {
-			if (scenes[k].sceneName == targetScene) { // this scene already exists, so popScenesTo it
-				scene_exists = true;
-			}
-		}
-		
-		if (scene_exists) {
-			Luna.Controller.stageController.popScenesTo(targetScene, returnValue);
-		} else {
-			Luna.Controller.stageController.swapScene(targetScene, returnValue);
-		}
-	};
-	
-	
-	
 	/**
 	 * opts is an object with key:val pairs, like so
 	 * {
@@ -171,15 +142,15 @@ scene_helpers.addCommonSceneMethods = function(assistant) {
 				*/
 				case 'home':
 					// console.log('is child window:'+Luna.Controller.StageController.isChildWindow(this));
-					this.findAndSwap("login", this);
+					findAndSwapScene("login", this);
 					break;
 				case 'my-timeline':
 					// console.log('is child window:'+Luna.Controller.StageController.isChildWindow(this));
-					this.findAndSwap("my-timeline", this);
+					findAndSwapScene("my-timeline", this);
 					break;
 				case 'search':
 					// console.log('is child window:'+Luna.Controller.StageController.isChildWindow(this));
-					this.findAndSwap("search-twitter", this);
+					findAndSwapScene("search-twitter", this);
 					break;	
 
 				/*
@@ -461,8 +432,7 @@ scene_helpers.addCommonSceneMethods = function(assistant) {
 			data = data[0];
 		}
 
-		data.text = sch.autolink(data.text);
-		data.text = sch.autolinkTwitter(data.text);
+		data.text = makeItemsClickable(data.text);
 		console.dir(data);
 
 		var itemhtml = Luna.View.render({object: data, template: 'shared/tweet'});
@@ -637,7 +607,7 @@ scene_helpers.addCommonSceneMethods = function(assistant) {
 	 * 
 	 */
 	assistant.searchFor = function(terms) {
-		this.findAndSwap("search-twitter", {
+		findAndSwapScene("search-twitter", {
 			'searchterm': terms
 		});
 	}
@@ -725,3 +695,53 @@ scene_helpers.addCommonSceneMethods = function(assistant) {
 
 	
 }
+
+
+
+/************************************
+ * global scene helper functions
+ ************************************/
+
+/**
+ * This helper looks through the array of scenes and looks for an existing instance of 
+ * the given targetScene. If one exists, we pop all scenes before it to return to it. Otherwise
+ * we swap to a new instance of the scene
+ * 
+ * @param {string} targetScene the scene name
+ * @param {many} returnValue a return value passed to the pop or swap call
+ */
+var findAndSwapScene = function(targetScene, returnValue) {
+	/*
+		initialize
+	*/
+	var scene_exists = false;
+	
+	/*
+		get an array of existing scenes
+	*/
+	var scenes = Luna.Controller.stageController.getScenes();
+	
+
+	for (var k=0; k<scenes.length; k++) {
+		if (scenes[k].sceneName == targetScene) { // this scene already exists, so popScenesTo it
+			scene_exists = true;
+		}
+	}
+	
+	if (scene_exists) {
+		Luna.Controller.stageController.popScenesTo(targetScene, returnValue);
+	} else {
+		Luna.Controller.stageController.swapScene(targetScene, returnValue);
+	}
+};
+
+
+
+var makeItemsClickable = function(str) {
+	
+	str = sch.autolink(str);
+	str = sch.autolinkTwitterScreenname(str, '<span class="username clickable" data-user-screen_name="#username#">@#username#</span>');
+	str = sch.autolinkTwitterHashtag(str, '<span class="hashtag clickable" data-hashtag="#hashtag#">##hashtag#</span>');
+	
+	return str;
+};
