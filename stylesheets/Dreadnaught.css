@@ -242,7 +242,7 @@ div.spaz-drawer-header {
 	font-size: 10pt;
 	text-transform: uppercase;
 	font-weight:  bold;
-	-webkit-border-image: url(http://localhost:8888/usr/lib/luna/framework/submissions/91/images/palm-menu-button.png) 0 25 150 25 stretch stretch;
+	-webkit-border-image: url(http://localhost:8888/usr/lib/mojo/framework/submissions/91/images/palm-menu-button.png) 0 25 150 25 stretch stretch;
 }
 	div.spaz-drawer-header.open {
 		color:#FFC;

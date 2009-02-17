@@ -1,5 +1,5 @@
 /**
- * helpers for scene assistants in Spaz on Luna 
+ * helpers for scene assistants in Spaz on Mojo 
  */
 var scene_helpers = {}
 
@@ -49,7 +49,7 @@ scene_helpers.addCommonSceneMethods = function(assistant) {
 			label: $L('viewmenu'), 
 			items: viewMenuItems,
 		};
-		this.controller.setupWidget(Luna.Menu.viewMenu, undefined, this.viewMenuModel);
+		this.controller.setupWidget(Mojo.Menu.viewMenu, undefined, this.viewMenuModel);
 		
 		
 
@@ -82,7 +82,7 @@ scene_helpers.addCommonSceneMethods = function(assistant) {
 		
 		
 		
-		this.controller.setupWidget(Luna.Menu.commandMenu, undefined, this.cmdMenuModel);
+		this.controller.setupWidget(Mojo.Menu.commandMenu, undefined, this.cmdMenuModel);
 
 
 		this.timelineFilterMenuModel = {
@@ -105,7 +105,7 @@ scene_helpers.addCommonSceneMethods = function(assistant) {
 		/*
 			This gets the sceneName before it's defined
 		*/
-		var spinner_id = this.scroller.id.replace(/luna-scene-([a-z_-]+)-scene-scroller/gi, "$1")+'-spinner';
+		var spinner_id = this.scroller.id.replace(/mojo-scene-([a-z_-]+)-scene-scroller/gi, "$1")+'-spinner';
 		
 		this.spinnerModel = {
 			'spinning':false
@@ -125,7 +125,7 @@ scene_helpers.addCommonSceneMethods = function(assistant) {
 	 *  
 	 */
 	assistant.handleCommand = function(event){
-		if (event.type == Luna.Event.command) {
+		if (event.type == Mojo.Event.command) {
 			switch (event.command) {
 				/*
 					timeline filtering
@@ -141,15 +141,15 @@ scene_helpers.addCommonSceneMethods = function(assistant) {
 					Navigation
 				*/
 				case 'home':
-					// console.log('is child window:'+Luna.Controller.StageController.isChildWindow(this));
+					// console.log('is child window:'+Mojo.Controller.StageController.isChildWindow(this));
 					findAndSwapScene("login", this);
 					break;
 				case 'my-timeline':
-					// console.log('is child window:'+Luna.Controller.StageController.isChildWindow(this));
+					// console.log('is child window:'+Mojo.Controller.StageController.isChildWindow(this));
 					findAndSwapScene("my-timeline", this);
 					break;
 				case 'search':
-					// console.log('is child window:'+Luna.Controller.StageController.isChildWindow(this));
+					// console.log('is child window:'+Mojo.Controller.StageController.isChildWindow(this));
 					findAndSwapScene("search-twitter", this);
 					break;	
 
@@ -188,7 +188,7 @@ scene_helpers.addCommonSceneMethods = function(assistant) {
 					back
 				*/
 				case 'back':
-					Luna.Controller.stageController.popScene();
+					Mojo.Controller.stageController.popScene();
 					break;
 
 
@@ -213,7 +213,7 @@ scene_helpers.addCommonSceneMethods = function(assistant) {
 		if (!this.scroller) {
 			this.scroller = this.controller.getSceneScroller();
 		}
-		this.scroller.palm.revealElement(jQuery('.timeline>div.timeline-entry:first', this.scroller).get());
+		this.scroller.mojo.revealElement(jQuery('.timeline>div.timeline-entry:first', this.scroller).get());
 	};
 	
 	/**
@@ -223,7 +223,7 @@ scene_helpers.addCommonSceneMethods = function(assistant) {
 		if (!this.scroller) {
 			this.scroller = this.controller.getSceneScroller();
 		}
-		this.scroller.palm.revealBottom();
+		this.scroller.mojo.revealBottom();
 		
 	};
 	
@@ -234,7 +234,7 @@ scene_helpers.addCommonSceneMethods = function(assistant) {
 		if (!this.scroller) {
 			this.scroller = this.controller.getSceneScroller();
 		}
-		this.scroller.palm.revealElement(jQuery('.timeline>div.timeline-entry.new:last', this.scroller).get());
+		this.scroller.mojo.revealElement(jQuery('.timeline>div.timeline-entry.new:last', this.scroller).get());
 		
 	};
 
@@ -289,11 +289,11 @@ scene_helpers.addCommonSceneMethods = function(assistant) {
 		
 		jQuery(scroll_el).append("<div id='post-popup-container'></div>");
 		
-		var itemhtml = Luna.View.render({object: null, template: 'shared/post-popup'});
+		var itemhtml = Mojo.View.render({object: null, template: 'shared/post-popup'});
 		jQuery('#post-popup-container', scroll_el).html(itemhtml);
 		
-		Luna.Event.listen($('post-send-button'), Luna.Event.tap, this.sendPost.bind(this));
-		Luna.Event.listen($('post-cancel-button'), Luna.Event.tap, this.cancelPost.bind(this));
+		Mojo.Event.listen($('post-send-button'), Mojo.Event.tap, this.sendPost.bind(this));
+		Mojo.Event.listen($('post-cancel-button'), Mojo.Event.tap, this.cancelPost.bind(this));
 
 		
 		// var thisA = this; // use for closures below
@@ -311,7 +311,7 @@ scene_helpers.addCommonSceneMethods = function(assistant) {
 		// 	thisA._updateCharCount();
 		// });
 		// 		
-		// jQuery('#post-panel-irt-dismiss').bind(Luna.Event.tap, function(e) {
+		// jQuery('#post-panel-irt-dismiss').bind(Mojo.Event.tap, function(e) {
 		// 	thisA.clearPostIRT();
 		// });
 		
@@ -323,15 +323,15 @@ scene_helpers.addCommonSceneMethods = function(assistant) {
 	 *  
 	 */
 	assistant.removePostPopup = function(event) {
-		Luna.Event.stopListening($('post-send-button'), Luna.Event.tap, this.sendPost); 
-		Luna.Event.stopListening($('post-cancel-button'), Luna.Event.tap, this.cancelPost);
+		Mojo.Event.stopListening($('post-send-button'), Mojo.Event.tap, this.sendPost); 
+		Mojo.Event.stopListening($('post-cancel-button'), Mojo.Event.tap, this.cancelPost);
 		
 		jQuery('#post-panel-textarea').unbind('keyup');
 		jQuery('#post-panel-textarea').unbind('keydown');
 		jQuery('#post-panel-textarea').unbind('blur');
 		jQuery('#post-panel-textarea').unbind('focus');
 		
-		jQuery('#post-panel-irt-dismiss').unbind(Luna.Event.tap);
+		jQuery('#post-panel-irt-dismiss').unbind(Mojo.Event.tap);
 		
 		
 		/*
@@ -435,7 +435,7 @@ scene_helpers.addCommonSceneMethods = function(assistant) {
 		data.text = makeItemsClickable(data.text);
 		console.dir(data);
 
-		var itemhtml = Luna.View.render({object: data, template: 'shared/tweet'});
+		var itemhtml = Mojo.View.render({object: data, template: 'shared/tweet'});
 		
 
 
@@ -731,7 +731,7 @@ scene_helpers.addCommonSceneMethods = function(assistant) {
 		
 		var category = 'newMessages';
 		
-		var appController = Luna.Controller.getAppController();
+		var appController = Mojo.Controller.getAppController();
 		appController.showBanner(params, launchArgs, category);
 		
 	}
@@ -743,15 +743,15 @@ scene_helpers.addCommonSceneMethods = function(assistant) {
 		
 		// var kDashboardStageName = 'spaz-dashboard'
 		// 
-		// var appController = Luna.Controller.getAppController();
+		// var appController = Mojo.Controller.getAppController();
 		// this.controller.commitChanges();
 		// appController.showBanner(msg, {banner: msg});
-		// var stageController = Luna.Controller.getAppController().getStageController(kDashboardStageName);
+		// var stageController = Mojo.Controller.getAppController().getStageController(kDashboardStageName);
 		// if (stageController) {
 		// 	stageController.delegateToSceneAssistant("update", msg, new Date());
 		// } else {
 		// 	this.notificationCreatedHandler = this.notificationCreated.bind(this, msg);
-		// 	Luna.Controller.getAppController().createStageWithCallback({name: kDashboardStageName, lightweight: true}, 
+		// 	Mojo.Controller.getAppController().createStageWithCallback({name: kDashboardStageName, lightweight: true}, 
 		// 		this.notificationCreatedHandler, "dashboard");			
 		// }
 	};
@@ -845,7 +845,7 @@ var findAndSwapScene = function(targetScene, returnValue) {
 	/*
 		get an array of existing scenes
 	*/
-	var scenes = Luna.Controller.stageController.getScenes();
+	var scenes = Mojo.Controller.stageController.getScenes();
 	
 
 	for (var k=0; k<scenes.length; k++) {
@@ -855,9 +855,9 @@ var findAndSwapScene = function(targetScene, returnValue) {
 	}
 	
 	if (scene_exists) {
-		Luna.Controller.stageController.popScenesTo(targetScene, returnValue);
+		Mojo.Controller.stageController.popScenesTo(targetScene, returnValue);
 	} else {
-		Luna.Controller.stageController.swapScene(targetScene, returnValue);
+		Mojo.Controller.stageController.swapScene(targetScene, returnValue);
 	}
 };
 

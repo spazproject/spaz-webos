@@ -13,7 +13,7 @@ function BindingAssistant() {
 	};
 
 	
-	this.demoDepot = new Luna.Depot(options, this.dbSuccess, this.dbFailure);
+	this.demoDepot = new Mojo.Depot(options, this.dbSuccess, this.dbFailure);
 }
 
 BindingAssistant.prototype.setup = function() {
@@ -32,7 +32,7 @@ BindingAssistant.prototype.setup = function() {
 	
 	this.demoDepot.getMultiple('bucket1', null, 10, 0, this.dbSuccess, this.dbFailure);
 		
-	/* use Luna.View.render to render view templates and add them to the scene, if needed. */
+	/* use Mojo.View.render to render view templates and add them to the scene, if needed. */
 	
 	/* setup widgets here */
 	

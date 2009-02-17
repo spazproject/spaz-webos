@@ -44,7 +44,7 @@ UserDetailAssistant.prototype.setup = function() {
 	
 	/* this function is for setup tasks that have to happen when the scene is first created */
 		
-	/* use Luna.View.render to render view templates and add them to the scene, if needed. */
+	/* use Mojo.View.render to render view templates and add them to the scene, if needed. */
 	
 	/* setup widgets here */
 	
@@ -65,7 +65,7 @@ UserDetailAssistant.prototype.setup = function() {
 
 		this.userRetrieved = true;		
 
-		var itemhtml = Luna.View.render({object:this.userobj, template: 'user-detail/user-detail'});
+		var itemhtml = Mojo.View.render({object:this.userobj, template: 'user-detail/user-detail'});
 		jQuery('#user-detail').html(itemhtml);
 		
 		
@@ -84,7 +84,7 @@ UserDetailAssistant.prototype.setup = function() {
 		/*
 			Render the new tweets as a collection (speed increase, I suspect)
 		*/
-		var itemhtml = Luna.View.render({collection: rendertweets, template: 'shared/tweet'});
+		var itemhtml = Mojo.View.render({collection: rendertweets, template: 'shared/tweet'});
 		jQuery('#user-timeline').html(itemhtml);
 
 		/*
@@ -111,24 +111,24 @@ UserDetailAssistant.prototype.activate = function(event) {
 	// alert('UserDetailAssistant.prototype.activate');
 	
 	console.log('getScenes()');
-	console.dir(Luna.Controller.stageController.getScenes());
+	console.dir(Mojo.Controller.stageController.getScenes());
 	console.log('activeScene()');
-	console.dir(Luna.Controller.stageController.activeScene());
+	console.dir(Mojo.Controller.stageController.activeScene());
 	console.log('topScene()');
-	console.dir(Luna.Controller.stageController.topScene());
+	console.dir(Mojo.Controller.stageController.topScene());
 	console.log('isChildWindow()');
-	console.dir(Luna.Controller.stageController.isChildWindow());
+	console.dir(Mojo.Controller.stageController.isChildWindow());
 	
 	
 	
 
 	var thisA = this; // for closures
 
-	jQuery('#user-detail-actions #view-user-posts', this.scroller).live(Luna.Event.tap, function(e) {
+	jQuery('#user-detail-actions #view-user-posts', this.scroller).live(Mojo.Event.tap, function(e) {
 		console.log(jQuery(this).attr('id'));
 		jQuery('#user-timeline').slideToggle('500');
 	});
-	jQuery('#user-detail-actions #search-user', this.scroller).live(Luna.Event.tap, function(e) {
+	jQuery('#user-detail-actions #search-user', this.scroller).live(Mojo.Event.tap, function(e) {
 		var screen_name = jQuery(this).attr('data-screen_name');
 		console.log("searching for '"+screen_name+"'");
 		
@@ -138,37 +138,37 @@ UserDetailAssistant.prototype.activate = function(event) {
 		// 	'searchterm': 'from:'+screen_name+' OR to:'+screen_name
 		// });
 	});
-	jQuery('#user-detail-actions #reply-to-user', this.scroller).live(Luna.Event.tap, function(e) {
+	jQuery('#user-detail-actions #reply-to-user', this.scroller).live(Mojo.Event.tap, function(e) {
 		console.log(jQuery(this).attr('id'));
 		thisA.prepReply(jQuery(this).attr('data-screen_name'));
 	});
-	jQuery('#user-detail-actions #dm-user', this.scroller).live(Luna.Event.tap, function(e) {
+	jQuery('#user-detail-actions #dm-user', this.scroller).live(Mojo.Event.tap, function(e) {
 		console.log(jQuery(this).attr('id'));
 		thisA.prepDirectMessage(jQuery(this).attr('data-screen_name'));
 	});
-	jQuery('#user-detail-actions #follow-user', this.scroller).live(Luna.Event.tap, function(e) {
+	jQuery('#user-detail-actions #follow-user', this.scroller).live(Mojo.Event.tap, function(e) {
 		console.log(jQuery(this).attr('id'));
-		Luna.Controller.notYetImplemented();
+		Mojo.Controller.notYetImplemented();
 	});
-	jQuery('#user-detail-actions #block-user', this.scroller).live(Luna.Event.tap, function(e) {
+	jQuery('#user-detail-actions #block-user', this.scroller).live(Mojo.Event.tap, function(e) {
 		console.log(jQuery(this).attr('id'));
-		Luna.Controller.notYetImplemented();
+		Mojo.Controller.notYetImplemented();
 	});
 
 
-	jQuery('.username.clickable', this.scroller).live(Luna.Event.tap, function(e) {
+	jQuery('.username.clickable', this.scroller).live(Mojo.Event.tap, function(e) {
 		var userid = jQuery(this).attr('data-user-screen_name');
-		Luna.Controller.stageController.pushScene('user-detail', userid);
+		Mojo.Controller.stageController.pushScene('user-detail', userid);
 	});
 
-	jQuery('.hashtag.clickable', this.scroller).live(Luna.Event.tap, function(e) {
+	jQuery('.hashtag.clickable', this.scroller).live(Mojo.Event.tap, function(e) {
 		var hashtag = jQuery(this).attr('data-hashtag');
 		thisA.searchFor('#'+hashtag);
 	});
 
-	jQuery('div.timeline-entry>.status>.meta', this.scroller).live(Luna.Event.tap, function(e) {
+	jQuery('div.timeline-entry>.status>.meta', this.scroller).live(Mojo.Event.tap, function(e) {
 		var statusid = jQuery(this).attr('data-status-id');
-		Luna.Controller.stageController.pushScene('message-detail', statusid);
+		Mojo.Controller.stageController.pushScene('message-detail', statusid);
 	});
 
 	if (!this.userRetrieved) {
@@ -194,16 +194,16 @@ UserDetailAssistant.prototype.deactivate = function(event) {
 	/*
 		We have to unbind our event listeners or weird/bad things happen
 	*/
-	jQuery('#user-detail-actions #view-user-posts', this.scroller).die(Luna.Event.tap);
-	jQuery('#user-detail-actions #search-user', this.scroller).die(Luna.Event.tap);
-	jQuery('#user-detail-actions #reply-to-user', this.scroller).die(Luna.Event.tap);
-	jQuery('#user-detail-actions #dm-user', this.scroller).die(Luna.Event.tap);
-	jQuery('#user-detail-actions #follow-user', this.scroller).die(Luna.Event.tap);
-	jQuery('#user-detail-actions #block-user', this.scroller).die(Luna.Event.tap);
+	jQuery('#user-detail-actions #view-user-posts', this.scroller).die(Mojo.Event.tap);
+	jQuery('#user-detail-actions #search-user', this.scroller).die(Mojo.Event.tap);
+	jQuery('#user-detail-actions #reply-to-user', this.scroller).die(Mojo.Event.tap);
+	jQuery('#user-detail-actions #dm-user', this.scroller).die(Mojo.Event.tap);
+	jQuery('#user-detail-actions #follow-user', this.scroller).die(Mojo.Event.tap);
+	jQuery('#user-detail-actions #block-user', this.scroller).die(Mojo.Event.tap);
 	
-	jQuery('.username.clickable', this.scroller).die(Luna.Event.tap);
-	jQuery('.hashtag.clickable', this.scroller).die(Luna.Event.tap);
-	jQuery('div.timeline-entry>.status>.meta', this.scroller).die(Luna.Event.tap);
+	jQuery('.username.clickable', this.scroller).die(Mojo.Event.tap);
+	jQuery('.hashtag.clickable', this.scroller).die(Mojo.Event.tap);
+	jQuery('div.timeline-entry>.status>.meta', this.scroller).die(Mojo.Event.tap);
 }
 
 UserDetailAssistant.prototype.cleanup = function(event) {

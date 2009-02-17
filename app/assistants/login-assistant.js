@@ -38,20 +38,20 @@ LoginAssistant.prototype.setup = function() {
 	
 	
 	/**
-	 * Panels that use jQuery (but listen with Luna)
+	 * Panels that use jQuery (but listen with Mojo)
 	 */
 	$('login-panel').hide();
-	Luna.Event.listen($('show-login-button'), Luna.Event.tap, this.toggleLoginPanel.bind(this));
+	Mojo.Event.listen($('show-login-button'), Mojo.Event.tap, this.toggleLoginPanel.bind(this));
 
 	$('search-panel').hide();
-	Luna.Event.listen($('show-search-button'), Luna.Event.tap, this.toggleSearchPanel.bind(this));
+	Mojo.Event.listen($('show-search-button'), Mojo.Event.tap, this.toggleSearchPanel.bind(this));
 
 	$('trends-panel').hide();
-	Luna.Event.listen($('show-trends-button'), Luna.Event.tap, this.toggleTrendsPanel.bind(this));
+	Mojo.Event.listen($('show-trends-button'), Mojo.Event.tap, this.toggleTrendsPanel.bind(this));
 	
 	
 	/**
-	 * Luna Widgets 
+	 * Mojo Widgets 
 	 */
 	
 	/*
@@ -63,7 +63,7 @@ LoginAssistant.prototype.setup = function() {
 			enterSubmits: true,
 			modelProperty:'username', 
 			changeOnKeyPress: true,
-			focusMode:	Luna.Widget.focusSelectMode,
+			focusMode:	Mojo.Widget.focusSelectMode,
 			multiline:		false,
 		},
 		this.model
@@ -79,7 +79,7 @@ LoginAssistant.prototype.setup = function() {
 			enterSubmits: true,
 			modelProperty:		'password',
 			changeOnKeyPress: true, 
-			focusMode:		Luna.Widget.focusSelectMode,
+			focusMode:		Mojo.Widget.focusSelectMode,
 			multiline:		false,
 		},
 		this.model
@@ -95,7 +95,7 @@ LoginAssistant.prototype.setup = function() {
 			enterSubmits: true,
 			modelProperty:		'search',
 			changeOnKeyPress: true, 
-			focusMode:		Luna.Widget.focusSelectMode,
+			focusMode:		Mojo.Widget.focusSelectMode,
 			multiline:		false,
 		},
 		this.model
@@ -114,9 +114,9 @@ LoginAssistant.prototype.setup = function() {
 	/*
 		Listen for taps on login button and status panel popup
 	*/
-	Luna.Event.listen($('login-button'), Luna.Event.tap, this.handleLogin.bind(this));
-	Luna.Event.listen($('search-button'), Luna.Event.tap, this.handleSearch.bind(this));
-	Luna.Event.listen($('status-panel'), Luna.Event.tap, this.hideStatusPanel.bind(this));
+	Mojo.Event.listen($('login-button'), Mojo.Event.tap, this.handleLogin.bind(this));
+	Mojo.Event.listen($('search-button'), Mojo.Event.tap, this.handleSearch.bind(this));
+	Mojo.Event.listen($('status-panel'), Mojo.Event.tap, this.hideStatusPanel.bind(this));
 	
 	/*
 		listen for trends data updates
@@ -124,7 +124,7 @@ LoginAssistant.prototype.setup = function() {
 	jQuery().bind('new_trends_data', {thisAssistant:this}, function(e, trends) {
 		e.data.thisAssistant.hideInlineSpinner('#trends-list');
 		
-		var trendshtml = Luna.View.render({'collection':trends, template:'login/trend-item'});
+		var trendshtml = Mojo.View.render({'collection':trends, template:'login/trend-item'});
 		
 		jQuery('#trends-list .trend-item').remove();
 		jQuery('#trends-list').append(trendshtml);
@@ -296,16 +296,16 @@ LoginAssistant.prototype.activate = function(event) {
 	   example, key handlers that are observing the document */
 		// 
 	console.log('getScenes()');
-	console.dir(Luna.Controller.stageController.getScenes());
+	console.dir(Mojo.Controller.stageController.getScenes());
 	console.log('activeScene()');
-	console.dir(Luna.Controller.stageController.activeScene());
+	console.dir(Mojo.Controller.stageController.activeScene());
 	console.log('topScene()');
-	console.dir(Luna.Controller.stageController.topScene());
+	console.dir(Mojo.Controller.stageController.topScene());
 
 
 	var thisA = this;
 
-	jQuery('.trend-item').live(Luna.Event.tap, function() {
+	jQuery('.trend-item').live(Mojo.Event.tap, function() {
 		var term = jQuery(this).attr('data-searchterm');
 		thisA.searchFor(term);
 	});
@@ -325,7 +325,7 @@ LoginAssistant.prototype.activate = function(event) {
 			@todo Save username and password as encrypted vals
 		*/
 
-		// Luna.Controller.stageController.swapScene("my-timeline", this);
+		// Mojo.Controller.stageController.swapScene("my-timeline", this);
 		findAndSwapScene("my-timeline", this);
 	});
 	
@@ -361,7 +361,7 @@ LoginAssistant.prototype.deactivate = function(event) {
 	jQuery().unbind('verify_credentials_succeeded');
 	jQuery().unbind('verify_credentials_failed');
 	
-	jQuery('.trend-item').die(Luna.Event.tap);
+	jQuery('.trend-item').die(Mojo.Event.tap);
 	
 }
 

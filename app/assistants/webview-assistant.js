@@ -28,9 +28,9 @@ WebviewAssistant.prototype.setup = function() {
 	this.controller.setupWidget('url_field', tfAttr, this.model);
 	
 	this.urlChangedHandler = this.urlChanged.bindAsEventListener(this);
-	this.controller.listen('url_field', Luna.Event.propertyChanged, this.urlChangedHandler);
+	this.controller.listen('url_field', Mojo.Event.propertyChanged, this.urlChangedHandler);
 	this.linkClicked = this.linkClicked.bindAsEventListener(this);
-	this.controller.listen('webview', Luna.Event.webViewLinkClicked, this.linkClicked);
+	this.controller.listen('webview', Mojo.Event.webViewLinkClicked, this.linkClicked);
 }
 
 WebviewAssistant.prototype.activate = function(event) {
@@ -59,21 +59,21 @@ WebviewAssistant.prototype.deactivate = function(event) {
 WebviewAssistant.prototype.cleanup = function(event) {
 	/* this function should do any cleanup needed before the scene is destroyed as 
 	   a result of being popped off the scene stack */
-	this.controller.stopListening('url_field', Luna.Event.propertyChanged,    this.urlChangedHandler);
-	this.controller.stopListening('webview',   Luna.Event.webViewLinkClicked, this.linkClicked);
+	this.controller.stopListening('url_field', Mojo.Event.propertyChanged,    this.urlChangedHandler);
+	this.controller.stopListening('webview',   Mojo.Event.webViewLinkClicked, this.linkClicked);
 }
 
 
 WebviewAssistant.prototype.urlChanged = function(event) {
 	var wb = this.controller.get('webview');
 	if (wb === null) {
-		Luna.log("couldn't find web adapter");
+		Mojo.log("couldn't find web adapter");
 	} else {
-		wb.palm.openURL(event.value);
+		wb.mojo.openURL(event.value);
 	}
 };
 
 WebviewAssistant.prototype.linkClicked = function(event) {
 	var wb = this.controller.get('webview');
-	wb.palm.openURL(event.url);
+	wb.mojo.openURL(event.url);
 };

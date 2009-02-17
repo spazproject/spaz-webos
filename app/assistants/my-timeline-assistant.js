@@ -67,13 +67,13 @@ MyTimelineAssistant.prototype.activate = function(event) {
 	// alert('MyTimelineAssistant.prototype.activate');
 	
 	console.log('getScenes()');
-	console.dir(Luna.Controller.stageController.getScenes());
+	console.dir(Mojo.Controller.stageController.getScenes());
 	console.log('activeScene()');
-	console.dir(Luna.Controller.stageController.activeScene());
+	console.dir(Mojo.Controller.stageController.activeScene());
 	console.log('topScene()');
-	console.dir(Luna.Controller.stageController.topScene());
+	console.dir(Mojo.Controller.stageController.topScene());
 	console.log('isChildWindow()');
-	console.dir(Luna.Controller.stageController.isChildWindow());
+	console.dir(Mojo.Controller.stageController.isChildWindow());
 	
 	
 	
@@ -113,9 +113,9 @@ MyTimelineAssistant.prototype.activate = function(event) {
 					Render the tweet
 				*/
 				if (this.SC_is_dm) {
-					var itemhtml = Luna.View.render({object: this, template: 'shared/dm'});
+					var itemhtml = Mojo.View.render({object: this, template: 'shared/dm'});
 				} else {
-					var itemhtml = Luna.View.render({object: this, template: 'shared/tweet'});
+					var itemhtml = Mojo.View.render({object: this, template: 'shared/tweet'});
 				}
 				
 				/*
@@ -146,7 +146,7 @@ MyTimelineAssistant.prototype.activate = function(event) {
 			e.data.thisAssistant.scrollToNew();
 			
 		} else {
-			Luna.log("no new tweets");
+			Mojo.log("no new tweets");
 		}
 
 		/*
@@ -197,39 +197,39 @@ MyTimelineAssistant.prototype.activate = function(event) {
 		Note that these will hear clicks across all active scenes, not just
 		this one.
 	*/
-	jQuery('div.timeline-entry>.user', this.scroller).live(Luna.Event.tap, function(e) {
+	jQuery('div.timeline-entry>.user', this.scroller).live(Mojo.Event.tap, function(e) {
 		var userid = jQuery(this).attr('data-user-screen_name');
-		Luna.Controller.stageController.pushScene('user-detail', userid);
+		Mojo.Controller.stageController.pushScene('user-detail', userid);
 	});
 	
-	jQuery('.username.clickable', this.scroller).live(Luna.Event.tap, function(e) {
+	jQuery('.username.clickable', this.scroller).live(Mojo.Event.tap, function(e) {
 		var userid = jQuery(this).attr('data-user-screen_name');
-		Luna.Controller.stageController.pushScene('user-detail', userid);
+		Mojo.Controller.stageController.pushScene('user-detail', userid);
 	});
 	
-	jQuery('.hashtag.clickable', this.scroller).live(Luna.Event.tap, function(e) {
+	jQuery('.hashtag.clickable', this.scroller).live(Mojo.Event.tap, function(e) {
 		var hashtag = jQuery(this).attr('data-hashtag');
 		thisA.searchFor('#'+hashtag);
 	});
 
-	jQuery('div.timeline-entry>.status>.meta', this.scroller).live(Luna.Event.tap, function(e) {
+	jQuery('div.timeline-entry>.status>.meta', this.scroller).live(Mojo.Event.tap, function(e) {
 		var statusid = jQuery(this).attr('data-status-id');
-		Luna.Controller.stageController.pushScene('message-detail', statusid);
+		Mojo.Controller.stageController.pushScene('message-detail', statusid);
 	});
 	
-	jQuery('a[href]', this.scroller).live(Luna.Event.tap, function(e) {
+	jQuery('a[href]', this.scroller).live(Mojo.Event.tap, function(e) {
 		e.preventDefault();
 		var href = jQuery(this).attr('href');
-		Luna.Controller.stageController.pushScene('webview', {'url':href});
+		Mojo.Controller.stageController.pushScene('webview', {'url':href});
 		return false;
 	});
 	
 	/*
 		the "hold" event might be a little too short, and interfere with normal clicks, so not using
 	*/
-	// jQuery('#my-timeline>div.timeline-entry').live(Luna.Event.hold, function(e) {
+	// jQuery('#my-timeline>div.timeline-entry').live(Mojo.Event.hold, function(e) {
 	// 	var statusid = jQuery(this).attr('data-status-id');
-	// 	Luna.Controller.stageController.pushScene('message-detail', statusid);
+	// 	Mojo.Controller.stageController.pushScene('message-detail', statusid);
 	// });
 
 
@@ -259,11 +259,11 @@ MyTimelineAssistant.prototype.deactivate = function(event) {
 	jQuery().unbind('update_succeeded');
 	jQuery().unbind('update_failed');
 	
-	jQuery('div.timeline-entry>.user', this.scroller).die(Luna.Event.tap);
-	jQuery('.username.clickable', this.scroller).die(Luna.Event.tap);
-	jQuery('.hashtag.clickable', this.scroller).die(Luna.Event.tap);
-	jQuery('div.timeline-entry>.status>.meta', this.scroller).die(Luna.Event.tap);
-	jQuery('a[href]', this.scroller).die(Luna.Event.tap);
+	jQuery('div.timeline-entry>.user', this.scroller).die(Mojo.Event.tap);
+	jQuery('.username.clickable', this.scroller).die(Mojo.Event.tap);
+	jQuery('.hashtag.clickable', this.scroller).die(Mojo.Event.tap);
+	jQuery('div.timeline-entry>.status>.meta', this.scroller).die(Mojo.Event.tap);
+	jQuery('a[href]', this.scroller).die(Mojo.Event.tap);
 }
 
 MyTimelineAssistant.prototype.cleanup = function(event) {

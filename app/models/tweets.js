@@ -16,12 +16,12 @@ Tweets.prototype._init  = function() {
 		'replace' : false,		
 	};
 	
-	Luna.Depot.initialize(opts,
+	Mojo.Depot.initialize(opts,
 		function() {
-			Luna.Log.info('Tweets depot initialized.');
+			Mojo.Log.info('Tweets depot initialized.');
 		},
 		function(msg) {
-			Luna.Log.error('Could not initialize Tweets depot. Error message: "', msg, '"');
+			Mojo.Log.error('Could not initialize Tweets depot. Error message: "', msg, '"');
 		}
 	);
 };

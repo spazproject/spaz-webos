@@ -46,7 +46,7 @@ MessageDetailAssistant.prototype.setup = function() {
 	
 	/* this function is for setup tasks that have to happen when the scene is first created */
 		
-	/* use Luna.View.render to render view templates and add them to the scene, if needed. */
+	/* use Mojo.View.render to render view templates and add them to the scene, if needed. */
 	
 	/* setup widgets here */
 	
@@ -60,13 +60,13 @@ MessageDetailAssistant.prototype.activate = function(event) {
 	// alert('MessageDetailAssistant.prototype.activate');
 	
 	console.log('getScenes()');
-	console.dir(Luna.Controller.stageController.getScenes());
+	console.dir(Mojo.Controller.stageController.getScenes());
 	console.log('activeScene()');
-	console.dir(Luna.Controller.stageController.activeScene());
+	console.dir(Mojo.Controller.stageController.activeScene());
 	console.log('topScene()');
-	console.dir(Luna.Controller.stageController.topScene());
+	console.dir(Mojo.Controller.stageController.topScene());
 	console.log('isChildWindow()');
-	console.dir(Luna.Controller.stageController.isChildWindow());
+	console.dir(Mojo.Controller.stageController.isChildWindow());
 	
 
 
@@ -77,35 +77,35 @@ MessageDetailAssistant.prototype.activate = function(event) {
 	
 	var thisA = this; // for closures
 
-	jQuery('#message-detail-action-reply', this.scroller).live(Luna.Event.tap, function(e) {
+	jQuery('#message-detail-action-reply', this.scroller).live(Mojo.Event.tap, function(e) {
 		var screen_name = jQuery(this).attr('data-screen_name');
 		var in_reply_to = jQuery(this).attr('data-status-id');
 		thisA.prepReply(screen_name, in_reply_to);
 	});
-	jQuery('#message-detail-action-retweet', this.scroller).live(Luna.Event.tap, function(e) {
+	jQuery('#message-detail-action-retweet', this.scroller).live(Mojo.Event.tap, function(e) {
 		thisA.prepRetweet(thisA.statusobj);
 	});
-	jQuery('#message-detail-action-dm', this.scroller).live(Luna.Event.tap, function(e) {
+	jQuery('#message-detail-action-dm', this.scroller).live(Mojo.Event.tap, function(e) {
 		thisA.prepDirectMessage(jQuery(this).attr('data-screen_name'));
 	});
-	jQuery('#message-detail-action-favorite', this.scroller).live(Luna.Event.tap, function(e) {
-		Luna.Controller.notYetImplemented();
+	jQuery('#message-detail-action-favorite', this.scroller).live(Mojo.Event.tap, function(e) {
+		Mojo.Controller.notYetImplemented();
 	});
 	
 	
-	jQuery('.username.clickable', this.scroller).live(Luna.Event.tap, function(e) {
+	jQuery('.username.clickable', this.scroller).live(Mojo.Event.tap, function(e) {
 		var userid = jQuery(this).attr('data-user-screen_name');
-		Luna.Controller.stageController.pushScene('user-detail', userid);
+		Mojo.Controller.stageController.pushScene('user-detail', userid);
 	});
 
-	jQuery('.hashtag.clickable', this.scroller).live(Luna.Event.tap, function(e) {
+	jQuery('.hashtag.clickable', this.scroller).live(Mojo.Event.tap, function(e) {
 		var hashtag = jQuery(this).attr('data-hashtag');
 		thisA.searchFor('#'+hashtag);
 	});
 
-	jQuery('div.timeline-entry>.status>.meta', this.scroller).live(Luna.Event.tap, function(e) {
+	jQuery('div.timeline-entry>.status>.meta', this.scroller).live(Mojo.Event.tap, function(e) {
 		var statusid = jQuery(this).attr('data-status-id');
-		Luna.Controller.stageController.pushScene('message-detail', statusid);
+		Mojo.Controller.stageController.pushScene('message-detail', statusid);
 	});
 	
 	this.addPostPopup();
@@ -123,14 +123,14 @@ MessageDetailAssistant.prototype.deactivate = function(event) {
 	
 	// jQuery().unbind('get_one_status_succeeded', this.processStatusReturn);
 	
-	jQuery('#message-detail-action-reply', this.scroller).die(Luna.Event.tap);
-	jQuery('#message-detail-action-retweet', this.scroller).die(Luna.Event.tap);
-	jQuery('#message-detail-action-dm', this.scroller).die(Luna.Event.tap);
-	jQuery('#message-detail-action-favorite', this.scroller).die(Luna.Event.tap);
+	jQuery('#message-detail-action-reply', this.scroller).die(Mojo.Event.tap);
+	jQuery('#message-detail-action-retweet', this.scroller).die(Mojo.Event.tap);
+	jQuery('#message-detail-action-dm', this.scroller).die(Mojo.Event.tap);
+	jQuery('#message-detail-action-favorite', this.scroller).die(Mojo.Event.tap);
 	
-	jQuery('.username.clickable', this.scroller).die(Luna.Event.tap);
-	jQuery('.hashtag.clickable', this.scroller).die(Luna.Event.tap);
-	jQuery('div.timeline-entry>.status>.meta', this.scroller).die(Luna.Event.tap);
+	jQuery('.username.clickable', this.scroller).die(Mojo.Event.tap);
+	jQuery('.hashtag.clickable', this.scroller).die(Mojo.Event.tap);
+	jQuery('div.timeline-entry>.status>.meta', this.scroller).die(Mojo.Event.tap);
 }
 
 MessageDetailAssistant.prototype.cleanup = function(event) {
@@ -151,7 +151,7 @@ MessageDetailAssistant.prototype.processStatusReturn = function(e, statusobj) {
 	
 	e.data.thisAssistant.statusobj.text = makeItemsClickable(e.data.thisAssistant.statusobj.text);
 	
-	var itemhtml = Luna.View.render({object:e.data.thisAssistant.statusobj, template: 'message-detail/message-detail'});
+	var itemhtml = Mojo.View.render({object:e.data.thisAssistant.statusobj, template: 'message-detail/message-detail'});
 	jQuery('#message-detail').html(itemhtml);
 	
 	sch.updateRelativeTimes('#message-detail .status>.meta>.date', 'data-created_at');
