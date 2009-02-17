@@ -1,6 +1,9 @@
-var __prefs = {
-
-    'usemarkdown': true,
+var default_preferences = {
+	
+	'username':null,
+	'password':null,
+	
+    'use-markdown': true,
 
     'sound-enabled': true,
     'wilhelm-enabled': true,
@@ -12,13 +15,9 @@ var __prefs = {
 
     'timeline-scrollonupdate': true,
     'timeline-maxentries': 300,
-    'timeline-loadonstartup': true,
     'timeline-friends-getcount': 40,
     'timeline-replies-getcount': 20,
     'timeline-dm-getcount': 10,
-	'timeline-keyboardnavwrap': false,
-
-    'screennames-cache-max': 150,
 
     'url-shortener': 'isgd',
 
@@ -32,7 +31,7 @@ var __prefs = {
     'services-pingfm-updatetype': 'default',
 
     'twitter-api-base-url': 'https://twitter.com/',
-    'twitter-base-url': 'http://twitter.com/',
+    'twitter-www-base-url': 'http://twitter.com/',
 
     'twitter-source': 'spaz',
 }

@@ -436,12 +436,35 @@ scene_helpers.addCommonSceneMethods = function(assistant) {
 		console.dir(data);
 
 		var itemhtml = Luna.View.render({object: data, template: 'shared/tweet'});
+		
+
 
 		/*
 			prepend the rendered markup to the timeline, so it shows on top
 		*/
 		jQuery('#my-timeline').prepend(itemhtml);
+
+
+		/*
+			remove extra items
+		*/
+		sch.removeExtraElements('#my-timeline>div.timeline-entry', 300);
+
+		/*
+			Update relative dates
+		*/
+		sch.updateRelativeTimes('div.timeline-entry>.status>.meta>.date', 'data-created_at');
+		
+		/*
+			re-apply filtering
+		*/
+		this.filterTimeline();
+
+		this.playAudioCue('send');
+		
+
 		this.spinnerOff();
+
 
 	}
 	
@@ -692,7 +715,110 @@ scene_helpers.addCommonSceneMethods = function(assistant) {
 	};
 	
 	
+	
+	assistant.newMsgBanner = function(count) {
+		
+		var params = {
+			messageText:count+' new messages in your timeline',
+			soundClass: null,
+			soundFile:  null,
+			icon:       'icon.png'
+		};
+		
+		var launchArgs = {
+			'from':'newMessagesBanner'
+		};
+		
+		var category = 'newMessages';
+		
+		var appController = Luna.Controller.getAppController();
+		appController.showBanner(params, launchArgs, category);
+		
+	}
+	
+	
+	
+	
+	assistant.showNotification = function(msg) {
+		
+		// var kDashboardStageName = 'spaz-dashboard'
+		// 
+		// var appController = Luna.Controller.getAppController();
+		// this.controller.commitChanges();
+		// appController.showBanner(msg, {banner: msg});
+		// var stageController = Luna.Controller.getAppController().getStageController(kDashboardStageName);
+		// if (stageController) {
+		// 	stageController.delegateToSceneAssistant("update", msg, new Date());
+		// } else {
+		// 	this.notificationCreatedHandler = this.notificationCreated.bind(this, msg);
+		// 	Luna.Controller.getAppController().createStageWithCallback({name: kDashboardStageName, lightweight: true}, 
+		// 		this.notificationCreatedHandler, "dashboard");			
+		// }
+	};
+	
+	// assistant.notificationCreated = function(text, stageController) {
+	// 	stageController.pushScene('dashboard', text, new Date())
+	// };
+	
+	
+	
+	
+	assistant._initSound = function() {
 
+		var makeCue = function(clip) {
+			var cue = new Audio();
+			cue.src = clip;
+			cue.autoplay = false;
+			
+			return cue;
+		};
+		
+		this.audioCues = {
+			'newmsg':  makeCue('sounds/New.mp3'),
+			'send':    makeCue('sounds/CSnd.mp3'),
+			'receive': makeCue('sounds/CRcv.mp3'),
+			'startup': makeCue('sounds/On.mp3'),
+			'shutdown':makeCue('sounds/Off.mp3'),
+			'wilhelm': makeCue('sounds/wilhelm.mp3')
+		};
+
+
+	}
+	
+	
+	
+	assistant.playAudioCue = function(clip) {
+
+		if (!this.audioCues) {
+			this._initSound();
+		};
+
+		switch(clip) {
+			case 'newmsg':
+				this.audioCues.newmsg.play();
+				break;
+
+			case 'send':
+				this.audioCues.send.play();
+				break;
+
+			case 'receive':
+				this.audioCues.receive.play();
+				break;
+
+			case 'startup':
+				this.audioCues.startup.play();
+				break;
+
+			case 'shutdown':
+				this.audioCues.shutdown.play();
+				break;
+
+			case 'wilhelm':
+				this.audioCues.wilhelm.play();
+				break;
+		};
+	};
 	
 }
 
@@ -736,7 +862,11 @@ var findAndSwapScene = function(targetScene, returnValue) {
 };
 
 
-
+/**
+ * converts various items in a timeline entry's text into clickables
+ * @param {string} str
+ * @return {string}
+ */
 var makeItemsClickable = function(str) {
 	
 	str = sch.autolink(str);
@@ -745,3 +875,7 @@ var makeItemsClickable = function(str) {
 	
 	return str;
 };
+
+
+
+

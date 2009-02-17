@@ -418,17 +418,35 @@ div.spaz-drawer {
 	}
 		#user-timeline div.timeline-entry {
 			min-height:24px;
+			padding: 6px 12px;
+			border-width: 0px;
+			border-style: solid;
+			border-color: transparent !important;
+			background:none !important;
+			-webkit-box-shadow:none;
+		}
+			#user-timeline .user {
+				display:none;
+			}
+			#user-timeline .status {
+				margin-left:0px;
+			}
+			#user-timeline .status .screen-name {
+				display:none;
+			}
+			#user-timeline div.timeline-entry .status .meta {
+				color:#FFFFCC;
+				-webkit-border-top-right-radius:6pt;
+				-webkit-border-bottom-right-radius:6pt;
+				padding:2pt 4pt 2pt 6pt;
+				background: -webkit-gradient(linear, left top, right top, from(rgba(34,34,0,0)), to(rgba(34,34,0,.5)));
+				
+			}
+					#user-timeline div.timeline-entry .status .meta:active {
+						color:#444444;
+						background: -webkit-gradient(linear, left top, right top, from(rgba(153,153,102,0)), to(rgba(153,153,102,.5)));
+					}
 			
-		}
-		#user-timeline .user {
-			display:none;
-		}
-		#user-timeline .status {
-			margin-left:0px;
-		}
-		#user-timeline .status .screen-name {
-			display:none;
-		}
 
 
 

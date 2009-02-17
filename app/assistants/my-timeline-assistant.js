@@ -136,10 +136,6 @@ MyTimelineAssistant.prototype.activate = function(event) {
 					jqitem.addClass('dm');
 				}
 				
-				dump(jqitem.attr('class'))
-				
-				// dump(this.user.screen_name +" is from "+ this.SC_timeline_from);
-				
 				/*
 					put item on timeline
 				*/
@@ -168,6 +164,13 @@ MyTimelineAssistant.prototype.activate = function(event) {
 		*/
 		e.data.thisAssistant.filterTimeline();
 		
+		var new_count = jQuery('#my-timeline>div.timeline-entry.new:visible').length;
+		
+		if (new_count > 0) {
+			e.data.thisAssistant.newMsgBanner(new_count);
+			e.data.thisAssistant.playAudioCue('newmsg');		
+		}
+
 		e.data.thisAssistant.spinnerOff();
 	});
 
@@ -214,6 +217,12 @@ MyTimelineAssistant.prototype.activate = function(event) {
 		Luna.Controller.stageController.pushScene('message-detail', statusid);
 	});
 	
+	jQuery('a[href]', this.scroller).live(Luna.Event.tap, function(e) {
+		e.preventDefault();
+		var href = jQuery(this).attr('href');
+		Luna.Controller.stageController.pushScene('webview', {'url':href});
+		return false;
+	});
 	
 	/*
 		the "hold" event might be a little too short, and interfere with normal clicks, so not using
@@ -254,6 +263,7 @@ MyTimelineAssistant.prototype.deactivate = function(event) {
 	jQuery('.username.clickable', this.scroller).die(Luna.Event.tap);
 	jQuery('.hashtag.clickable', this.scroller).die(Luna.Event.tap);
 	jQuery('div.timeline-entry>.status>.meta', this.scroller).die(Luna.Event.tap);
+	jQuery('a[href]', this.scroller).die(Luna.Event.tap);
 }
 
 MyTimelineAssistant.prototype.cleanup = function(event) {

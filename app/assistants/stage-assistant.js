@@ -1,6 +1,22 @@
 function StageAssistant () {
-	sc.app.twit = new scTwit(); // username and password will be provided by login scene
-	// sc.app.twit = new scTwit('spaztest', 'perlsucks');
+	
+	/*
+		load our prefs
+		default_preferences is from default_preferences.js, loaded in index.html
+	*/
+	sc.app.prefs = new scPrefs(default_preferences);
+
+	var username = sc.app.prefs.get('username');
+	var password = sc.app.prefs.get('password');
+	
+	
+	
+	sc.app.twit = new scTwit();
+	
+	if (username && password) {
+		sc.app.twit.setCredentials(username, password);
+	}
+	
 }
 
 StageAssistant.prototype.setup = function() {
