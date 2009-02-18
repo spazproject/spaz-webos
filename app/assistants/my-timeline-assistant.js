@@ -66,14 +66,14 @@ MyTimelineAssistant.prototype.activate = function(event) {
 	
 	// alert('MyTimelineAssistant.prototype.activate');
 	
-	console.log('getScenes()');
-	console.dir(Mojo.Controller.stageController.getScenes());
-	console.log('activeScene()');
-	console.dir(Mojo.Controller.stageController.activeScene());
-	console.log('topScene()');
-	console.dir(Mojo.Controller.stageController.topScene());
-	console.log('isChildWindow()');
-	console.dir(Mojo.Controller.stageController.isChildWindow());
+	// dump('getScenes()');
+	// dump(Mojo.Controller.stageController.getScenes());
+	// dump('activeScene()');
+	// dump(Mojo.Controller.stageController.activeScene());
+	// dump('topScene()');
+	// dump(Mojo.Controller.stageController.topScene());
+	// dump('isChildWindow()');
+	// dump(Mojo.Controller.stageController.isChildWindow());
 	
 	
 	
@@ -86,8 +86,8 @@ MyTimelineAssistant.prototype.activate = function(event) {
 		jQuery is used to listen to events from SpazTwit library
 	*/
 	jQuery().bind('error_user_timeline_data', { thisAssistant:this }, function(e, response) {
-		console.log('error_user_timeline_data - response:');
-		console.dir(response);
+		dump('error_user_timeline_data - response:');
+		dump(response);
 		e.data.thisAssistant.spinnerOff();
 	});
 	
@@ -106,7 +106,7 @@ MyTimelineAssistant.prototype.activate = function(event) {
 			var rendertweets = tweets;
 			
 			jQuery.each( rendertweets, function() {
-				// console.dir(this)
+				// dump(this)
 				this.text = makeItemsClickable(this.text);
 				
 				/*

@@ -5,7 +5,7 @@ function MessageDetailAssistant(argFromPusher) {
 	   that needs the scene controller should be done in the setup function below. */
 	scene_helpers.addCommonSceneMethods(this);
 	
-	console.dir(argFromPusher);
+	dump(argFromPusher);
 	
 	if (sc.helpers.isString(argFromPusher) || sc.helpers.isNumber(argFromPusher)) {
 		/*
@@ -59,14 +59,14 @@ MessageDetailAssistant.prototype.activate = function(event) {
 	
 	// alert('MessageDetailAssistant.prototype.activate');
 	
-	console.log('getScenes()');
-	console.dir(Mojo.Controller.stageController.getScenes());
-	console.log('activeScene()');
-	console.dir(Mojo.Controller.stageController.activeScene());
-	console.log('topScene()');
-	console.dir(Mojo.Controller.stageController.topScene());
-	console.log('isChildWindow()');
-	console.dir(Mojo.Controller.stageController.isChildWindow());
+	// dump('getScenes()');
+	// dump(Mojo.Controller.stageController.getScenes());
+	// dump('activeScene()');
+	// dump(Mojo.Controller.stageController.activeScene());
+	// dump('topScene()');
+	// dump(Mojo.Controller.stageController.topScene());
+	// dump('isChildWindow()');
+	// dump(Mojo.Controller.stageController.isChildWindow());
 	
 
 
@@ -141,13 +141,13 @@ MessageDetailAssistant.prototype.cleanup = function(event) {
 
 MessageDetailAssistant.prototype.processStatusReturn = function(e, statusobj) {
 
-	console.dir(e.data.thisAssistant);
+	dump(e.data.thisAssistant);
 
 	e.data.thisAssistant.statusobj = statusobj;
 	e.data.thisAssistant.statusRetrieved = false;
 
-	console.log('message data:');
-	console.dir(e.data.thisAssistant.statusobj);
+	dump('message data:');
+	dump(e.data.thisAssistant.statusobj);
 	
 	e.data.thisAssistant.statusobj.text = makeItemsClickable(e.data.thisAssistant.statusobj.text);
 	

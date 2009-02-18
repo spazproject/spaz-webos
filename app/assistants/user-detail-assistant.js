@@ -4,7 +4,7 @@ function UserDetailAssistant(argFromPusher) {
 	   to the scene controller (this.controller) has not be established yet, so any initialization
 	   that needs the scene controller should be done in the setup function below. */
 	
-	console.dir(argFromPusher);
+	dump(argFromPusher);
 	
 	scene_helpers.addCommonSceneMethods(this);	
 	
@@ -54,14 +54,14 @@ UserDetailAssistant.prototype.setup = function() {
 	
 	jQuery().bind('new_user_timeline_data', { thisAssistant:this }, function(e, tweets) {
 
-		console.dir(e.data.thisAssistant);
+		dump(e.data.thisAssistant);
 
-		console.log('user\'s tweets:');
-		console.dir(tweets);
+		dump('user\'s tweets:');
+		dump(tweets);
 
 		this.userobj = tweets[0].user;
-		console.log('user\'s info:');
-		console.dir(this.userobj);
+		dump('user\'s info:');
+		dump(this.userobj);
 
 		this.userRetrieved = true;		
 
@@ -77,7 +77,7 @@ UserDetailAssistant.prototype.setup = function() {
 		rendertweets.reverse();
 
 		jQuery.each( rendertweets, function() {
-			console.dir(this)
+			dump(this)
 			this.text = makeItemsClickable(this.text);
 		});
 
@@ -110,14 +110,14 @@ UserDetailAssistant.prototype.activate = function(event) {
 	
 	// alert('UserDetailAssistant.prototype.activate');
 	
-	console.log('getScenes()');
-	console.dir(Mojo.Controller.stageController.getScenes());
-	console.log('activeScene()');
-	console.dir(Mojo.Controller.stageController.activeScene());
-	console.log('topScene()');
-	console.dir(Mojo.Controller.stageController.topScene());
-	console.log('isChildWindow()');
-	console.dir(Mojo.Controller.stageController.isChildWindow());
+	// dump('getScenes()');
+	// dump(Mojo.Controller.stageController.getScenes());
+	// dump('activeScene()');
+	// dump(Mojo.Controller.stageController.activeScene());
+	// dump('topScene()');
+	// dump(Mojo.Controller.stageController.topScene());
+	// dump('isChildWindow()');
+	// dump(Mojo.Controller.stageController.isChildWindow());
 	
 	
 	
@@ -125,12 +125,12 @@ UserDetailAssistant.prototype.activate = function(event) {
 	var thisA = this; // for closures
 
 	jQuery('#user-detail-actions #view-user-posts', this.scroller).live(Mojo.Event.tap, function(e) {
-		console.log(jQuery(this).attr('id'));
+		dump(jQuery(this).attr('id'));
 		jQuery('#user-timeline').slideToggle('500');
 	});
 	jQuery('#user-detail-actions #search-user', this.scroller).live(Mojo.Event.tap, function(e) {
 		var screen_name = jQuery(this).attr('data-screen_name');
-		console.log("searching for '"+screen_name+"'");
+		dump("searching for '"+screen_name+"'");
 		
 		thisA.searchFor('from:'+screen_name+' OR to:'+screen_name);
 		
@@ -139,19 +139,19 @@ UserDetailAssistant.prototype.activate = function(event) {
 		// });
 	});
 	jQuery('#user-detail-actions #reply-to-user', this.scroller).live(Mojo.Event.tap, function(e) {
-		console.log(jQuery(this).attr('id'));
+		dump(jQuery(this).attr('id'));
 		thisA.prepReply(jQuery(this).attr('data-screen_name'));
 	});
 	jQuery('#user-detail-actions #dm-user', this.scroller).live(Mojo.Event.tap, function(e) {
-		console.log(jQuery(this).attr('id'));
+		dump(jQuery(this).attr('id'));
 		thisA.prepDirectMessage(jQuery(this).attr('data-screen_name'));
 	});
 	jQuery('#user-detail-actions #follow-user', this.scroller).live(Mojo.Event.tap, function(e) {
-		console.log(jQuery(this).attr('id'));
+		dump(jQuery(this).attr('id'));
 		Mojo.Controller.notYetImplemented();
 	});
 	jQuery('#user-detail-actions #block-user', this.scroller).live(Mojo.Event.tap, function(e) {
-		console.log(jQuery(this).attr('id'));
+		dump(jQuery(this).attr('id'));
 		Mojo.Controller.notYetImplemented();
 	});
 

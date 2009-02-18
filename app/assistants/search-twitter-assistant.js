@@ -80,7 +80,7 @@ SearchTwitterAssistant.prototype.setup = function() {
 }
 
 SearchTwitterAssistant.prototype.search = function(e) {
-	console.log("search called");
+	dump("search called");
 	
 	/*
 		clear any existing results
@@ -90,10 +90,10 @@ SearchTwitterAssistant.prototype.search = function(e) {
 	this.spinnerOn();
 	
 	if (sch.isString(e)) {
-		console.dir(e);
+		dump(e);
 		sc.app.twit.search(e);
 	} else {
-		console.dir(e);
+		dump(e);
 		sc.app.twit.search(e.value);		
 	}
 }
@@ -107,14 +107,14 @@ SearchTwitterAssistant.prototype.refresh = function() {
 SearchTwitterAssistant.prototype.activate = function(event) {
 	/* put in event handlers here that should only be in effect when this scene is active. For
 	   example, key handlers that are observing the document */
-	console.log('getScenes()');
-	console.dir(Mojo.Controller.stageController.getScenes());
-	console.log('activeScene()');
-	console.dir(Mojo.Controller.stageController.activeScene());
-	console.log('topScene()');
-	console.dir(Mojo.Controller.stageController.topScene());
-	console.log('isChildWindow()');
-	console.dir(Mojo.Controller.stageController.isChildWindow());
+	// dump('getScenes()');
+	// dump(Mojo.Controller.stageController.getScenes());
+	// dump('activeScene()');
+	// dump(Mojo.Controller.stageController.activeScene());
+	// dump('topScene()');
+	// dump(Mojo.Controller.stageController.topScene());
+	// dump('isChildWindow()');
+	// dump(Mojo.Controller.stageController.isChildWindow());
 	
 	if (event && event.searchterm) {
 		this.passedSearch = event.searchterm;
@@ -135,10 +135,10 @@ SearchTwitterAssistant.prototype.activate = function(event) {
 	
 	jQuery().bind('new_search_timeline_data', { thisAssistant:this }, function(e, tweets) {
 
-		console.dir(e.data.thisAssistant);
+		dump(e.data.thisAssistant);
 
-		console.log('seach\'s tweets:');
-		console.dir(tweets);
+		dump('seach\'s tweets:');
+		dump(tweets);
 
 		/*
 			reverse the tweets for collection rendering (faster)
@@ -146,7 +146,7 @@ SearchTwitterAssistant.prototype.activate = function(event) {
 		var rendertweets = tweets;
 
 		jQuery.each( rendertweets, function() {
-			console.dir(this)
+			dump(this)
 			this.text = makeItemsClickable(this.text);
 			
 			var itemhtml = Mojo.View.render({object: this, template: 'search-twitter/search-item'});
@@ -156,8 +156,8 @@ SearchTwitterAssistant.prototype.activate = function(event) {
 			*/
 			var jqitem = jQuery(itemhtml);
 			
-			console.log('data for item:');
-			console.log(jQuery.data(jqitem.get(0)));
+			dump('data for item:');
+			dump(jQuery.data(jqitem.get(0)));
 			/*
 				attach data object to item html
 			*/

@@ -41,11 +41,11 @@ BindingAssistant.prototype.setup = function() {
 
 
 BindingAssistant.prototype.dbSuccess = function(obj) {
-	console.log("dbSuccess:");
-	console.dir(obj);
+	dump("dbSuccess:");
+	dump(obj);
 };
 BindingAssistant.prototype.dbFailure = function(msg) {
-	console.log("dbFailure:"+msg);
+	dump("dbFailure:"+msg);
 };
 
 BindingAssistant.prototype.activate = function(event) {

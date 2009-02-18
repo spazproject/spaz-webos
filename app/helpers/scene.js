@@ -141,15 +141,15 @@ scene_helpers.addCommonSceneMethods = function(assistant) {
 					Navigation
 				*/
 				case 'home':
-					// console.log('is child window:'+Mojo.Controller.StageController.isChildWindow(this));
+					// dump('is child window:'+Mojo.Controller.StageController.isChildWindow(this));
 					findAndSwapScene("login", this);
 					break;
 				case 'my-timeline':
-					// console.log('is child window:'+Mojo.Controller.StageController.isChildWindow(this));
+					// dump('is child window:'+Mojo.Controller.StageController.isChildWindow(this));
 					findAndSwapScene("my-timeline", this);
 					break;
 				case 'search':
-					// console.log('is child window:'+Mojo.Controller.StageController.isChildWindow(this));
+					// dump('is child window:'+Mojo.Controller.StageController.isChildWindow(this));
 					findAndSwapScene("search-twitter", this);
 					break;	
 
@@ -433,7 +433,7 @@ scene_helpers.addCommonSceneMethods = function(assistant) {
 		}
 
 		data.text = makeItemsClickable(data.text);
-		console.dir(data);
+		dump(data);
 
 		var itemhtml = Mojo.View.render({object: data, template: 'shared/tweet'});
 		

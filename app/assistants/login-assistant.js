@@ -284,7 +284,7 @@ LoginAssistant.prototype.hideStatusPanel = function(event) {
 }
 
 LoginAssistant.prototype.propertyChanged = function(event) {
-	console.log("********* property Change *************");
+	dump("********* property Change *************");
 }
 
 
@@ -295,12 +295,12 @@ LoginAssistant.prototype.activate = function(event) {
 	/* put in event handlers here that should only be in effect when this scene is active. For
 	   example, key handlers that are observing the document */
 		// 
-	console.log('getScenes()');
-	console.dir(Mojo.Controller.stageController.getScenes());
-	console.log('activeScene()');
-	console.dir(Mojo.Controller.stageController.activeScene());
-	console.log('topScene()');
-	console.dir(Mojo.Controller.stageController.topScene());
+	// dump('getScenes()');
+	// dump(Mojo.Controller.stageController.getScenes());
+	// dump('activeScene()');
+	// dump(Mojo.Controller.stageController.activeScene());
+	// dump('topScene()');
+	// dump(Mojo.Controller.stageController.topScene());
 
 
 	var thisA = this;
