@@ -1,12 +1,10 @@
 /* Put Application specific CSS here. */
 
-BODY, .palm-scene {
-/*	background-color: transparent !important;*/
-	background-color:#111111 !important;
+BODY, div[x-mojo-element=Scroller] {	
+	background-image: url('../images/theme/page-bg-dark-splash.png');
 }
 
 BODY {
-	background-color:#111111;
 /*	background: -webkit-gradient(linear, 100% 0, 0 100%, from(#000), to(#333)) !important;*/
 /*	-webkit-background-size:480px !important;*/
 }
@@ -18,6 +16,10 @@ BODY {
 .command-menu .palm-menu-fade {
 	background: transparent url("../images/theme/command-menu-gradient.png") no-repeat !important;
 	border-top:2px solid #222200;	
+}
+
+.palm-header {
+-webkit-border-image: url(/usr/lib/luna/framework/submissions/116.2/images/palm-menu-button.png) 0 25 200 25 repeat repeat;
 }
 
 a:link {
@@ -195,7 +197,17 @@ div.timeline-entry {
 /*
 	login scene stuff
 */
+
+#splash-logo {
+	opacity: .1;
+	position:fixed;
+	top:-30px;
+	left:-50px;
+	z-index:1;
+}
+
 #login-scene #status-panel {
+	z-index:10;
 	margin:5px 20px;
 	padding:10px;
 	border:1px solid rgba(255,255,204,.8);
@@ -256,7 +268,7 @@ div.spaz-drawer-header {
 	}
 	
 div.spaz-drawer {
-	-webkit-border-image: url(../images/theme/drawer-background-9tile.png) 20 1 20 1 stretch stretch;
+	-webkit-border-image: url(../images/theme/drawer-background-9tile-opaque.png) 20 1 20 1 stretch stretch;
 	-webkit-box-sizing: border-box;
 	width:100%;
 	padding:0;
@@ -593,12 +605,18 @@ div.spaz-button-group {
 		font-size:12pt;
 		line-height:24pt;
 /*		-khtml-border-radius:16px;*/
-		border-width: 0 17px 0 17px;
-		-webkit-border-image: url(../images/theme/spaz-button-bg.png) 0 17 0 17;
+		border-width: 0 18px 0 17px;
+		-webkit-border-image: url(../images/theme/spaz-button-bg.png) 0 18 0 17;
 	}
 	div.spaz-button-wide:active {
-		-webkit-border-image: url(../images/theme/spaz-button-bg-active.png) 0 17 0 17;
+		-webkit-border-image: url(../images/theme/spaz-button-bg-active.png) 0 18 0 17;
 	}
+	div.spaz-button-wide.open {
+		-webkit-border-image: url(../images/theme/spaz-button-reveal.png) 0 18 0 17;
+	}
+		div.spaz-button-wide.open:active {
+			-webkit-border-image: url(../images/theme/spaz-button-reveal-active.png) 0 18 0 17;
+		}
 	
 	
 .spaz-activity-spinner {
@@ -612,7 +630,6 @@ div.spaz-button-group {
 	background-repeat: no-repeat;
 	background-position: center center;
 	position:fixed;
-	background-color: rgba(0,0,0,.7);
 /*	-khtml-border-radius:14px;*/
 	height:  24px;
 	padding: 6px 0px 0px 35px;
@@ -620,15 +637,19 @@ div.spaz-button-group {
 	color:  rgba(255,255,255,.7);
 	font-family:"Coconut Condensed";
 	font-size:12pt;
-	
+	border-width: 0 17 0 17;
+	-webkit-border-image: url(../images/theme/spaz-button-reveal-active.png) 0 17 0 17;
 }
 
 
 div.progress-panel {
-	height: 17px;
+	height: 24px;
 	margin:5px 8px;
-	background-color: rgba(0,0,0,.8);
+
 	padding: 8px 16px;
+	border-width: 0 18px 0 18px;
+	-webkit-border-image: url(../images/theme/spaz-roundeditem-darker-bg.png) 0 18 0 18;
+	
 /*	-khtml-border-radius:16px;*/
 }
 	div.progress-panel span.progress-panel-spinner {

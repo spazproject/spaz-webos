@@ -87,7 +87,9 @@ SearchTwitterAssistant.prototype.search = function(e) {
 	*/
 	jQuery('#search-timeline').empty();
 	
-	this.spinnerOn();
+	// this.spinnerOn();
+	this.showInlineSpinner('#search-timeline', 'Looking for results…');
+	
 	
 	if (sch.isString(e)) {
 		dump(e);
@@ -178,7 +180,8 @@ SearchTwitterAssistant.prototype.activate = function(event) {
 			Update relative dates
 		*/
 		sch.updateRelativeTimes('#search-timeline>div.timeline-entry>.status>.meta>.date', 'data-created_at');
-		e.data.thisAssistant.spinnerOff();
+		// e.data.thisAssistant.spinnerOff();
+		e.data.thisAssistant.hideInlineSpinner('#search-timeline');
 
 		
 	});

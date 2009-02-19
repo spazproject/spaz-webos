@@ -88,7 +88,8 @@ MyTimelineAssistant.prototype.activate = function(event) {
 	jQuery().bind('error_user_timeline_data', { thisAssistant:this }, function(e, response) {
 		dump('error_user_timeline_data - response:');
 		dump(response);
-		e.data.thisAssistant.spinnerOff();
+		// e.data.thisAssistant.spinnerOff();
+		this.hideInlineSpinner('#my-timeline');
 	});
 	
 	// jQuery().bind('new_friends_timeline_data', { thisAssistant:this }, function(e, tweets) {
@@ -171,25 +172,12 @@ MyTimelineAssistant.prototype.activate = function(event) {
 			e.data.thisAssistant.playAudioCue('newmsg');		
 		}
 
-		e.data.thisAssistant.spinnerOff();
+		// e.data.thisAssistant.spinnerOff();
+		e.data.thisAssistant.hideInlineSpinner('#my-timeline');
 	});
 
 	
 	
-	/*
-		if update succeeds
-	*/
-	jQuery().bind('update_succeeded', { thisAssistant:this }, function(e, data) {
-		e.data.thisAssistant.renderSuccessfulPost(e, data);
-		e.data.thisAssistant.spinnerOff();
-	});
-	
-	/*
-		if update fails
-	*/
-	jQuery().bind('update_failed', { thisAssistant:this }, function(e, data) {
-		e.data.thisAssistant.spinnerOff();
-	});
 	
 	
 	/*
@@ -273,9 +261,10 @@ MyTimelineAssistant.prototype.cleanup = function(event) {
 
 
 MyTimelineAssistant.prototype.getData = function() {
-	this.spinnerOn();
-	sc.helpers.markAllAsRead('#my-timeline>div.timeline-entry');
+	// this.spinnerOn();
 	
+	sc.helpers.markAllAsRead('#my-timeline>div.timeline-entry');
+	this.showInlineSpinner('#my-timeline', 'Looking for new tweets…');
 	// /*
 	// 	this is just to avoid network requests
 	// */

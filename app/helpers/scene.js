@@ -296,6 +296,21 @@ scene_helpers.addCommonSceneMethods = function(assistant) {
 		Mojo.Event.listen($('post-cancel-button'), Mojo.Event.tap, this.cancelPost.bind(this));
 
 		
+		/*
+			if update succeeds
+		*/
+		jQuery().bind('update_succeeded', { thisAssistant:this }, function(e, data) {
+			e.data.thisAssistant.renderSuccessfulPost(e, data);
+		});
+
+		/*
+			if update fails
+		*/
+		jQuery().bind('update_failed', { thisAssistant:this }, function(e, data) {
+			e.data.thisAssistant.reportFailedPost();
+		});
+		
+		
 		// var thisA = this; // use for closures below
 		// 		
 		// jQuery('#post-panel-textarea').bind('keyup',   function(e) {
@@ -333,7 +348,8 @@ scene_helpers.addCommonSceneMethods = function(assistant) {
 		
 		jQuery('#post-panel-irt-dismiss').unbind(Mojo.Event.tap);
 		
-		
+		jQuery().unbind('update_succeeded');
+		jQuery().unbind('update_failed');
 		/*
 			add a container within the current scene
 		*/
@@ -403,7 +419,8 @@ scene_helpers.addCommonSceneMethods = function(assistant) {
 	 *  
 	 */
 	assistant.sendPost = function(event) {
-		this.spinnerOn();
+		// this.spinnerOn();
+		this.showInlineSpinner('#post-panel-spinner-container', "Posting…");
 		var status = jQuery('#post-panel-textarea').val();
 
 		if (status.length > 0) {
@@ -415,9 +432,6 @@ scene_helpers.addCommonSceneMethods = function(assistant) {
 			} else {
 				sc.app.twit.update(status, null, null);
 			}
-			
-			this.hidePostPanel(event);
-			this.clearPostPanel(event);
 			
 		}
 	}
@@ -442,7 +456,11 @@ scene_helpers.addCommonSceneMethods = function(assistant) {
 		/*
 			prepend the rendered markup to the timeline, so it shows on top
 		*/
-		jQuery('#my-timeline').prepend(itemhtml);
+		if (jQuery('#my-timeline').length == 1) {
+			jQuery('#my-timeline').prepend(itemhtml);
+		}
+			
+		
 
 
 		/*
@@ -462,8 +480,18 @@ scene_helpers.addCommonSceneMethods = function(assistant) {
 
 		this.playAudioCue('send');
 		
-
-		this.spinnerOff();
+		this.hideInlineSpinner('#post-panel-spinner-container');			
+		this.hidePostPanel(event);
+		this.clearPostPanel(event);
+		// this.controller.showAlertDialog({
+		//     title: $L("Posting success"),
+		//     message: $L("Twitter got your post. wikked!"),
+		//     choices:[
+		//          {label:$L("OK"), value:"ok", type:'dismiss'}    
+		//     ]
+		// });
+		
+		// this.spinnerOff();
 
 
 	}
@@ -473,7 +501,10 @@ scene_helpers.addCommonSceneMethods = function(assistant) {
 	 *  
 	 */
 	assistant.reportFailedPost = function(event) {
-		this.spinnerOff();
+		this.hideInlineSpinner('#post-panel-spinner-container');			
+		this.hidePostPanel(event);
+		this.clearPostPanel(event);
+		Mojo.Controller.errorDialog("Twitter never told us if your post was successful. Maybe it was, maybe it wasn't!");
 	}
 	
 	
@@ -665,7 +696,7 @@ scene_helpers.addCommonSceneMethods = function(assistant) {
 	
 	
 	/**
-	 *  
+	 *  destroys and existing spinners and creates a new one, showing it
 	 */
 	assistant.showInlineSpinner = function(container, message) {
 		/*
@@ -678,37 +709,37 @@ scene_helpers.addCommonSceneMethods = function(assistant) {
 			<span class="progress-panel-label">'+message+'</span> \
 		</div>'
 		jQuery(container).prepend(html);
-		jQuery('.progress-panel', container).slideDown('fast');
+		jQuery('.progress-panel', container).show('blind', 'fast');
 		// jQuery('.progress-panel', container).fadeIn('fast');
 		
 	};
 
 	/**
-	 *  
+	 *  stops, but does not remove, the spinner
 	 */
 	assistant.stopInlineSpinner = function(container, message) {
 		// jQuery('.progress-panel', container).fadeOut('fast');
-		jQuery('.progress-panel-spinner', container).fadeOut('fast');
+		jQuery('.progress-panel-spinner', container).hide('blind', 'fast');
 		jQuery('.progress-panel-label', container).html(message);
 	};
 
 
 	/**
-	 *  
+	 *  starts an existing spinner
 	 */
 	assistant.startInlineSpinner = function(container, message) {
 		// jQuery('.progress-panel', container).fadeOut('fast');
-		jQuery('.progress-panel-spinner', container).fadeIn('fast');
+		jQuery('.progress-panel', container).show('blind', 'fast');
 		jQuery('.progress-panel-label', container).html(message);
 	};
 
 
 	/**
-	 *  
+	 *  hides and DESTROYS an existing spinner
 	 */
 	assistant.hideInlineSpinner = function(container, message) {
 		// jQuery('.progress-panel', container).fadeOut('fast');
-		jQuery('.progress-panel', container).slideUp('fast', function() {
+		jQuery('.progress-panel', container).hide('blind', 'fast', function() {
 			jQuery(this).remove();
 		});
 		
@@ -732,7 +763,9 @@ scene_helpers.addCommonSceneMethods = function(assistant) {
 		var category = 'newMessages';
 		
 		var appController = Mojo.Controller.getAppController();
-		appController.showBanner(params, launchArgs, category);
+		// appController.showBanner(params, launchArgs, category);
+		appController.showBanner("There are some new messages", {});
+		// dump('SHOWED NEW MESSAGE BANNER');
 		
 	}
 	

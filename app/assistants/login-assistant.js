@@ -14,7 +14,7 @@ LoginAssistant.prototype.setup = function() {
 	// this.setupCommonMenus({
 	// 	viewMenuItems: [
 	// 		{},
-	// 		{label:$L('Dreadnaught'), command:'scroll-top'},
+	// 		{label:$L('Spaz:Home'), command:'scroll-top'},
 	// 		{}
 	// 	],
 	// 	cmdMenuItems: [{}]
@@ -26,9 +26,11 @@ LoginAssistant.prototype.setup = function() {
 	/*
 		Initialize the model
 	*/
+	var username = sc.app.prefs.get('username');
+	var password = sc.app.prefs.get('password');
 	this.model = {
-		'username':'',
-		'password':'',
+		'username':username,
+		'password':password,
 		'search':''
 	};
 	
@@ -136,59 +138,37 @@ LoginAssistant.prototype.setup = function() {
 }
 
 
+LoginAssistant.prototype.togglePanel = function(panel_selector, button_selector, onOpen, onClose) {
+	if (jQuery(panel_selector).is(':visible')) { // is open, we need to close
+		
+		jQuery(panel_selector).hide('blind', 'fast');
+		jQuery(button_selector).removeClass('open').addClass('closed');
+		if (onClose) { onClose(); }
+		
+	} else { // is closed, we need to open
+		
+		jQuery(panel_selector).show('blind', 'fast');
+		jQuery(button_selector).removeClass('closed').addClass('open');
+		if (onOpen) { onOpen(); }
+		
+	}
+};
+
 
 LoginAssistant.prototype.toggleLoginPanel = function(event) {
-
-	if (jQuery('#login-panel').is(':visible')) {
-		jQuery('#login-panel').slideUp('fast');
-		jQuery('#show-login-button').html('Login &#x2192;')
-									.removeClass('open')
-									.addClass('closed');
-	} else {
-		jQuery('#login-panel').slideDown('fast');
-		jQuery('#show-login-button').html('Login &#x2193;')
-									.removeClass('closed')
-									.addClass('open');
-		
-	}
+	this.togglePanel('#login-panel', '#show-login-button');
 }
-
 LoginAssistant.prototype.toggleSearchPanel = function(event) {
-	
-	if (jQuery('#search-panel').is(':visible')) {
-		jQuery('#search-panel').slideUp('fast');
-		jQuery('#show-search-button').html('Search Twitter &#x2192;')
-									.removeClass('open')
-									.addClass('closed');
-	} else {
-		jQuery('#search-panel').slideDown('fast');
-		jQuery('#show-search-button').html('Search Twitter &#x2193;')
-									.removeClass('closed')
-									.addClass('open');
-		
-	}
-	
+	this.togglePanel('#search-panel', '#show-search-button');
 }
 LoginAssistant.prototype.toggleTrendsPanel = function(event) {
-
-	if (jQuery('#trends-panel').is(':visible')) {
-		jQuery('#trends-panel').slideUp('fast');
-		jQuery('#show-trends-button').html('Current Trends &#x2192;')
-									.removeClass('open')
-									.addClass('closed');
-	} else {
+	var thisA = this;		
+	this.togglePanel('#trends-panel', '#show-trends-button', function() {
+		thisA.showInlineSpinner('#trends-list', 'Loading…');
 		sc.app.twit.getTrends();
-		
-		var thisA = this;
-		jQuery('#trends-panel').slideDown('fast', function() {
-			thisA.showInlineSpinner('#trends-list', 'Loading…');
-		});
-		jQuery('#show-trends-button').html('Current Trends &#x2193;')
-									.removeClass('closed')
-									.addClass('open');
-		
-	}
+	});
 }
+
 
 
 /**
@@ -317,6 +297,11 @@ LoginAssistant.prototype.activate = function(event) {
 	*/				
 	jQuery().bind('verify_credentials_succeeded', {'thisAssistant':this}, function(e) {
 		sc.app.twit.setCredentials(e.data.thisAssistant.model.username, e.data.thisAssistant.model.password);
+
+		sc.app.prefs.set('username', e.data.thisAssistant.model.username);
+		sc.app.prefs.set('password', e.data.thisAssistant.model.password);
+		
+		
 		sc.app.lastFriendsTimelineId = 1;
 		
 		e.data.thisAssistant.hideInlineSpinner('#spinner-container');

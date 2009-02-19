@@ -11,8 +11,7 @@ var Tweets = function() {
 
 Tweets.prototype._init  = function() {
 	var opts = {
-		'name'    : , 
-		'displayName' : 'SpazDB',
+		'name'    : 'SpazDepot',
 		'replace' : false,		
 	};
 	
