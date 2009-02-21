@@ -28,10 +28,13 @@ LoginAssistant.prototype.setup = function() {
 	*/
 	var username = sc.app.prefs.get('username');
 	var password = sc.app.prefs.get('password');
+
+	// alert(username+":"+password)
 	this.model = {
 		'username':username,
 		'password':password,
-		'search':''
+		'search':'',
+		'always-go-to-my-timeline':sc.app.prefs.get('always-go-to-my-timeline')
 	};
 	
 	this.spinnerModel = {
@@ -45,11 +48,11 @@ LoginAssistant.prototype.setup = function() {
 	$('login-panel').hide();
 	Mojo.Event.listen($('show-login-button'), Mojo.Event.tap, this.toggleLoginPanel.bind(this));
 
-	$('search-panel').hide();
+	// $('search-panel').hide();
 	Mojo.Event.listen($('show-search-button'), Mojo.Event.tap, this.toggleSearchPanel.bind(this));
 
-	$('trends-panel').hide();
-	Mojo.Event.listen($('show-trends-button'), Mojo.Event.tap, this.toggleTrendsPanel.bind(this));
+	// $('trends-panel').hide();
+	// Mojo.Event.listen($('show-trends-button'), Mojo.Event.tap, this.toggleTrendsPanel.bind(this));
 	
 	
 	/**
@@ -61,7 +64,7 @@ LoginAssistant.prototype.setup = function() {
 	*/
 	this.controller.setupWidget('username',
 		this.atts = {
-			hintText: 'enter username',
+			// hintText: 'enter username',
 			enterSubmits: true,
 			modelProperty:'username', 
 			changeOnKeyPress: true,
@@ -76,7 +79,7 @@ LoginAssistant.prototype.setup = function() {
 	*/
 	this.controller.setupWidget('password',
 	    this.atts = {
-	        hintText: 'enter password',
+	        // hintText: 'enter password',
 	        label: "password",
 			enterSubmits: true,
 			modelProperty:		'password',
@@ -86,6 +89,20 @@ LoginAssistant.prototype.setup = function() {
 		},
 		this.model
     );
+	
+	/*
+		checkbox to go to my timeline
+	*/
+	this.controller.setupWidget("goToMyTimelineCheckbox",
+		this.atts = {
+			fieldName: 'always-go-to-my-timeline',
+			modelProperty: 'always-go-to-my-timeline',
+			disabledProperty: 'always-go-to-my-timeline_disabled'
+		},
+		this.model
+	);
+
+	
 	
 	/*
 		Search
@@ -133,6 +150,16 @@ LoginAssistant.prototype.setup = function() {
 		jQuery('#trends-list .trend-item').fadeIn(500);
 	});
 	
+	this.showInlineSpinner('#trends-list', 'Loading…');
+	sc.app.twit.getTrends();
+	
+	
+	var thisA = this;
+
+	jQuery('#goToMyTimelineCheckbox', this.scroller).bind(Mojo.Event.tap, function() {
+		var state = !thisA.model['always-go-to-my-timeline'];
+		sc.app.prefs.set('always-go-to-my-timeline', state);
+	});
 	
 	
 }
@@ -345,6 +372,8 @@ LoginAssistant.prototype.deactivate = function(event) {
 	
 	jQuery().unbind('verify_credentials_succeeded');
 	jQuery().unbind('verify_credentials_failed');
+	
+	jQuery('#goToMyTimelineCheckbox', this.scroller).unbind(Mojo.Event.tap);
 	
 	jQuery('.trend-item').die(Mojo.Event.tap);
 	

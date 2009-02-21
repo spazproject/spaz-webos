@@ -1,8 +1,9 @@
 var default_preferences = {
 	
-	'username':'null',
-	'password':'null',
-	
+	'username':false,
+	'password':false,
+	'always-go-to-my-timeline':false,
+
     'use-markdown': true,
 
     'sound-enabled': true,
@@ -11,7 +12,7 @@ var default_preferences = {
     'network-refreshinterval': 300000,
     'network-autoadjustrefreshinterval': true,
 
-    'debug-enabled': 'false',
+    'debug-enabled': false,
 
     'timeline-scrollonupdate': true,
     'timeline-maxentries': 300,
@@ -23,11 +24,11 @@ var default_preferences = {
 
     'file-uploader': 'twitpic',
 
-    'services-twitpic-sharepassword': 'false',
+    'services-twitpic-sharepassword': false,
 
     'services-pingfm-userappkey': '',
-    'services-pingfm-enabled': 'false',
-    'services-pingfm-sendreplies': 'false',
+    'services-pingfm-enabled': false,
+    'services-pingfm-sendreplies': false,
     'services-pingfm-updatetype': 'default',
 
     'twitter-api-base-url': 'https://twitter.com/',
