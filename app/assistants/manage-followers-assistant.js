@@ -10,11 +10,13 @@ function ManageFollowersAssistant() {
 
 ManageFollowersAssistant.prototype.setup = function() {
 	
+	this.initAppMenu();
+	
 	this.setupCommonMenus({
 		viewMenuItems: [
 			{
 				items: [
-					{label:$L('Search Twitter'), command:'scroll-top'},
+					{label:$L('Manage Followers'), command:'scroll-top'},
 					// {label: $L('Show me'), iconPath:'images/theme/menu-icon-triangle-down.png', submenu:'filter-menu'},
 				]
 			},
@@ -28,10 +30,10 @@ ManageFollowersAssistant.prototype.setup = function() {
 		cmdMenuItems: [{ items:
 			[
 				{},
-				{label:$L('Home'),        command:'home', shortcut:'H'},
+				// {label:$L('Home'),        iconPath:'images/theme/menu-icon-home.png', command:'home', shortcut:'H'},
 				{label:$L('My Timeline'), icon:'conversation', command:'my-timeline', shortcut:'T'},
 				{label:$L('Search'),      icon:'search', command:'search', shortcut:'S'},
-				{label:$L('Followers'),   command:'followers', shortcut:'L', disabled:true},
+				{label:$L('Followers'),   icon:'remove-vip', command:'followers', shortcut:'L', disabled:true},
 				{}
 			]
 		}]

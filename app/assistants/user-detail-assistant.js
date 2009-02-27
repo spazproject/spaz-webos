@@ -4,8 +4,6 @@ function UserDetailAssistant(argFromPusher) {
 	   to the scene controller (this.controller) has not be established yet, so any initialization
 	   that needs the scene controller should be done in the setup function below. */
 	
-	dump(argFromPusher);
-	
 	scene_helpers.addCommonSceneMethods(this);	
 	
 	if (sc.helpers.isString(argFromPusher) || sc.helpers.isNumber(argFromPusher)) {
@@ -23,7 +21,7 @@ function UserDetailAssistant(argFromPusher) {
 
 UserDetailAssistant.prototype.setup = function() {
 	
-	// alert('UserDetailAssistant.prototype.setup');
+	this.initAppMenu();
 	
 	this.setupCommonMenus({
 		viewMenuItems: [
@@ -32,11 +30,14 @@ UserDetailAssistant.prototype.setup = function() {
 					{label:$L('Back'),        icon:'back', command:'back'},
 					{label:$L('User Detail'), command:'scroll-top'}
 				]
+			},
+			{
+				items: [
+					{label:$L('Compose'),  icon:'compose', command:'compose', shortcut:'N'},
+				]
 			}
+			
 		],
-		cmdMenuItems: [
-			{label:$L('Compose'),  icon:'compose', command:'compose', shortcut:'N'},
-		]
 	});
 
 	this.scroller = this.controller.getSceneScroller();
@@ -54,15 +55,7 @@ UserDetailAssistant.prototype.setup = function() {
 	
 	jQuery().bind('new_user_timeline_data', { thisAssistant:this }, function(e, tweets) {
 
-		dump(e.data.thisAssistant);
-
-		dump('user\'s tweets:');
-		dump(tweets);
-
 		this.userobj = tweets[0].user;
-		dump('user\'s info:');
-		dump(this.userobj);
-
 		this.userRetrieved = true;		
 
 		var itemhtml = Mojo.View.render({object:this.userobj, template: 'user-detail/user-detail'});
@@ -77,7 +70,6 @@ UserDetailAssistant.prototype.setup = function() {
 		rendertweets.reverse();
 
 		jQuery.each( rendertweets, function() {
-			dump(this)
 			this.text = makeItemsClickable(this.text);
 		});
 
@@ -108,20 +100,6 @@ UserDetailAssistant.prototype.activate = function(event) {
 	/* put in event handlers here that should only be in effect when this scene is active. For
 	   example, key handlers that are observing the document */
 	
-	// alert('UserDetailAssistant.prototype.activate');
-	
-	// dump('getScenes()');
-	// dump(Mojo.Controller.stageController.getScenes());
-	// dump('activeScene()');
-	// dump(Mojo.Controller.stageController.activeScene());
-	// dump('topScene()');
-	// dump(Mojo.Controller.stageController.topScene());
-	// dump('isChildWindow()');
-	// dump(Mojo.Controller.stageController.isChildWindow());
-	
-	
-	
-
 	var thisA = this; // for closures
 
 	jQuery('#user-detail-actions #view-user-posts', this.scroller).live(Mojo.Event.tap, function(e) {

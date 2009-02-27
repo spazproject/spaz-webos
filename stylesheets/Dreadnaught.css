@@ -1,6 +1,6 @@
 /* Put Application specific CSS here. */
 
-BODY, div[x-mojo-element=Scroller] {	
+BODY, BODY>div[x-mojo-element=Scroller] {	
 /*	background-image: url('../images/theme/page-bg-dark-splash.png');*/
 	background-color:#111111;
 	color:#CCCCCC;
@@ -16,8 +16,9 @@ BODY {
 	border-bottom:2px solid #111100;
 }
 .command-menu .palm-menu-fade {
-	background: transparent url("../images/theme/command-menu-gradient.png") no-repeat !important;
-	border-top:2px solid #222200;	
+/*	background: transparent url("../images/theme/command-menu-gradient.png") no-repeat !important;*/
+	background: transparent !important;
+/*	border-top:2px solid #222200;	*/
 }
 
 a:link {
@@ -48,7 +49,9 @@ a:link {
 }
 
 
-
+.palm-group {
+	-webkit-border-image: url(../images/theme/palm-group.png) 40 18 14 18;	
+}
 
 
 
@@ -135,7 +138,7 @@ div.timeline-entry {
 			width:48px;
 			height:48px;
 			border:2px double #333;
-			-webkit-box-shadow:0px 1px 5px #333;
+/*			-webkit-box-shadow:0px 1px 5px #333;*/
 			background-image:url('../images/theme/details-image-generic.png');
 			opacity:.9;
 		}
@@ -149,7 +152,7 @@ div.timeline-entry {
 			font-variant: uppercase;
 			font-family:"Coconut Condensed";
 			margin-bottom: .2em;
-			text-shadow: 0px 1px 5px #666;
+/*			text-shadow: 0px 1px 5px #666;*/
 		}
 		div.timeline-entry .status .text {
 			font-size:10pt;
@@ -232,17 +235,22 @@ div.timeline-entry {
 	}
 
 	.palm-row .label {
-		color:#9BB8CF;
-		text-shadow: #999 0 1px 5px;
+/*		color:#9BB8CF;*/
+		text-shadow: none;
 	}
 	
 	.palm-row .truncating-text {
-		color:#FFF;
+/*		color:#FFF;*/
 	}
 		.palm-row .focused input[type='text'] {
-			color:#000;
+/*			color:#000;*/
 		}
 	
+	.checkbox-label {
+		margin:18px 0 0 0;
+		font-size:12pt;
+		color:#FFF;
+	}
 
 	#trends-list {}
 	#trends-list>li {
@@ -277,6 +285,10 @@ div.spaz-drawer {
 	margin:0;
 }
 
+#login-button, #search-button {
+	margin:0px !important;
+}
+
 
 
 /*
@@ -307,7 +319,7 @@ div.spaz-drawer {
 		width:48px;
 		height:48px;
 		border:2px double #333;
-		-webkit-box-shadow:0px 1px 5px #000;
+/*		-webkit-box-shadow:0px 1px 5px #000;*/
 		background-image:url('../images/theme/details-image-generic.png');
 		opacity:.9;
 		display:block;
@@ -393,7 +405,7 @@ div.spaz-drawer {
 		width:48px;
 		height:48px;
 		border:2px double #333;
-		-webkit-box-shadow:0px 1px 5px #000;
+/*		-webkit-box-shadow:0px 1px 5px #000;*/
 		background-image:url('../images/theme/details-image-generic.png');
 		opacity:.9;
 		display:block;
@@ -441,7 +453,7 @@ div.spaz-drawer {
 			border-style: solid;
 			border-color: transparent !important;
 			background:none !important;
-			-webkit-box-shadow:none;
+/*			-webkit-box-shadow:none;*/
 		}
 			#user-timeline .user {
 				display:none;
@@ -543,7 +555,7 @@ div.spaz-view-menu-container {
 	position:fixed;	
 	width:  100%;
 	background-color:rgba(0,0,0,1);
-	-webkit-box-shadow:0px 1px 5px #000;
+/*	-webkit-box-shadow:0px 1px 5px #000;*/
 
 }
 
@@ -619,6 +631,22 @@ div.spaz-button-group {
 		div.spaz-button-wide.open:active {
 			-webkit-border-image: url(../images/theme/spaz-button-reveal-active.png) 0 18 0 17;
 		}
+
+
+div.spaz-row {
+	height: 32px;
+	margin: 2px 2px;
+/*	background-color: rgba(51,51,51,.8);*/
+/*	padding: 8px 16px;*/
+	color:  #FFECCD;
+	font-family:"Coconut Condensed";
+	font-size:12pt;
+	line-height:24pt;
+/*	-khtml-border-radius:16px;*/
+	border-width: 0 18px 0 17px;
+/*	background-color:#444444;*/
+	-webkit-border-image: url(../images/theme/spaz-button-bg.png) 0 18 0 17;
+}
 	
 	
 .spaz-activity-spinner {

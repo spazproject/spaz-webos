@@ -1,19 +1,10 @@
 function StageAssistant () {
-	this.firstload = true;	
+
 }
 
 
 
 StageAssistant.prototype.setup = function() {
-	// this.controller.pushScene('my-timeline');
-	// this.controller.pushScene('search-twitter', {searchterm:'funkatron'});
-	// this.controller.pushScene('user-detail', 'poop');
-	
-	
-	sc.app.search_cards = [];
-	sc.app.new_search_card = 0;
-	
-	
 	/*
 		We can't go to the login screen until the 
 		prefs have fully loaded
@@ -30,13 +21,13 @@ StageAssistant.prototype.setup = function() {
 			sc.app.twit.setCredentials(username, password);
 		}
 		
-		if (thisSA.firstload) {
-			dump('FIRSTLOAD ----------------------');
-			thisSA.controller.pushScene('login', {'firstload':true});
-			thisSA.firstload = false;
-		} else {
-			thisSA.controller.pushScene('login');
-		}
+		// if (thisSA.firstload) {
+		// 	dump('FIRSTLOAD ----------------------');
+		// 	thisSA.controller.pushScene('login', {'firstload':true});
+		// 	thisSA.firstload = false;
+		// } else {
+		// 	thisSA.controller.pushScene('login');
+		// }
 		
 		
 	});
@@ -48,8 +39,3 @@ StageAssistant.prototype.setup = function() {
 	sc.app.prefs = new scPrefs(default_preferences);
 	sc.app.prefs.load();
 }
-
-
-StageAssistant.prototype.onPrefsLoad = function() {
-
-};

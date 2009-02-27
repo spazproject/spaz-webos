@@ -5,79 +5,76 @@
 
 <div id="login-scene">
 
-	<div id="main" class="palm-hasheader">
-		<div class="palm-header left" id="main-hdr">
-		  Spaz:Home
+
+	<div class="palm-group">
+		<div class="palm-group-title" id="login-toggle" x-mojo-loc=''>Log-in To My Account</div>
+		<div class="palm-list" id="login-panel">
+			<div class="palm-row single">
+				<div class="palm-row-wrapper">
+					<div class="textfield-group" x-mojo-focus-highlight="true">
+						<div class="title">
+							<div class="label">
+								username
+							</div>
+							<div id="username" name="username" x-mojo-element="TextField"></div>
+						</div>
+					</div>
+				</div>
+			</div>
+			<div class="palm-row single">
+				<div class="palm-row-wrapper">
+					<div class="textfield-group" x-mojo-focus-highlight="true">
+						<div class="title">
+							<div class="label">
+								password
+							</div>
+							<div id="password" name="password" x-mojo-element="PasswordField"></div>
+						</div>
+					</div>
+				</div>
+			</div>			
+			
+			
+
+	   		<div class="palm-row single">
+				<button class="palm-button" id="login-button">Login</button>
+				<div style="overflow:auto; text-align:center">
+					<div x-mojo-element="CheckBox" id="goToMyTimelineCheckbox"></div>
+					<div class="checkbox-label">Always go to My Timeline</div>
+				</div>
+				<div id="spinner-container"></div>
+			</div>
+
+
 		</div>
 	</div>
 
 
-	<div id="show-login-button" class="spaz-button-wide closed">Log-in</div>
-
-	<div id="login-panel" class='spaz-drawer'><!-- </div> -->
-
-		<div class='palm-row' id="username-row">
-			<div class="palm-row-wrapper">
-				<div class="textfield-group" x-mojo-focus-highlight="true">
+	<div class="palm-group">
+		<div class="palm-group-title" id="search-toggle" x-mojo-loc=''>Search Twitter</div>
+		<div class="palm-list" id="search-panel">
+	   		<div class="palm-row single">
+				<div class="palm-row-wrapper textfield-group" x-mojo-focus-highlight="true">
 					<div class="title">
-						<div class="label">
-							username
-						</div>
-						<div id="username" name="username" x-mojo-element="TextField"></div>
+							<div class="label">
+								search terms
+							</div>
+	      				<div id="search" name="search"  x-mojo-element="TextField"></div>
 					</div>
 				</div>
 			</div>
-			<div class="palm-row-wrapper">
-				<div class="textfield-group" x-mojo-focus-highlight="true">
-					<div class="title">
-						<div class="label">
-							password
-						</div>
-						<div id="password" name="password" x-mojo-element="PasswordField"></div>
-					</div>
+
+	   		<div class="palm-row single">
+				<button class="palm-button" id="search-button">Search</button>
+			</div>
+
+			<div class="palm-group">
+				<div class="palm-group-title" x-mojo-loc=''>Current Trends on Twitter</div>
+				<div class="palm-list" id="trends-list">
 				</div>
 			</div>
-		</div>
 
-		<button class="palm-button" id="login-button">Login</button>
-		<div style="overflow:auto">
-			<div x-mojo-element="CheckBox" id="goToMyTimelineCheckbox"></div>
-			<label for="always-go-to-my-timeline">Always go to My Timeline</label>
 		</div>
-		<div id="spinner-container"></div>
+	</div>
 		
-	</div>
-
-	<div id="show-search-button" class="spaz-button-wide">Search Twitter</div>
-
-	<div id="search-panel" class='spaz-drawer'>
-		<div class='palm-row' id="search-row">
-			<div class="palm-row-wrapper">
-				<div class="textfield-group" x-mojo-focus-highlight="true">
-					<div class="title">
-						<div class="label">
-							search terms
-						</div>
-						<div id="search" name="search" x-mojo-element="TextField"></div>
-					</div>
-				</div>
-			</div>
-		</div>
-		<button class="palm-button" id="search-button">Search</button>
-		
-	<!-- </div>
-
-	<div id="show-trends-button" class="spaz-button-wide closed">Current Trends</div>
-
-	<div id="trends-panel" class='spaz-drawer'> -->
-		<h3>Trends</h3>
-		<div id="trends-list" class="spaz-button-group">
-		</div>
-	</div>
-
-	<div id="status-panel">
-		<div x-mojo-element="Spinner" id="activity-spinner"></div>
-		<span id="status-label"></span>
-	</div>
-
 </div>

@@ -22,6 +22,7 @@ MessageDetailAssistant.prototype.setup = function() {
 
 	// alert('MessageDetailAssistant.prototype.setup');
 	
+	this.initAppMenu();
 	
 	this.setupCommonMenus({
 		viewMenuItems: [
@@ -30,10 +31,13 @@ MessageDetailAssistant.prototype.setup = function() {
 					{label:$L('Back'),        icon:'back', command:'back'},
 					{label:$L('Message Detail'), command:'scroll-top'}
 				]
+			},
+			{
+				items: [
+					{label:$L('Compose'),  icon:'compose', command:'compose', shortcut:'N'},
+				]
 			}
-		],
-		cmdMenuItems: [
-			{label:$L('Compose'),  icon:'compose', command:'compose', shortcut:'N'},
+			
 		]
 	});
 	
@@ -57,22 +61,7 @@ MessageDetailAssistant.prototype.activate = function(event) {
 	/* put in event handlers here that should only be in effect when this scene is active. For
 	   example, key handlers that are observing the document */
 	
-	// alert('MessageDetailAssistant.prototype.activate');
-	
-	// dump('getScenes()');
-	// dump(Mojo.Controller.stageController.getScenes());
-	// dump('activeScene()');
-	// dump(Mojo.Controller.stageController.activeScene());
-	// dump('topScene()');
-	// dump(Mojo.Controller.stageController.topScene());
-	// dump('isChildWindow()');
-	// dump(Mojo.Controller.stageController.isChildWindow());
-	
-
-
-	
-	sc.app.twit.getOne(this.status_id);
-	
+	sc.app.twit.getOne(this.status_id);	
 
 	
 	var thisA = this; // for closures

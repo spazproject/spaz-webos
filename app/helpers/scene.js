@@ -9,6 +9,29 @@ var scene_helpers = {}
  */
 scene_helpers.addCommonSceneMethods = function(assistant) {
 	
+	
+	assistant.initAppMenu = function(opts) {
+		// the initial app/scene commands set into the class's appMenuModel for the beverage:
+		this.appMenuAttr  = {
+			omitDefaultItems: true
+		};
+		
+		this.appMenuModel = {
+			visible: true,
+			
+			items: [
+				Mojo.Menu.editItem,
+				{ label: $L('About Spaz'),		command: 'appmenu-about' },
+				Mojo.Menu.helpItem,
+				Mojo.Menu.prefsItem,
+				{ label: $L('Log-in'),			command: 'appmenu-login' }
+			]
+		};
+
+		// good to go, set up the almighty Application Menu:
+		this.controller.setupWidget(Mojo.Menu.appMenu, this.appMenuAttr, this.appMenuModel);
+	};
+	
 
 	/**
 	 * opts is an object with key:val pairs, like so
@@ -23,66 +46,37 @@ scene_helpers.addCommonSceneMethods = function(assistant) {
 			this.scroller = this.controller.getSceneScroller();
 		}
 		
-		if (opts.viewMenuItems) {
-			var viewMenuItems = opts.viewMenuItems;
-		} else {
-			var viewMenuItems = [
-				{
-					items: [
-						{label: $L(opts.viewMenuLabel), command:'scroll-top'},
-						{label: $L('Filter timeline'), iconPath:'images/theme/menu-icon-triangle-down.png', submenu:'filter-menu'},
-					]
-				},
-				{
-					items: [
-						{label:$L('Compose'),  icon:'compose', command:'compose', shortcut:'N'},
-						{label:$L('Update'),   icon:'sync', command:'refresh', shortcut:'R'}					
-					]
-				}
-			];
-		}
-		
 		/*
 			View menu at top of screen
 		*/
-		this.viewMenuModel = {
-			label: $L('viewmenu'), 
-			items: viewMenuItems,
-		};
-		this.controller.setupWidget(Mojo.Menu.viewMenu, undefined, this.viewMenuModel);
-		
-		
-
-
-
-
-		if (opts.cmdMenuItems) {
-			var cmdMenuItems = opts.cmdMenuItems;
-		} else {
-			var cmdMenuItems = [{ items:
-				[
-					{},
-					{label:$L('Home'),        command:'home', shortcut:'H'},
-					{label:$L('My Timeline'), icon:'conversation', command:'my-timeline', shortcut:'T'},
-					{label:$L('Search'),      icon:'search', command:'search', shortcut:'S'},
-					{label:$L('Followers'),   command:'followers', shortcut:'L'},
-					{}
-				]
-			}]
+		if (opts.viewMenuItems) {
+			var viewMenuItems = opts.viewMenuItems;
+			this.viewMenuModel = {
+				label: $L('viewmenu'), 
+				items: viewMenuItems,
+			};
+			this.controller.setupWidget(Mojo.Menu.viewMenu, undefined, this.viewMenuModel);
 		}
+		
+
+		
+		
+
 
 
 		/*
 			Command menu at bottom of screen
 		*/
-		this.cmdMenuModel = {
-			visible:true,
-			items: cmdMenuItems
-		};
-		
-		
-		
-		this.controller.setupWidget(Mojo.Menu.commandMenu, undefined, this.cmdMenuModel);
+		if (opts.cmdMenuItems) {
+			var cmdMenuItems = opts.cmdMenuItems;
+			this.cmdMenuModel = {
+				visible:true,
+				items: cmdMenuItems
+			};
+			this.controller.setupWidget(Mojo.Menu.commandMenu, undefined, this.cmdMenuModel);
+		}
+
+
 
 
 		this.timelineFilterMenuModel = {
@@ -119,7 +113,14 @@ scene_helpers.addCommonSceneMethods = function(assistant) {
 	};
 
 
-
+	assistant.createStage = function(sceneName, sceneArgs, stageName) {
+		// "nocache:true" tells sysmanager to not use the card caching strategy on compose cards
+		var params = {name: stageName, nocache: true };
+		var callback = function(stageController) {
+			stageController.pushScene(sceneName, sceneArgs, stageName);
+		};
+		Mojo.Controller.getAppController().createStageWithCallback(params, callback);
+	};
 
 	/**
 	 *  
@@ -141,17 +142,27 @@ scene_helpers.addCommonSceneMethods = function(assistant) {
 					Navigation
 				*/
 				case 'home':
-					// dump('is child window:'+Mojo.Controller.StageController.isChildWindow(this));
 					findAndSwapScene("login", this);
 					break;
 				case 'my-timeline':
-					// dump('is child window:'+Mojo.Controller.StageController.isChildWindow(this));
 					findAndSwapScene("my-timeline", this);
 					break;
 				case 'search':
-					// dump('is child window:'+Mojo.Controller.StageController.isChildWindow(this));
 					findAndSwapScene("search-twitter", this);
-					break;	
+					break;
+				case 'new-search-card':
+
+					sc.app.new_search_card++;
+					this.createStage('search-twitter', { 'lightweight':true }, 'stage-lightweight-search'+sc.app.new_search_card);
+
+					// findAndSwapScene("search-twitter", this);
+					break;
+				case 'followers':
+					findAndSwapScene("manage-followers", this);
+					break;
+				case 'preferences':
+					findAndSwapScene("preferences", this);
+					break;
 
 				/*
 					Compose a new message
@@ -199,7 +210,9 @@ scene_helpers.addCommonSceneMethods = function(assistant) {
 					this.refresh(); // need to have a "refresh" method defined for each scene asst
 					break;
 
-
+				case 'search-trends':
+					Mojo.Controller.notYetImplemented();
+					break;
 
 			}
 		}
@@ -332,6 +345,19 @@ scene_helpers.addCommonSceneMethods = function(assistant) {
 		
 		
 	}
+	
+	
+	assistant.initTwit = function() {
+		var username = sc.app.prefs.get('username');
+		var password = sc.app.prefs.get('password');
+
+		this.twit = new scTwit();
+
+		if (username && password) {
+			this.twit.setCredentials(username, password);
+		}
+	};
+	
 
 
 	/**
@@ -661,7 +687,8 @@ scene_helpers.addCommonSceneMethods = function(assistant) {
 	 * 
 	 */
 	assistant.searchFor = function(terms) {
-		findAndSwapScene("search-twitter", {
+		// findAndSwapScene("search-twitter", {
+		Mojo.Controller.stageController.pushScene("search-twitter", {
 			'searchterm': terms
 		});
 	}
@@ -748,14 +775,7 @@ scene_helpers.addCommonSceneMethods = function(assistant) {
 	
 	
 	assistant.newMsgBanner = function(count) {
-		
-		var params = {
-			messageText:count+' new messages in your timeline',
-			soundClass: null,
-			soundFile:  null,
-			icon:       'icon.png'
-		};
-		
+				
 		var launchArgs = {
 			'from':'newMessagesBanner'
 		};
@@ -763,10 +783,8 @@ scene_helpers.addCommonSceneMethods = function(assistant) {
 		var category = 'newMessages';
 		
 		var appController = Mojo.Controller.getAppController();
-		// appController.showBanner(params, launchArgs, category);
-		appController.showBanner("There are some new messages", {});
-		// dump('SHOWED NEW MESSAGE BANNER');
-		
+
+		appController.showBanner("There are "+count+" new messages", launchArgs, category);
 	}
 	
 	

@@ -10,9 +10,9 @@ var default_preferences = {
     'wilhelm-enabled': true,
 
     'network-refreshinterval': 300000,
-    'network-autoadjustrefreshinterval': true,
+    'network-searchrefreshinterval': 300000,
 
-    'debug-enabled': false,
+    'network-autoadjustrefreshinterval': true,
 
     'timeline-scrollonupdate': true,
     'timeline-maxentries': 300,
