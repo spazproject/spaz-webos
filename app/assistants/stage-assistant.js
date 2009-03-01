@@ -38,9 +38,6 @@ StageAssistant.prototype.setup = function() {
 		} else {
 			thisSA.controller.pushScene('start');
 		}
-
-		thisSA.controller.pushScene('start');
-		
 		
 	});
 	

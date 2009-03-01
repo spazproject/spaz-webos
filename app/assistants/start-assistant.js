@@ -7,8 +7,6 @@ function StartAssistant(argFromPusher) {
 	if (argFromPusher && argFromPusher.firstload) {
 		if (sc.app.prefs.get('always-go-to-my-timeline')) {
 			Mojo.Controller.stageController.pushScene('my-timeline');	
-		} else {
-			alert('NO always-go-to-my-timeline');
 		}
 	}
 	
@@ -158,14 +156,12 @@ StartAssistant.prototype.setup = function() {
 	this.showInlineSpinner('#trends-list', 'Loading…');
 	sc.app.twit.getTrends();
 	
-	
-	var thisA = this;
 
-	jQuery('#goToMyTimelineCheckbox', this.scroller).bind(Mojo.Event.tap, function() {
-		var state = !thisA.model['always-go-to-my-timeline'];
+	
+	this.controller.listen('goToMyTimelineCheckbox', Mojo.Event.propertyChange, function() {
+		var state = thisA.model['always-go-to-my-timeline'];
 		sc.app.prefs.set('always-go-to-my-timeline', state);
 	});
-	
 	
 }
 
@@ -243,7 +239,6 @@ StartAssistant.prototype.deactivate = function(event) {
 	jQuery().unbind('verify_credentials_succeeded');
 	jQuery().unbind('verify_credentials_failed');
 	
-	jQuery('#goToMyTimelineCheckbox', this.scroller).unbind(Mojo.Event.tap);
 	
 	jQuery('.trend-item').die(Mojo.Event.tap);
 	
