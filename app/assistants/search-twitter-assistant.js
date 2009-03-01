@@ -300,7 +300,7 @@ SearchTwitterAssistant.prototype.search = function(e) {
 		this.showInlineSpinner('#search-timeline', 'Looking for results…');
 		
 	} else if (e.value) {
-		dump(e);
+		// dump(e);
 		this.twit.search(e.value);		
 		/*
 			clear any existing results
