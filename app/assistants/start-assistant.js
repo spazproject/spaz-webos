@@ -133,6 +133,13 @@ StartAssistant.prototype.setup = function() {
 	jQuery().bind('new_trends_data', {thisAssistant:this}, function(e, trends) {
 		e.data.thisAssistant.hideInlineSpinner('#trends-list');
 		
+		/*
+			some trends are wrapped in double-quotes, so we need to turn then into entities
+		*/
+		for (var k=0; k<trends.length; k++) {
+			trends[k].searchterm = trends[k].searchterm.replace(/"/gi, '&quot;');
+		}
+		
 		var trendshtml = Mojo.View.render({'collection':trends, template:'login/trend-item'});
 		
 		jQuery('#trends-list .trend-item').remove();
