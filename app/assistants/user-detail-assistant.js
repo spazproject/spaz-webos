@@ -60,14 +60,10 @@ UserDetailAssistant.prototype.setup = function() {
 
 		var itemhtml = Mojo.View.render({object:this.userobj, template: 'user-detail/user-detail'});
 		jQuery('#user-detail').html(itemhtml);
-		
-		
 
-		/*
-			reverse the tweets for collection rendering (faster)
-		*/
 		var rendertweets = tweets;
-		rendertweets.reverse();
+		// they come in oldest-first, so reverse it since we're rendering as a collection
+		rendertweets = rendertweets.reverse(); 
 
 		jQuery.each( rendertweets, function() {
 			this.text = makeItemsClickable(this.text);
