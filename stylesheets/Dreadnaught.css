@@ -469,12 +469,12 @@ div.spaz-drawer {
 /*				-webkit-border-top-right-radius:6pt;
 				-webkit-border-bottom-right-radius:6pt;
 */				padding:2pt 4pt 2pt 6pt;
-				background-color: rgba(34,34,0,.5);
+/*				background-color: rgba(34,34,0,.5);*/
 				
 			}
 					#user-timeline div.timeline-entry .status .meta:active {
 						color:#444444;
-						background-color: rgba(153,153,102,.5);
+/*						background-color: rgba(153,153,102,.5);*/
 					}
 			
 

@@ -85,7 +85,7 @@ MyTimelineAssistant.prototype.activate = function(event) {
 	var thisA = this; // for closures
 	
 	/*
-		jQuery is used to listen to events from SpazTwit library
+		Listen for error
 	*/
 	jQuery().bind('error_user_timeline_data', { thisAssistant:this }, function(e, response) {
 		dump('error_user_timeline_data - response:');
@@ -95,8 +95,7 @@ MyTimelineAssistant.prototype.activate = function(event) {
 		this.startRefresher();
 	});
 	
-	// jQuery().bind('new_friends_timeline_data', { thisAssistant:this }, function(e, tweets) {
-		
+
 	/*
 		Get combined timeline data
 	*/
@@ -259,6 +258,7 @@ MyTimelineAssistant.prototype.deactivate = function(event) {
 MyTimelineAssistant.prototype.cleanup = function(event) {
 	/* this function should do any cleanup needed before the scene is destroyed as 
 	   a result of being popped off the scene stack */
+	this.stopRefresher();
 }
 
 
@@ -300,11 +300,12 @@ MyTimelineAssistant.prototype.startRefresher = function() {
 		Set up refresher
 	*/
 	
+	this.stopRefresher(); // in case one is already running
+	
 	this.refresher = setInterval(function() {
 			jQuery().trigger('my_timeline_refresh');
 		}, sc.app.prefs.get('network-refreshinterval')
 	);
-	// this.refresher = setInterval(this.refresh.call(this), 5000)
 }
 
 MyTimelineAssistant.prototype.stopRefresher = function() {

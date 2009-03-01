@@ -295,6 +295,8 @@ scene_helpers.addCommonSceneMethods = function(assistant) {
 			add a container within the current scene
 		*/
 		var scroll_el = this.controller.getSceneScroller();
+		
+		var thisA = this; // use for closures below
 
 		/*
 			destroy any existing post popups
@@ -325,24 +327,24 @@ scene_helpers.addCommonSceneMethods = function(assistant) {
 		});
 		
 		
-		// var thisA = this; // use for closures below
-		// 		
-		// jQuery('#post-panel-textarea').bind('keyup',   function(e) {
-		// 	thisA._updateCharCount();
-		// });
-		// jQuery('#post-panel-textarea').bind('keydown', function(e) {
-		// 	thisA._updateCharCount();
-		// });
-		// jQuery('#post-panel-textarea').bind('blur',    function(e) {
-		// 	thisA._updateCharCount();
-		// });
-		// jQuery('#post-panel-textarea').bind('focus',   function(e) {
-		// 	thisA._updateCharCount();
-		// });
-		// 		
-		// jQuery('#post-panel-irt-dismiss').bind(Mojo.Event.tap, function(e) {
-		// 	thisA.clearPostIRT();
-		// });
+
+				
+		jQuery('#post-panel-textarea').bind('keyup',   function(e) {
+			thisA._updateCharCount();
+		});
+		jQuery('#post-panel-textarea').bind('keydown', function(e) {
+			thisA._updateCharCount();
+		});
+		jQuery('#post-panel-textarea').bind('blur',    function(e) {
+			thisA._updateCharCount();
+		});
+		jQuery('#post-panel-textarea').bind('focus',   function(e) {
+			thisA._updateCharCount();
+		});
+				
+		jQuery('#post-panel-irt-dismiss').bind(Mojo.Event.tap, function(e) {
+			thisA.clearPostIRT();
+		});
 		
 		
 	}
