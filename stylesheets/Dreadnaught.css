@@ -695,3 +695,12 @@ div.progress-panel {
 		font-size:12pt;
 
 	}
+	
+	
+/*
+	Start scene
+*/
+#start-smallprint {
+	font-size:70%;
+	margin-top:1em;
+}

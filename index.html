@@ -4,11 +4,8 @@
 
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
 <head>
-	<title>Dreadnaught</title>
+	<title>Spaz Mobile</title>
 	
-	<script type="text/javascript" charset="utf-8">
-		var use_palmhost_proxy = false;
-	</script>
 	
 	<script src="default_preferences.js" type="text/javascript" charset="utf-8"></script>
 		
@@ -48,6 +45,7 @@
 	
 	<!-- Load assistants -->
 	<script src="app/assistants/stage-assistant.js" type="text/javascript"></script>
+	<script src="app/assistants/start-assistant.js" type="text/javascript" charset="utf-8"></script>
 	<script src="app/assistants/my-timeline-assistant.js" type="text/javascript" charset="utf-8"></script>
 	<script src="app/assistants/login-assistant.js" type="text/javascript" charset="utf-8"></script>
 	<script src="app/assistants/my-timeline-assistant.js" type="text/javascript" charset="utf-8"></script>
@@ -60,6 +58,17 @@
 
 	<!-- application stylesheet should come in after the one loaded by the framework -->
 	<link href="stylesheets/Dreadnaught.css" media="screen" rel="stylesheet" type="text/css" />
+
+	<script type="text/javascript" charset="utf-8">
+		Mojo.Log.info("Mojo.Host.current:", Mojo.Host.current);
+		Mojo.Log.info("Mojo.Host.browser:", Mojo.Host.browser);
+
+		if (Mojo.Host.current === Mojo.Host.browser) {
+			var use_palmhost_proxy = true;
+		}
+	</script>
+	
+
 
 </head>
 

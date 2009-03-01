@@ -24,7 +24,8 @@ scene_helpers.addCommonSceneMethods = function(assistant) {
 				{ label: $L('About Spaz'),		command: 'appmenu-about' },
 				Mojo.Menu.helpItem,
 				Mojo.Menu.prefsItem,
-				{ label: $L('Log-in'),			command: 'appmenu-login' }
+				{ label: $L('Log-in'),			command: 'appmenu-login' },
+				{ label: $L('New Search Card'),	command: 'new-search-card' }
 			]
 		};
 

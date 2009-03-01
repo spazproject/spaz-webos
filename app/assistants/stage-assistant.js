@@ -30,13 +30,16 @@ StageAssistant.prototype.setup = function() {
 			sc.app.twit.setCredentials(username, password);
 		}
 		
+
 		if (thisSA.firstload) {
 			dump('FIRSTLOAD ----------------------');
-			thisSA.controller.pushScene('login', {'firstload':true});
+			thisSA.controller.pushScene('start', {'firstload':true});
 			thisSA.firstload = false;
 		} else {
-			thisSA.controller.pushScene('login');
+			thisSA.controller.pushScene('start');
 		}
+
+		thisSA.controller.pushScene('start');
 		
 		
 	});
