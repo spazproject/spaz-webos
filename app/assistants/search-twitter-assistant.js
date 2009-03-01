@@ -35,8 +35,6 @@ function SearchTwitterAssistant(args) {
 
 
 SearchTwitterAssistant.prototype.initPrefs = function() {
-
-	
 	/*
 		load our prefs
 		default_preferences is from default_preferences.js, loaded in index.html
@@ -74,7 +72,6 @@ SearchTwitterAssistant.prototype.setup = function() {
 		
 	/* use Mojo.View.render to render view templates and add them to the scene, if needed. */
 
-	
 	var thisA = this;	
 	
 	this.initTwit();
@@ -131,26 +128,25 @@ SearchTwitterAssistant.prototype.setup = function() {
 
 	this.scroller = this.controller.getSceneScroller();
 	
+	
+	
 	this.searchBoxAttr = {
 		"hintText":	      'Enter search terms…',
 		"focusMode":      Mojo.Widget.focusSelectMode,
 		"fieldName":'search-twitter'
-		// "changeOnKeyPress":true
-		
 	};
 	this.searchBoxModel = {
 		'value':     null,
 		'disabled':  false
 	}
-	
 	this.controller.setupWidget('search-twitter-textfield', this.searchBoxAttr, this.searchBoxModel);
-	
-	
+
+	Mojo.Event.listenForFocusChanges($('search-twitter-textfield'),this.searchboxFocusChange.bind(this));
+
 	jQuery('#submit-search-button').bind(Mojo.Event.tap, function() {
 		thisA.search.call(thisA, thisA.searchBoxModel.value);
 	});
 
-	
 }
 
 
@@ -159,14 +155,6 @@ SearchTwitterAssistant.prototype.setup = function() {
 SearchTwitterAssistant.prototype.activate = function(event) {
 	/* put in event handlers here that should only be in effect when this scene is active. For
 	   example, key handlers that are observing the document */
-	// dump('getScenes()');
-	// dump(Mojo.Controller.stageController.getScenes());
-	// dump('activeScene()');
-	// dump(Mojo.Controller.stageController.activeScene());
-	// dump('topScene()');
-	// dump(Mojo.Controller.stageController.topScene());
-	// dump('isChildWindow()');
-	// dump(Mojo.Controller.stageController.isChildWindow());
 	
 	if (event && event.searchterm) {
 		this.passedSearch = event.searchterm;
@@ -186,11 +174,6 @@ SearchTwitterAssistant.prototype.activate = function(event) {
 	var thisA = this; // for closures below
 	
 	jQuery().bind('new_search_timeline_data', { thisAssistant:this }, function(e, tweets) {
-
-		// dump(e.data.thisAssistant);
-		// 
-		// dump('search\'s tweets:');
-		// dump(tweets);
 
 		/*
 			reverse the tweets for collection rendering (faster)
@@ -282,7 +265,6 @@ SearchTwitterAssistant.prototype.deactivate = function(event) {
 	/* remove any event handlers you added in activate and do any other cleanup that should happen before
 	   this scene is popped or another scene is pushed on top */
 	
-	// Mojo.Event.stopListening($('search-twitter-textfield'), Mojo.Event.propertyChange, this.search);
 	Mojo.Event.stopListening($('submit-search-button'), Mojo.Event.tap, this.search);	
 	
 	jQuery().unbind('new_search_timeline_data');
@@ -361,3 +343,11 @@ SearchTwitterAssistant.prototype.stopRefresher = function() {
 	*/
 	clearInterval(this.refresher);
 }
+
+SearchTwitterAssistant.prototype.searchboxFocusChange = function(el) {
+	if (el) { // focusIN -- something gained focus
+		jQuery('#submit-search-button').show('blind');
+	} else { // focusOut -- blur
+		jQuery('#submit-search-button').hide('blind');
+	}
+};

@@ -40,19 +40,6 @@ StartAssistant.prototype.setup = function() {
 	
 	
 	/**
-	 * Panels that use jQuery (but listen with Mojo)
-	 */
-	// jQuery('login-panel').hide();
-
-	// jQuery('#login-toggle').bind(Mojo.Event.tap, function() {
-	// 	thisA.togglePanel('#login-panel', '#login-toggle');
-	// });
-	// jQuery('#search-toggle').bind(Mojo.Event.tap, function() {
-	// 	thisA.togglePanel('#search-panel', '#search-toggle');
-	// });
-	
-	
-	/**
 	 * Mojo Widgets 
 	 */
 	
