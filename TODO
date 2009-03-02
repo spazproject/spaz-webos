@@ -1,23 +1,23 @@
-Scenes:
-	Stage => App
-	Scene => page in App
-
 * Login/splash
+	* Need to listen for Ajax errors on trends
 * Timeline
 	* Combined timeline
-		* change spinner to not use complex widget system
-		* add parsing of #hashtags and point them to search
-		* new user posts don't get added correctly b/c of processing_opts 
-		* dupes still seem to get through in some cases on combined timeline (replies only?)
+		* dupes still seem to get through in some cases on combined timeline (posting new msgs)
+	* Need to listen for Ajax errors
+	* need to save current timeline so HTML does not have to regenerate each time scene is pushed/swapped
 * Message Detail
+	* Need to listen for Ajax errors
 	* parse links, usernames, hashtags
 	* reveal IRT message if exists
 	* buttons
-		* reply-to
+		* reply-to (DONE)
 		* add fav
 		* send as dm (DONE)
-		* retweet
+		* retweet (DONE)
 * User Detail
+	* Need to listen for Ajax errors on user data
+	* Need to listen for Ajax errors on user timeline
+	* grab data from /users/username.json (half-done)
 	* parse links, usernames, hashtags
 	* make buttons functional
 		* View recent posts (DONE)
@@ -28,24 +28,27 @@ Scenes:
 		* Follow
 		* block
 * Search
-	* search items passed in with single-quotes don't display in textbox properly
+	* Need to listen for Ajax errors
 * Preferences
+	* create scene
+	* add to AppMenu
 * Following/Followers list
-
+	* Not done
+	* Need to listen for Ajax errors
 * Notifications
 	* banner on new posts
-
+	* Link banners back to scene that opened them
+	* raise notifications from search
 * Posting
-	* in reply to
-	* hook up char counter (DONE)
-	* disable post button when over char limit
-	* hide IRT line unless invoked
+	* Need to listen for Ajax errors in posting
 	* People Picker widget to integrate with contacts?
 	* posting a dm returns the last "regular" message and prepends it to the timeline (even if dupe)
 
-* Preferences
-	* prefs need to be loaded from and saved to Luna.Depot
-	
 SpazTwit
+	* Add generic event raised on Ajax errors
+	* Make sure all methods raise specific error events
 	* add event for "no new messages" so view can do any necessary updates
+	* do follow/unfollow calls
+	* do add favorite calls
+	* do block calls
 	* complete min_age limits on refresh, and "force refresh" functionality
