@@ -20,6 +20,7 @@ function UserDetailAssistant(argFromPusher) {
 }
 
 UserDetailAssistant.prototype.setup = function() {
+	var thisA = this;
 	
 	this.initAppMenu();
 	
@@ -55,11 +56,11 @@ UserDetailAssistant.prototype.setup = function() {
 	
 	jQuery().bind('new_user_timeline_data', { thisAssistant:this }, function(e, tweets) {
 
-		this.userobj = tweets[0].user;
-		this.userRetrieved = true;		
+		// this.userobj = tweets[0].user;
+		// this.userRetrieved = true;	
 
-		var itemhtml = Mojo.View.render({object:this.userobj, template: 'user-detail/user-detail'});
-		jQuery('#user-detail').html(itemhtml);
+		// var itemhtml = Mojo.View.render({object:this.userobj, template: 'user-detail/user-detail'});
+		// jQuery('#user-detail').html(itemhtml);
 
 		var rendertweets = tweets;
 		// they come in oldest-first, so reverse it since we're rendering as a collection
@@ -79,13 +80,23 @@ UserDetailAssistant.prototype.setup = function() {
 			Update relative dates
 		*/
 		sch.updateRelativeTimes('#user-timeline>div.timeline-entry>.status>.meta>.date', 'data-created_at');
-		// e.data.thisAssistant.spinnerOff();
-
 		
 	});
 	
 	
+	jQuery().bind('get_user_succeeded', function(e, userobj) {
+		this.userRetrieved = true;
+		
+		this.userobj = userobj;
+		
+		var itemhtml = Mojo.View.render({object:this.userobj, template: 'user-detail/user-detail'});
+		jQuery('#user-detail').html(itemhtml);		
+	});
 	
+	
+	jQuery().bind('get_user_failed', function(e, message) {
+		
+	});
 	
 
 
@@ -105,12 +116,7 @@ UserDetailAssistant.prototype.activate = function(event) {
 	jQuery('#user-detail-actions #search-user', this.scroller).live(Mojo.Event.tap, function(e) {
 		var screen_name = jQuery(this).attr('data-screen_name');
 		dump("searching for '"+screen_name+"'");
-		
 		thisA.searchFor('from:'+screen_name+' OR to:'+screen_name);
-		
-		// findAndSwapScene("search-twitter", {
-		// 	'searchterm': 'from:'+screen_name+' OR to:'+screen_name
-		// });
 	});
 	jQuery('#user-detail-actions #reply-to-user', this.scroller).live(Mojo.Event.tap, function(e) {
 		dump(jQuery(this).attr('id'));
@@ -146,7 +152,10 @@ UserDetailAssistant.prototype.activate = function(event) {
 	});
 
 	if (!this.userRetrieved) {
+		
+		sc.app.twit.getUser(this.userid);
 		sc.app.twit.getUserTimeline(this.userid);
+		
 	}
 	
 	this.addPostPopup();
