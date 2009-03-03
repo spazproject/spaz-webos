@@ -181,26 +181,20 @@ SearchTwitterAssistant.prototype.activate = function(event) {
 		var rendertweets = tweets;
 
 		jQuery.each( rendertweets, function() {
-			// dump(this)
 			this.text = makeItemsClickable(this.text);
 			
-			var itemhtml = Mojo.View.render({object: this, template: 'search-twitter/search-item'});
+			// var itemhtml = Mojo.View.render({object: this, template: 'search-twitter/search-item'});
+			var itemhtml = sc.app.tpl.parseTemplate('search-item', this);
 			
 			/*
 				make jQuery obj
 			*/
 			var jqitem = jQuery(itemhtml);
 			
-			// dump('data for item:');
-			// dump(jQuery.data(jqitem.get(0)));
 			/*
 				attach data object to item html
 			*/
 			jqitem.data('item', this);
-			
-			// dump(jqitem.attr('class'))
-			
-			// dump(this.user.screen_name +" is from "+ this.SC_timeline_from);
 			
 			/*
 				put item on timeline

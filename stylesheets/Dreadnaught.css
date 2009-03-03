@@ -302,7 +302,7 @@ div.spaz-drawer {
 
 #message-detail-container {
 	background-attachment: fixed;
-	padding:8px 8px;
+	padding:8px 0px;
 }
 
 
@@ -316,6 +316,7 @@ div.spaz-drawer {
 
 	#message-detail-image {
 		float:left;
+		margin-left:8px;
 		width:48px;
 		height:48px;
 		border:2px double #333;
@@ -335,33 +336,44 @@ div.spaz-drawer {
 		#message-detail .status .text {
 			margin-top:.3em;
 			line-height:130%;
-			font-size:10pt;
-			margin-left:5px;
+			font-size:11pt;
 		}
 
 		#message-detail .status .meta {
-			margin-left:-64px;
-			clear:both;
-		}
-
-        #message-detail .status .meta .date,
-        #message-detail .status .meta .source,
-        #message-detail .status .meta .in-reply-to {
 			font-size:10pt;
-			font-weight:bold;
-			font-family:"Coconut Condensed";
-			display:inline-block;
-			color:#ffffcc;
-			background-color:rgba(32,32,32,.7);
-/*			-webkit-border-radius:6pt;*/
-			padding:2pt 5pt;
-			text-decoration:none;
-			margin-left:2px;
+			margin-top: .3em;
+			padding-top:.3em;
+			border-top:  1px solid #999999;
+			font-family:"Coconut";
 		}
+		
+			
+			#message-detail .status .meta .date {
+			}
+		
+			#message-detail .status .meta .in-reply-to {
+			}
+
+	        #message-detail .status .meta .clickable,
+			#message-detail .status .meta a:link,
+			#message-detail .status .meta a:visited {
+				font-weight:bold;
+				display:inline-block;
+				color:#ffffcc;
+				padding:2px 0px;
+				text-decoration:none;
+				height:14px;
+				border-width:2px 7px;
+				-webkit-border-image: url(../images/theme/text-link-bg.png) 0 7 0 7;
+			}
+				#message-detail .status .meta .clickable:active,
+				#message-detail .status .meta a:active, {
+					-webkit-border-image: url(../images/theme/text-link-bg-active.png) 0 7 0 7;
+				}
 
 
 	#message-detail-actions {
-		margin:8px 8px;
+		margin:8px 0px;
 		left:0px;
 		right:0px;
 		background-color:rgba(0,0,0,.2);
@@ -387,7 +399,7 @@ div.spaz-drawer {
 
 
 #user-detail-container {
-	padding:8px 8px;
+	padding:8px 0px;
 }
 
 
@@ -402,6 +414,7 @@ div.spaz-drawer {
 
 	#user-detail-image {
 		float:left;
+		margin-left:8px;
 		width:48px;
 		height:48px;
 		border:2px double #333;
@@ -414,7 +427,25 @@ div.spaz-drawer {
 	#user-detail-info {
 		margin-left: 64px;
 		margin-right:10px;
+		overflow:visible;		
 	}
+
+		#user-detail-info a:link,
+		#user-detail-info a:visited,
+		#user-detail-info a:active,
+		#user-detail-info .clickable {
+			color:#ffffcc;
+			padding:2px 0px;
+			text-decoration:none;
+			height:14px;
+			border-width:2px 7px;
+			-webkit-border-image: url(../images/theme/text-link-bg.png) 0 7 0 7;
+		}
+			#user-detail-info a:active,
+			#user-detail-info .clickable:active {
+				-webkit-border-image: url(../images/theme/text-link-bg-active.png) 0 7 0 7;
+			}
+
 		#user-detail-name {
 			font-size:14pt;
 /*			font-weight:bold;*/
@@ -425,23 +456,27 @@ div.spaz-drawer {
 			font-family:"Coconut Condensed";
 			display:inline-block;
 			color:#ffffcc;
-			background-color:rgba(32,32,32,.7);
 /*			-webkit-border-radius:6pt;*/
-			padding:2pt 5pt;
+			padding:2pt 0pt;
 			text-decoration:none;
-			margin-left:2px;
+			margin-left:0px;
 		}
 		#user-detail-description {
 			margin-top:.3em;
 			line-height:130%;
-			font-size:10pt;
-			margin-left:5px;
+			font-size:  12pt;
+			margin-left:0px;
 		}
 
 	#user-detail-actions {
-		margin:8px 8px;
+		clear:both;
+		margin:8px 0px;
+		left:0px;
+		right:0px;
 		background-color:rgba(0,0,0,.2);
 		border-top: 3px solid #333300;
+		border-bottom: 3px solid #333300;
+		padding:0 0 5px 0;
 	}
 
 	#user-timeline {

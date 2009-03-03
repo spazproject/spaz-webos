@@ -108,6 +108,7 @@ MyTimelineAssistant.prototype.activate = function(event) {
 
 			var rendertweets = tweets;
 			
+			Mojo.Timing.resume('my_timeline_render');
 			jQuery.each( rendertweets, function() {
 				
 				/*
@@ -121,9 +122,9 @@ MyTimelineAssistant.prototype.activate = function(event) {
 						Render the tweet
 					*/
 					if (this.SC_is_dm) {
-						var itemhtml = Mojo.View.render({object: this, template: 'shared/dm'});
+						var itemhtml = sc.app.tpl.parseTemplate('dm', this);
 					} else {
-						var itemhtml = Mojo.View.render({object: this, template: 'shared/tweet'});
+						var itemhtml = sc.app.tpl.parseTemplate('tweet', this);
 					}
 
 					/*
@@ -151,7 +152,10 @@ MyTimelineAssistant.prototype.activate = function(event) {
 				} else {
 					dump('Tweet ('+this.id+') already is in timeline');
 				}
-			});			
+				
+			});
+			Mojo.Timing.pause('my_timeline_render');
+			Mojo.Log.info(Mojo.Timing.reportTiming("my_timeline_render", "my_timeline_render -- \n"));
 			
 			e.data.thisAssistant.scrollToNew();
 			

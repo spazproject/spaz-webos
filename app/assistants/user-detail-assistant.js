@@ -55,12 +55,16 @@ UserDetailAssistant.prototype.setup = function() {
 	/* add event handlers to listen to events from widgets */
 	
 	jQuery().bind('new_user_timeline_data', { thisAssistant:this }, function(e, tweets) {
-
-		// this.userobj = tweets[0].user;
-		// this.userRetrieved = true;	
+		
+		this.userobj = tweets[0].user;
+		this.userRetrieved = true;	
 
 		// var itemhtml = Mojo.View.render({object:this.userobj, template: 'user-detail/user-detail'});
 		// jQuery('#user-detail').html(itemhtml);
+		var details_html = sc.app.tpl.parseTemplate('user-detail', this.userobj);
+		jQuery('#user-detail').html(details_html);
+		
+		
 
 		var rendertweets = tweets;
 		// they come in oldest-first, so reverse it since we're rendering as a collection
@@ -73,14 +77,26 @@ UserDetailAssistant.prototype.setup = function() {
 		/*
 			Render the new tweets as a collection (speed increase, I suspect)
 		*/
+		
+		
+		Mojo.Timing.resume("rendertweets#Mojo");
 		var itemhtml = Mojo.View.render({collection: rendertweets, template: 'shared/tweet'});
+		Mojo.Timing.pause("rendertweets#Mojo");
+		
+		Mojo.Timing.resume("rendertweets#SpazCore");
+		itemhtml = sc.app.tpl.parseArray('tweet', rendertweets);
+		Mojo.Timing.pause("rendertweets#SpazCore");
+
+
 		jQuery('#user-timeline').html(itemhtml);
 
 		/*
 			Update relative dates
 		*/
 		sch.updateRelativeTimes('#user-timeline>div.timeline-entry>.status>.meta>.date', 'data-created_at');
-		
+
+
+		Mojo.Log.info(Mojo.Timing.reportTiming("rendertweets", "rendertweets::"));
 	});
 	
 	
@@ -89,8 +105,12 @@ UserDetailAssistant.prototype.setup = function() {
 		
 		this.userobj = userobj;
 		
-		var itemhtml = Mojo.View.render({object:this.userobj, template: 'user-detail/user-detail'});
-		jQuery('#user-detail').html(itemhtml);		
+		dump(this.userobj);
+		
+		// var itemhtml = Mojo.View.render({object:this.userobj, template: 'user-detail/user-detail'});
+		
+		var itemhtml = sc.app.tpl.parseTemplate('user-detail', this.userobj);
+		jQuery('#user-detail').html(itemhtml);
 	});
 	
 	

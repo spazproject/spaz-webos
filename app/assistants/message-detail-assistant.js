@@ -140,9 +140,12 @@ MessageDetailAssistant.prototype.processStatusReturn = function(e, statusobj) {
 	
 	e.data.thisAssistant.statusobj.text = makeItemsClickable(e.data.thisAssistant.statusobj.text);
 	
-	var itemhtml = Mojo.View.render({object:e.data.thisAssistant.statusobj, template: 'message-detail/message-detail'});
+	// var itemhtml = Mojo.View.render({object:e.data.thisAssistant.statusobj, template: 'message-detail/message-detail'});
+	
+	var itemhtml = sc.app.tpl.parseTemplate('message-detail', e.data.thisAssistant.statusobj);
+	
 	jQuery('#message-detail').html(itemhtml);
 	
-	sch.updateRelativeTimes('#message-detail .status>.meta>.date', 'data-created_at');
+	sch.updateRelativeTimes('#message-detail .status>.meta>.date>.date-relative', 'data-created_at');
 	
 };
