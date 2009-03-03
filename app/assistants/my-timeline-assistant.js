@@ -51,7 +51,7 @@ MyTimelineAssistant.prototype.setup = function() {
 				// {label:$L('Home'),        iconPath:'images/theme/menu-icon-home.png', command:'home', shortcut:'H'},
 				{label:$L('My Timeline'), icon:'conversation', command:'my-timeline', shortcut:'T', disabled:true},
 				{label:$L('Search'),      icon:'search', command:'search', shortcut:'S'},
-				{label:$L('Followers'),   icon:'remove-vip', command:'followers', shortcut:'L'},
+				// {label:$L('Followers'),   icon:'remove-vip', command:'followers', shortcut:'L'},
 				{}
 			]
 		}]
@@ -70,7 +70,7 @@ MyTimelineAssistant.prototype.setup = function() {
 	
 	/* add event handlers to listen to events from widgets */
 
-
+	this.loadTimelineHTML();
 }
 
 
@@ -263,9 +263,45 @@ MyTimelineAssistant.prototype.cleanup = function(event) {
 	/* this function should do any cleanup needed before the scene is destroyed as 
 	   a result of being popped off the scene stack */
 	this.stopRefresher();
+
+	this.saveTimelineHTML();
 }
 
 
+MyTimelineAssistant.prototype.loadTimelineHTML = function() {
+	/*
+		load the cached html stack
+	*/
+	this.mojoDepot = new Mojo.Depot({
+		name:'SpazDepot',
+		replace:false
+	});
+	
+	this.mojoDepot.simpleGet('SpazMyTimelineHTMLCache',
+		function(html) {
+			jQuery('#my-timeline').html(html);
+		},
+		function() { dump('HTML Cache load failed') }
+	);
+	
+};
+
+MyTimelineAssistant.prototype.saveTimelineHTML = function() {
+	/*
+		save the current html stack
+	*/
+	var timeline_html = jQuery('#my-timeline').html();
+	this.mojoDepot = new Mojo.Depot({
+		name:'SpazDepot',
+		replace:false
+	});
+	
+	this.mojoDepot.simpleAdd('SpazMyTimelineHTMLCache', timeline_html,
+		function() { dump('HTML Cache Saved') },
+		function() { dump('HTML Cache save failed') }
+	);
+	
+};
 
 // MyTimelineAssistant.prototype.initTwit = function() {
 // };
