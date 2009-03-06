@@ -42,7 +42,7 @@ sc.app.tpl.addTemplateMethod('user-detail', function(d) {
 	html += '			<div id="user-detail-description">'+d.description+'</div>';
 
 	if (d.location) {
-		html += '		    <div><a id="user-detail-location" href="http://maps.yahoo.com/maps_result.php?q1=' +encodeURIComponent(d.location)+ '" title="View this location on a map">'+d.location+'</a></div>';
+		html += '		    <div><a id="user-detail-location" href="http://maps.google.com/?q=' +encodeURIComponent(d.location)+ '" title="View this location on a map">'+d.location+'</a></div>';
 	}
 	if (d.url) {
 		html += '			<div><a id="user-detail-homepage" href="'+d.url+'" title="Open user\'s homepage">Homepage</a></div>';
