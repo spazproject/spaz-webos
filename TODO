@@ -7,13 +7,8 @@
 	* need to save current timeline so HTML does not have to regenerate each time scene is pushed/swapped
 * Message Detail
 	* Need to listen for Ajax errors
-	* parse links, usernames, hashtags
-	* reveal IRT message if exists
-	* buttons
-		* reply-to (DONE)
-		* add fav
-		* send as dm (DONE)
-		* retweet (DONE)
+	* reveal IRT instead of just linking to it
+	* add star to favorite button (that reflects status)
 * User Detail
 	* Need to listen for Ajax errors on user data
 	* Need to listen for Ajax errors on user timeline

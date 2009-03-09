@@ -188,6 +188,11 @@ MyTimelineAssistant.prototype.activate = function(event) {
 		// e.data.thisAssistant.spinnerOff();
 		e.data.thisAssistant.hideInlineSpinner('#my-timeline');
 		e.data.thisAssistant.startRefresher();
+		
+		/*
+			Save this in case we need to load from cache
+		*/
+		e.data.thisAssistant.saveTimelineHTML();
 	});
 
 	
@@ -255,16 +260,12 @@ MyTimelineAssistant.prototype.deactivate = function(event) {
 	jQuery('div.timeline-entry>.status>.meta', this.scroller).die(Mojo.Event.tap);
 	jQuery('a[href]', this.scroller).die(Mojo.Event.tap);
 	
-	
-
 }
 
 MyTimelineAssistant.prototype.cleanup = function(event) {
 	/* this function should do any cleanup needed before the scene is destroyed as 
 	   a result of being popped off the scene stack */
 	this.stopRefresher();
-
-	this.saveTimelineHTML();
 }
 
 

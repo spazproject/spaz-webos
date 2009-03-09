@@ -45,6 +45,19 @@ MessageDetailAssistant.prototype.setup = function() {
 	
 	
 	jQuery().bind('get_one_status_succeeded', { thisAssistant:this }, this.processStatusReturn);
+
+
+
+	jQuery().bind('create_favorite_succeeded',  { thisAssistant:this }, function(e, statusobj) {
+		jQuery('#message-detail-action-favorite[data-status-id="'+statusobj.id+'"]')
+			.attr('data-favorited', 'true')
+			.html('Remove as favorite');
+	});
+	jQuery().bind('destroy_favorite_succeeded', { thisAssistant:this }, function(e, statusobj) {
+		jQuery('#message-detail-action-favorite[data-status-id="'+statusobj.id+'"]')
+			.attr('data-favorited', 'false')
+			.html('Add as favorite');		
+	});
 	
 
 	
@@ -66,6 +79,11 @@ MessageDetailAssistant.prototype.activate = function(event) {
 	
 	var thisA = this; // for closures
 
+	jQuery('.in-reply-to-link', this.scroller).live(Mojo.Event.tap, function(e) {
+		var statusid = jQuery(this).attr('data-irt-status-id');
+		Mojo.Controller.stageController.pushScene('message-detail', statusid);
+	});
+
 	jQuery('#message-detail-action-reply', this.scroller).live(Mojo.Event.tap, function(e) {
 		var screen_name = jQuery(this).attr('data-screen_name');
 		var in_reply_to = jQuery(this).attr('data-status-id');
@@ -78,7 +96,14 @@ MessageDetailAssistant.prototype.activate = function(event) {
 		thisA.prepDirectMessage(jQuery(this).attr('data-screen_name'));
 	});
 	jQuery('#message-detail-action-favorite', this.scroller).live(Mojo.Event.tap, function(e) {
-		Mojo.Controller.notYetImplemented();
+		var status_id = parseInt(jQuery(this).attr('data-status-id'));		
+		if (jQuery(this).attr('data-favorited') === 'true') {
+			dump('UNFAVORITING');
+			sc.app.twit.unfavorite(status_id);
+		} else {
+			dump('FAVORITING');
+			sc.app.twit.favorite(status_id);
+		}
 	});
 	
 	
@@ -112,6 +137,7 @@ MessageDetailAssistant.prototype.deactivate = function(event) {
 	
 	// jQuery().unbind('get_one_status_succeeded', this.processStatusReturn);
 	
+	jQuery('.in-reply-to-link', this.scroller).die(Mojo.Event.tap);
 	jQuery('#message-detail-action-reply', this.scroller).die(Mojo.Event.tap);
 	jQuery('#message-detail-action-retweet', this.scroller).die(Mojo.Event.tap);
 	jQuery('#message-detail-action-dm', this.scroller).die(Mojo.Event.tap);

@@ -24,7 +24,11 @@ sc.app.tpl.addTemplateMethod('message-detail', function(d) {
 	html += '			<div class="spaz-button-wide" id="message-detail-action-reply" data-status-id="'+d.id+'" data-screen_name="'+d.user.screen_name+'">@Reply to this message</div>';
 	html += '			<div class="spaz-button-wide" id="message-detail-action-retweet" data-status-id="'+d.id+'">ReTweet this message</div>';
 	html += '			<div class="spaz-button-wide" id="message-detail-action-dm" data-screen_name="'+d.user.screen_name+'">Direct message this user</div>';
-	html += '			<div class="spaz-button-wide" id="message-detail-action-favorite" data-status-id="'+d.id+'" data-screen_name="'+d.user.screen_name+'">Add as favorite</div>';
+	if (d.favorited) {
+		html += '			<div class="spaz-button-wide" id="message-detail-action-favorite" data-status-id="'+d.id+'" data-screen_name="'+d.user.screen_name+'" data-favorited="true">Remove as favorite</div>';
+	} else {
+		html += '			<div class="spaz-button-wide" id="message-detail-action-favorite" data-status-id="'+d.id+'" data-screen_name="'+d.user.screen_name+'" data-favorited="false">Add as favorite</div>';
+	}
 	html += '		</div>';
 	html += '	</div>';
 	html += '</div>';
@@ -38,7 +42,13 @@ sc.app.tpl.addTemplateMethod('user-detail', function(d) {
 	html += '	<div data-screen_name="'+d.screen_name+'" data-id="'+d.id+'">';
 	html += '		<img src="'+d.profile_image_url+'" id="user-detail-image" data-screen_name="'+d.screen_name+'" title="View user\'s profile" />';
 	html += '		<div id="user-detail-info">';
-	html += '			<div id="user-detail-name" data-screen_name="'+d.screen_name+'">'+d.name+' ('+d.screen_name+')</div>';
+	html += '			<div id="user-detail-name" data-screen_name="'+d.screen_name+'">';
+	html += '			'+d.name;
+	if (d.name !== d.screen_name) {
+		html += '			('+d.screen_name+')';
+	}
+	html += '			</div>';
+	
 	html += '			<div id="user-detail-description">'+d.description+'</div>';
 
 	if (d.location) {
