@@ -69,8 +69,12 @@ sc.app.tpl.addTemplateMethod('user-detail', function(d) {
 	html += '				<div id="dm-user" class="spaz-button-wide" data-screen_name="'+d.screen_name+'">Send direct message to user</div>';
 	html += '			</div>';
 	html += '			<div class="spaz-button-group">';
-	html += '				<div id="follow-user" class="spaz-button-wide" data-screen_name="'+d.screen_name+'">Follow user</div>';
-	html += '				<div id="block-user" class="spaz-button-wide" data-screen_name="'+d.screen_name+'">Block user</div>';
+	if (d.following) {
+		html += '				<div id="friend-user" class="spaz-button-wide" data-screen_name="'+d.screen_name+'" data-friended="true">Remove user as friend</div>';
+	} else {
+		html += '				<div id="friend-user" class="spaz-button-wide" data-screen_name="'+d.screen_name+'" data-friended="false">Add user as friend</div>';
+	}
+	html += '				<div id="block-user" class="spaz-button-wide" data-screen_name="'+d.screen_name+'" data-blocked="false">Block user</div>';
 	html += '			</div>';
 	html += '		</div>';
 	html += '	</div>';

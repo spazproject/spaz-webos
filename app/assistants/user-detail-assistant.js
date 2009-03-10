@@ -56,16 +56,6 @@ UserDetailAssistant.prototype.setup = function() {
 	
 	jQuery().bind('new_user_timeline_data', { thisAssistant:this }, function(e, tweets) {
 		
-		this.userobj = tweets[0].user;
-		this.userRetrieved = true;	
-
-		// var itemhtml = Mojo.View.render({object:this.userobj, template: 'user-detail/user-detail'});
-		// jQuery('#user-detail').html(itemhtml);
-		var details_html = sc.app.tpl.parseTemplate('user-detail', this.userobj);
-		jQuery('#user-detail').html(details_html);
-		
-		
-
 		var rendertweets = tweets;
 		// they come in oldest-first, so reverse it since we're rendering as a collection
 		rendertweets = rendertweets.reverse(); 
@@ -78,15 +68,7 @@ UserDetailAssistant.prototype.setup = function() {
 			Render the new tweets as a collection (speed increase, I suspect)
 		*/
 		
-		
-		Mojo.Timing.resume("rendertweets#Mojo");
-		var itemhtml = Mojo.View.render({collection: rendertweets, template: 'shared/tweet'});
-		Mojo.Timing.pause("rendertweets#Mojo");
-		
-		Mojo.Timing.resume("rendertweets#SpazCore");
-		itemhtml = sc.app.tpl.parseArray('tweet', rendertweets);
-		Mojo.Timing.pause("rendertweets#SpazCore");
-
+		var itemhtml = sc.app.tpl.parseArray('tweet', rendertweets);
 
 		jQuery('#user-timeline').html(itemhtml);
 
@@ -95,14 +77,11 @@ UserDetailAssistant.prototype.setup = function() {
 		*/
 		sch.updateRelativeTimes('#user-timeline>div.timeline-entry>.status>.meta>.date', 'data-created_at');
 
-
-		Mojo.Log.info(Mojo.Timing.reportTiming("rendertweets", "rendertweets::"));
 	});
 	
 	
 	jQuery().bind('get_user_succeeded', function(e, userobj) {
 		this.userRetrieved = true;
-		
 		this.userobj = userobj;
 		
 		dump(this.userobj);
@@ -111,6 +90,8 @@ UserDetailAssistant.prototype.setup = function() {
 		
 		var itemhtml = sc.app.tpl.parseTemplate('user-detail', this.userobj);
 		jQuery('#user-detail').html(itemhtml);
+		
+		sc.app.twit.getUserTimeline(this.userobj.id);
 	});
 	
 	
@@ -119,6 +100,29 @@ UserDetailAssistant.prototype.setup = function() {
 	});
 	
 
+
+	jQuery().bind('create_friendship_succeeded',  { thisAssistant:this }, function(e, userobj) {
+		jQuery('#friend-user[data-screen_name="'+userobj.screen_name+'"]')
+			.attr('data-friended', 'true')
+			.html('Remove user as friend');
+	});
+	jQuery().bind('destroy_friendship_succeeded', { thisAssistant:this }, function(e, userobj) {
+		jQuery('#friend-user[data-screen_name="'+userobj.screen_name+'"]')
+			.attr('data-friended', 'false')
+			.html('Add user as friend');		
+	});
+
+	jQuery().bind('create_block_succeeded', { thisAssistant:this }, function(e, userobj) {
+		jQuery('#block-user[data-screen_name="'+userobj.screen_name+'"]')
+			.attr('data-blocked', 'true')
+			.html('Unblock user');
+	});
+	jQuery().bind('destroy_block_succeeded', { thisAssistant:this }, function(e, userobj) {
+		jQuery('#block-user[data-screen_name="'+userobj.screen_name+'"]')
+			.attr('data-blocked', 'false')
+			.html('Block user');
+	});
+	
 
 }
 
@@ -146,13 +150,41 @@ UserDetailAssistant.prototype.activate = function(event) {
 		dump(jQuery(this).attr('id'));
 		thisA.prepDirectMessage(jQuery(this).attr('data-screen_name'));
 	});
-	jQuery('#user-detail-actions #follow-user', this.scroller).live(Mojo.Event.tap, function(e) {
-		dump(jQuery(this).attr('id'));
-		Mojo.Controller.notYetImplemented();
+	jQuery('#user-detail-actions #friend-user', this.scroller).live(Mojo.Event.tap, function(e) {
+		dump("Friend user:"+jQuery(this).attr('data-screen_name'));
+		// Mojo.Controller.notYetImplemented();
+		
+		var user_id = jQuery(this).attr('data-screen_name');
+		if (jQuery(this).attr('data-friended') === 'true') {
+			dump('UN-FOLLOWING');
+			sc.app.twit.removeFriend(user_id);
+		} else {
+			dump('FOLLOWING');
+			sc.app.twit.addFriend(user_id);
+		}
+		
 	});
 	jQuery('#user-detail-actions #block-user', this.scroller).live(Mojo.Event.tap, function(e) {
-		dump(jQuery(this).attr('id'));
-		Mojo.Controller.notYetImplemented();
+		dump("Block user:"+jQuery(this).attr('data-screen_name'));
+		// Mojo.Controller.notYetImplemented();
+		
+		
+		/*
+			Note that on first load of user detail, state will alwasy be 'false'
+			because we don't get blocked state via the API
+		*/
+		var user_id = jQuery(this).attr('data-screen_name');
+		if (jQuery(this).attr('data-blocked') === 'true') {
+			dump('UNBLOCKING:'+user_id);
+			sc.app.twit.unblock(user_id);
+		} else {
+			dump('BLOCKING:'+user_id);
+			sc.app.twit.block(user_id);
+		}
+
+		// dump('BLOCKING:'+user_id);
+		// sc.app.twit.block(user_id);
+		
 	});
 
 
@@ -172,10 +204,7 @@ UserDetailAssistant.prototype.activate = function(event) {
 	});
 
 	if (!this.userRetrieved) {
-		
 		sc.app.twit.getUser(this.userid);
-		sc.app.twit.getUserTimeline(this.userid);
-		
 	}
 	
 	this.addPostPopup();
@@ -192,6 +221,7 @@ UserDetailAssistant.prototype.deactivate = function(event) {
 	
 	// alert('UserDetailAssistant.prototype.deactivate');
 	
+	
 	this.removePostPopup();
 	
 	/*
@@ -201,7 +231,7 @@ UserDetailAssistant.prototype.deactivate = function(event) {
 	jQuery('#user-detail-actions #search-user', this.scroller).die(Mojo.Event.tap);
 	jQuery('#user-detail-actions #reply-to-user', this.scroller).die(Mojo.Event.tap);
 	jQuery('#user-detail-actions #dm-user', this.scroller).die(Mojo.Event.tap);
-	jQuery('#user-detail-actions #follow-user', this.scroller).die(Mojo.Event.tap);
+	jQuery('#user-detail-actions #friend-user', this.scroller).die(Mojo.Event.tap);
 	jQuery('#user-detail-actions #block-user', this.scroller).die(Mojo.Event.tap);
 	
 	jQuery('.username.clickable', this.scroller).die(Mojo.Event.tap);
@@ -213,5 +243,11 @@ UserDetailAssistant.prototype.cleanup = function(event) {
 	/* this function should do any cleanup needed before the scene is destroyed as 
 	   a result of being popped off the scene stack */
 	
+	jQuery().unbind('new_user_timeline_data');
+	jQuery().unbind('get_user_succeeded');
+	jQuery().unbind('get_user_failed');
+	jQuery().unbind('create_friendship_succeeded');
+	jQuery().unbind('destroy_friendship_succeeded');
 
+	
 }
