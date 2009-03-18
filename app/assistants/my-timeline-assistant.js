@@ -278,7 +278,7 @@ MyTimelineAssistant.prototype.loadTimelineHTML = function() {
 		replace:false
 	});
 	
-	this.mojoDepot.simpleGet('SpazMyTimelineHTMLCache',
+	this.mojoDepot.simpleGet('SpazMyTimelineHTMLCache_'+this.twit.getUsername(),
 		function(html) {
 			jQuery('#my-timeline').html(html);
 		},
@@ -291,13 +291,20 @@ MyTimelineAssistant.prototype.saveTimelineHTML = function() {
 	/*
 		save the current html stack
 	*/
-	var timeline_html = jQuery('#my-timeline').html();
+	var timeline_html = '';
+	
+	jQuery('#my-timeline div.timeline-entry').each(function() {
+		if (this.outerHTML) {
+			timeline_html += this.outerHTML;
+		}
+	});
+	
 	this.mojoDepot = new Mojo.Depot({
 		name:'SpazDepot',
 		replace:false
 	});
 	
-	this.mojoDepot.simpleAdd('SpazMyTimelineHTMLCache', timeline_html,
+	this.mojoDepot.simpleAdd('SpazMyTimelineHTMLCache_'+this.twit.getUsername(), timeline_html,
 		function() { dump('HTML Cache Saved') },
 		function() { dump('HTML Cache save failed') }
 	);

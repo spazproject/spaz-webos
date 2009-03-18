@@ -174,6 +174,10 @@ SearchTwitterAssistant.prototype.activate = function(event) {
 	var thisA = this; // for closures below
 	
 	jQuery().bind('new_search_timeline_data', { thisAssistant:this }, function(e, tweets) {
+		
+		/*
+			Check to see if the returned query matches what we are using. If not, ignore.
+		*/
 
 		/*
 			reverse the tweets for collection rendering (faster)
@@ -246,11 +250,11 @@ SearchTwitterAssistant.prototype.activate = function(event) {
 	
 	
 	jQuery().bind('search_twitter_refresh', { thisAssistant:this }, function(e) {
-		e.data.thisAssistant.refresh();
+		e.data.thisAssistant.startRefresher();
 	});
 	
 	
-	this.startRefresher();
+	this.refresh();
 
 }
 
@@ -310,6 +314,7 @@ SearchTwitterAssistant.prototype.search = function(e) {
 
 
 SearchTwitterAssistant.prototype.refresh = function() {
+	dump('Stopping refresher');
 	this.stopRefresher();
 	this.search(this.searchBoxModel.value);
 };
@@ -318,6 +323,8 @@ SearchTwitterAssistant.prototype.refresh = function() {
 
 
 SearchTwitterAssistant.prototype.startRefresher = function() {
+	this.stopRefresher();
+	
 	dump('Starting refresher');
 	/*
 		Set up refresher
@@ -325,7 +332,8 @@ SearchTwitterAssistant.prototype.startRefresher = function() {
 	
 	this.refresher = setInterval(function() {
 			jQuery().trigger('search_twitter_refresh');
-		}, sc.app.prefs.get('network-refreshinterval')
+		}, 30000
+		// }, sc.app.prefs.get('network-refreshinterval')
 	);
 	// this.refresher = setInterval(this.refresh.call(this), 5000)
 }

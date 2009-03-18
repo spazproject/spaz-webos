@@ -3,7 +3,7 @@
 BODY, BODY>div[x-mojo-element=Scroller] {	
 /*	background-image: url('../images/theme/page-bg-dark-splash.png');*/
 	background-color:#111111;
-/*	color:#CCCCCC;*/
+	color:#CCCCCC;
 }
 
 BODY {
