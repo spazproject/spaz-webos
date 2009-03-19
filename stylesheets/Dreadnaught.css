@@ -53,7 +53,9 @@ a:link {
 	-webkit-border-image: url(../images/theme/palm-group.png) 40 18 14 18;	
 }
 
-
+.palm-popup-container {
+	color:#111111;
+}
 
 
 /*************************************************

@@ -10,6 +10,7 @@
 	* Need to listen for Ajax errors
 	* reveal IRT instead of just linking to it
 	* add star to favorite button (that reflects status)
+	* DMs don't show detail properly (need to detect and grab with right method)
 * User Detail
 	* Need to listen for Ajax errors on user data
 	* Need to listen for Ajax errors on user timeline
@@ -40,6 +41,7 @@
 	* Need to listen for Ajax errors in posting
 	* People Picker widget to integrate with contacts?
 	* posting a dm returns the last "regular" message and prepends it to the timeline (even if dupe)
+	* can still send if over char limit
 
 SpazTwit
 	* Add generic event raised on Ajax errors
