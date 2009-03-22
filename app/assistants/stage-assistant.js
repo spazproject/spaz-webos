@@ -13,7 +13,6 @@ StageAssistant.prototype.setup = function() {
 	sc.app.search_cards = [];
 	sc.app.new_search_card = 0;
 	
-	
 	/*
 		We can't go to the login screen until the 
 		prefs have fully loaded
@@ -23,14 +22,14 @@ StageAssistant.prototype.setup = function() {
 		
 		var username = sc.app.prefs.get('username');
 		var password = sc.app.prefs.get('password');
-
+	
 		sc.app.twit = new scTwit();
-
+	
 		if (username && password) {
 			sc.app.twit.setCredentials(username, password);
 		}
 		
-
+	
 		if (thisSA.firstload) {
 			dump('FIRSTLOAD ----------------------');
 			thisSA.controller.pushScene('start', {'firstload':true});

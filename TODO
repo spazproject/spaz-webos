@@ -1,11 +1,12 @@
 * Login/splash
 	* Need to listen for Ajax errors on trends
-* Timeline
-	* Caching needs to be tied to specific users
+* My Timeline
 	* Combined timeline
 		* dupes still seem to get through in some cases on combined timeline (posting new msgs)
 	* Need to listen for Ajax errors
-	* need to save current timeline so HTML does not have to regenerate each time scene is pushed/swapped
+	* Timeline is sometimes out of order when loading some from cache (replies and DMs). Need to resort whole list on view side, prob
+* Favorites Timeline
+	* Need to create
 * Message Detail
 	* Need to listen for Ajax errors
 	* reveal IRT instead of just linking to it
@@ -30,16 +31,12 @@
 * Preferences
 	* create scene
 	* add to AppMenu
-* Following/Followers list
-	* Not done
-	* Need to listen for Ajax errors
 * Notifications
 	* banner on new posts
 	* Link banners back to scene that opened them
 	* raise notifications from search
 * Posting
 	* Need to listen for Ajax errors in posting
-	* People Picker widget to integrate with contacts?
 	* posting a dm returns the last "regular" message and prepends it to the timeline (even if dupe)
 	* can still send if over char limit
 
@@ -48,7 +45,6 @@ SpazTwit
 	* Make sure all methods raise specific error events
 	* add event for "no new messages" so view can do any necessary updates
 	* do follow/unfollow calls
-	* do add favorite calls
 	* do block calls
 	* complete min_age limits on refresh, and "force refresh" functionality
 
@@ -57,4 +53,4 @@ SpazTwit
 	* Photo posting
 	* Photo taking and posting
 	* Updating location with GPS services
-	
+	* People Picker widget to integrate with contacts for posting(?)

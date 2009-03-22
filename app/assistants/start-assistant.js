@@ -16,8 +16,6 @@ function StartAssistant(argFromPusher) {
 StartAssistant.prototype.setup = function() {
 		
 	var thisA = this;
-		
-	/* this function is for setup tasks that have to happen when the scene is first created */
 
 	this.scroller = this.controller.getSceneScroller();
 	
@@ -72,7 +70,7 @@ StartAssistant.prototype.setup = function() {
 			multiline:		false,
 		},
 		this.model
-    );
+	    );
 	
 	/*
 		checkbox to go to my timeline
@@ -86,6 +84,65 @@ StartAssistant.prototype.setup = function() {
 		this.model
 	);
 
+
+	/*
+		load users from prefs obj
+	*/
+	this.Users = new Users(sc.app.prefs);
+	this.Users.load();
+	
+	this.controller.setupWidget("accountList",
+		this.accountsAtts = {
+			itemTemplate: 'start/user-list-entry',
+			listTemplate: 'start/user-list-container',
+			dividerTemplate:'start/user-list-separator',
+			addItemLabel: $L('Add account…'),
+			swipeToDelete: true,
+			autoconfirmDelete: false,
+			reorderable: true
+		},
+		this.accountsModel = {
+			listTitle: $L('Accounts'),
+			items : this.Users.getAll()
+		}
+	);
+	
+    Mojo.Event.listen($('accountList'), Mojo.Event.listTap, function(e) {
+		console.dir(e.item);
+		// sc.app.twit.setCredentials(e.item.username, e.item.password);
+		sc.app.prefs.set('username', e.item.username);
+		sc.app.prefs.set('password', e.item.password);
+		
+		Mojo.Controller.stageController.pushScene('my-timeline');
+	});
+    Mojo.Event.listen($('accountList'), Mojo.Event.listAdd, function(e) {
+		// alert("This would show a popup for input of a username and password. When submitted, the popup would verify the credentials. If successful, it would be added to the list");
+		
+		thisA.controller.showDialog({
+	          template: 'start/new-account-dialog',
+	          assistant: new NewAccountDialogAssistant(thisA),
+	          preventCancel:false
+	    });
+	 
+	});
+    Mojo.Event.listen($('accountList'), Mojo.Event.listChange, function(e) {
+		// if(e.originalEvent.target.tagName == "INPUT") {
+		// 	e.item.data = e.originalEvent.target.value;
+		// 	console.log("Change called.  Word is now: "+e.item.data);
+		// }
+		// Mojo.Controller.notYetImplemented();
+	});
+    Mojo.Event.listen($('accountList'), Mojo.Event.listDelete, function(e) {
+		thisA.accountsModel.items.splice(thisA.accountsModel.items.indexOf(e.item), 1);
+		thisA.Users.setAll(thisA.accountsModel.items);
+	});
+    Mojo.Event.listen($('accountList'), Mojo.Event.listReorder, function(e) {
+		thisA.accountsModel.items.splice(thisA.accountsModel.items.indexOf(e.item), 1);
+		thisA.accountsModel.items.splice(e.toIndex, 0, e.item);
+		thisA.Users.setAll(thisA.accountsModel.items);
+	});
+	
+	
 	
 	
 	/*
@@ -125,6 +182,10 @@ StartAssistant.prototype.setup = function() {
 	
 	
 	Mojo.Event.listen($('login-button'), Mojo.Event.tap, this.handleLogin.bind(this));
+	this.controller.listen('goToMyTimelineCheckbox', Mojo.Event.propertyChange, function() {
+		var state = thisA.model['always-go-to-my-timeline'];
+		sc.app.prefs.set('always-go-to-my-timeline', state);
+	});
 	Mojo.Event.listen($('search-button'), Mojo.Event.tap, this.handleSearch.bind(this));
 	
 	/*
@@ -152,10 +213,7 @@ StartAssistant.prototype.setup = function() {
 	
 
 	
-	this.controller.listen('goToMyTimelineCheckbox', Mojo.Event.propertyChange, function() {
-		var state = thisA.model['always-go-to-my-timeline'];
-		sc.app.prefs.set('always-go-to-my-timeline', state);
-	});
+
 	
 }
 
@@ -179,44 +237,7 @@ StartAssistant.prototype.activate = function(argFromPusher) {
 	});
 
 
-	/*
-		What to do if we succeed
-		Note that we pass the assistant object as data into the closure
-	*/				
-	jQuery().bind('verify_credentials_succeeded', {'thisAssistant':this}, function(e) {
-		sc.app.twit.setCredentials(e.data.thisAssistant.model.username, e.data.thisAssistant.model.password);
 
-		sc.app.prefs.set('username', e.data.thisAssistant.model.username);
-		sc.app.prefs.set('password', e.data.thisAssistant.model.password);
-		
-		
-		sc.app.lastFriendsTimelineId = 1;
-		
-		e.data.thisAssistant.hideInlineSpinner('#spinner-container');
-		
-		/*
-			@todo Save username and password as encrypted vals
-		*/
-
-		// Mojo.Controller.stageController.swapScene("my-timeline", this);
-		// findAndSwapScene("my-timeline", this);
-		Mojo.Controller.stageController.pushScene('my-timeline');
-	});
-	
-	/*
-		What to do if we fail
-	*/
-	jQuery().bind('verify_credentials_failed', {'thisAssistant':this}, function(e) {
-		
-		
-		/*
-			If we return to this scene from another
-			and fail the login, e.data.thisAssistant will not have
-			its controller property. WHY?
-		*/
-		
-		e.data.thisAssistant.stopInlineSpinner('#spinner-container', 'Login failed!');
-	});
 	
 }
 
@@ -359,6 +380,131 @@ StartAssistant.prototype.propertyChanged = function(event) {
 
 
 
+/*
+	Small controller class used for the new account dialog
+*/
+var NewAccountDialogAssistant = Class.create({
+	
+	initialize: function(sceneAssistant) {
+		this.sceneAssistant = sceneAssistant;
+		this.controller = sceneAssistant.controller;
+	},
+	
+	setup : function(widget) {
+		this.widget = widget;
+		
+		$('saveAccountButton').addEventListener(
+							Mojo.Event.tap,
+							this.handleVerifyPassword.bindAsEventListener(this)
+						);
+		$('cancelSaveAccountButton').addEventListener(
+							Mojo.Event.tap,
+							this.handleCancel.bindAsEventListener(this)
+						);
+		
+		
+		this.newAccountModel = {
+			'username':false,
+			'password':false,
+		};
 
 
+		/*
+			Username
+		*/
+		this.controller.setupWidget('new-username',
+			this.atts = {
+				// hintText: 'enter username',
+				enterSubmits: true,
+				modelProperty:'username', 
+				changeOnKeyPress: true,
+				focusMode:	Mojo.Widget.focusSelectMode,
+				multiline:		false,
+			},
+			this.newAccountModel
+		);
 
+		/*
+			Password
+		*/
+		this.controller.setupWidget('new-password',
+		    this.atts = {
+		        // hintText: 'enter password',
+		        label: "password",
+				enterSubmits: true,
+				modelProperty:		'password',
+				changeOnKeyPress: true, 
+				focusMode:		Mojo.Widget.focusSelectMode,
+				multiline:		false,
+			},
+			this.newAccountModel
+		    );
+		
+	},
+	
+	
+	activate: function() {
+		var thisA = this;
+		/*
+			What to do if we succeed
+			Note that we pass the assistant object as data into the closure
+		*/				
+		jQuery().bind('verify_credentials_succeeded', function(e) {
+			thisA.sceneAssistant.hideInlineSpinner('#new-account-spinner-container');
+			
+			var newItem = {
+							id:thisA.newAccountModel.username,
+							username:thisA.newAccountModel.username,
+							password:thisA.newAccountModel.password,
+							type:'twitter'
+						};
+			thisA.sceneAssistant.accountsModel.items.push(newItem);
+			thisA.sceneAssistant.Users.setAll(thisA.sceneAssistant.accountsModel.items);
+			$('accountList').mojo.noticeAddedItems(thisA.sceneAssistant.accountsModel.items.length, [newItem]);
+			thisA.widget.mojo.close();
+		});
+
+		/*
+			What to do if we fail
+		*/
+		jQuery().bind('verify_credentials_failed', function(e) {
+
+
+			/*
+				If we return to this scene from another
+				and fail the login, e.data.thisAssistant will not have
+				its controller property. WHY?
+			*/
+
+			thisA.sceneAssistant.stopInlineSpinner('#new-account-spinner-container', 'Verification failed!');
+		});
+	},
+	
+	
+	deactivate: function() {
+		jQuery().unbind('verify_credentials_succeeded');
+		jQuery().unbind('verify_credentials_failed');
+	},
+	
+	
+	
+	
+	
+	handleCancel: function() {
+		this.widget.mojo.close();
+	},
+	
+	handleVerifyPassword: function() {
+		/*
+			Turn on the spinner and set the message
+		*/
+		this.sceneAssistant.showInlineSpinner('#new-account-spinner-container', 'Verifying credentials');
+		
+		/*
+			now verify credentials against the Twitter API
+		*/
+		sc.app.twit.verifyCredentials(this.newAccountModel.username, this.newAccountModel.password);
+	}
+	
+	
+});

@@ -2,6 +2,7 @@ var default_preferences = {
 	
 	'username':false,
 	'password':false,
+	'users':[], // an array of user objects with properties { 'id', 'username', 'password', 'type' }	
 	'always-go-to-my-timeline':false,
 
     'use-markdown': true,
@@ -22,12 +23,12 @@ var default_preferences = {
 
     'url-shortener': 'isgd',
 
-    'file-uploader': 'twitpic',
+    'image-uploader': 'twitpic',
 
     'services-twitpic-sharepassword': false,
 
-    'services-pingfm-userappkey': '',
-    'services-pingfm-enabled': false,
+    'services-pingfm-userappkey':  '',
+    'services-pingfm-enabled':     false,
     'services-pingfm-sendreplies': false,
     'services-pingfm-updatetype': 'default',
 

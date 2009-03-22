@@ -17,8 +17,15 @@
 	<div id="login-section" style="display:none">
 	
 		<button class="palm-button secondary" id="back-login-button">&laquo; Back</button>
-	
-		<div class="palm-group">
+		
+		<div id="accountList" name="userlist" x-mojo-element='List'></div>
+		<div style="overflow:auto;" class="checkbox-container">
+			<div x-mojo-element="CheckBox" id="goToMyTimelineCheckbox"></div>
+			<div class="checkbox-label">Always go to My Timeline</div>
+		</div>
+		
+
+		<div class="palm-group palm-group-spaz" style="display:none">
 			<div class="palm-group-title" id="login-toggle" x-mojo-loc=''>Log-in To My Account</div>
 			<div class="palm-list" id="login-panel">
 				<div class="palm-row single">
@@ -50,10 +57,10 @@
 
 		   		<div class="palm-row single">
 					<button class="palm-button" id="login-button">Login</button>
-					<div style="overflow:auto; text-align:center">
+					<!-- <div style="overflow:auto; text-align:center">
 						<div x-mojo-element="CheckBox" id="goToMyTimelineCheckbox"></div>
 						<div class="checkbox-label">Always go to My Timeline</div>
-					</div>
+					</div> -->
 					<div id="spinner-container"></div>
 				</div>
 
@@ -68,7 +75,7 @@
 
 		<button class="palm-button secondary" id="back-search-button">&laquo; Back</button>
 	
-		<div class="palm-group">
+		<div class="palm-group palm-group-spaz">
 			<div class="palm-group-title" id="search-toggle" x-mojo-loc=''>Search Twitter</div>
 			<div class="palm-list" id="search-panel">
 		   		<div class="palm-row single">
@@ -87,7 +94,7 @@
 				</div>
 			</div>
 		</div>	
-		<div class="palm-group">
+		<div class="palm-group palm-group-spaz">
 			<div class="palm-group-title" x-mojo-loc=''>Current Trends on Twitter</div>
 			<div class="palm-list" id="trends-list">
 			</div>

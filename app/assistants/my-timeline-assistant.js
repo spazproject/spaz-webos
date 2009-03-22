@@ -293,7 +293,7 @@ MyTimelineAssistant.prototype.saveTimelineHTML = function() {
 	*/
 	var timeline_html = '';
 	
-	jQuery('#my-timeline div.timeline-entry').each(function() {
+	jQuery('#my-timeline div.timeline-entry').show().each(function() {
 		if (this.outerHTML) {
 			timeline_html += this.outerHTML;
 		}

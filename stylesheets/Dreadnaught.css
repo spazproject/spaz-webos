@@ -49,7 +49,7 @@ a:link {
 }
 
 
-.palm-group {
+.palm-group-spaz {
 	-webkit-border-image: url(../images/theme/palm-group.png) 40 18 14 18;	
 }
 
@@ -252,11 +252,18 @@ div.timeline-entry {
 /*			color:#000;*/
 		}
 	
-	.checkbox-label {
-		margin:18px 0 0 0;
-		font-size:12pt;
-		color:#FFF;
+	.add-item .title {
+		color:#FFFFEE;
 	}
+	
+	.checkbox-container {
+		margin:5px 10px;
+	}
+		.checkbox-label {
+			margin:7px 0 0 0;
+			font-size:12pt;
+			color:#FFF;
+		}
 
 	#trends-list {}
 	#trends-list>li {
