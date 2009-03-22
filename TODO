@@ -15,37 +15,25 @@
 * User Detail
 	* Need to listen for Ajax errors on user data
 	* Need to listen for Ajax errors on user timeline
-	* grab data from /users/username.json (done)
 	* Data timeline should only load on request
-	* parse links, usernames, hashtags
-	* make buttons functional
-		* View recent posts (DONE)
-			* change template for this view and display inline (DONE)
-		* Search for user (DONE)
-		* send reply (DONE)
-		* send dm (DONE)
-		* Follow (DONE)
-		* block (DONE -- but API doesn't tell us blocking state, so blocked users will show "unblocked")
+	* parse links, usernames, hashtags in description
 * Search
 	* Need to listen for Ajax errors
 * Preferences
 	* create scene
 	* add to AppMenu
 * Notifications
-	* banner on new posts
 	* Link banners back to scene that opened them
 	* raise notifications from search
 * Posting
 	* Need to listen for Ajax errors in posting
 	* posting a dm returns the last "regular" message and prepends it to the timeline (even if dupe)
-	* can still send if over char limit
+	* can still send if over char limit (disable post button!)
 
 SpazTwit
 	* Add generic event raised on Ajax errors
 	* Make sure all methods raise specific error events
 	* add event for "no new messages" so view can do any necessary updates
-	* do follow/unfollow calls
-	* do block calls
 	* complete min_age limits on refresh, and "force refresh" functionality
 
 

@@ -420,6 +420,7 @@ scene_helpers.addCommonSceneMethods = function(assistant) {
 	assistant.showPostPanel = function(event) {
 		jQuery('#palm-dialog-box.post-panel', this.controller.getSceneScroller()).fadeIn('fast');
 		jQuery('#post-panel-textarea', this.controller.getSceneScroller()).focus();
+		jQuery('#post-send-button', this.controller.getSceneScroller()).attr('disabled', '');
 	}
 	
 	/**
@@ -433,12 +434,13 @@ scene_helpers.addCommonSceneMethods = function(assistant) {
 			/*
 				disable post send button
 			*/
-			//post-send-button
+			jQuery('#post-send-button', this.controller.getSceneScroller()).attr('disabled', 'disabled');
 		} else {
 			jQuery('#post-panel-counter', this.controller.getSceneScroller()).removeClass('over-limit');
 			/*
 				enable post send button
 			*/
+			jQuery('#post-send-button', this.controller.getSceneScroller()).attr('disabled', '');
 		}
 	};
 
