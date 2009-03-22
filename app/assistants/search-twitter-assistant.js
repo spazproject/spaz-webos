@@ -117,6 +117,7 @@ SearchTwitterAssistant.prototype.setup = function() {
 					{},
 					// {label:$L('Home'),        iconPath:'images/theme/menu-icon-home.png', command:'home', shortcut:'H'},
 					{label:$L('My Timeline'), icon:'conversation', command:'my-timeline', shortcut:'T'},
+					{label:$L('Favorites'), iconPath:'images/theme/menu-icon-favorite.png', command:'favorites', shortcut:'F'},
 					{label:$L('Search'),      icon:'search', command:'search', shortcut:'S', disabled:true},
 					// {label:$L('Followers'),   icon:'remove-vip', command:'followers', shortcut:'L'},
 					{}

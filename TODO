@@ -4,9 +4,7 @@
 	* Combined timeline
 		* dupes still seem to get through in some cases on combined timeline (posting new msgs)
 	* Need to listen for Ajax errors
-	* Timeline is sometimes out of order when loading some from cache (replies and DMs). Need to resort whole list on view side, prob
-* Favorites Timeline
-	* Need to create
+	* Timeline is sometimes out of order when loading some from cache (replies and DMs). Need to resort whole list on view side, prob (maybe happens when DMs and replies drop off bottom of stack)
 * Message Detail
 	* Need to listen for Ajax errors
 	* reveal IRT instead of just linking to it
@@ -17,6 +15,7 @@
 	* Need to listen for Ajax errors on user timeline
 	* Data timeline should only load on request
 	* parse links, usernames, hashtags in description
+	* add ability to view user's favorites
 * Search
 	* Need to listen for Ajax errors
 * Preferences

@@ -148,6 +148,9 @@ scene_helpers.addCommonSceneMethods = function(assistant) {
 				case 'my-timeline':
 					findAndSwapScene("my-timeline", this);
 					break;
+				case 'favorites':
+					findAndSwapScene("favorites", this);
+					break;
 				case 'search':
 					findAndSwapScene("search-twitter", this);
 					break;
