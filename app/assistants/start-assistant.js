@@ -233,7 +233,7 @@ StartAssistant.prototype.activate = function(argFromPusher) {
 
 	jQuery('.trend-item').live(Mojo.Event.tap, function() {
 		var term = jQuery(this).attr('data-searchterm');
-		thisA.searchFor(term);
+		thisA.searchFor(term, 'lightweight');
 	});
 
 
@@ -364,12 +364,9 @@ StartAssistant.prototype.handleLogin = function(event) {
 	
 }
 
-
 StartAssistant.prototype.handleSearch = function(event) {
 	if (this.model && this.model.search) {
-		Mojo.Controller.stageController.pushScene("search-twitter", {
-			searchterm:this.model.search
-		});
+		this.searchFor(this.model.search, 'lightweight');
 	}
 }
 

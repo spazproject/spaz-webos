@@ -33,7 +33,7 @@ MyTimelineAssistant.prototype.setup = function() {
 		viewMenuItems: [
 			{
 				items: [
-					{label:$L('My Timeline'), command:'scroll-top'},
+					{label: sc.app.prefs.get('username'), command:'scroll-top'},
 					{label: $L('Filter timeline'), iconPath:'images/theme/menu-icon-triangle-down.png', submenu:'filter-menu'},
 				]
 			},

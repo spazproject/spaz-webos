@@ -305,7 +305,7 @@ scene_helpers.addCommonSceneMethods = function(assistant) {
 		
 		jQuery(scroll_el).append("<div id='post-popup-container'></div>");
 		
-		var itemhtml = Mojo.View.render({object: null, template: 'shared/post-popup'});
+		var itemhtml = Mojo.View.render({object: {'username':sc.app.prefs.get('username')}, template: 'shared/post-popup'});
 		jQuery('#post-popup-container', scroll_el).html(itemhtml);
 		
 		Mojo.Event.listen($('post-send-button'), Mojo.Event.tap, this.sendPost.bind(this));
@@ -689,10 +689,16 @@ scene_helpers.addCommonSceneMethods = function(assistant) {
 	/**
 	 * 
 	 */
-	assistant.searchFor = function(terms) {
+	assistant.searchFor = function(terms, scenetype) {
 		// findAndSwapScene("search-twitter", {
+		var lightweight = false;
+		if (scenetype === 'lightweight') {
+			lightweight = true;
+		}
+			
 		Mojo.Controller.stageController.pushScene("search-twitter", {
-			'searchterm': terms
+			'searchterm': terms,
+			'lightweight': lightweight
 		});
 	}
 
