@@ -108,7 +108,6 @@ StartAssistant.prototype.setup = function() {
 	);
 	
     Mojo.Event.listen($('accountList'), Mojo.Event.listTap, function(e) {
-		console.dir(e.item);
 		// sc.app.twit.setCredentials(e.item.username, e.item.password);
 		sc.app.prefs.set('username', e.item.username);
 		sc.app.prefs.set('password', e.item.password);
