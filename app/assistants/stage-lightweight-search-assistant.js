@@ -12,14 +12,14 @@ StageAssistant.prototype.setup = function() {
 	var thisSA = this;
 	jQuery().bind('spazprefs_loaded', function() {
 		
-		var username = sc.app.prefs.get('username');
-		var password = sc.app.prefs.get('password');
+		// var username = sc.app.prefs.get('username');
+		// var password = sc.app.prefs.get('password');
 
 		sc.app.twit = new scTwit();
 
-		if (username && password) {
-			sc.app.twit.setCredentials(username, password);
-		}
+		// if (username && password) {
+		// 	sc.app.twit.setCredentials(username, password);
+		// }
 		
 		// if (thisSA.firstload) {
 		// 	dump('FIRSTLOAD ----------------------');

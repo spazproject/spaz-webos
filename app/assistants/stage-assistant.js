@@ -9,9 +9,17 @@ StageAssistant.prototype.setup = function() {
 	// this.controller.pushScene('search-twitter', {searchterm:'funkatron'});
 	// this.controller.pushScene('user-detail', 'poop');
 	
+	/*
+		model for saving Tweets to Depot
+	*/
+	sc.app.Tweets = new Tweets();
 	
 	sc.app.search_cards = [];
 	sc.app.new_search_card = 0;
+	
+	sc.app.username = null;
+	sc.app.password = null;
+	
 	
 	/*
 		We can't go to the login screen until the 
@@ -20,14 +28,14 @@ StageAssistant.prototype.setup = function() {
 	var thisSA = this;
 	jQuery().bind('spazprefs_loaded', function() {
 		
-		var username = sc.app.prefs.get('username');
-		var password = sc.app.prefs.get('password');
+		// var username = sc.app.prefs.get('username');
+		// var password = sc.app.prefs.get('password');
 	
 		sc.app.twit = new scTwit();
 	
-		if (username && password) {
-			sc.app.twit.setCredentials(username, password);
-		}
+		// if (username && password) {
+		// 	sc.app.twit.setCredentials(username, password);
+		// }
 		
 	
 		if (thisSA.firstload) {

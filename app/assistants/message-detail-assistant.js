@@ -13,39 +13,65 @@ function MessageDetailAssistant(argFromPusher) {
 		*/
 		this.status_id  = argFromPusher;
 	} else {
-		this.statusobj = argFromPusher.statusobj;
+		this.status_obj = argFromPusher.status_obj;
+		this.status_id  = argFromPusher.status_id,
+		this.isdm  = argFromPusher.isdm
 	}
 }
 
 MessageDetailAssistant.prototype.setup = function() {
 
+	var thisA = this;
 
 	// alert('MessageDetailAssistant.prototype.setup');
 	
 	this.initAppMenu();
 	
-	this.setupCommonMenus({
-		viewMenuItems: [
-			{
-				items: [
-					{label:$L('Back'),        icon:'back', command:'back'},
-					{label:$L('Message Detail'), command:'scroll-top'}
-				]
-			},
-			{
-				items: [
-					{label:$L('Compose'),  icon:'compose', command:'compose', shortcut:'N'},
-				]
-			}
+	this.initTwit();
+	
+	if (sc.app.username && sc.app.password) {
+		this.setupCommonMenus({
+			viewMenuItems: [
+				{
+					items: [
+						{label:$L('Back'),        icon:'back', command:'back'},
+						{label:$L('Message Detail'), command:'scroll-top'}
+					]
+				},
+				{
+					items: [
+						{label:$L('Compose'),  icon:'compose', command:'compose', shortcut:'N'},
+					]
+				}
 			
-		]
-	});
+			]
+		});
+	} else {
+		this.setupCommonMenus({
+			viewMenuItems: [
+				{
+					items: [
+						{label:$L('Back'),        icon:'back', command:'back'},
+						{label:$L('Message Detail'), command:'scroll-top'}
+					]
+				}
+			]
+		});	
+	};
 	
 	this.scroller = this.controller.getSceneScroller();
 	
 	
 	jQuery().bind('get_one_status_succeeded', { thisAssistant:this }, this.processStatusReturn);
 
+	jQuery().bind('get_one_status_failed', { thisAssistant:this }, function(e, error_obj) {
+		// error_obj.url
+		// error_obj.xhr
+		// error_obj.msg
+		Mojo.Controller.errorDialog($L("There was an error retrieving this status"));
+	});
+
+	
 
 
 	jQuery().bind('create_favorite_succeeded',  { thisAssistant:this }, function(e, statusobj) {
@@ -71,19 +97,36 @@ MessageDetailAssistant.prototype.setup = function() {
 }
 
 MessageDetailAssistant.prototype.activate = function(event) {
+	
+	var thisA = this;
+	
 	/* put in event handlers here that should only be in effect when this scene is active. For
 	   example, key handlers that are observing the document */
 	
-	sc.app.twit.getOne(this.status_id);	
-
+	if (this.isdm) {
+		if (this.status_obj){
+			jQuery().trigger('get_one_status_succeeded', [this.status_obj]);
+		} else {
+			Mojo.Controller.notYetImplemented();
+			return;
+		}
+	} else {
+		this.twit.getOne(this.status_id);
+	}
 	
-	var thisA = this; // for closures
 
 	jQuery('.in-reply-to-link', this.scroller).live(Mojo.Event.tap, function(e) {
 		var statusid = jQuery(this).attr('data-irt-status-id');
 		Mojo.Controller.stageController.pushScene('message-detail', statusid);
 	});
 
+
+
+	jQuery('#message-detail-image', this.scroller).live(Mojo.Event.tap, function(e) {
+		var userid = jQuery(this).attr('data-screen_name');
+		Mojo.Controller.stageController.pushScene('user-detail', userid);
+	});
+	
 	jQuery('#message-detail-action-reply', this.scroller).live(Mojo.Event.tap, function(e) {
 		var screen_name = jQuery(this).attr('data-screen_name');
 		var in_reply_to = jQuery(this).attr('data-status-id');
@@ -99,10 +142,10 @@ MessageDetailAssistant.prototype.activate = function(event) {
 		var status_id = parseInt(jQuery(this).attr('data-status-id'));		
 		if (jQuery(this).attr('data-favorited') === 'true') {
 			dump('UNFAVORITING');
-			sc.app.twit.unfavorite(status_id);
+			thisA.twit.unfavorite(status_id);
 		} else {
 			dump('FAVORITING');
-			sc.app.twit.favorite(status_id);
+			thisA.twit.favorite(status_id);
 		}
 	});
 	
@@ -138,6 +181,7 @@ MessageDetailAssistant.prototype.deactivate = function(event) {
 	// jQuery().unbind('get_one_status_succeeded', this.processStatusReturn);
 	
 	jQuery('.in-reply-to-link', this.scroller).die(Mojo.Event.tap);
+	jQuery('#message-detail-image', this.scroller).die(Mojo.Event.tap);
 	jQuery('#message-detail-action-reply', this.scroller).die(Mojo.Event.tap);
 	jQuery('#message-detail-action-retweet', this.scroller).die(Mojo.Event.tap);
 	jQuery('#message-detail-action-dm', this.scroller).die(Mojo.Event.tap);
@@ -166,9 +210,20 @@ MessageDetailAssistant.prototype.processStatusReturn = function(e, statusobj) {
 	
 	e.data.thisAssistant.statusobj.text = makeItemsClickable(e.data.thisAssistant.statusobj.text);
 	
+	/*
+		save this tweet to Depot
+	*/
+	// sc.app.Tweets.save(this);
+	
+	
 	// var itemhtml = Mojo.View.render({object:e.data.thisAssistant.statusobj, template: 'message-detail/message-detail'});
 	
-	var itemhtml = sc.app.tpl.parseTemplate('message-detail', e.data.thisAssistant.statusobj);
+	if (e.data.thisAssistant.isdm) {
+		var itemhtml = sc.app.tpl.parseTemplate('message-detail-dm', e.data.thisAssistant.statusobj);
+	} else {
+		var itemhtml = sc.app.tpl.parseTemplate('message-detail', e.data.thisAssistant.statusobj);
+	}
+	
 	
 	jQuery('#message-detail').html(itemhtml);
 	

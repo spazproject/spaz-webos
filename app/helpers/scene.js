@@ -20,11 +20,10 @@ scene_helpers.addCommonSceneMethods = function(assistant) {
 			visible: true,
 			
 			items: [
-				Mojo.Menu.editItem,
 				{ label: $L('About Spaz'),		command: 'appmenu-about' },
-				Mojo.Menu.helpItem,
-				Mojo.Menu.prefsItem,
-				{ label: $L('Log-in'),			command: 'appmenu-login' },
+				Mojo.Menu.editItem,
+				{ label: $L('Preferences...'),	command:Mojo.Menu.prefsCmd },
+				{ label: $L('Help...'),			command:Mojo.Menu.helpCmd },
 				{ label: $L('New Search Card'),	command: 'new-search-card' }
 			]
 		};
@@ -127,6 +126,9 @@ scene_helpers.addCommonSceneMethods = function(assistant) {
 	 *  
 	 */
 	assistant.handleCommand = function(event){
+		
+		dump(event.command);
+		
 		if (event.type == Mojo.Event.command) {
 			switch (event.command) {
 				/*
@@ -164,8 +166,14 @@ scene_helpers.addCommonSceneMethods = function(assistant) {
 				case 'followers':
 					findAndSwapScene("manage-followers", this);
 					break;
-				case 'preferences':
-					findAndSwapScene("preferences", this);
+
+
+				case Mojo.Menu.prefsCmd:
+					Mojo.Controller.stageController.pushScene("preferences", this);
+					break;
+				case Mojo.Menu.helpCmd:
+					Mojo.Controller.notYetImplemented();
+					// findAndSwapScene("preferences", this);
 					break;
 
 				/*
@@ -308,7 +316,7 @@ scene_helpers.addCommonSceneMethods = function(assistant) {
 		
 		jQuery(scroll_el).append("<div id='post-popup-container'></div>");
 		
-		var itemhtml = Mojo.View.render({object: {'username':sc.app.prefs.get('username')}, template: 'shared/post-popup'});
+		var itemhtml = Mojo.View.render({object: {'username':sc.app.username}, template: 'shared/post-popup'});
 		jQuery('#post-popup-container', scroll_el).html(itemhtml);
 		
 		Mojo.Event.listen($('post-send-button'), Mojo.Event.tap, this.sendPost.bind(this));
@@ -354,13 +362,16 @@ scene_helpers.addCommonSceneMethods = function(assistant) {
 	
 	
 	assistant.initTwit = function() {
-		var username = sc.app.prefs.get('username');
-		var password = sc.app.prefs.get('password');
+		// var username = sc.app.prefs.get('username');
+		// var password = sc.app.prefs.get('password');
 
 		this.twit = new scTwit();
 
-		if (username && password) {
-			this.twit.setCredentials(username, password);
+		if (sc.app.username && sc.app.password) {
+			// alert('seetting credentials for '+sc.app.username);
+			this.twit.setCredentials(sc.app.username, sc.app.password);
+		} else {
+			// alert('NOT seetting credentials for!');
 		}
 	};
 	
@@ -462,9 +473,9 @@ scene_helpers.addCommonSceneMethods = function(assistant) {
 			var in_reply_to = parseInt(jQuery('#post-panel-irt-message', this.controller.getSceneScroller()).attr('data-status-id'));
 			
 			if (in_reply_to > 0) {
-				sc.app.twit.update(status, null, in_reply_to);
+				this.twit.update(status, null, in_reply_to);
 			} else {
-				sc.app.twit.update(status, null, null);
+				this.twit.update(status, null, null);
 			}
 			
 		}
@@ -481,6 +492,12 @@ scene_helpers.addCommonSceneMethods = function(assistant) {
 		}
 
 		data.text = makeItemsClickable(data.text);
+		
+		/*
+			save this tweet to Depot
+		*/
+		// sc.app.Tweets.save(data);
+		
 		dump(data);
 
 		var itemhtml = Mojo.View.render({object: data, template: 'shared/tweet'});
@@ -538,8 +555,9 @@ scene_helpers.addCommonSceneMethods = function(assistant) {
 		this.hideInlineSpinner('#post-panel-spinner-container');			
 		this.hidePostPanel(event);
 		this.clearPostPanel(event);
-		Mojo.Controller.errorDialog("Twitter never told us if your post was successful. Maybe it was, maybe it wasn't!");
+		Mojo.Controller.errorDialog($L("Twitter never told us if your post was successful. Maybe it was, maybe it wasn't!"));
 	}
+	
 	
 	
 	/**
@@ -695,9 +713,16 @@ scene_helpers.addCommonSceneMethods = function(assistant) {
 	 * 
 	 */
 	assistant.searchFor = function(terms, scenetype) {
-		// findAndSwapScene("search-twitter", {
+
 		var lightweight = false;
 		if (scenetype === 'lightweight') {
+			lightweight = true;
+		}
+		
+		/*
+			if username and pass aren't set, use lightweight version
+		*/
+		if (!(sc.app.username && sc.app.password)) {
 			lightweight = true;
 		}
 			

@@ -6,7 +6,27 @@ function StartAssistant(argFromPusher) {
 	
 	if (argFromPusher && argFromPusher.firstload) {
 		if (sc.app.prefs.get('always-go-to-my-timeline')) {
-			Mojo.Controller.stageController.pushScene('my-timeline');	
+			
+			/*
+				load users from prefs obj
+			*/
+			this.Users = new Users(sc.app.prefs);
+			this.Users.load();
+			
+			/*
+				get last user
+			*/
+			var last_user = sc.app.prefs.get('last_username');
+			var last_user_obj = this.Users.getUser(last_user);
+			if (last_user_obj !== false) {
+				sc.app.username = last_user_obj.username;
+				sc.app.password = last_user_obj.password;
+				Mojo.Controller.stageController.pushScene('my-timeline');
+			} else {
+				dump("Tried to load last_user_object, but failed.");
+			}
+			
+			
 		}
 	}
 	
@@ -109,9 +129,11 @@ StartAssistant.prototype.setup = function() {
 	
     Mojo.Event.listen($('accountList'), Mojo.Event.listTap, function(e) {
 		// sc.app.twit.setCredentials(e.item.username, e.item.password);
-		sc.app.prefs.set('username', e.item.username);
-		sc.app.prefs.set('password', e.item.password);
+		sc.app.username = e.item.username;
+		sc.app.password = e.item.password;
 		
+		sc.app.prefs.set('last_username', e.item.username);
+				
 		Mojo.Controller.stageController.pushScene('my-timeline');
 	});
     Mojo.Event.listen($('accountList'), Mojo.Event.listAdd, function(e) {

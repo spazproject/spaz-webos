@@ -59,6 +59,22 @@ FavoritesAssistant.prototype.activate = function(event) {
 
 	var thisA = this; // for closures below
 	
+	jQuery().bind('error_favorites_timeline_data', { thisAssistant:this }, function(e, error_obj) {
+		// error_obj.url
+		// error_obj.xhr
+		// error_obj.msg
+		
+		Mojo.Controller.errorDialog($L("There was an error retrieving your favorites"));
+		
+		/*
+			Update relative dates
+		*/
+		sch.updateRelativeTimes('#favorites-timeline>div.timeline-entry>.status>.meta>.date', 'data-created_at');
+		e.data.thisAssistant.hideInlineSpinner('#favorites-timeline');
+	});
+	
+	
+	
 	jQuery().bind('new_favorites_timeline_data', function(e, tweets) {
 		
 		/*
@@ -73,7 +89,6 @@ FavoritesAssistant.prototype.activate = function(event) {
 		jQuery.each( rendertweets, function() {
 			this.text = makeItemsClickable(this.text);
 			
-			// var itemhtml = Mojo.View.render({object: this, template: 'search-twitter/search-item'});
 			var itemhtml = sc.app.tpl.parseTemplate('tweet', this);
 			
 			/*
@@ -87,6 +102,12 @@ FavoritesAssistant.prototype.activate = function(event) {
 			jqitem.data('item', this);
 			
 			/*
+				save this tweet to Depot
+			*/
+			// sc.app.Tweets.save(this);
+			
+			
+			/*
 				put item on timeline
 			*/
 			jQuery('#favorites-timeline').prepend(jqitem);
@@ -97,7 +118,6 @@ FavoritesAssistant.prototype.activate = function(event) {
 			Update relative dates
 		*/
 		sch.updateRelativeTimes('#favorites-timeline>div.timeline-entry>.status>.meta>.date', 'data-created_at');
-		// e.data.thisAssistant.spinnerOff();
 		thisA.hideInlineSpinner('#favorites-timeline');
 		
 	});
@@ -124,19 +144,7 @@ FavoritesAssistant.prototype.activate = function(event) {
 		var statusid = jQuery(this).attr('data-status-id');
 		Mojo.Controller.stageController.pushScene('message-detail', statusid);
 	});
-	
-	jQuery('#search-twitter-textfield', this.scroller).bind('focus', function(e) {
-		jQuery('#submit-search-button').fadeIn('fast');
-	});
 
-	jQuery('#search-twitter-textfield', this.scroller).bind('blur', function(e) {
-		jQuery('#submit-search-button').fadeOut('fast');
-	});
-	
-	
-	jQuery().bind('search_twitter_refresh', { thisAssistant:this }, function(e) {
-		e.data.thisAssistant.startRefresher();
-	});
 	
 	
 	this.refresh();
@@ -146,8 +154,18 @@ FavoritesAssistant.prototype.activate = function(event) {
 
 
 FavoritesAssistant.prototype.deactivate = function(event) {
+	
+
 	/* remove any event handlers you added in activate and do any other cleanup that should happen before
 	   this scene is popped or another scene is pushed on top */
+	
+	jQuery().unbind('new_favorites_timeline_data');
+	jQuery('div.timeline-entry>.user', this.scroller).die(Mojo.Event.tap);
+	jQuery('.username.clickable', this.scroller).die(Mojo.Event.tap);
+	jQuery('.hashtag.clickable', this.scroller).die(Mojo.Event.tap);
+	jQuery('div.timeline-entry>.status>.meta', this.scroller).die(Mojo.Event.tap);
+	
+	
 }
 
 FavoritesAssistant.prototype.cleanup = function(event) {

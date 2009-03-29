@@ -1,3 +1,33 @@
+## APRIL 15 TASKS
+* Login/splash
+	* Need to listen for Ajax errors on trends
+* My Timeline
+	* Combined timeline
+		* dupes still seem to get through in some cases on combined timeline (posting new msgs)
+	* Need to listen for Ajax errors
+	* Should set up JSON caching
+* Message Detail
+	* Need to listen for Ajax errors
+* User Detail
+	* Need to listen for Ajax errors on user data
+	* Need to listen for Ajax errors on user timeline
+	* parse links, usernames, hashtags in description
+* Search
+	* Need to listen for Ajax errors
+* Preferences
+	* Finish pref UI & code for Refresh rate
+* Notifications
+	* Link banners back to scene that opened them
+	* raise notifications from search
+* Posting
+	* Need to listen for Ajax errors in posting
+	
+
+SpazTwit
+	* Need to be able to lookup and return object for spcific tweet
+
+
+
 * Login/splash
 	* Need to listen for Ajax errors on trends
 * My Timeline
@@ -5,6 +35,7 @@
 		* dupes still seem to get through in some cases on combined timeline (posting new msgs)
 	* Need to listen for Ajax errors
 	* Timeline is sometimes out of order when loading some from cache (replies and DMs). Need to resort whole list on view side, prob (maybe happens when DMs and replies drop off bottom of stack)
+	* Timeline HTML caching seems to prevent some messages from loading. Perhaps an issue with how since_id is determined?
 * Message Detail
 	* Need to listen for Ajax errors
 	* reveal IRT instead of just linking to it
@@ -28,12 +59,14 @@
 	* Need to listen for Ajax errors in posting
 	* posting a dm returns the last "regular" message and prepends it to the timeline (even if dupe)
 	* can still send if over char limit (disable post button!)
+	
 
 SpazTwit
 	* Add generic event raised on Ajax errors
 	* Make sure all methods raise specific error events
 	* add event for "no new messages" so view can do any necessary updates
 	* complete min_age limits on refresh, and "force refresh" functionality
+	* Need to be able to lookup and return object for spcific tweet
 
 
 ## UPCOMING FEATURES

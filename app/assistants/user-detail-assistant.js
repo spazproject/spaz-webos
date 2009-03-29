@@ -24,22 +24,40 @@ UserDetailAssistant.prototype.setup = function() {
 	
 	this.initAppMenu();
 	
-	this.setupCommonMenus({
-		viewMenuItems: [
-			{
-				items: [
-					{label:$L('Back'),        icon:'back', command:'back'},
-					{label:$L('User Detail'), command:'scroll-top'}
-				]
-			},
-			{
-				items: [
-					{label:$L('Compose'),  icon:'compose', command:'compose', shortcut:'N'},
-				]
-			}
-			
-		],
-	});
+	this.initTwit();
+	
+	
+	
+	if (sc.app.username && sc.app.password) {
+		this.setupCommonMenus({
+			viewMenuItems: [
+				{
+					items: [
+						{label:$L('Back'),        icon:'back', command:'back'},
+						{label:$L('User Detail'), command:'scroll-top'}
+					]
+				},
+				{
+					items: [
+						{label:$L('Compose'),  icon:'compose', command:'compose', shortcut:'N'},
+					]
+				}
+
+			],
+		});		
+	} else {
+		this.setupCommonMenus({
+			viewMenuItems: [
+				{
+					items: [
+						{label:$L('Back'),        icon:'back', command:'back'},
+						{label:$L('User Detail'), command:'scroll-top'}
+					]
+				}
+			]
+		});	
+	};
+	
 
 	this.scroller = this.controller.getSceneScroller();
 	
@@ -62,6 +80,12 @@ UserDetailAssistant.prototype.setup = function() {
 
 		jQuery.each( rendertweets, function() {
 			this.text = makeItemsClickable(this.text);
+			
+			/*
+				save this tweet to Depot
+			*/
+			// sc.app.Tweets.save(this);
+			
 		});
 
 		/*
@@ -81,34 +105,37 @@ UserDetailAssistant.prototype.setup = function() {
 	
 	
 	jQuery().bind('get_user_succeeded', function(e, userobj) {
-		this.userRetrieved = true;
-		this.userobj = userobj;
+		thisA.userRetrieved = true;
+		thisA.userobj = userobj;
 		
-		dump(this.userobj);
+		dump(thisA.userobj);
 		
 		// var itemhtml = Mojo.View.render({object:this.userobj, template: 'user-detail/user-detail'});
 		
-		var itemhtml = sc.app.tpl.parseTemplate('user-detail', this.userobj);
+		var itemhtml = sc.app.tpl.parseTemplate('user-detail', thisA.userobj);
 		jQuery('#user-detail').html(itemhtml);
 		
-		sc.app.twit.getUserTimeline(this.userobj.id);
+		thisA.twit.getUserTimeline(thisA.userobj.id);
 	});
 	
 	
-	jQuery().bind('get_user_failed', function(e, message) {
-		
+	jQuery().bind('get_user_failed', function(e, error_obj) {
+		// error_obj.url
+		// error_obj.xhr
+		// error_obj.msg
+		Mojo.Controller.errorDialog($L("There was an error retrieving this user"));
 	});
 	
 
 
 	jQuery().bind('create_friendship_succeeded',  { thisAssistant:this }, function(e, userobj) {
-		jQuery('#friend-user[data-screen_name="'+userobj.screen_name+'"]')
-			.attr('data-friended', 'true')
+		jQuery('#follow-user[data-screen_name="'+userobj.screen_name+'"]')
+			.attr('data-following', 'true')
 			.html('Remove user as friend');
 	});
 	jQuery().bind('destroy_friendship_succeeded', { thisAssistant:this }, function(e, userobj) {
-		jQuery('#friend-user[data-screen_name="'+userobj.screen_name+'"]')
-			.attr('data-friended', 'false')
+		jQuery('#follow-user[data-screen_name="'+userobj.screen_name+'"]')
+			.attr('data-following', 'false')
 			.html('Add user as friend');		
 	});
 
@@ -150,17 +177,17 @@ UserDetailAssistant.prototype.activate = function(event) {
 		dump(jQuery(this).attr('id'));
 		thisA.prepDirectMessage(jQuery(this).attr('data-screen_name'));
 	});
-	jQuery('#user-detail-actions #friend-user', this.scroller).live(Mojo.Event.tap, function(e) {
+	jQuery('#user-detail-actions #follow-user', this.scroller).live(Mojo.Event.tap, function(e) {
 		dump("Friend user:"+jQuery(this).attr('data-screen_name'));
 		// Mojo.Controller.notYetImplemented();
 		
 		var user_id = jQuery(this).attr('data-screen_name');
-		if (jQuery(this).attr('data-friended') === 'true') {
+		if (jQuery(this).attr('data-following') === 'true') {
 			dump('UN-FOLLOWING');
-			sc.app.twit.removeFriend(user_id);
+			thisA.twit.removeFriend(user_id);
 		} else {
 			dump('FOLLOWING');
-			sc.app.twit.addFriend(user_id);
+			thisA.twit.addFriend(user_id);
 		}
 		
 	});
@@ -176,14 +203,14 @@ UserDetailAssistant.prototype.activate = function(event) {
 		var user_id = jQuery(this).attr('data-screen_name');
 		if (jQuery(this).attr('data-blocked') === 'true') {
 			dump('UNBLOCKING:'+user_id);
-			sc.app.twit.unblock(user_id);
+			thisA.twit.unblock(user_id);
 		} else {
 			dump('BLOCKING:'+user_id);
-			sc.app.twit.block(user_id);
+			thisA.twit.block(user_id);
 		}
 
 		// dump('BLOCKING:'+user_id);
-		// sc.app.twit.block(user_id);
+		// thisA.twit.block(user_id);
 		
 	});
 
@@ -204,7 +231,7 @@ UserDetailAssistant.prototype.activate = function(event) {
 	});
 
 	if (!this.userRetrieved) {
-		sc.app.twit.getUser(this.userid);
+		this.twit.getUser(this.userid);
 	}
 	
 	this.addPostPopup();
@@ -231,7 +258,7 @@ UserDetailAssistant.prototype.deactivate = function(event) {
 	jQuery('#user-detail-actions #search-user', this.scroller).die(Mojo.Event.tap);
 	jQuery('#user-detail-actions #reply-to-user', this.scroller).die(Mojo.Event.tap);
 	jQuery('#user-detail-actions #dm-user', this.scroller).die(Mojo.Event.tap);
-	jQuery('#user-detail-actions #friend-user', this.scroller).die(Mojo.Event.tap);
+	jQuery('#user-detail-actions #follow-user', this.scroller).die(Mojo.Event.tap);
 	jQuery('#user-detail-actions #block-user', this.scroller).die(Mojo.Event.tap);
 	
 	jQuery('.username.clickable', this.scroller).die(Mojo.Event.tap);

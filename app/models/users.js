@@ -61,3 +61,18 @@ Users.prototype.getByType	= function(type) {
 };
 
 
+Users.prototype.getUser		= function(username) {
+	
+	for (i=0; i<this._users.length; i++) {
+		
+		if (this._users[i].username = username) {
+			return this._users[i];
+		}
+		
+	}
+	
+	return false;
+	
+}
+
+

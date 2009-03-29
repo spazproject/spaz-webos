@@ -5,11 +5,18 @@ function LoginAssistant(argFromPusher) {
 	   that needs the scene controller should be done in the setup function below. */
 	
 	if (argFromPusher && argFromPusher.firstload) {
+		
+		this.firstload = true;
+		
 		if (sc.app.prefs.get('always-go-to-my-timeline')) {
-			Mojo.Controller.stageController.pushScene('my-timeline');	
+			Mojo.Controller.stageController.pushScene('my-timeline', {
+				'firstload':true
+			});	
 		} else {
 			alert('NO always-go-to-my-timeline');
 		}
+	} else {
+		this.firstload = false;
 	}
 	
 	scene_helpers.addCommonSceneMethods(this);
@@ -210,7 +217,10 @@ LoginAssistant.prototype.activate = function(argFromPusher) {
 
 		// Mojo.Controller.stageController.swapScene("my-timeline", this);
 		// findAndSwapScene("my-timeline", this);
-		Mojo.Controller.stageController.pushScene('my-timeline');
+		this.firstload = false;
+		Mojo.Controller.stageController.pushScene('my-timeline', {
+			'firstload':e.data.thisAssistant.firstload
+		});
 	});
 	
 	/*

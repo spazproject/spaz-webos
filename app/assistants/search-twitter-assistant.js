@@ -15,16 +15,12 @@ function SearchTwitterAssistant(args) {
 		this.passedSearch = args.searchterm;
 	}
 	if (args && args.lightweight) {
-		
-		
 		/*
 			we may be in a new stage, so need to init prefs if they don't exist
 		*/
 		this.initPrefs();
 		
 		this.lightweight = true;
-		
-
 	}
 	
 	/*
@@ -48,14 +44,14 @@ SearchTwitterAssistant.prototype.initPrefs = function() {
 		var thisSA = this;
 		jQuery().bind('spazprefs_loaded', function() {
 
-			var username = sc.app.prefs.get('username');
-			var password = sc.app.prefs.get('password');
+			// var username = sc.app.prefs.get('username');
+			// var password = sc.app.prefs.get('password');
 
 			if (!sc.app.twit) {
 				sc.app.twit = new scTwit();
 
-				if (username && password) {
-					sc.app.twit.setCredentials(username, password);
+				if (sc.app.username && sc.app.password) {
+					sc.app.twit.setCredentials(sc.app.username, sc.app.password);
 				}
 			}		
 
@@ -84,7 +80,6 @@ SearchTwitterAssistant.prototype.setup = function() {
 				{
 					items: [
 						{label:$L('Search Twitter'), command:'scroll-top', 'class':"palm-header left"},
-						// {label: $L('Show me'), iconPath:'images/theme/menu-icon-triangle-down.png', submenu:'filter-menu'},
 					]
 				},
 				{
@@ -96,6 +91,7 @@ SearchTwitterAssistant.prototype.setup = function() {
 		});
 		
 	} else {
+		
 		this.setupCommonMenus({
 			viewMenuItems: [
 				{
@@ -148,6 +144,8 @@ SearchTwitterAssistant.prototype.setup = function() {
 		thisA.search.call(thisA, thisA.searchBoxModel.value);
 	});
 
+	// this.refresh();
+
 }
 
 
@@ -173,6 +171,22 @@ SearchTwitterAssistant.prototype.activate = function(event) {
 	
 	
 	var thisA = this; // for closures below
+	
+	jQuery().bind('error_search_timeline_data', { thisAssistant:this }, function(e, error_obj) {
+		// error_obj.url
+		// error_obj.xhr
+		// error_obj.msg
+		
+		Mojo.Controller.errorDialog($L("There was an error retrieving search results"));
+		
+		/*
+			Update relative dates
+		*/
+		sch.updateRelativeTimes('#search-timeline>div.timeline-entry>.status>.meta>.date', 'data-created_at');
+		// e.data.thisAssistant.spinnerOff();
+		e.data.thisAssistant.hideInlineSpinner('#search-timeline');
+		e.data.thisAssistant.startRefresher();
+	});
 	
 	jQuery().bind('new_search_timeline_data', { thisAssistant:this }, function(e, tweets) {
 		
@@ -200,6 +214,12 @@ SearchTwitterAssistant.prototype.activate = function(event) {
 				attach data object to item html
 			*/
 			jqitem.data('item', this);
+			
+			/*
+				save this tweet to Depot
+			*/
+			// sc.app.Tweets.save(this);
+			
 			
 			/*
 				put item on timeline
@@ -233,7 +253,12 @@ SearchTwitterAssistant.prototype.activate = function(event) {
 
 	jQuery('.hashtag.clickable', this.scroller).live(Mojo.Event.tap, function(e) {
 		var hashtag = jQuery(this).attr('data-hashtag');
-		thisA.searchFor('#'+hashtag);
+		
+		if (thisA.lightweight) {
+			var scene_type = 'lightweight';
+		};
+		
+		thisA.searchFor('#'+hashtag, scene_type);
 	});
 
 	jQuery('div.timeline-entry>.status>.meta', this.scroller).live(Mojo.Event.tap, function(e) {
@@ -241,21 +266,18 @@ SearchTwitterAssistant.prototype.activate = function(event) {
 		Mojo.Controller.stageController.pushScene('message-detail', statusid);
 	});
 	
-	jQuery('#search-twitter-textfield', this.scroller).bind('focus', function(e) {
-		jQuery('#submit-search-button').fadeIn('fast');
-	});
-
-	jQuery('#search-twitter-textfield', this.scroller).bind('blur', function(e) {
-		jQuery('#submit-search-button').fadeOut('fast');
-	});
+	// jQuery('#search-twitter-textfield', this.scroller).bind('focus', function(e) {
+	// 	jQuery('#submit-search-button').fadeIn('fast');
+	// });
+	// 
+	// jQuery('#search-twitter-textfield', this.scroller).bind('blur', function(e) {
+	// 	jQuery('#submit-search-button').fadeOut('fast');
+	// });
 	
 	
 	jQuery().bind('search_twitter_refresh', { thisAssistant:this }, function(e) {
 		e.data.thisAssistant.startRefresher();
 	});
-	
-	
-	this.refresh();
 
 }
 

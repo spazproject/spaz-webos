@@ -3,18 +3,62 @@ function PreferencesAssistant() {
 	   additional parameters (after the scene name) that were passed to pushScene. The reference
 	   to the scene controller (this.controller) has not be established yet, so any initialization
 	   that needs the scene controller should be done in the setup function below. */
+	
+	scene_helpers.addCommonSceneMethods(this);
 }
 
 PreferencesAssistant.prototype.setup = function() {
 	
+	var thisA = this;
+
+	this.scroller = this.controller.getSceneScroller();
+	
 	this.initAppMenu();
+
+	this.setupCommonMenus({
+		viewMenuItems: [
+			{
+				items: [
+					{label:$L('Back'),        icon:'back', command:'back'},
+					{label:$L('Preferences'), command:'scroll-top'}
+				]
+			}
+		],
+		cmdMenuItems: [{ items:
+			[]
+		}]
+	});
+
+
+	
 	/* this function is for setup tasks that have to happen when the scene is first created */
 		
 	/* use Luna.View.render to render view templates and add them to the scene, if needed. */
 	
 	/* setup widgets here */
+	this.controller.setupWidget("refreshRateList",
+		this.accountsAtts = {
+			itemTemplate: 'preferences/user-list-entry',
+			listTemplate: 'preferences/user-list-container',
+			dividerTemplate:'preferences/user-list-separator',
+			swipeToDelete: false,
+			autoconfirmDelete: false,
+			reorderable: false
+		},
+		this.accountsModel = {
+			listTitle: $L('Refresh Rates'),
+			items : [
+				
+			]
+		}
+	);	
 	
 	/* add event handlers to listen to events from widgets */
+	Mojo.Event.listen($('refreshRateList'), Mojo.Event.listTap, function(e) {
+		
+		Mojo.Controller.stageController.pushScene('my-timeline');
+	});
+	
 }
 
 PreferencesAssistant.prototype.activate = function(event) {
