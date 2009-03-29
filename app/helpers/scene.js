@@ -333,8 +333,8 @@ scene_helpers.addCommonSceneMethods = function(assistant) {
 		/*
 			if update fails
 		*/
-		jQuery().bind('update_failed', { thisAssistant:this }, function(e, data) {
-			e.data.thisAssistant.reportFailedPost();
+		jQuery().bind('update_failed', { thisAssistant:this }, function(e, error_obj) {
+			e.data.thisAssistant.reportFailedPost(error_obj);
 		});
 		
 		
@@ -551,11 +551,13 @@ scene_helpers.addCommonSceneMethods = function(assistant) {
 	/**
 	 *  
 	 */
-	assistant.reportFailedPost = function(event) {
+	assistant.reportFailedPost = function(error_obj) {
 		this.hideInlineSpinner('#post-panel-spinner-container');			
 		this.hidePostPanel(event);
 		this.clearPostPanel(event);
-		Mojo.Controller.errorDialog($L("Twitter never told us if your post was successful. Maybe it was, maybe it wasn't!"));
+		
+		var err_msg = $L("There was a problem posting your status");
+		thisA.displayErrorInfo(err_msg, error_obj);
 	}
 	
 	
@@ -909,6 +911,115 @@ scene_helpers.addCommonSceneMethods = function(assistant) {
 				break;
 		};
 	};
+
+
+
+	assistant.processAjaxError = function(errobj) {		
+
+		var human_msg, twiterr_req, twiterr_msg;
+		
+		switch(errobj.msg) {
+			case 'timeout':
+				
+				human_msg = $L('The request timed out – server did not respond in time');
+				break;
+				
+			case 'error':
+				
+				if (errobj.xhr.status == 400) {
+					human_msg = $L('Request limit exceeded');
+				} else if (errobj.xhr.status == 401) {
+					human_msg = $L('You are not authorized to view this content');
+				} else if (errobj.xhr.status == 403) {
+					human_msg = $L('You are not authorized to view this content');
+				} else if (errobj.xhr.status == 404) {
+					human_msg = $L('The requested URL doesn\'t exist');
+				} else if (errobj.xhr.status == 500) {
+					human_msg = $L('There was an error on the server');
+				} else if (errobj.xhr.status == 502) {
+					human_msg = $L('Servers are down or being upgraded');
+				} else if (errobj.xhr.status == 503) {
+					human_msg = $L('Servers are overloaded');
+				} else {
+					human_msg = $L('Unknown error');
+				}
+				
+				try {
+					var twiterr = sch.deJSON(errobj.xhr.responseText);
+					twiterr_req = twiterr.request;
+					twiterr_msg = twiterr.error;
+				} catch (e) {
+					dump('Tried to decode JSON from responseText, but failed')
+				}
+				
+				break;
+				
+			case 'notmodified':
+			
+				human_msg = $L('Not modified');
+				
+				break;
+				
+			case 'parsererror':
+				
+				human_msg = $L('Error parsing XML returned by request');
+				
+				break;
+			
+			default:
+			
+				human_msg = $L('Ajax Error');
+				break;
+		}
+		
+		var error_processed = {
+			'status':		errobj.xhr.status,
+			'statusText':	errobj.xhr.statusText,
+			'responseText':	errobj.xhr.responseText,
+			'url':			errobj.url,
+			'msg':			errobj.msg,
+			'human_msg':	human_msg,
+			'twitter_request':	twiterr_req,
+			'twitter_msg':	twiterr_msg
+		}
+
+		return error_processed;
+		
+	};
+	
+	
+	assistant.displayErrorInfo = function(msg, errors, template) {
+		
+		var error_info;
+		var error_html = '';
+		
+		dump(errors);
+		
+		if (!sch.isArray(errors)) {
+			var err = errors;
+			errors = [errors];
+		}
+		
+		dump(errors);
+		
+		if (!template) {
+			template = 'error_info';
+		} 
+
+		
+		if ( errors ) {
+			for (var i = 0; i < errors.length; i++) {
+				error_info  = this.processAjaxError(errors[i]);
+				if (error_html.length>0) {
+					error_html += '<hr>';
+				}
+				error_html += sc.app.tpl.parseTemplate(template, error_info);
+			}
+		}
+				
+		Mojo.Controller.errorDialog(msg+"<br>\n"+error_html);
+		
+	}
 	
 }
 

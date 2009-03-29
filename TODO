@@ -4,16 +4,12 @@
 * My Timeline
 	* Combined timeline
 		* dupes still seem to get through in some cases on combined timeline (posting new msgs)
-	* Need to listen for Ajax errors
 	* Should set up JSON caching
 * Message Detail
-	* Need to listen for Ajax errors
 * User Detail
-	* Need to listen for Ajax errors on user data
 	* Need to listen for Ajax errors on user timeline
 	* parse links, usernames, hashtags in description
 * Search
-	* Need to listen for Ajax errors
 * Preferences
 	* Finish pref UI & code for Refresh rate
 * Notifications

@@ -79,12 +79,11 @@ MyTimelineAssistant.prototype.setup = function() {
 
 	this.loadTimelineHTML();
 	
-	/*
-		Make request to Twitter
-	*/
-	this.getData();
 	
-	this.startRefresher();
+	/*
+		We use this to delay the request until activation
+	*/
+	this.loadOnActivate = true;
 }
 
 
@@ -102,12 +101,26 @@ MyTimelineAssistant.prototype.activate = function(event) {
 		Listen for error
 	*/
 	jQuery().bind('error_combined_timeline_data', { thisAssistant:this }, function(e, error_array) {
-		dump('error_user_timeline_data - response:');
+		dump('error_combined_timeline_data - response:');
 		dump(error_array);
 		// e.data.thisAssistant.spinnerOff();
 		thisA.hideInlineSpinner('#my-timeline');
 		thisA.startRefresher();
-		Mojo.Controller.errorDialog($L("There were errors retrieving your combined timeline"));
+
+		var err_msg = $L("There were errors retrieving your combined timeline");
+		thisA.displayErrorInfo(err_msg, error_array);
+		
+		// var error_info;
+		// var error_html = '';
+		// for (var i = 0; i < error_array.length; i++) {
+		// 	error_info  = thisA.processAjaxError(error_obj);
+		// 	if (error_html.length>0) {
+		// 		error_html += '<hr>';
+		// 	}
+		// 	error_html += sc.app.tpl('error_info', error_info);
+		// }
+		// 
+		// Mojo.Controller.errorDialog($L("There were errors retrieving your combined timeline")+error_html);
 	});
 	
 
@@ -273,7 +286,19 @@ MyTimelineAssistant.prototype.activate = function(event) {
 	// });
 	
 
+	if (this.loadOnActivate) {
+		/*
+			Make request to Twitter
+		*/
+		this.getData();
 
+		this.startRefresher();
+		
+		/*
+			Disable this so we don't load on next activation
+		*/
+		this.loadOnActivate = false;
+	}
 	
 }
 

@@ -2,9 +2,6 @@ var default_preferences = {
 	
 	'last_username':null,
 
-	// 'username':false,
-	// 'password':false,
-
 	'users':[], // an array of user objects with properties { 'id', 'username', 'password', 'type' }	
 	'always-go-to-my-timeline':false,
 

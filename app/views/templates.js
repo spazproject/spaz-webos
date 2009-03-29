@@ -173,3 +173,40 @@ sc.app.tpl.addTemplateMethod('search-item', function(d) {
 	return html;
 });
 
+
+sc.app.tpl.addTemplateMethod('error_info', function(d) {
+	/*
+	* status':		
+	* statusText':	
+	* responseText':	
+	* url':			
+	* msg':			
+	* human_msg':	
+	* twitter_request
+	* twitter_msg':	    		
+	*/
+	
+	dump(d);
+	
+	var html = '';
+	
+	html += '<div class="error_info">';
+	
+	html += ' <div class="human_msg">'+d.human_msg+'</div>'
+	if (d.twitter_msg) {
+		html += ' <div class="row"><div class="label">'+$L('Twitter error')+'</div> <div class="value twitter_msg">'+d.twitter_msg+'</div></div>'
+		html += ' <div class="row"><div class="label">'+$L('Twitter request')+'</div> <div class="value twitter_request">'+d.twitter_request+'</div></div>'
+	}
+	html += ' <div class="row"><div class="label">'+$L('Status code')+'</div> <div class="value status">'+d.status+'</div></div>'
+	html += ' <div class="row"><div class="label">'+$L('Status text')+'</div> <div class="value statusText">'+d.statusText+'</div></div>'	
+	html += ' <div class="row"><div class="label">'+$L('URL')+'</div> <div class="value url">'+d.url+'</div></div>'	
+	
+	
+	html += '</div>';
+	
+	return html;
+	
+});
+
+
+

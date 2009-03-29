@@ -59,18 +59,20 @@ FavoritesAssistant.prototype.activate = function(event) {
 
 	var thisA = this; // for closures below
 	
-	jQuery().bind('error_favorites_timeline_data', { thisAssistant:this }, function(e, error_obj) {
+	jQuery().bind('error_favorites_timeline_data', function(e, error_obj) {
 		// error_obj.url
 		// error_obj.xhr
 		// error_obj.msg
 		
-		Mojo.Controller.errorDialog($L("There was an error retrieving your favorites"));
+		var err_msg = $L("There was an error retrieving your favorites");
+		thisA.displayErrorInfo(err_msg, error_obj);
+		
 		
 		/*
 			Update relative dates
 		*/
 		sch.updateRelativeTimes('#favorites-timeline>div.timeline-entry>.status>.meta>.date', 'data-created_at');
-		e.data.thisAssistant.hideInlineSpinner('#favorites-timeline');
+		thisA.hideInlineSpinner('#favorites-timeline');
 	});
 	
 	
@@ -87,30 +89,36 @@ FavoritesAssistant.prototype.activate = function(event) {
 		var rendertweets = tweets;
 
 		jQuery.each( rendertweets, function() {
-			this.text = makeItemsClickable(this.text);
 			
-			var itemhtml = sc.app.tpl.parseTemplate('tweet', this);
+			if (!thisA.getEntryElementByStatusId(this.id)) {
 			
-			/*
-				make jQuery obj
-			*/
-			var jqitem = jQuery(itemhtml);
+				this.text = makeItemsClickable(this.text);
 			
-			/*
-				attach data object to item html
-			*/
-			jqitem.data('item', this);
+				var itemhtml = sc.app.tpl.parseTemplate('tweet', this);
 			
-			/*
-				save this tweet to Depot
-			*/
-			// sc.app.Tweets.save(this);
+				/*
+					make jQuery obj
+				*/
+				var jqitem = jQuery(itemhtml);
+			
+				/*
+					attach data object to item html
+				*/
+				jqitem.data('item', this);
+			
+				/*
+					save this tweet to Depot
+				*/
+				// sc.app.Tweets.save(this);
 			
 			
-			/*
-				put item on timeline
-			*/
-			jQuery('#favorites-timeline').prepend(jqitem);
+				/*
+					put item on timeline
+				*/
+				jQuery('#favorites-timeline').prepend(jqitem);
+			} else {
+				dump('Tweet ('+this.id+') already is in favorites timeline');
+			}
 		});
 
 
@@ -173,6 +181,10 @@ FavoritesAssistant.prototype.cleanup = function(event) {
 	   a result of being popped off the scene stack */
 }
 
+FavoritesAssistant.prototype.getEntryElementByStatusId = function(id) {
+	var el = jQuery('#favorites-timeline div.timeline-entry[data-status-id='+id+']', this.scroller).get(0);
+	return el;
+};
 
 
 FavoritesAssistant.prototype.refresh = function(event) {

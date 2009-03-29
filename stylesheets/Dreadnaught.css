@@ -744,6 +744,38 @@ div.progress-panel {
 	}
 	
 	
+	
+div.error_info {
+	font-size:9pt;
+	border:1px solid #666;
+	background: #FFCCCC;
+	padding:3px;
+	margin: 3px 0px;
+}
+	div.error_info .human_msg {
+		font-size:11pt;
+	}
+	
+	div.error_info .row {
+		overflow:hidden;
+	}
+	div.error_info .label {
+		font-weight:bold;
+		width:75px;
+		overflow: hidden;
+		float:left;
+		text-align:right;
+		margin-right:3px;
+		text-wrap:none;
+	}
+	div.error_info .value {
+		float:left;
+		overflow:none;
+		text-wrap:none;
+	}
+	
+	
+	
 /*
 	Start scene
 */

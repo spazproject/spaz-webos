@@ -68,7 +68,10 @@ MessageDetailAssistant.prototype.setup = function() {
 		// error_obj.url
 		// error_obj.xhr
 		// error_obj.msg
-		Mojo.Controller.errorDialog($L("There was an error retrieving this status"));
+
+		var err_msg = $L("There was an error retrieving this status");
+		thisA.displayErrorInfo(err_msg, error_obj);
+		
 	});
 
 	

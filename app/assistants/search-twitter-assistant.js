@@ -177,7 +177,8 @@ SearchTwitterAssistant.prototype.activate = function(event) {
 		// error_obj.xhr
 		// error_obj.msg
 		
-		Mojo.Controller.errorDialog($L("There was an error retrieving search results"));
+		var error_msg = $L("There was an error retrieving search results");
+		thisA.displayErrorInfo(error_msg, error_obj);
 		
 		/*
 			Update relative dates
