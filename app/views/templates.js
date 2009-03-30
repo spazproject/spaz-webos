@@ -148,9 +148,10 @@ sc.app.tpl.addTemplateMethod('dm', function(d) {
 	html += '		</div>';
 	html += '		<div class="meta" data-status-id="'+d.id+'"><span class="date" data-created_at="'+d.created_at+'">'+d.relative_time+'</span></div>';
 	html += '	</div>';
-	html += '  <div class="entry-json" style="display:none">'+sch.enJSON(d)+'</div>';
+	// html += '  <div class="entry-json" style="display:none">'+sch.enJSON(d)+'</div>';
+	html += '  <div class="entry-json" style="display:none"></div>';
 	html += '</div>';
-
+	
 	return html;
 });
 

@@ -28,6 +28,8 @@ function MyTimelineAssistant(argFromPusher) {
 MyTimelineAssistant.prototype.setup = function() {
 	
 	
+	this.tweetsModel = {};
+	
 	/* this function is for setup tasks that have to happen when the scene is first created */
 
 	this.initAppMenu();
@@ -153,6 +155,11 @@ MyTimelineAssistant.prototype.activate = function(event) {
 				*/
 				if (!e.data.thisAssistant.getEntryElementByStatusId(this.id)) {
 					
+					/*
+						add to tweetsModel
+					*/
+					thisA.tweetsModel[this.id] = this;
+					
 					this.text = makeItemsClickable(this.text);
 
 					/*
@@ -169,19 +176,16 @@ MyTimelineAssistant.prototype.activate = function(event) {
 					*/
 					var jqitem = jQuery(itemhtml);
 
-					/*
-						attach data object to item html
-					*/
-					jqitem.data('item', this);
-
 					if (this.SC_is_reply) {
 						jqitem.addClass('reply');
+						dump("THIS IS A REPLY!\n"+jqitem[0].outerHTML+"\n\n");
 					}
 
 					if (this.SC_is_dm) {
 						jqitem.addClass('dm');
 					}
 
+					
 
 					/*
 						put item on timeline
@@ -265,7 +269,8 @@ MyTimelineAssistant.prototype.activate = function(event) {
 		
 		if (jQuery(this).parent().parent().hasClass('dm')) {
 			isdm = true;
-			status_obj = sch.deJSON( jQuery(this).parent().parent().children('.entry-json').text() );
+			// status_obj = sch.deJSON( jQuery(this).parent().parent().children('.entry-json').text() );
+			status_obj = thisA.tweetsModel[parseInt(status_id)];
 		}
 		Mojo.Controller.stageController.pushScene('message-detail', {'status_id':status_id, 'isdm':isdm, 'status_obj':status_obj});
 	});
