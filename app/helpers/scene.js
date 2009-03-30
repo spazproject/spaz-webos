@@ -557,7 +557,7 @@ scene_helpers.addCommonSceneMethods = function(assistant) {
 		this.clearPostPanel(event);
 		
 		var err_msg = $L("There was a problem posting your status");
-		thisA.displayErrorInfo(err_msg, error_obj);
+		this.displayErrorInfo(err_msg, error_obj);
 	}
 	
 	
@@ -972,15 +972,29 @@ scene_helpers.addCommonSceneMethods = function(assistant) {
 				break;
 		}
 		
-		var error_processed = {
-			'status':		errobj.xhr.status,
-			'statusText':	errobj.xhr.statusText,
-			'responseText':	errobj.xhr.responseText,
-			'url':			errobj.url,
-			'msg':			errobj.msg,
-			'human_msg':	human_msg,
-			'twitter_request':	twiterr_req,
-			'twitter_msg':	twiterr_msg
+		if (errobj.xhr) {
+			var error_processed = {
+				'status':		errobj.xhr.status,
+				'statusText':	errobj.xhr.statusText,
+				'responseText':	errobj.xhr.responseText,
+				'url':			errobj.url,
+				'msg':			errobj.msg,
+				'human_msg':	human_msg,
+				'twitter_request':	twiterr_req,
+				'twitter_msg':	twiterr_msg
+			}
+		} else {
+			var error_processed = {
+				'status':		errobj.xhr.status,
+				'statusText':	errobj.xhr.statusText,
+				'responseText':	errobj.xhr.responseText,
+				'url':			errobj.url,
+				'msg':			errobj.msg,
+				'human_msg':	human_msg,
+				'twitter_request':	twiterr_req,
+				'twitter_msg':	twiterr_msg
+			}
+			
 		}
 
 		return error_processed;

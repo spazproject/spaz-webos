@@ -244,8 +244,15 @@ StartAssistant.prototype.activate = function(argFromPusher) {
 	/* put in event handlers here that should only be in effect when this scene is active. For
 	   example, key handlers that are observing the document */
 
-	this.model.username = sc.app.prefs.get('username');
-	this.model.password = sc.app.prefs.get('password');
+	// this.model.username = sc.app.prefs.get('username');
+	// this.model.password = sc.app.prefs.get('password');
+
+	/*
+		don't use this anymore, but patching it over so it breaks stuff less
+	*/
+	this.model.username = 'foo';
+	this.model.password = 'foo';
+
 	this.model['always-go-to-my-timeline'] = sc.app.prefs.get('always-go-to-my-timeline');
 	this.controller.modelChanged( this.model );
 	 
