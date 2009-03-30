@@ -259,7 +259,10 @@ scene_helpers.addCommonSceneMethods = function(assistant) {
 		if (!this.scroller) {
 			this.scroller = this.controller.getSceneScroller();
 		}
-		this.scroller.mojo.revealElement(jQuery('.timeline>div.timeline-entry.new:last', this.scroller).get());
+		
+		var first_new = jQuery('.timeline>div.timeline-entry.new:last', this.scroller).get();
+		
+		this.scroller.mojo.revealElement(first_new);
 		
 	};
 
