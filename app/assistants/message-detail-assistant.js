@@ -29,6 +29,8 @@ MessageDetailAssistant.prototype.setup = function() {
 	
 	this.initTwit();
 	
+	this.scroller = this.controller.getSceneScroller();
+	
 	if (sc.app.username && sc.app.password) {
 		this.setupCommonMenus({
 			viewMenuItems: [
@@ -58,8 +60,6 @@ MessageDetailAssistant.prototype.setup = function() {
 			]
 		});	
 	};
-	
-	this.scroller = this.controller.getSceneScroller();
 	
 	
 	jQuery().bind('get_one_status_succeeded', { thisAssistant:this }, this.processStatusReturn);

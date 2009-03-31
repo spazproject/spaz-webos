@@ -2,9 +2,7 @@
 * Login/splash
 	* Need to listen for Ajax errors on trends
 * My Timeline
-	* Combined timeline
-		* dupes still seem to get through in some cases on combined timeline (posting new msgs)
-	* Should set up JSON caching
+	* this.tweetsModel is culled in a different way than HTML timeline, and will get out of sync (and cause problems when cache is loaded, because the model is the cache source). Needs to independently handle dms and replies
 * Message Detail
 * User Detail
 	* Need to listen for Ajax errors on user timeline

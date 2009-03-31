@@ -55,8 +55,11 @@ PreferencesAssistant.prototype.setup = function() {
 	
 	/* add event handlers to listen to events from widgets */
 	Mojo.Event.listen($('refreshRateList'), Mojo.Event.listTap, function(e) {
-		
 		Mojo.Controller.stageController.pushScene('my-timeline');
+	});
+	
+	Mojo.Event.listen($('clear-cache-button'), Mojo.Event.tap, function(e) {
+		thisA.clearTimelineCache();
 	});
 	
 }

@@ -72,6 +72,7 @@ div.timeline-entry {
 	overflow:hidden;
 	min-height:64px;
 	color:#333;
+	position:relative;
 /*	-webkit-border-radius:8px;*/
 	margin:0;
 /*	-webkit-box-shadow:0px 0px 5px #000;*/
@@ -99,16 +100,16 @@ div.timeline-entry {
 	*/
 	div.timeline-entry.reply:nth-of-type(odd),
 	div.timeline-entry.reply:nth-of-type(even) {
-		background-color: #EEEEAA !important;
-		background-image: none !important;
+		background-color: #EEEECC;
+		background-image: none;
 	}
 	/*
 		Entries that are direct messages to the user
 	*/
 	div.timeline-entry.dm:nth-of-type(odd),
 	div.timeline-entry.dm:nth-of-type(even) {
-		background-color: #EEAAAA !important;
-		background-image: none !important;
+		background-color: #EECCCC;
+		background-image: none;
 	}
 	
 	div.timeline-entry.new {
@@ -127,6 +128,24 @@ div.timeline-entry {
 			background-image: url('../images/theme/entry-even-new-bg.png');
 			background-repeat: repeat-x;
 		}
+
+		/*
+			Entries that are replies directed at the user
+		*/
+		div.timeline-entry.reply.new:nth-of-type(odd),
+		div.timeline-entry.reply.new:nth-of-type(even) {
+			background-color: #EEEEAA;
+			background-image: none;
+		}
+		/*
+			Entries that are direct messages to the user
+		*/
+		div.timeline-entry.dm.new:nth-of-type(odd),
+		div.timeline-entry.dm.new:nth-of-type(even) {
+			background-color: #EEAAAA;
+			background-image: none;
+		}
+		
 
 	div.timeline-entry .user {
 		width:48px;
@@ -153,6 +172,7 @@ div.timeline-entry {
 			font-variant: uppercase;
 			font-family:"Coconut Condensed";
 			margin-bottom: .2em;
+			position:relative;
 /*			text-shadow: 0px 1px 5px #666;*/
 		}
 		div.timeline-entry .status .text {

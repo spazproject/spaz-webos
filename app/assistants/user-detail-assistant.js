@@ -123,7 +123,7 @@ UserDetailAssistant.prototype.setup = function() {
 		// error_obj.url
 		// error_obj.xhr
 		// error_obj.msg
-		var err_msg = $L("There was an error retrieving this user");
+		var err_msg = $L('There was an error retrieving this user');
 		thisA.displayErrorInfo(err_msg, error_obj);
 		
 	});
@@ -133,23 +133,23 @@ UserDetailAssistant.prototype.setup = function() {
 	jQuery().bind('create_friendship_succeeded',  { thisAssistant:this }, function(e, userobj) {
 		jQuery('#follow-user[data-screen_name="'+userobj.screen_name+'"]')
 			.attr('data-following', 'true')
-			.html('Remove user as friend');
+			.html($L('Stop following user'));
 	});
 	jQuery().bind('destroy_friendship_succeeded', { thisAssistant:this }, function(e, userobj) {
 		jQuery('#follow-user[data-screen_name="'+userobj.screen_name+'"]')
 			.attr('data-following', 'false')
-			.html('Add user as friend');		
+			.html($L('Follow user'));		
 	});
 
 	jQuery().bind('create_block_succeeded', { thisAssistant:this }, function(e, userobj) {
 		jQuery('#block-user[data-screen_name="'+userobj.screen_name+'"]')
 			.attr('data-blocked', 'true')
-			.html('Unblock user');
+			.html($L('Unblock user'));
 	});
 	jQuery().bind('destroy_block_succeeded', { thisAssistant:this }, function(e, userobj) {
 		jQuery('#block-user[data-screen_name="'+userobj.screen_name+'"]')
 			.attr('data-blocked', 'false')
-			.html('Block user');
+			.html($L('Block user'));
 	});
 	
 

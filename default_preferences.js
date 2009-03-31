@@ -16,7 +16,9 @@ var default_preferences = {
     'network-autoadjustrefreshinterval': true,
 
     'timeline-scrollonupdate': true,
-    'timeline-maxentries': 300,
+    'timeline-maxentries': 100,
+    'timeline-maxentries-dm': 10, 
+    'timeline-maxentries-reply': 10, 
     'timeline-friends-getcount': 40,
     'timeline-replies-getcount': 20,
     'timeline-dm-getcount': 10,

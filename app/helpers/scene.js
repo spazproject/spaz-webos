@@ -260,9 +260,23 @@ scene_helpers.addCommonSceneMethods = function(assistant) {
 			this.scroller = this.controller.getSceneScroller();
 		}
 		
-		var first_new = jQuery('.timeline>div.timeline-entry.new:last', this.scroller).get();
+		var first_new = jQuery('.timeline>div.timeline-entry.new:last', this.scroller).get(0);
 		
-		this.scroller.mojo.revealElement(first_new);
+		if (first_new) {
+			var second_new_jq = jQuery(first_new).prev();
+			if (second_new_jq.length>0) {
+				dump('SECOND NEW');
+				var second_new = second_new_jq.get(0);
+				dump(second_new.outerHTML);
+				this.scroller.mojo.revealElement(second_new);
+			} else {
+				dump('FIRST NEW');
+				dump(first_new.outerHTML);
+				this.scroller.mojo.revealElement(first_new);				
+			}
+		} else {
+			dump('No new items to scroll to');
+		}
 		
 	};
 
@@ -421,6 +435,8 @@ scene_helpers.addCommonSceneMethods = function(assistant) {
 	 *  
 	 */
 	assistant.hidePostPanel = function(event) {
+		
+		
 		jQuery('#palm-dialog-box.post-panel', this.controller.getSceneScroller()).fadeOut('fast');
 		
 	}
@@ -520,7 +536,12 @@ scene_helpers.addCommonSceneMethods = function(assistant) {
 		/*
 			remove extra items
 		*/
-		sch.removeExtraElements('#my-timeline>div.timeline-entry', 300);
+		// sch.removeExtraElements('#my-timeline>div.timeline-entry', sc.app.prefs.get('timeline-maxentries'));
+		
+		sch.removeExtraElements('#my-timeline>div.timeline-entry:not(.reply):not(.dm)', sc.app.prefs.get('timeline-maxentries'));
+		sch.removeExtraElements('#my-timeline>div.timeline-entry.reply', sc.app.prefs.get('timeline-maxentries-reply'));
+		sch.removeExtraElements('#my-timeline>div.timeline-entry.dm', sc.app.prefs.get('timeline-maxentries-dm'));
+		
 
 		/*
 			Update relative dates
@@ -952,7 +973,8 @@ scene_helpers.addCommonSceneMethods = function(assistant) {
 					twiterr_req = twiterr.request;
 					twiterr_msg = twiterr.error;
 				} catch (e) {
-					dump('Tried to decode JSON from responseText, but failed')
+					dump('Tried to decode JSON from responseText, but failed');
+					dump(e.name + ":" + e.message);
 				}
 				
 				break;
@@ -1037,8 +1059,71 @@ scene_helpers.addCommonSceneMethods = function(assistant) {
 		Mojo.Controller.errorDialog(msg+"<br>\n"+error_html);
 		
 	}
+
+
+	assistant.clearTimelineCache = function(callback) {
+		var thisA = this;
+		
+		// Mojo.Log.info('Timeline Caching disabled for now');
+		this.mojoDepot = new Mojo.Depot({
+			name:'SpazDepot',
+			replace:false
+		});
+		
+		var users = sc.app.prefs.get('users');
+		
+		for (var i=0; i<users.length; i++) {
+			var username = users[i].username;
+			this.mojoDepot.simpleAdd('SpazMyTimelineCache_'+username, {},
+				function() { 
+					// thisA.showAlert('Cache cleared');
+					dump('Cache SpazMyTimelineCache_'+username+' cleared');
+				},
+				function() { 
+					// Mojo.Controller.errorDialog('Cache clearing FAILED');
+					dump('Cache SpazMyTimelineCache_'+username+' clear failed');
+				}
+			);
+		}
+		
+	}
+	
+	
+	
+	
+	/**
+	 * A helper to easily display JS alert()-style popups
+	 * @param {string} msg  required 
+	 * @param {string} title  optional 
+	 * @param {function} ok_cb  callback like function(value) where value is value assigned to OK button. Optional
+	 */
+	assistant.showAlert = function(msg, title, ok_cb) {
+
+		var opts = {};
+
+		if (title) { opts['title'] = title };
+		if (ok_cb) { opts['onChoose'] = okcb }
+
+		this.controller.showAlertDialog({
+			onChoose: function(value) {this.outputDisplay.innerHTML = $L("Alert result = ") + value;},
+			title: $L("Filet Mignon"),
+			message: $L("How would you like your steak done?"),
+			choices:[
+				{label:$L('Rare'), value:"refresh", type:'affirmative'},  
+				{label:$L("Medium"), value:"don't refresh"},
+				{label:$L("Overcooked"), value:"don't refresh", type:'negative'},    
+				{label:$L("Nevermind"), value:"maybe refresh", type:'dismiss'}    
+			]
+		});
+	};
+	
+
 	
 }
+
+
+
+
 
 
 
@@ -1093,6 +1178,7 @@ var makeItemsClickable = function(str) {
 	
 	return str;
 };
+
 
 
 

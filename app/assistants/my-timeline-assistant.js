@@ -111,18 +111,6 @@ MyTimelineAssistant.prototype.activate = function(event) {
 
 		var err_msg = $L("There were errors retrieving your combined timeline");
 		thisA.displayErrorInfo(err_msg, error_array);
-		
-		// var error_info;
-		// var error_html = '';
-		// for (var i = 0; i < error_array.length; i++) {
-		// 	error_info  = thisA.processAjaxError(error_obj);
-		// 	if (error_html.length>0) {
-		// 		error_html += '<hr>';
-		// 	}
-		// 	error_html += sc.app.tpl('error_info', error_info);
-		// }
-		// 
-		// Mojo.Controller.errorDialog($L("There were errors retrieving your combined timeline")+error_html);
 	});
 	
 
@@ -159,9 +147,21 @@ MyTimelineAssistant.prototype.activate = function(event) {
 		thisA.searchFor('#'+hashtag);
 	});
 
-	jQuery('div.timeline-entry>.status>.meta', this.scroller).live(Mojo.Event.tap, function(e) {
+	jQuery('div.timeline-entry', this.scroller).live(Mojo.Event.hold, function(e) {
+		var status_id = jQuery(this).attr('data-status-id');
+		var isdm = false;
+		var status_obj = null;
 		
-	}
+		// dump("ISDM:"+jQuery(this).parent().parent().hasClass('dm'));
+		
+		if (jQuery(this).hasClass('dm')) {
+			isdm = true;
+			// status_obj = sch.deJSON( jQuery(this).parent().parent().children('.entry-json').text() );
+			status_obj = thisA.getTweet(parseInt(status_id));
+		}
+		Mojo.Controller.stageController.pushScene('message-detail', {'status_id':status_id, 'isdm':isdm, 'status_obj':status_obj});
+	});
+	
 	jQuery('div.timeline-entry>.status>.meta', this.scroller).live(Mojo.Event.tap, function(e) {
 		var status_id = jQuery(this).attr('data-status-id');
 		var isdm = false;
@@ -225,6 +225,7 @@ MyTimelineAssistant.prototype.deactivate = function(event) {
 	jQuery('div.timeline-entry>.user', this.scroller).die(Mojo.Event.tap);
 	jQuery('.username.clickable', this.scroller).die(Mojo.Event.tap);
 	jQuery('.hashtag.clickable', this.scroller).die(Mojo.Event.tap);
+	jQuery('div.timeline-entry', this.scroller).die(Mojo.Event.hold);
 	jQuery('div.timeline-entry>.status>.meta', this.scroller).die(Mojo.Event.tap);
 	jQuery('a[href]', this.scroller).die(Mojo.Event.tap);
 	
@@ -252,17 +253,26 @@ MyTimelineAssistant.prototype.loadTimelineCache = function() {
 		function(data) {
 			dump('loading cache');
 			
-			/*
-				it seems to be double-encoded coming from the depot
-			*/
-			tl_data = sch.deJSON(sch.deJSON(data.tweets_json));
-			dump('My Timeline Cache loaded ##########################################');
-			dump(tl_data);
-			thisA.renderTweets(tl_data,
-				function() {
-					sc.helpers.markAllAsRead('#my-timeline>div.timeline-entry');
-				}
-			);
+			try {
+				thisA.twit.setLastId(SPAZCORE_SECTION_FRIENDS, data[SPAZCORE_SECTION_FRIENDS + '_lastid']);
+				thisA.twit.setLastId(SPAZCORE_SECTION_REPLIES, data[SPAZCORE_SECTION_REPLIES + '_lastid']);
+				thisA.twit.setLastId(SPAZCORE_SECTION_DMS,     data[SPAZCORE_SECTION_DMS     + '_lastid']);
+
+				/*
+					it seems to be double-encoded coming from the depot
+				*/				
+				tl_data = sch.deJSON(sch.deJSON(data.tweets_json));
+				dump('My Timeline Cache loaded ##########################################');
+				dump(tl_data);
+				thisA.renderTweets(tl_data,
+					function() {
+						sch.markAllAsRead('#my-timeline>div.timeline-entry');
+					}
+				);				
+			} catch (e) {
+				dump('Couldn\'t load cache');
+				dump(e.name + ":" + e.message);
+			}
 		},
 		function() { dump('My Timeline Cache load failed') }
 	);
@@ -275,39 +285,25 @@ MyTimelineAssistant.prototype.saveTimelineCache = function() {
 	// if (this.tweetsModel.length > 0) {
 		var tweetsModel_json = sch.enJSON(this.tweetsModel);
 
-		dump("Saving the following:");
-		// dump(tweetsModel_json);
+		var twitdata = {}
+		twitdata['tweets_json']                        = tweetsModel_json;
+		twitdata[SPAZCORE_SECTION_FRIENDS + '_lastid'] = this.twit.getLastId(SPAZCORE_SECTION_FRIENDS);
+		twitdata[SPAZCORE_SECTION_REPLIES + '_lastid'] = this.twit.getLastId(SPAZCORE_SECTION_REPLIES);
+		twitdata[SPAZCORE_SECTION_DMS     + '_lastid'] = this.twit.getLastId(SPAZCORE_SECTION_DMS);
 
 		this.mojoDepot = new Mojo.Depot({
 			name:'SpazDepot',
 			replace:false
 		});
 
-		this.mojoDepot.simpleAdd('SpazMyTimelineCache_'+sc.app.username, {'tweets_json':tweetsModel_json},
+
+
+		this.mojoDepot.simpleAdd('SpazMyTimelineCache_'+sc.app.username, twitdata,
 			function() { dump('My Timeline Cache Saved') },
 			function(msg) { dump('My Timeline Cache save failed:'+msg) }
 		);
-		
-	// } else {
-	// 	dump('Not saving; this.tweetsModel.length <= 0');
-	// }
 	
 };
-
-
-MyTimelineAssistant.prototype.clearTimelineCache = function() {
-	// Mojo.Log.info('Timeline Caching disabled for now');
-	this.mojoDepot = new Mojo.Depot({
-		name:'SpazDepot',
-		replace:false
-	});
-	
-	this.mojoDepot.simpleAdd('SpazMyTimelineCache_'+sc.app.username, '',
-		function() { dump('My Timeline Cache Saved') },
-		function() { dump('My Timeline Cache save failed') }
-	);
-}
-
 
 
 
@@ -323,10 +319,17 @@ MyTimelineAssistant.prototype.getEntryElementByStatusId = function(id) {
 
 
 MyTimelineAssistant.prototype.getData = function() {
-	sc.helpers.markAllAsRead('#my-timeline>div.timeline-entry');
+	sch.markAllAsRead('#my-timeline>div.timeline-entry');
 	this.showInlineSpinner('#my-timeline', 'Looking for new tweets…');
 	
-	this.twit.getCombinedTimeline();
+	/*
+		friends_count is the only one that gets used currently
+	*/
+	this.twit.getCombinedTimeline({
+		'friends_count':sc.app.prefs.get('timeline-friends-getcount'),
+		'replies_count':sc.app.prefs.get('timeline-replies-getcount'),
+		'dm_count':sc.app.prefs.get('timeline-dm-getcount')
+	});
 };
 
 
@@ -360,7 +363,7 @@ MyTimelineAssistant.prototype.renderTweets = function(tweets, render_callback) {
 				/*
 					add to tweetsModel
 				*/
-				thisA.tweetsModel.push(this);
+				thisA.addTweetToModel(this);
 				
 				this.text = makeItemsClickable(this.text);
 
@@ -386,7 +389,6 @@ MyTimelineAssistant.prototype.renderTweets = function(tweets, render_callback) {
 					jqitem.addClass('dm');
 				}
 
-				
 
 				/*
 					put item on timeline
@@ -402,7 +404,10 @@ MyTimelineAssistant.prototype.renderTweets = function(tweets, render_callback) {
 		Mojo.Timing.pause('my_timeline_render');
 		Mojo.Log.info(Mojo.Timing.reportTiming("my_timeline_render", "my_timeline_render -- \n"));
 		
-		this.scrollToNew();
+		if ( sc.app.prefs.get('timeline-scrollonupdate') ) {
+			this.scrollToNew();
+		}
+		
 		
 	} else {
 		dump("no new tweets");
@@ -411,12 +416,17 @@ MyTimelineAssistant.prototype.renderTweets = function(tweets, render_callback) {
 	/*
 		remove extra items
 	*/
-	sch.removeExtraElements('#my-timeline>div.timeline-entry', 300);
+	// sch.removeExtraElements('#my-timeline>div.timeline-entry', sc.app.prefs.get('timeline-maxentries'));
+	
+	sch.removeExtraElements('#my-timeline>div.timeline-entry:not(.reply):not(.dm)', sc.app.prefs.get('timeline-maxentries'));
+	sch.removeExtraElements('#my-timeline>div.timeline-entry.reply', sc.app.prefs.get('timeline-maxentries-reply'));
+	sch.removeExtraElements('#my-timeline>div.timeline-entry.dm', sc.app.prefs.get('timeline-maxentries-dm'));
+
 
 	/*
 		Update relative dates
 	*/
-	sch.updateRelativeTimes('div.timeline-entry>.status>.meta>.date', 'data-created_at');
+	sch.updateRelativeTimes('div.timeline-entry .meta>.date', 'data-created_at');
 	
 	/*
 		re-apply filtering
@@ -488,3 +498,19 @@ MyTimelineAssistant.prototype.getTweet = function(id) {
 	return false;
 	
 };
+
+
+
+/*
+	add to tweetsModel
+*/
+MyTimelineAssistant.prototype.addTweetToModel = function(twobj) {
+	var newlen = this.tweetsModel.push(twobj);
+	dump('this.tweetsModel is now '+newlen+' items long')
+	if (newlen > sc.app.prefs.get('timeline-maxentries')) {
+		this.tweetsModel.shift();
+		dump('SHIFTED: this.tweetsModel is now '+this.tweetsModel.length+' items long');
+	}
+};
+
+
