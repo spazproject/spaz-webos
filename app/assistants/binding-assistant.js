@@ -19,16 +19,29 @@ function BindingAssistant() {
 BindingAssistant.prototype.setup = function() {
 	/* this function is for setup tasks that have to happen when the scene is first created */
 		
-
+	jsondata = {
+	    "user": {
+	        "followers_count": 795,
+	        "description": "David LeFevre \u2013 Gemini - Earth Muffin \u2013 Dad \u2013 Husband \u2013 Visionary - Marketing Wizard - Entrepreneur... & You?",
+	        "url": "http:\/\/www.loanamp.com\/GetMotivatedPresentation",
+	        "profile_image_url": "http:\/\/s3.amazonaws.com\/twitter_production\/profile_images\/67663757\/David_Pic_normal.JPG",
+	        "protected": false,
+	        "location": "Texas",
+	        "screen_name": "Go2DavidLeFevre",
+	        "name": "David LeFevre",
+	        "id": "18175897"
+	    },
+	    "text": "I don't have a crystal ball, but I think we're facing a massive and fundamental change in the way money works in this society...",
+	    "truncated": false,
+	    "favorited": false,
+	    "in_reply_to_user_id": null,
+	    "created_at": "Wed Jan 14 15:01:55 +0000 2009",
+	    "source": "web",
+	    "in_reply_to_status_id": null,
+	    "id": "1118407075"
+	};
 		
-	this.demoDepot.addSingle('bucket1', 'test_entry_key'+sch.getTimeAsInt(), {
-		'funk':'punk',
-		'date':sch.getTimeAsInt(),
-		'user':{
-			'id': Base64.encode(sch.getTimeAsInt().toString()),
-			'name':'bear'
-		}
-	}, undefined, this.dbSuccess.bind(this), this.dbFailure.bind(this));
+	this.demoDepot.addSingle('bucket1', jsondata.id, jsondata, undefined, this.dbSuccess.bind(this), this.dbFailure.bind(this));
 	
 	this.demoDepot.getMultiple('bucket1', null, 10, 0, this.dbSuccess, this.dbFailure);
 		

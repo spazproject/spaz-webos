@@ -1,10 +1,11 @@
 {
 	"title": "Spaz",
-	"version": 0.2.6,
+	"version": 0.3,
 	"type": "web",
 	"main": "index.html",
 	"id": "com.funkatron.app.spaz",
 	"icon": "icon.png",
-	"vendorId": "Funkatron Productions"
+	"vendor": "Funkatron Productions",
+	"vendorurl": "http://funkatron.com"
 }
 

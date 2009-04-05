@@ -172,7 +172,7 @@ scene_helpers.addCommonSceneMethods = function(assistant) {
 					Mojo.Controller.stageController.pushScene("preferences", this);
 					break;
 				case Mojo.Menu.helpCmd:
-					Mojo.Controller.notYetImplemented();
+					Mojo.Controller.stageController.pushScene("help", this);
 					// findAndSwapScene("preferences", this);
 					break;
 
@@ -238,7 +238,8 @@ scene_helpers.addCommonSceneMethods = function(assistant) {
 		if (!this.scroller) {
 			this.scroller = this.controller.getSceneScroller();
 		}
-		this.scroller.mojo.revealElement(jQuery('.timeline>div.timeline-entry:first', this.scroller).get());
+		dump('Scrolling to top');
+		jQuery(this.scroller).scrollTo( {'top':0,'left':0}, { axis:'y', duration:0 } );
 	};
 	
 	/**
@@ -248,8 +249,8 @@ scene_helpers.addCommonSceneMethods = function(assistant) {
 		if (!this.scroller) {
 			this.scroller = this.controller.getSceneScroller();
 		}
-		this.scroller.mojo.revealBottom();
-		
+		dump('Scrolling to bottom');
+		jQuery(this.scroller).scrollTo( jQuery(this.scroller).height(), { axis:'y', duration:0 } );
 	};
 	
 	/**
@@ -260,24 +261,15 @@ scene_helpers.addCommonSceneMethods = function(assistant) {
 			this.scroller = this.controller.getSceneScroller();
 		}
 		
-		var first_new = jQuery('.timeline>div.timeline-entry.new:last', this.scroller).get(0);
+		var first_new = jQuery('.timeline>div.timeline-entry.new:visible:last', this.scroller).get(0);
 		
 		if (first_new) {
-			var second_new_jq = jQuery(first_new).prev();
-			if (second_new_jq.length>0) {
-				dump('SECOND NEW');
-				var second_new = second_new_jq.get(0);
-				dump(second_new.outerHTML);
-				this.scroller.mojo.revealElement(second_new);
-			} else {
-				dump('FIRST NEW');
-				dump(first_new.outerHTML);
-				this.scroller.mojo.revealElement(first_new);				
-			}
+			dump('Scrolling to first new item');
+			jQuery(this.scroller).scrollTo(first_new, { axis:'y', duration:0, offset:{top:-100} });
+			// jQuery(this.scroller).scrollTo(first_new, { axis:'y', duration:0 });
 		} else {
 			dump('No new items to scroll to');
 		}
-		
 	};
 
 
@@ -794,15 +786,15 @@ scene_helpers.addCommonSceneMethods = function(assistant) {
 		/*
 			remove any existing
 		*/
-		jQuery('.progress-panel', container).remove(); 
+		jQuery('.inline-spinner', container).remove(); 
 		
-		var html = '<div class="progress-panel" style="display:none"> \
-			<img src="images/theme/loading.gif" class="progress-panel-spinner" /> \
-			<span class="progress-panel-label">'+message+'</span> \
+		var html = '<div class="inline-spinner" style="display:none"> \
+			<img src="images/theme/loading.gif" class="inline-spinner-spinner" /> \
+			<span class="inline-spinner-label">'+message+'</span> \
 		</div>'
 		jQuery(container).prepend(html);
-		jQuery('.progress-panel', container).show('blind', 'fast');
-		// jQuery('.progress-panel', container).fadeIn('fast');
+		jQuery('.inline-spinner', container).show('blind', 'fast');
+		// jQuery('.inline-spinner', container).fadeIn('fast');
 		
 	};
 
@@ -810,9 +802,9 @@ scene_helpers.addCommonSceneMethods = function(assistant) {
 	 *  stops, but does not remove, the spinner
 	 */
 	assistant.stopInlineSpinner = function(container, message) {
-		// jQuery('.progress-panel', container).fadeOut('fast');
-		jQuery('.progress-panel-spinner', container).hide('blind', 'fast');
-		jQuery('.progress-panel-label', container).html(message);
+		// jQuery('.inline-spinner', container).fadeOut('fast');
+		jQuery('.inline-spinner-spinner', container).hide('blind', 'fast');
+		jQuery('.inline-spinner-label', container).html(message);
 	};
 
 
@@ -820,9 +812,9 @@ scene_helpers.addCommonSceneMethods = function(assistant) {
 	 *  starts an existing spinner
 	 */
 	assistant.startInlineSpinner = function(container, message) {
-		// jQuery('.progress-panel', container).fadeOut('fast');
-		jQuery('.progress-panel', container).show('blind', 'fast');
-		jQuery('.progress-panel-label', container).html(message);
+		// jQuery('.inline-spinner', container).fadeOut('fast');
+		jQuery('.inline-spinner', container).show('blind', 'fast');
+		jQuery('.inline-spinner-label', container).html(message);
 	};
 
 
@@ -830,8 +822,8 @@ scene_helpers.addCommonSceneMethods = function(assistant) {
 	 *  hides and DESTROYS an existing spinner
 	 */
 	assistant.hideInlineSpinner = function(container, message) {
-		// jQuery('.progress-panel', container).fadeOut('fast');
-		jQuery('.progress-panel', container).hide('blind', 'fast', function() {
+		// jQuery('.inline-spinner', container).fadeOut('fast');
+		jQuery('.inline-spinner', container).hide('blind', 'fast', function() {
 			jQuery(this).remove();
 		});
 		
@@ -1065,8 +1057,8 @@ scene_helpers.addCommonSceneMethods = function(assistant) {
 		var thisA = this;
 		
 		// Mojo.Log.info('Timeline Caching disabled for now');
-		this.mojoDepot = new Mojo.Depot({
-			name:'SpazDepot',
+		var cacheDepot = new Mojo.Depot({
+			name:'SpazDepotTimelineCache',
 			replace:false
 		});
 		
@@ -1074,14 +1066,14 @@ scene_helpers.addCommonSceneMethods = function(assistant) {
 		
 		for (var i=0; i<users.length; i++) {
 			var username = users[i].username;
-			this.mojoDepot.simpleAdd('SpazMyTimelineCache_'+username, {},
+			cacheDepot.simpleAdd(username, {},
 				function() { 
 					// thisA.showAlert('Cache cleared');
-					dump('Cache SpazMyTimelineCache_'+username+' cleared');
+					dump('Cache '+username+' cleared');
 				},
 				function() { 
 					// Mojo.Controller.errorDialog('Cache clearing FAILED');
-					dump('Cache SpazMyTimelineCache_'+username+' clear failed');
+					dump('Cache '+username+' clear failed');
 				}
 			);
 		}

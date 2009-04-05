@@ -13,7 +13,7 @@ function MyTimelineAssistant(argFromPusher) {
 	
 	if (argFromPusher && argFromPusher.firstload === true) {
 		console.debug();
-		this.clearTimelineCache();
+		// this.clearTimelineCache();
 	}
 	
 	
@@ -21,14 +21,24 @@ function MyTimelineAssistant(argFromPusher) {
 		this property will hold the setInterval return
 	*/
 	this.refresher = null;
+	
+	this.cacheDepot = new Mojo.Depot({
+		name:'SpazDepotTimelineCache',
+		displayName:'SpazDepotTimelineCache',
+		replace:false,
+		version:1
+	});
+
 }
 
 
 
 MyTimelineAssistant.prototype.setup = function() {
 	
+	var thisA = this;
 	
 	this.tweetsModel = [];
+
 	
 	/* this function is for setup tasks that have to happen when the scene is first created */
 
@@ -74,6 +84,15 @@ MyTimelineAssistant.prototype.setup = function() {
 	
 	/* setup widgets here */
 	
+	jQuery().bind('load_from_mytimeline_cache_done', function() {
+		if (thisA.activateStarted === true) {
+			dump('getting data!');
+			thisA.getData();
+		} else {
+			dump('waiting for activate to load!');
+			thisA.loadOnActivate = true;
+		}
+	});
 	
 	
 	
@@ -81,11 +100,6 @@ MyTimelineAssistant.prototype.setup = function() {
 	dump('Loading Timeline Cache ###################################');
 	this.loadTimelineCache();
 	
-	
-	/*
-		We use this to delay the request until activation
-	*/
-	this.loadOnActivate = true;
 }
 
 
@@ -93,6 +107,7 @@ MyTimelineAssistant.prototype.setup = function() {
 MyTimelineAssistant.prototype.activate = function(event) {
 	/* put in event handlers here that should only be in effect when this scene is active. For
 	   example, key handlers that are observing the document */
+	this.activateStarted = true;
 	
 	this.addPostPopup();
 
@@ -120,7 +135,7 @@ MyTimelineAssistant.prototype.activate = function(event) {
 	*/
 	jQuery().bind('new_combined_timeline_data', { thisAssistant:this }, function(e, tweets, render_callback) {
 		
-		e.data.thisAssistant.renderTweets.call(e.data.thisAssistant, tweets, render_callback);
+		e.data.thisAssistant.renderTweets.call(e.data.thisAssistant, tweets, render_callback, false);
 
 	});
 
@@ -128,6 +143,7 @@ MyTimelineAssistant.prototype.activate = function(event) {
 	jQuery().bind('my_timeline_refresh', { thisAssistant:this }, function(e) {
 		e.data.thisAssistant.refresh();
 	});
+	
 	
 	/*
 		listen for clicks on user avatars
@@ -176,6 +192,9 @@ MyTimelineAssistant.prototype.activate = function(event) {
 		}
 		Mojo.Controller.stageController.pushScene('message-detail', {'status_id':status_id, 'isdm':isdm, 'status_obj':status_obj});
 	});
+	
+	
+	
 	
 	// jQuery('a[href]', this.scroller).live(Mojo.Event.tap, function(e) {
 	// 	e.preventDefault();
@@ -240,68 +259,67 @@ MyTimelineAssistant.prototype.cleanup = function(event) {
 
 
 MyTimelineAssistant.prototype.loadTimelineCache = function() {
-	// Mojo.Log.info('Timeline Caching disabled for now');
 
 	var thisA = this;
 
-	this.mojoDepot = new Mojo.Depot({
-		name:'SpazDepot',
-		replace:false
-	});
-	
-	this.mojoDepot.simpleGet('SpazMyTimelineCache_'+sc.app.username,
+	this.cacheDepot.simpleGet(sc.app.username,
 		function(data) {
 			dump('loading cache');
 			
+			var tl_data = null;
+			
 			try {
+				dump(data);
 				thisA.twit.setLastId(SPAZCORE_SECTION_FRIENDS, data[SPAZCORE_SECTION_FRIENDS + '_lastid']);
 				thisA.twit.setLastId(SPAZCORE_SECTION_REPLIES, data[SPAZCORE_SECTION_REPLIES + '_lastid']);
 				thisA.twit.setLastId(SPAZCORE_SECTION_DMS,     data[SPAZCORE_SECTION_DMS     + '_lastid']);
-
+	
 				/*
 					it seems to be double-encoded coming from the depot
 				*/				
-				tl_data = sch.deJSON(sch.deJSON(data.tweets_json));
+				tl_data = sch.deJSON(data.tweets_json);
+				if (sch.isString(tl_data)) { // in webkit we're sometimes double-encoded. Dunno why
+					tl_data = sch.deJSON(tl_data);	
+				}			
+			} catch (e) {
+				dump('Couldn\'t load cache');
+				dump(e.name + ":" + e.message);
+				jQuery().trigger('load_from_mytimeline_cache_done');
+			}
+			
+			if (tl_data) {
 				dump('My Timeline Cache loaded ##########################################');
 				dump(tl_data);
 				thisA.renderTweets(tl_data,
 					function() {
 						sch.markAllAsRead('#my-timeline>div.timeline-entry');
-					}
-				);				
-			} catch (e) {
-				dump('Couldn\'t load cache');
-				dump(e.name + ":" + e.message);
+					},
+					true // we are loading from cache
+				);
 			}
 		},
-		function() { dump('My Timeline Cache load failed') }
+		function(msg) {
+			dump('My Timeline Cache load failed:'+msg);
+			jQuery().trigger('load_from_mytimeline_cache_done');
+		}
 	);
 	
 };
 
-MyTimelineAssistant.prototype.saveTimelineCache = function() {
-	// Mojo.Log.info('Timeline Caching disabled for now');
+MyTimelineAssistant.prototype.saveTimelineCache = function() {	
+	var tweetsModel_json = sch.enJSON(this.tweetsModel);
 	
-	// if (this.tweetsModel.length > 0) {
-		var tweetsModel_json = sch.enJSON(this.tweetsModel);
-
-		var twitdata = {}
-		twitdata['tweets_json']                        = tweetsModel_json;
-		twitdata[SPAZCORE_SECTION_FRIENDS + '_lastid'] = this.twit.getLastId(SPAZCORE_SECTION_FRIENDS);
-		twitdata[SPAZCORE_SECTION_REPLIES + '_lastid'] = this.twit.getLastId(SPAZCORE_SECTION_REPLIES);
-		twitdata[SPAZCORE_SECTION_DMS     + '_lastid'] = this.twit.getLastId(SPAZCORE_SECTION_DMS);
-
-		this.mojoDepot = new Mojo.Depot({
-			name:'SpazDepot',
-			replace:false
-		});
-
-
-
-		this.mojoDepot.simpleAdd('SpazMyTimelineCache_'+sc.app.username, twitdata,
-			function() { dump('My Timeline Cache Saved') },
-			function(msg) { dump('My Timeline Cache save failed:'+msg) }
-		);
+	var twitdata = {}
+	twitdata['tweets_json']                        = tweetsModel_json;
+	twitdata[SPAZCORE_SECTION_FRIENDS + '_lastid'] = this.twit.getLastId(SPAZCORE_SECTION_FRIENDS);
+	twitdata[SPAZCORE_SECTION_REPLIES + '_lastid'] = this.twit.getLastId(SPAZCORE_SECTION_REPLIES);
+	twitdata[SPAZCORE_SECTION_DMS     + '_lastid'] = this.twit.getLastId(SPAZCORE_SECTION_DMS);
+	
+	
+	this.cacheDepot.simpleAdd(sc.app.username, twitdata,
+		function() { dump('My Timeline Cache Saved') },
+		function(msg) { dump('My Timeline Cache save failed:'+msg) }
+	);
 	
 };
 
@@ -340,8 +358,13 @@ MyTimelineAssistant.prototype.refresh = function(e) {
 
 
 
-MyTimelineAssistant.prototype.renderTweets = function(tweets, render_callback) {
+MyTimelineAssistant.prototype.renderTweets = function(tweets, render_callback, from_cache) {
 	
+	if (from_cache !== true) {
+		from_cache = false;
+	}
+	
+		
 	var thisA = this;
 	
 	/*
@@ -352,18 +375,27 @@ MyTimelineAssistant.prototype.renderTweets = function(tweets, render_callback) {
 
 		var rendertweets = tweets;
 		
+		var tweets_added = 0;
+		
 		Mojo.Timing.resume('my_timeline_render');
 
 		jQuery.each( rendertweets, function() {
 			/*
 				check to see if this item exists
 			*/
-			if (!thisA.getEntryElementByStatusId(this.id)) {
+			if (this == false) {
+				dump("Tweet object was FALSE; skipping");
+			} else if (!thisA.getEntryElementByStatusId(this.id)) {
+				
+				dump('adding '+this.id+':');
+				dump(this);
 				
 				/*
 					add to tweetsModel
 				*/
 				thisA.addTweetToModel(this);
+				tweets_added++;
+				
 				
 				this.text = makeItemsClickable(this.text);
 
@@ -404,8 +436,18 @@ MyTimelineAssistant.prototype.renderTweets = function(tweets, render_callback) {
 		Mojo.Timing.pause('my_timeline_render');
 		Mojo.Log.info(Mojo.Timing.reportTiming("my_timeline_render", "my_timeline_render -- \n"));
 		
-		if ( sc.app.prefs.get('timeline-scrollonupdate') ) {
-			this.scrollToNew();
+		dump("tweets_added:"+tweets_added);
+		dump("from_cache:"+from_cache);
+		dump("sc.app.prefs.get('timeline-scrollonupdate'):"+sc.app.prefs.get('timeline-scrollonupdate'));
+		
+		
+		
+		
+		if ( tweets_added > 0 && !from_cache && sc.app.prefs.get('timeline-scrollonupdate') ) {
+			dump("I'm going to scroll to new in 500ms!");
+			setTimeout(function() { thisA.scrollToNew() }, 500);
+		} else {
+			dump("Not scrolling to new!");
 		}
 		
 		
@@ -418,10 +460,10 @@ MyTimelineAssistant.prototype.renderTweets = function(tweets, render_callback) {
 	*/
 	// sch.removeExtraElements('#my-timeline>div.timeline-entry', sc.app.prefs.get('timeline-maxentries'));
 	
-	sch.removeExtraElements('#my-timeline>div.timeline-entry:not(.reply):not(.dm)', sc.app.prefs.get('timeline-maxentries'));
-	sch.removeExtraElements('#my-timeline>div.timeline-entry.reply', sc.app.prefs.get('timeline-maxentries-reply'));
-	sch.removeExtraElements('#my-timeline>div.timeline-entry.dm', sc.app.prefs.get('timeline-maxentries-dm'));
-
+	// sch.removeExtraElements('#my-timeline>div.timeline-entry:not(.reply):not(.dm)', sc.app.prefs.get('timeline-maxentries'));
+	// sch.removeExtraElements('#my-timeline>div.timeline-entry.reply', sc.app.prefs.get('timeline-maxentries-reply'));
+	// sch.removeExtraElements('#my-timeline>div.timeline-entry.dm', sc.app.prefs.get('timeline-maxentries-dm'));
+	thisA.removeExtraItems();
 
 	/*
 		Update relative dates
@@ -443,7 +485,7 @@ MyTimelineAssistant.prototype.renderTweets = function(tweets, render_callback) {
 	
 	var new_count = jQuery('#my-timeline>div.timeline-entry.new:visible').length;
 	
-	if (new_count > 0) {
+	if (!from_cache && new_count > 0) {
 		thisA.newMsgBanner(new_count);
 		thisA.playAudioCue('newmsg');		
 	}
@@ -455,7 +497,13 @@ MyTimelineAssistant.prototype.renderTweets = function(tweets, render_callback) {
 	/*
 		Save this in case we need to load from cache
 	*/
-	thisA.saveTimelineCache();
+	if (!from_cache) {
+		thisA.saveTimelineCache();
+	} else {
+		jQuery().trigger('load_from_mytimeline_cache_done');
+	}
+	
+
 
 };
 
@@ -491,12 +539,11 @@ MyTimelineAssistant.prototype.getTweet = function(id) {
 	
 	for(var i=0; i < this.tweetsModel.length; i++) {
 		if (this.tweetsModel[i].id == id) {
-			return this.tweetsModel[i]
+			return this.tweetsModel[i];
 		}
 	}
 	
 	return false;
-	
 };
 
 
@@ -506,11 +553,84 @@ MyTimelineAssistant.prototype.getTweet = function(id) {
 */
 MyTimelineAssistant.prototype.addTweetToModel = function(twobj) {
 	var newlen = this.tweetsModel.push(twobj);
-	dump('this.tweetsModel is now '+newlen+' items long')
-	if (newlen > sc.app.prefs.get('timeline-maxentries')) {
-		this.tweetsModel.shift();
-		dump('SHIFTED: this.tweetsModel is now '+this.tweetsModel.length+' items long');
-	}
+	dump('this.tweetsModel is now '+newlen+' items long');
 };
 
 
+MyTimelineAssistant.prototype.removeExtraItems = function() {
+	/*
+		from html timeline
+	*/
+	sch.removeExtraElements('#my-timeline>div.timeline-entry:not(.reply):not(.dm)', sc.app.prefs.get('timeline-maxentries'));
+	sch.removeExtraElements('#my-timeline>div.timeline-entry.reply', sc.app.prefs.get('timeline-maxentries-reply'));
+	sch.removeExtraElements('#my-timeline>div.timeline-entry.dm', sc.app.prefs.get('timeline-maxentries-dm'));
+	
+	/*
+		now sync the local model to the html
+		We go backwards because we're splicing
+	*/
+	var thisA = this;
+	var new_model = [];
+	Mojo.Timing.resume('syncModel');
+	jQuery('#my-timeline>div.timeline-entry').each( function() {
+		var id = jQuery(this).attr('data-status-id');
+		var this_obj = thisA.getTweet(id);
+		new_model.push(this_obj);
+	} );
+	this.tweetsModel = new_model.reverse();
+	
+	Mojo.Timing.pause('syncModel');
+	// alert(Mojo.Timing.reportTiming("syncModel", "syncModel Timing -- \n"));
+
+	
+	
+	
+	
+	
+	// for (var i=this.tweetsModel.length-1; i >=0; i--) {
+	// 	var this_item = this.tweetsModel[i];
+	// 	if (!this.getEntryElementByStatusId(this_item.id)) {
+	// 		var deleted = this.tweetsModel.splice(i, 1)[0];
+	// 		dump("deleted entry "+this_item.id+" in model");
+	// 		dump(deleted);
+	// 	} else {
+	// 		dump("keeping "+this_item.id);
+	// 		dump(this_item);
+	// 	}
+	// 	
+	// }
+	
+	var html_count  = jQuery('#my-timeline>div.timeline-entry').length;
+	var norm_count  = jQuery('#my-timeline>div.timeline-entry:not(.reply):not(.dm)').length;
+	var reply_count = jQuery('#my-timeline>div.timeline-entry.reply').length;
+	var dm_count    = jQuery('#my-timeline>div.timeline-entry.dm').length;
+	
+	
+	var model_count = this.tweetsModel.length;
+	
+	dump('HTML COUNT:'+html_count);
+	dump('NORM COUNT:'+norm_count);
+	dump('REPLY COUNT:'+reply_count);
+	dump('DM COUNT:'+dm_count);
+	dump('MODEL COUNT:'+model_count);
+	
+	// var last_normal = jQuery('#my-timeline>div.timeline-entry:not(.reply):not(.dm):last');
+	// var last_normal = jQuery('#my-timeline>div.timeline-entry:not(.reply):not(.dm):last');
+	// 
+	// 
+	// 
+	// function removeFromModel(tweet_array, key, value) {
+	// 	var matching_tweets
+	// 	
+	// 	for (var i=0; i < tweet_array.length; i++) {
+	// 		
+	// 		if (tweet_array[i][key] == value) {
+	// 			
+	// 		}
+	// 		
+	// 	}
+	// }
+	// 
+	
+	
+};

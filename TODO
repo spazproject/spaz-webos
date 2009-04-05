@@ -1,70 +1,59 @@
 ## APRIL 15 TASKS
 * Login/splash
-	* Need to listen for Ajax errors on trends
+	* Need to listen for Ajax errors on trends (just leave msg in inline spinner)
+	* insert way to pull news to send out updates
 * My Timeline
-	* this.tweetsModel is culled in a different way than HTML timeline, and will get out of sync (and cause problems when cache is loaded, because the model is the cache source). Needs to independently handle dms and replies
+	* Not scrollingTo properly on first load
 * Message Detail
+	* Should pull passed data, not pull from network
 * User Detail
 	* Need to listen for Ajax errors on user timeline
-	* parse links, usernames, hashtags in description
 * Search
+	* search needs to auto-refresh
 * Preferences
 	* Finish pref UI & code for Refresh rate
+	* Pref for scroll on new
+	* Pref for API base URL
+	* enable/disable sounds
+	* Twitter API Base URL
 * Notifications
-	* Link banners back to scene that opened them
 	* raise notifications from search
 * Posting
 	* Need to listen for Ajax errors in posting
-	
-
 SpazTwit
 	* Need to be able to lookup and return object for spcific tweet
 
 
 
 * Login/splash
-	* Need to listen for Ajax errors on trends
 * My Timeline
-	* Combined timeline
-		* dupes still seem to get through in some cases on combined timeline (posting new msgs)
-	* Need to listen for Ajax errors
-	* Timeline is sometimes out of order when loading some from cache (replies and DMs). Need to resort whole list on view side, prob (maybe happens when DMs and replies drop off bottom of stack)
-	* Timeline HTML caching seems to prevent some messages from loading. Perhaps an issue with how since_id is determined?
 * Message Detail
-	* Need to listen for Ajax errors
 	* reveal IRT instead of just linking to it
 	* add star to favorite button (that reflects status)
-	* DMs don't show detail properly (need to detect and grab with right method)
 * User Detail
-	* Need to listen for Ajax errors on user data
-	* Need to listen for Ajax errors on user timeline
 	* Data timeline should only load on request
-	* parse links, usernames, hashtags in description
 	* add ability to view user's favorites
 * Search
-	* Need to listen for Ajax errors
 * Preferences
-	* create scene
-	* add to AppMenu
 * Notifications
-	* Link banners back to scene that opened them
-	* raise notifications from search
 * Posting
-	* Need to listen for Ajax errors in posting
 	* posting a dm returns the last "regular" message and prepends it to the timeline (even if dupe)
-	* can still send if over char limit (disable post button!)
-	
 
 SpazTwit
 	* Add generic event raised on Ajax errors
 	* Make sure all methods raise specific error events
 	* add event for "no new messages" so view can do any necessary updates
 	* complete min_age limits on refresh, and "force refresh" functionality
-	* Need to be able to lookup and return object for spcific tweet
+	* Need to be able to lookup and return object for specific tweet
 
 
 ## UPCOMING FEATURES
+	* Support stocktwits links ($JAVA, $PALM)
+	* User lookup shortcut (from App menu)
 	* Photo posting
 	* Photo taking and posting
+	* Search history and saved searches
 	* Updating location with GPS services
+	* View User's favs
+	* Ping.fm posting
 	* People Picker widget to integrate with contacts for posting(?)

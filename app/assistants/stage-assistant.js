@@ -5,6 +5,7 @@ function StageAssistant () {
 
 
 StageAssistant.prototype.setup = function() {
+	// this.controller.pushScene('binding');
 	// this.controller.pushScene('my-timeline');
 	// this.controller.pushScene('search-twitter', {searchterm:'funkatron'});
 	// this.controller.pushScene('user-detail', 'poop');
@@ -19,6 +20,7 @@ StageAssistant.prototype.setup = function() {
 	
 	sc.app.username = null;
 	sc.app.password = null;
+	
 	
 	
 	/*

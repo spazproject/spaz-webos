@@ -3,8 +3,6 @@
  * @param (Object) prefsObj  An existing SpazPrefs object (optional)
  */
 var Users = function(prefsObj) {
-	// this.bucket = 'Users';
-	// this.depot  = 'SpazDepot'
 	if (prefsObj) {
 		this.prefs = prefsObj;
 	} else {
@@ -44,12 +42,14 @@ Users.prototype.initUsers	= function(onSuccess, onFailure) {
 
 
 Users.prototype.add			= function(username, password, type) {
+	username = username.toLowerCase();
 	this._users.push = {
 		'username':username,
 		'password':password,
 		'type':type
 	};
 	this.saveUsers();
+	dump("Added new user:"+username);
 };
 
 
@@ -62,10 +62,12 @@ Users.prototype.getByType	= function(type) {
 
 
 Users.prototype.getUser		= function(username) {
+	username = username.toLowerCase();
 	
 	for (i=0; i<this._users.length; i++) {
 		
-		if (this._users[i].username = username) {
+		if (this._users[i].username.toLowerCase() === username) {
+			dump('Found matching user record to '+ username)
 			return this._users[i];
 		}
 		

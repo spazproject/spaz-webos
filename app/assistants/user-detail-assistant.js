@@ -76,7 +76,7 @@ UserDetailAssistant.prototype.setup = function() {
 		
 		var rendertweets = tweets;
 		// they come in oldest-first, so reverse it since we're rendering as a collection
-		rendertweets = rendertweets.reverse(); 
+		rendertweets = rendertweets.reverse();
 
 		jQuery.each( rendertweets, function() {
 			this.text = makeItemsClickable(this.text);
@@ -111,6 +111,7 @@ UserDetailAssistant.prototype.setup = function() {
 		dump(thisA.userobj);
 		
 		// var itemhtml = Mojo.View.render({object:this.userobj, template: 'user-detail/user-detail'});
+		thisA.userobj.description = makeItemsClickable(thisA.userobj.description);
 		
 		var itemhtml = sc.app.tpl.parseTemplate('user-detail', thisA.userobj);
 		jQuery('#user-detail').html(itemhtml);

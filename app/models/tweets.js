@@ -12,7 +12,7 @@ var Tweets = function() {
 
 Tweets.prototype._init  = function() {
 	var opts = {
-		'name'    : 'SpazDepot',
+		'name'    : 'SpazDepotTweets',
 		'replace' : false
 	};
 	
@@ -28,6 +28,12 @@ Tweets.prototype.get    = function(id, is_dm, onSuccess, onFailure) {
 		this.mojoDepot.getSingle(this.dm_bucket, id, onSuccess, onFailure);
 	}
 };
+
+
+Tweets.prototype.getMultiple = function(type, since_id) {
+	
+};
+
 
 Tweets.prototype.save   = function(object, onSuccess, onFailure) {
 	var objid = object.id;

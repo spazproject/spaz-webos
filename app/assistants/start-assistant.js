@@ -324,6 +324,7 @@ StartAssistant.prototype.showStart  = function() {
 	if (jQuery('#login-section').is(':visible')) {
 		this.showSection('#login-section', '#start-section');
 	}
+	jQuery().unbind(Mojo.Event.back);
 };
 
 
@@ -445,6 +446,8 @@ var NewAccountDialogAssistant = Class.create({
 				changeOnKeyPress: true,
 				focusMode:	Mojo.Widget.focusSelectMode,
 				multiline:		false,
+				textReplacement: false,
+				autoCapitalization: false
 			},
 			this.newAccountModel
 		);
@@ -460,7 +463,7 @@ var NewAccountDialogAssistant = Class.create({
 				modelProperty:		'password',
 				changeOnKeyPress: true, 
 				focusMode:		Mojo.Widget.focusSelectMode,
-				multiline:		false,
+				multiline:		false
 			},
 			this.newAccountModel
 		    );
@@ -478,8 +481,8 @@ var NewAccountDialogAssistant = Class.create({
 			thisA.sceneAssistant.hideInlineSpinner('#new-account-spinner-container');
 			
 			var newItem = {
-							id:thisA.newAccountModel.username,
-							username:thisA.newAccountModel.username,
+							id:thisA.newAccountModel.username.toLowerCase(),
+							username:thisA.newAccountModel.username.toLowerCase(),
 							password:thisA.newAccountModel.password,
 							type:'twitter'
 						};
@@ -528,7 +531,7 @@ var NewAccountDialogAssistant = Class.create({
 		/*
 			now verify credentials against the Twitter API
 		*/
-		sc.app.twit.verifyCredentials(this.newAccountModel.username, this.newAccountModel.password);
+		sc.app.twit.verifyCredentials(this.newAccountModel.username.toLowerCase(), this.newAccountModel.password);
 	}
 	
 	
