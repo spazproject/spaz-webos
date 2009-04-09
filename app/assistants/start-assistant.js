@@ -52,45 +52,45 @@ StartAssistant.prototype.setup = function() {
 		'always-go-to-my-timeline':false
 	};
 	
-	this.spinnerModel = {
-		'spinning':false
-	}
+	// this.spinnerModel = {
+	// 	'spinning':false
+	// }
 	
 	
-	/**
-	 * Mojo Widgets 
-	 */
-	
-	/*
-		Username
-	*/
-	this.controller.setupWidget('username',
-		this.atts = {
-			// hintText: 'enter username',
-			enterSubmits: true,
-			modelProperty:'username', 
-			changeOnKeyPress: true,
-			focusMode:	Mojo.Widget.focusSelectMode,
-			multiline:		false,
-		},
-		this.model
-	);
-	
-	/*
-		Password
-	*/
-	this.controller.setupWidget('password',
-	    this.atts = {
-	        // hintText: 'enter password',
-	        label: "password",
-			enterSubmits: true,
-			modelProperty:		'password',
-			changeOnKeyPress: true, 
-			focusMode:		Mojo.Widget.focusSelectMode,
-			multiline:		false,
-		},
-		this.model
-	    );
+	// /**
+	//  * Mojo Widgets 
+	//  */
+	// 
+	// /*
+	// 	Username
+	// */
+	// this.controller.setupWidget('username',
+	// 	this.atts = {
+	// 		// hintText: 'enter username',
+	// 		enterSubmits: true,
+	// 		modelProperty:'username', 
+	// 		changeOnKeyPress: true,
+	// 		focusMode:	Mojo.Widget.focusSelectMode,
+	// 		multiline:		false,
+	// 	},
+	// 	this.model
+	// );
+	// 
+	// /*
+	// 	Password
+	// */
+	// this.controller.setupWidget('password',
+	//     this.atts = {
+	//         // hintText: 'enter password',
+	//         label: "password",
+	// 		enterSubmits: true,
+	// 		modelProperty:		'password',
+	// 		changeOnKeyPress: true, 
+	// 		focusMode:		Mojo.Widget.focusSelectMode,
+	// 		multiline:		false,
+	// 	},
+	// 	this.model
+	//     );
 	
 	/*
 		checkbox to go to my timeline
@@ -127,6 +127,7 @@ StartAssistant.prototype.setup = function() {
 		}
 	);
 	
+	
     Mojo.Event.listen($('accountList'), Mojo.Event.listTap, function(e) {
 		// sc.app.twit.setCredentials(e.item.username, e.item.password);
 		sc.app.username = e.item.username;
@@ -147,11 +148,6 @@ StartAssistant.prototype.setup = function() {
 	 
 	});
     Mojo.Event.listen($('accountList'), Mojo.Event.listChange, function(e) {
-		// if(e.originalEvent.target.tagName == "INPUT") {
-		// 	e.item.data = e.originalEvent.target.value;
-		// 	console.log("Change called.  Word is now: "+e.item.data);
-		// }
-		// Mojo.Controller.notYetImplemented();
 	});
     Mojo.Event.listen($('accountList'), Mojo.Event.listDelete, function(e) {
 		thisA.accountsModel.items.splice(thisA.accountsModel.items.indexOf(e.item), 1);
@@ -186,11 +182,11 @@ StartAssistant.prototype.setup = function() {
 	/*
 		Spinner
 	*/
-	this.controller.setupWidget('activity-spinner', {
-			property: 'spinning',
-		},
-		this.spinnerModel
-	);	
+	// this.controller.setupWidget('activity-spinner', {
+	// 		property: 'spinning',
+	// 	},
+	// 	this.spinnerModel
+	// );	
 	
 	/*
 		Listen for taps on login button and status panel popup
@@ -293,38 +289,43 @@ StartAssistant.prototype.cleanup = function(event) {
 }
 
 
-StartAssistant.prototype.showSection = function(from, to) {
-	jQuery(from).hide('drop', 'up', function() {
-		jQuery(to).show('drop', 'down');
-	});
+// StartAssistant.prototype.showSection = function(from, to) {
+// 	jQuery(from).hide('drop', 'up', function() {
+// 		jQuery(to).show('drop', 'down');
+// 	});
+// 	jQuery(to).show('drop', 'down'); 
+// }
+// 
+// StartAssistant.prototype.showLogin  = function() {
+// 	this.showSection('#start-section', '#login-section');
+// 	var thisA = this;
+// 	// jQuery().bind(Mojo.Event.back, function() {
+// 	// 	thisA.showStart();
+// 	// 	jQuery().unbind(Mojo.Event.back);
+// 	// });
+// };
+
+StartAssistant.prototype.showLogin = function() { 
+	this.showSection('start-section', 'login-section');
+}; 
+
+StartAssistant.prototype.showSection = function(from, to) { 
+	$(from).hide();
+	$(to).show(); 
 }
 
-StartAssistant.prototype.showLogin  = function() {
-	this.showSection('#start-section', '#login-section');
-	var thisA = this;
-	jQuery().bind(Mojo.Event.back, function() {
-		thisA.showStart();
-		jQuery().unbind(Mojo.Event.back);
-	});
-};
-
 StartAssistant.prototype.showSearch = function() {
-	this.showSection('#start-section', '#search-section');
+	this.showSection('start-section', 'search-section');
 	var thisA = this;
-	jQuery().bind(Mojo.Event.back, function() {
-		thisA.showStart();
-		jQuery().unbind(Mojo.Event.back);
-	});
 };
 
 StartAssistant.prototype.showStart  = function() {
 	if (jQuery('#search-section').is(':visible')) {
-		this.showSection('#search-section', '#start-section');
+		this.showSection('search-section', 'start-section');
 	}
 	if (jQuery('#login-section').is(':visible')) {
-		this.showSection('#login-section', '#start-section');
+		this.showSection('login-section', 'start-section');
 	}
-	jQuery().unbind(Mojo.Event.back);
 };
 
 
