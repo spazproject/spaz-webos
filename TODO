@@ -3,18 +3,15 @@
 	* Need to listen for Ajax errors on trends (just leave msg in inline spinner)
 	* insert way to pull news to send out updates
 * My Timeline
-	* Not scrollingTo properly on first load
 * Message Detail
 	* Should pull passed data, not pull from network
 * User Detail
 	* Need to listen for Ajax errors on user timeline
 * Search
 	* search needs to auto-refresh
+	* Trends button
+	Make sure can spawn search cards from search cards
 * Preferences
-	* Finish pref UI & code for Refresh rate
-	* Pref for scroll on new
-	* Pref for API base URL
-	* enable/disable sounds
 	* Twitter API Base URL
 * Notifications
 	* raise notifications from search
@@ -27,6 +24,8 @@ SpazTwit
 
 * Login/splash
 * My Timeline
+	* Weirdness with spacing in timeline sometimes
+	* items sometimes load out of order (New data will load before cached)
 * Message Detail
 	* reveal IRT instead of just linking to it
 	* add star to favorite button (that reflects status)

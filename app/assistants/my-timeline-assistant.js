@@ -240,6 +240,7 @@ MyTimelineAssistant.prototype.deactivate = function(event) {
 	jQuery().unbind('update_succeeded');
 	jQuery().unbind('update_failed');
 	jQuery().unbind('my_timeline_refresh');
+	jQuery().unbind('load_from_mytimeline_cache_done');
 	
 	jQuery('div.timeline-entry>.user', this.scroller).die(Mojo.Event.tap);
 	jQuery('.username.clickable', this.scroller).die(Mojo.Event.tap);
@@ -514,14 +515,19 @@ MyTimelineAssistant.prototype.startRefresher = function() {
 	/*
 		Set up refresher
 	*/
-	
 	this.stopRefresher(); // in case one is already running
 	
-	this.refresher = setInterval(function() {
-			jQuery().trigger('my_timeline_refresh');
-		}, sc.app.prefs.get('network-refreshinterval')
-	);
-}
+	var time = sc.app.prefs.get('network-refreshinterval');
+	
+	if (time > 0) {
+		this.refresher = setInterval(function() {
+				jQuery().trigger('my_timeline_refresh');
+			}, time
+		)
+	} else {
+		this.refresher = null;
+	}
+};
 
 MyTimelineAssistant.prototype.stopRefresher = function() {
 	dump('Stopping refresher');
@@ -529,7 +535,7 @@ MyTimelineAssistant.prototype.stopRefresher = function() {
 		Clear refresher
 	*/
 	clearInterval(this.refresher);
-}
+};
 
 
 /**

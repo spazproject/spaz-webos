@@ -1,12 +1,54 @@
 
-<div id="refreshRateList" name="refreshRateList" x-mojo-element='List'></div>
 
-<button class="palm-button" id="clear-cache-button">Clear caches</button>
+<div class="palm-group palm-group-spaz">
+	<div class="palm-group-title" id="search-toggle" x-mojo-loc=''>Refresh rate</div>
+	<div class="palm-list">
+		<div class="palm-row first" x-mojo-tap-highlight="momentary">
+			<div class="palm-row-wrapper">
+				<div id="network-refreshinterval" x-mojo-element="ListSelector"></div>                                                   
+			</div>
+		</div>
+		
+		<div class="palm-row last" x-mojo-tap-highlight="momentary">
+			<div class="palm-row-wrapper">
+				<div id="network-searchrefreshinterval" x-mojo-element="ListSelector"></div>
+			</div>
+		</div>        
+	</div>
+</div>
+
+
+<div class="palm-group palm-group-spaz">
+	<div class="palm-group-title" id="search-toggle" x-mojo-loc=''>Message caches</div>
+	<div class="palm-list">
+		<div class="palm-row single">
+			<button class="palm-button" id="clear-cache-button">Clear caches</button>
+		</div>        
+	</div>
+</div>
+
+
+
+<div class="palm-group palm-group-spaz">
+	<div class="palm-group-title" id="search-toggle" x-mojo-loc=''>Other options</div>
+	<div class="palm-list">
+		<div class="palm-row first">
+			<div style="overflow:auto;" class="checkbox-container">
+				<div x-mojo-element="CheckBox" id="checkbox-sound-enabled"></div>
+				<div class="checkbox-label">Play sounds</div>
+			</div>
+		</div>
+		
+		<div class="palm-row last">
+			<div style="overflow:auto;" class="checkbox-container">
+				<div x-mojo-element="CheckBox" id="checkbox-timeline-scrollonupdate"></div>
+				<div class="checkbox-label">Scroll to 1st new item on refresh</div>
+			</div>
+		</div>        
+	</div>
+</div>
+
 
 <ul>
-	<li>Picker: Refresh time: main timeline</li>
-	<li>Picker: Refresh time: searches</li>
-	<li>Checkbox: Play sounds</li>
-	<li>Checkbox: Scroll to first new item on refresh</li>
 	<li>Textbox: Twitter API Base URL</li>
 </ul>

@@ -27,6 +27,8 @@ function SearchTwitterAssistant(args) {
 		this property will hold the setInterval return
 	*/
 	this.refresher = null;
+	
+	this.lastQuery = '';
 }
 
 
@@ -84,14 +86,13 @@ SearchTwitterAssistant.prototype.setup = function() {
 				},
 				{
 					items: [
-						{label:$L('Trends'),   iconPath:'images/theme/menu-icon-trends.png', command:'search-trends', shortcut:'R'},
+						{label:$L('Update'),   icon:'sync', command:'refresh', shortcut:'R'},
+						{label:$L('Trends'),   iconPath:'images/theme/menu-icon-trends.png', command:'search-trends'},
 					]
 				}
 			]
 		});
-		
 	} else {
-		
 		this.setupCommonMenus({
 			viewMenuItems: [
 				{
@@ -103,8 +104,8 @@ SearchTwitterAssistant.prototype.setup = function() {
 				{
 					items: [
 						{label:$L('Compose'),  icon:'compose', command:'compose', shortcut:'N'},
-						{label:$L('Trends'),   iconPath:'images/theme/menu-icon-trends.png', command:'search-trends', shortcut:'R'},
-						{label:$L('New Search'), icon:'new', command:'new-search-card', shortcut:'S'}					
+						{label:$L('Update'),   icon:'sync', command:'refresh', shortcut:'R'},
+						{label:$L('Trends'),   iconPath:'images/theme/menu-icon-trends.png', command:'search-trends'}
 					]
 				}
 			],
@@ -120,7 +121,6 @@ SearchTwitterAssistant.prototype.setup = function() {
 				]
 			}]
 		});
-		
 	}
 
 	this.scroller = this.controller.getSceneScroller();
@@ -130,15 +130,16 @@ SearchTwitterAssistant.prototype.setup = function() {
 	this.searchBoxAttr = {
 		"hintText":	      'Enter search terms…',
 		"focusMode":      Mojo.Widget.focusSelectMode,
-		"fieldName":'search-twitter'
+		"fieldName":'search-twitter',
+		"changeOnKeyPress": true
 	};
 	this.searchBoxModel = {
-		'value':     null,
+		'value':     '',
 		'disabled':  false
 	}
 	this.controller.setupWidget('search-twitter-textfield', this.searchBoxAttr, this.searchBoxModel);
 
-	Mojo.Event.listenForFocusChanges($('search-twitter-textfield'),this.searchboxFocusChange.bind(this));
+	Mojo.Event.listenForFocusChanges($('search-twitter-textfield'), this.searchboxFocusChange.bind(this));
 
 	jQuery('#submit-search-button').bind(Mojo.Event.tap, function() {
 		thisA.search.call(thisA, thisA.searchBoxModel.value);
@@ -201,33 +202,37 @@ SearchTwitterAssistant.prototype.activate = function(event) {
 		var rendertweets = tweets;
 
 		jQuery.each( rendertweets, function() {
-			this.text = makeItemsClickable(this.text);
-			
-			// var itemhtml = Mojo.View.render({object: this, template: 'search-twitter/search-item'});
-			var itemhtml = sc.app.tpl.parseTemplate('search-item', this);
-			
-			/*
-				make jQuery obj
-			*/
-			var jqitem = jQuery(itemhtml);
-			
-			/*
-				attach data object to item html
-			*/
-			jqitem.data('item', this);
-			
-			/*
-				save this tweet to Depot
-			*/
-			// sc.app.Tweets.save(this);
-			
-			
-			/*
-				put item on timeline
-			*/
-			jQuery('#search-timeline').prepend(jqitem);
-		});
 
+			if (!thisA.getEntryElementByStatusId(this.id)) {
+				this.text = makeItemsClickable(this.text);
+			
+				// var itemhtml = Mojo.View.render({object: this, template: 'search-twitter/search-item'});
+				var itemhtml = sc.app.tpl.parseTemplate('search-item', this);
+			
+				/*
+					make jQuery obj
+				*/
+				var jqitem = jQuery(itemhtml);
+			
+				/*
+					attach data object to item html
+				*/
+				jqitem.data('item', this);
+			
+				/*
+					save this tweet to Depot
+				*/
+				// sc.app.Tweets.save(this);
+			
+			
+				/*
+					put item on timeline
+				*/
+				jQuery('#search-timeline').prepend(jqitem);
+			}
+		});
+		
+		sch.removeExtraElements('#search-timeline>div.timeline-entry', sc.app.prefs.get('timeline-maxentries'));
 
 		/*
 			Update relative dates
@@ -237,7 +242,21 @@ SearchTwitterAssistant.prototype.activate = function(event) {
 		e.data.thisAssistant.hideInlineSpinner('#search-timeline');
 		e.data.thisAssistant.startRefresher();
 		
+		
+		var new_count = jQuery('#search-timeline>div.timeline-entry.new:visible').length;
+		if (new_count > 0) {
+			thisA.newSearchResultsBanner(new_count, e.data.thisAssistant.lastQuery);
+			thisA.playAudioCue('newmsg');
+		}
+		
 	});
+	
+	
+	jQuery().bind('search_timeline_refresh', { thisAssistant:this }, function(e) {
+		sch.markAllAsRead('#search-timeline>div.timeline-entry');
+		e.data.thisAssistant.refresh();
+	});
+	
 	
 	/*
 		listen for clicks on user avatars
@@ -290,6 +309,7 @@ SearchTwitterAssistant.prototype.deactivate = function(event) {
 	Mojo.Event.stopListening($('submit-search-button'), Mojo.Event.tap, this.search);	
 	
 	jQuery().unbind('new_search_timeline_data');
+	jQuery().unbind('error_search_timeline_data');
 	
 	jQuery('div.timeline-entry>.user', this.scroller).die(Mojo.Event.tap);
 	jQuery('.username.clickable', this.scroller).die(Mojo.Event.tap);
@@ -302,34 +322,38 @@ SearchTwitterAssistant.prototype.deactivate = function(event) {
 SearchTwitterAssistant.prototype.cleanup = function(event) {
 	/* this function should do any cleanup needed before the scene is destroyed as 
 	   a result of being popped off the scene stack */
+	jQuery().unbind('search_timeline_refresh');
 }
 
 
 
-SearchTwitterAssistant.prototype.search = function(e) {
+SearchTwitterAssistant.prototype.search = function(e, type) {
 	dump("search called");
 	
+	if (type && type.toLowerCase() !== 'refresh') { // empty unless this is a refresh
+		jQuery('#search-timeline').empty();
+	} else {
+		sch.markAllAsRead('#search-timeline>div.timeline-entry');
+	}
 		
 	if (sch.isString(e)) {
 		dump(e);
+		this.lastQuery = e;
 		this.twit.search(e);
 		/*
 			clear any existing results
 		*/
-		jQuery('#search-timeline').empty();
-
-		// this.spinnerOn();
+		
 		this.showInlineSpinner('#search-timeline', 'Looking for results…');
 		
 	} else if (e.value) {
 		// dump(e);
+		this.lastQuery = e.value;
 		this.twit.search(e.value);		
 		/*
 			clear any existing results
 		*/
-		jQuery('#search-timeline').empty();
 
-		// this.spinnerOn();
 		this.showInlineSpinner('#search-timeline', 'Looking for results…');
 		
 		jQuery('#submit-search-button').hide();
@@ -340,27 +364,30 @@ SearchTwitterAssistant.prototype.search = function(e) {
 SearchTwitterAssistant.prototype.refresh = function() {
 	dump('Stopping refresher');
 	this.stopRefresher();
-	this.search(this.searchBoxModel.value);
+	this.search(this.searchBoxModel.value, 'refresh');
 };
 
 
 
 
 SearchTwitterAssistant.prototype.startRefresher = function() {
-	this.stopRefresher();
-	
 	dump('Starting refresher');
 	/*
 		Set up refresher
 	*/
+	this.stopRefresher(); // in case one is already running
 	
-	this.refresher = setInterval(function() {
-			jQuery().trigger('search_twitter_refresh');
-		}, 30000
-		// }, sc.app.prefs.get('network-refreshinterval')
-	);
-	// this.refresher = setInterval(this.refresh.call(this), 5000)
-}
+	var time = sc.app.prefs.get('network-searchrefreshinterval');
+	
+	if (time > 0) {
+		this.refresher = setInterval(function() {
+				jQuery().trigger('search_timeline_refresh');
+			}, time
+		)
+	} else {
+		this.refresher = null;
+	}
+};
 
 SearchTwitterAssistant.prototype.stopRefresher = function() {
 	dump('Stopping refresher');
@@ -368,7 +395,7 @@ SearchTwitterAssistant.prototype.stopRefresher = function() {
 		Clear refresher
 	*/
 	clearInterval(this.refresher);
-}
+};
 
 SearchTwitterAssistant.prototype.searchboxFocusChange = function(el) {
 	if (el) { // focusIN -- something gained focus
@@ -376,4 +403,12 @@ SearchTwitterAssistant.prototype.searchboxFocusChange = function(el) {
 	} else { // focusOut -- blur
 		jQuery('#submit-search-button').hide('blind');
 	}
+};
+
+SearchTwitterAssistant.prototype.getEntryElementByStatusId = function(id) {
+	
+	var el = jQuery('#search-timeline div.timeline-entry[data-status-id='+id+']', this.scroller).get(0);
+	
+	return el;
+	
 };

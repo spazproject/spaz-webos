@@ -322,6 +322,9 @@ div.spaz-drawer {
 #login-button, #search-button {
 	margin:0px !important;
 }
+.palm-list .palm-row .palm-button {
+	margin:0px !important;
+}
 
 
 

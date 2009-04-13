@@ -843,6 +843,17 @@ scene_helpers.addCommonSceneMethods = function(assistant) {
 
 		appController.showBanner("There are "+count+" new messages", launchArgs, category);
 	}
+
+
+
+	assistant.newSearchResultsBanner = function(count, query) {				
+		var launchArgs = {
+			'from':'newSearchResultsBanner'
+		};
+		var category = 'newSearchResults';
+		var appController = Mojo.Controller.getAppController();
+		appController.showBanner(count+" new results for '"+query+"'", launchArgs, category);
+	}
 	
 	
 	
