@@ -788,10 +788,10 @@ scene_helpers.addCommonSceneMethods = function(assistant) {
 		*/
 		jQuery('.inline-spinner', container).remove(); 
 		
-		var html = '<div class="inline-spinner" style="display:none"> \
-			<img src="images/theme/loading.gif" class="inline-spinner-spinner" /> \
-			<span class="inline-spinner-label">'+message+'</span> \
-		</div>'
+		var html = '<div class="inline-spinner" style="display:none">'+
+			'<img src="images/theme/loading.gif" class="inline-spinner-spinner" />'+
+			'<span class="inline-spinner-label">'+message+'</span>'+
+		'</div>';
 		jQuery(container).prepend(html);
 		jQuery('.inline-spinner', container).show('blind', 'fast');
 		// jQuery('.inline-spinner', container).fadeIn('fast');

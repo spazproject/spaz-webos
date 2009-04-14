@@ -38,4 +38,4 @@ StageAssistant.prototype.setup = function() {
 	*/
 	sc.app.prefs = new scPrefs(default_preferences);
 	sc.app.prefs.load();
-}
+};

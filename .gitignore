@@ -1,2 +1,6 @@
 .DS_Store
+<<<<<<< HEAD:.gitignore
 mockups
+=======
+SpazCore.kpf
+>>>>>>> cda16cf9fde03a2bb6de88a2453cfef0c827f316:.gitignore

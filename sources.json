@@ -1,4 +1,36 @@
-[{
-    "scenes": "help",
-    "source": "app\/assistants\/help-assistant.js"
-}]
+
+[
+	{"source": "app\/assistants\/stage-assistant.js"},
+	{
+	    "scenes": "start",
+	    "source": "app\/assistants\/start-assistant.js"
+	},
+	{
+	    "scenes": "favorites",
+	    "source": "app\/assistants\/favorites-assistant.js"
+	},
+	{
+	    "scenes": "help",
+	    "source": "app\/assistants\/help-assistant.js"
+	},
+	{
+	    "scenes": "message-detail",
+	    "source": "app\/assistants\/message-detail-assistant.js"
+	},
+	{
+	    "scenes": "my-timeline",
+	    "source": "app\/assistants\/my-timeline-assistant.js"
+	},
+	{
+	    "scenes": "preferences",
+	    "source": "app\/assistants\/preferences-assistant.js"
+	},
+	{
+	    "scenes": "search-twitter",
+	    "source": "app\/assistants\/search-twitter-assistant.js"
+	},
+	{
+	    "scenes": "user-detail",
+	    "source": "app\/assistants\/user-detail-assistant.js"
+	}
+]

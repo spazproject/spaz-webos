@@ -14,8 +14,8 @@ function MessageDetailAssistant(argFromPusher) {
 		this.status_id  = argFromPusher;
 	} else {
 		this.status_obj = argFromPusher.status_obj;
-		this.status_id  = argFromPusher.status_id,
-		this.isdm  = argFromPusher.isdm
+		this.status_id  = argFromPusher.status_id;
+		this.isdm  = argFromPusher.isdm;
 	}
 }
 
