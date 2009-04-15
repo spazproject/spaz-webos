@@ -825,7 +825,9 @@ div.error_info {
 		#start-smallprint a:active, {
 			-webkit-border-image: url(../images/theme/text-link-bg-active.png) 0 7 0 7;
 		}
-		
+#new-username, #new-password {
+	color:#333333;
+}
 		
 /*
 	about scene
