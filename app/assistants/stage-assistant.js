@@ -1,12 +1,15 @@
 function StageAssistant () {
-	this.firstload = true;	
+	this.firstload = true;
+	
+	/*
+		sc is attached to the appController.assistant at startup, 
+		so we want to make sure we're using the same one, even
+		in different stages
+	*/
+	sc = Mojo.Controller.getAppController().assistant.sc;
 }
 
 StageAssistant.prototype.setup = function() {
-	// this.controller.pushScene('binding');
-	// this.controller.pushScene('my-timeline');
-	// this.controller.pushScene('search-twitter', {searchterm:'funkatron'});
-	// this.controller.pushScene('user-detail', 'poop');
 	var thisSA = this;	
 
 	/*

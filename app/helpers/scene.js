@@ -115,7 +115,7 @@ scene_helpers.addCommonSceneMethods = function(assistant) {
 
 	assistant.createStage = function(sceneName, sceneArgs, stageName) {
 		// "nocache:true" tells sysmanager to not use the card caching strategy on compose cards
-		var params = {name: stageName, nocache: true };
+		var params = {name: stageName, assistantName:'StageLightweightSearchAssistant', nocache: true };
 		var callback = function(stageController) {
 			stageController.pushScene(sceneName, sceneArgs, stageName);
 		};
@@ -159,7 +159,7 @@ scene_helpers.addCommonSceneMethods = function(assistant) {
 				case 'new-search-card':
 
 					sc.app.new_search_card++;
-					this.createStage('search-twitter', { 'lightweight':true }, 'stage-lightweight-search'+sc.app.new_search_card);
+					this.createStage('search-twitter', { 'lightweight':true }, sc.app.search_card_prefix+sc.app.new_search_card);
 
 					// findAndSwapScene("search-twitter", this);
 					break;
@@ -834,13 +834,10 @@ scene_helpers.addCommonSceneMethods = function(assistant) {
 	
 	
 	assistant.newMsgBanner = function(count) {
-				
 		var launchArgs = {
-			'from':'newMessagesBanner'
+			'fromstage':this.getStageName()
 		};
-		
 		var category = 'newMessages';
-		
 		var appController = Mojo.Controller.getAppController();
 
 		appController.showBanner("There are "+count+" new messages", launchArgs, category);
@@ -849,11 +846,12 @@ scene_helpers.addCommonSceneMethods = function(assistant) {
 
 
 	assistant.newSearchResultsBanner = function(count, query) {				
-		var launchArgs = {
-			'from':'newSearchResultsBanner'
-		};
-		var category = 'newSearchResults';
+		var category = 'newSearchResults_'+query;
 		var appController = Mojo.Controller.getAppController();
+		var stageController = appController.getActiveStageController();
+		var launchArgs = {
+			'fromstage':this.getStageName()
+		};
 		appController.showBanner(count+" new results for '"+query+"'", launchArgs, category);
 	}
 	
@@ -1122,6 +1120,16 @@ scene_helpers.addCommonSceneMethods = function(assistant) {
 		});
 	};
 	
+	
+	
+	assistant.getStageName = function() {
+		if (window.name) {
+			var stagename = window.name;
+		} else {
+			var stagename = 'main';
+		}
+		return stagename;
+	};
 
 	
 }

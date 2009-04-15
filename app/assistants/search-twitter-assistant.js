@@ -11,6 +11,8 @@ function SearchTwitterAssistant(args) {
 	
 	scene_helpers.addCommonSceneMethods(this);
 	
+	sc = Mojo.Controller.getAppController().assistant.sc;
+	
 	if (args && args.searchterm) {
 		this.passedSearch = args.searchterm;
 	}
@@ -18,7 +20,6 @@ function SearchTwitterAssistant(args) {
 		/*
 			we may be in a new stage, so need to init prefs if they don't exist
 		*/
-		this.initPrefs();
 		
 		this.lightweight = true;
 	}
@@ -32,37 +33,37 @@ function SearchTwitterAssistant(args) {
 }
 
 
-SearchTwitterAssistant.prototype.initPrefs = function() {
-	/*
-		load our prefs
-		default_preferences is from default_preferences.js, loaded in index.html
-	*/
-	if (!sc.app.prefs) {
-		
-		/*
-			We can't go to the login screen until the 
-			prefs have fully loaded
-		*/
-		var thisSA = this;
-		jQuery().bind('spazprefs_loaded', function() {
-
-			// var username = sc.app.prefs.get('username');
-			// var password = sc.app.prefs.get('password');
-
-			if (!sc.app.twit) {
-				sc.app.twit = new scTwit();
-
-				if (sc.app.username && sc.app.password) {
-					sc.app.twit.setCredentials(sc.app.username, sc.app.password);
-				}
-			}		
-
-		});
-		
-		sc.app.prefs = new scPrefs(default_preferences);
-		sc.app.prefs.load();
-	}
-};
+// SearchTwitterAssistant.prototype.initPrefs = function() {
+// 	/*
+// 		load our prefs
+// 		default_preferences is from default_preferences.js, loaded in index.html
+// 	*/
+// 	if (!sc.app.prefs) {
+// 		
+// 		/*
+// 			We can't go to the login screen until the 
+// 			prefs have fully loaded
+// 		*/
+// 		var thisSA = this;
+// 		jQuery().bind('spazprefs_loaded', function() {
+// 
+// 			// var username = sc.app.prefs.get('username');
+// 			// var password = sc.app.prefs.get('password');
+// 
+// 			if (!sc.app.twit) {
+// 				sc.app.twit = new scTwit();
+// 
+// 				if (sc.app.username && sc.app.password) {
+// 					sc.app.twit.setCredentials(sc.app.username, sc.app.password);
+// 				}
+// 			}		
+// 
+// 		});
+// 		
+// 		sc.app.prefs = new scPrefs(default_preferences);
+// 		sc.app.prefs.load();
+// 	}
+// };
 
 
 SearchTwitterAssistant.prototype.setup = function() {
