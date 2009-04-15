@@ -8,21 +8,17 @@
 * User Detail
 	* Need to listen for Ajax errors on user timeline
 * Search
-	* search needs to auto-refresh
-	* Trends button
-	Make sure can spawn search cards from search cards
+	* Trends button needs to actually do something
+	* Spawn multiple search cards from search cards
 * Preferences
-	* Twitter API Base URL
+
 * Notifications
-	* raise notifications from search
 * Posting
 	* Need to listen for Ajax errors in posting
 SpazTwit
 	* Need to be able to lookup and return object for spcific tweet
-
-
-
 * Login/splash
+	* How to map *back* gesture to arbitrary action?
 * My Timeline
 	* Weirdness with spacing in timeline sometimes
 	* items sometimes load out of order (New data will load before cached)
@@ -34,6 +30,7 @@ SpazTwit
 	* add ability to view user's favorites
 * Search
 * Preferences
+	* Twitter API Base URL
 * Notifications
 * Posting
 	* posting a dm returns the last "regular" message and prepends it to the timeline (even if dupe)

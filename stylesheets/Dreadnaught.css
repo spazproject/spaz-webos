@@ -1,9 +1,9 @@
 /* Put Application specific CSS here. */
 
 BODY, BODY>div[x-mojo-element=Scroller] {	
-/*	background-image: url('../images/theme/page-bg-dark-splash.png');*/
+	background-image: url('../images/theme/page-bg-dark.png');
 	background-color:#111111;
-	color:#CCCCCC;
+	color:#EEEEEE;
 }
 
 BODY {
@@ -575,15 +575,14 @@ div.spaz-drawer {
 		}
 		#post-panel-irt-dismiss {
 			color:white;
-			background-color:#666;
-			height:12px;
-			width: 16px;
-			padding-bottom:4px;
-/*			-webkit-border-radius:8px;*/
 			display:inline-block;
+			font-size:18px;
+			background-color:#666;
+			height:16px;
+			line-height:10px;
+			width: 18px;
+			margin-bottom:4px;
 			text-align:center;
-			vertical-align:20%;
-			
 		} 
 			#post-panel-irt-dismiss:active {
 				background-color:#333;
@@ -824,5 +823,29 @@ div.error_info {
 		-webkit-border-image: url(../images/theme/text-link-bg.png) 0 7 0 7;
 	}
 		#start-smallprint a:active, {
+			-webkit-border-image: url(../images/theme/text-link-bg-active.png) 0 7 0 7;
+		}
+		
+		
+/*
+	about scene
+*/
+#about-content {
+	font-size:75%;
+	margin:0px 5px;
+	line-height:1.3em;
+}
+	#about-content a:link,
+	#about-content a:visited {
+		font-weight:normal;
+		display:inline-block;
+		color:#ffffcc;
+/*		padding:0px 0px 4px;*/
+		text-decoration:underline;
+/*		height:14px;*/
+/*		border-width:0px 7px;*/
+/*		-webkit-border-image: url(../images/theme/text-link-bg.png) 0 7 0 7;*/
+	}
+		#about-content a:active, {
 			-webkit-border-image: url(../images/theme/text-link-bg-active.png) 0 7 0 7;
 		}

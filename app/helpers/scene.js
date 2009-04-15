@@ -167,7 +167,9 @@ scene_helpers.addCommonSceneMethods = function(assistant) {
 					findAndSwapScene("manage-followers", this);
 					break;
 
-
+				case 'appmenu-about':
+					Mojo.Controller.stageController.pushScene("about", this);
+					break;
 				case Mojo.Menu.prefsCmd:
 					Mojo.Controller.stageController.pushScene("preferences", this);
 					break;
@@ -1178,11 +1180,30 @@ var makeItemsClickable = function(str) {
 	str = sch.autolink(str);
 	str = sch.autolinkTwitterScreenname(str, '<span class="username clickable" data-user-screen_name="#username#">@#username#</span>');
 	str = sch.autolinkTwitterHashtag(str, '<span class="hashtag clickable" data-hashtag="#hashtag#">##hashtag#</span>');
+
 	
 	return str;
 };
 
 
 
+/*
+	Remap JSON parser to work around webOS deficiencies with unicode chars
+*/
+JSON.parse_orig = JSON.parse;
 
-
+JSON.parse = function(str) {
+	function hex2dec(str, p1) {	
+		Mojo.Log.info('BEFORE HEX', p1);
+		var dec = parseInt(p1, 16);
+		var dec_str = '&#'+dec.toString()+';';
+		Mojo.Log.info('AFTER DEC:', dec_str);
+		return dec_str;
+	}
+	
+	str = str.replace(/\\u([0-9a-f]{4})/gi, hex2dec);
+	Mojo.Log.info(str);
+	obj = JSON.parse_orig(str);
+	Mojo.Log.info(obj);
+	return obj;
+};

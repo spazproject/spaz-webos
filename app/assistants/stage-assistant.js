@@ -1,13 +1,8 @@
 function StageAssistant () {
 	this.firstload = true;	
-	alert('HELLO!!!');
 }
 
-///var/usr/palm/applications/com.funkatron.app.spaz/app/assistants/stage-assistant.js:2
-
-
 StageAssistant.prototype.setup = function() {
-	// thisSA.controller.pushScene('start');
 	// this.controller.pushScene('binding');
 	// this.controller.pushScene('my-timeline');
 	// this.controller.pushScene('search-twitter', {searchterm:'funkatron'});
@@ -17,13 +12,10 @@ StageAssistant.prototype.setup = function() {
 	/*
 		model for saving Tweets to Depot
 	*/
-	alert('making sc.app.Tweets');
 	sc.app.Tweets = new Tweets();
-	alert('made sc.app.Tweets');
-	
+
 	sc.app.search_cards = [];
 	sc.app.new_search_card = 0;
-	alert('made sc.app.search_cards');
 
 	sc.app.username = null;
 	sc.app.password = null;
