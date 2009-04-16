@@ -1,4 +1,5 @@
 function StageAssistant () {
+	Mojo.Log.info("Logging from StageAssistant Constructor");
 	this.firstload = true;
 	
 	/*
@@ -10,6 +11,7 @@ function StageAssistant () {
 }
 
 StageAssistant.prototype.setup = function() {
+	Mojo.Log.info("Logging from StageAssistant Setup");
 	var thisSA = this;	
 
 	/*
@@ -59,9 +61,4 @@ StageAssistant.prototype.setup = function() {
 	sc.app.prefs = new scPrefs(default_preferences);
 	sc.app.prefs.load();
 	Mojo.Log.info("loading prefs…");
-};
-
-
-StageAssistant.prototype.onPrefsLoad = function() {
-
 };

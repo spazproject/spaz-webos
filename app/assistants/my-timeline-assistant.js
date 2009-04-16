@@ -120,8 +120,7 @@ MyTimelineAssistant.prototype.activate = function(event) {
 	jQuery().bind('error_combined_timeline_data', { thisAssistant:this }, function(e, error_array) {
 		dump('error_combined_timeline_data - response:');
 		dump(error_array);
-		// e.data.thisAssistant.spinnerOff();
-		thisA.hideInlineSpinner('#my-timeline');
+		thisA.hideInlineSpinner('#my-timeline-spinner-container');
 		thisA.startRefresher();
 
 		var err_msg = $L("There were errors retrieving your combined timeline");
@@ -339,7 +338,7 @@ MyTimelineAssistant.prototype.getEntryElementByStatusId = function(id) {
 
 MyTimelineAssistant.prototype.getData = function() {
 	sch.markAllAsRead('#my-timeline>div.timeline-entry');
-	this.showInlineSpinner('#my-timeline', 'Looking for new tweets…');
+	this.showInlineSpinner('#my-timeline-spinner-container', 'Looking for new tweets…');
 	
 	/*
 		friends_count is the only one that gets used currently
@@ -491,8 +490,7 @@ MyTimelineAssistant.prototype.renderTweets = function(tweets, render_callback, f
 		thisA.playAudioCue('newmsg');		
 	}
 
-	// thisA.spinnerOff();
-	thisA.hideInlineSpinner('#my-timeline');
+	thisA.hideInlineSpinner('#my-timeline-spinner-container');
 	thisA.startRefresher();
 	
 	/*

@@ -186,8 +186,7 @@ SearchTwitterAssistant.prototype.activate = function(event) {
 			Update relative dates
 		*/
 		sch.updateRelativeTimes('#search-timeline>div.timeline-entry>.status>.meta>.date', 'data-created_at');
-		// e.data.thisAssistant.spinnerOff();
-		e.data.thisAssistant.hideInlineSpinner('#search-timeline');
+		e.data.thisAssistant.hideInlineSpinner('#search-spinner-container');
 		e.data.thisAssistant.startRefresher();
 	});
 	
@@ -239,8 +238,7 @@ SearchTwitterAssistant.prototype.activate = function(event) {
 			Update relative dates
 		*/
 		sch.updateRelativeTimes('#search-timeline>div.timeline-entry>.status>.meta>.date', 'data-created_at');
-		// e.data.thisAssistant.spinnerOff();
-		e.data.thisAssistant.hideInlineSpinner('#search-timeline');
+		e.data.thisAssistant.hideInlineSpinner('#search-spinner-container');
 		e.data.thisAssistant.startRefresher();
 		
 		
@@ -345,17 +343,16 @@ SearchTwitterAssistant.prototype.search = function(e, type) {
 			clear any existing results
 		*/
 		
-		this.showInlineSpinner('#search-timeline', 'Looking for results…');
+		this.showInlineSpinner('#search-spinner-container', 'Looking for results…');
 		
 	} else if (e.value) {
-		// dump(e);
 		this.lastQuery = e.value;
 		this.twit.search(e.value);		
 		/*
 			clear any existing results
 		*/
 
-		this.showInlineSpinner('#search-timeline', 'Looking for results…');
+		this.showInlineSpinner('#search-spinner-container', 'Looking for results…');
 		
 		jQuery('#submit-search-button').hide();
 	}

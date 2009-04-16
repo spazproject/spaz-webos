@@ -4,6 +4,8 @@ function StartAssistant(argFromPusher) {
 	   to the scene controller (this.controller) has not be established yet, so any initialization
 	   that needs the scene controller should be done in the setup function below. */
 	
+	Mojo.Log.info("Logging from StartAssistant Constructor");
+	
 	if (argFromPusher && argFromPusher.firstload) {
 		if (sc.app.prefs.get('always-go-to-my-timeline')) {
 			
@@ -34,6 +36,8 @@ function StartAssistant(argFromPusher) {
 }
 
 StartAssistant.prototype.setup = function() {
+	
+	Mojo.Log.info("Logging from StartAssistant Setup");
 		
 	var thisA = this;
 
@@ -237,6 +241,9 @@ StartAssistant.prototype.setup = function() {
 
 
 StartAssistant.prototype.activate = function(argFromPusher) {
+	
+	Mojo.Log.info("Logging from StartAssistant Activate");
+	
 	/* put in event handlers here that should only be in effect when this scene is active. For
 	   example, key handlers that are observing the document */
 

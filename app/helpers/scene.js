@@ -477,7 +477,6 @@ scene_helpers.addCommonSceneMethods = function(assistant) {
 	 *  
 	 */
 	assistant.sendPost = function(event) {
-		// this.spinnerOn();
 		this.showInlineSpinner('#post-panel-spinner-container', "Posting…");
 		var status = jQuery('#post-panel-textarea').val();
 
@@ -560,7 +559,6 @@ scene_helpers.addCommonSceneMethods = function(assistant) {
 		//     ]
 		// });
 		
-		// this.spinnerOff();
 
 
 	}
@@ -754,33 +752,6 @@ scene_helpers.addCommonSceneMethods = function(assistant) {
 
 
 
-	/**
-	 * turn the spinner on, and optionally set the message
-	 * @param {string} message 
-	 */
-	assistant.spinnerOn = function(message) {
-
-		var thisA = this;
-		jQuery('div.spaz-activity-spinner', this.controller.getSceneScroller()).html('Loading').fadeIn('fast', function() {
-			thisA.spinnerModel.spinning = true;
-			thisA.controller.modelChanged( thisA.spinnerModel );
-		});
-		
-	}
-
-	/**
-	 * Turns off the spinner. does NOT hide the status panel. Optionally sets message
-	 * @param {string} message
-	 */
-	assistant.spinnerOff = function(message) {
-		var thisA = this;
-		jQuery('div.spaz-activity-spinner', this.controller.getSceneScroller()).html('Loading').fadeOut('fast', function() {
-			thisA.spinnerModel.spinning = false;
-			thisA.controller.modelChanged( thisA.spinnerModel );
-		});
-	}
-	
-	
 	/**
 	 *  destroys and existing spinners and creates a new one, showing it
 	 */

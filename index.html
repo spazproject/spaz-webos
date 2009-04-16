@@ -16,7 +16,10 @@
 	<script type="text/javascript" charset="utf-8">
 		jQuery.noConflict();
 	</script>
-	<!-- // <script src="spazcore/vendors/json2.js" type="text/javascript" charset="utf-8"></script> -->
+	<!--
+		We don't use the usual JSON2.js parser here because
+		of problems with non-ascii characters on webOS
+	-->
 	<script src="spazcore/vendors/webtoolkit.base64.js" type="text/javascript" charset="utf-8"></script>
 
 		
@@ -63,17 +66,9 @@
 
 	
 	<!-- Load assistants -->
-	<!-- <script src="app/assistants/favorites-assistant.js" type="text/javascript" charset="utf-8"></script>
-	<script src="app/assistants/help-assistant.js" type="text/javascript" charset="utf-8"></script>
-	<script src="app/assistants/login-assistant.js" type="text/javascript" charset="utf-8"></script>
-	<script src="app/assistants/message-detail-assistant.js" type="text/javascript" charset="utf-8"></script>
-	<script src="app/assistants/my-timeline-assistant.js" type="text/javascript" charset="utf-8"></script>
-	<script src="app/assistants/preferences-assistant.js" type="text/javascript" charset="utf-8"></script>
-	<script src="app/assistants/search-twitter-assistant.js" type="text/javascript" charset="utf-8"></script>
-	<script src="app/assistants/stage-assistant.js" type="text/javascript" charset="utf-8"></script>
-	<script src="app/assistants/stage-lightweight-search-assistant.js" type="text/javascript" charset="utf-8"></script>
-	<script src="app/assistants/start-assistant.js" type="text/javascript" charset="utf-8"></script>
-	<script src="app/assistants/user-detail-assistant.js" type="text/javascript" charset="utf-8"></script> -->
+	<!--
+		Assistants are lazily loaded; see sources.json
+	-->
 
 
 

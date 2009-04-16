@@ -3,5 +3,5 @@
 "timingEnabled": false,
 "useNativeJSONParser":false,
 "debuggingEnabled":false,
-"logEvents":false
+"logEvents":true
 }

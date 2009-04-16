@@ -193,7 +193,7 @@ FavoritesAssistant.prototype.refresh = function(event) {
 
 FavoritesAssistant.prototype.getData = function() {
 	sc.helpers.markAllAsRead('#favorites-timeline>div.timeline-entry');
-	this.showInlineSpinner('#favorites-timeline', 'Loading favorite tweets…');
+	this.showInlineSpinner('#favorites-spinner-container', 'Loading favorite tweets…');
 	
 	this.twit.getFavorites();
 };
