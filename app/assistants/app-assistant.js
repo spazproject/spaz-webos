@@ -1,6 +1,14 @@
 function AppAssistant(appController) {
 	var thisSA = this;	
 
+	/*
+		Remap JSON parser because JSON2.js one was causing probs with unicode
+	*/
+	sc.helpers.deJSON = function(str) {
+		return Mojo.parseJSON(str);
+	};
+
+
 	this.sc = sc;
 
 	/*
@@ -16,7 +24,7 @@ function AppAssistant(appController) {
 	sc.app.password = null;
 	
 	sc.app.prefs = new scPrefs(default_preferences);
-
+	
 }
 
 

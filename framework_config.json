@@ -1,4 +1,7 @@
 {
 "logLevel": 0,
-"timingEnabled": false
+"timingEnabled": false,
+"useNativeJSONParser":false,
+"debuggingEnabled":false,
+"logEvents":false
 }

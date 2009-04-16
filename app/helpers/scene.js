@@ -1193,25 +1193,3 @@ var makeItemsClickable = function(str) {
 	return str;
 };
 
-
-
-/*
-	Remap JSON parser to work around webOS deficiencies with unicode chars
-*/
-JSON.parse_orig = JSON.parse;
-
-JSON.parse = function(str) {
-	function hex2dec(str, p1) {	
-		Mojo.Log.info('BEFORE HEX', p1);
-		var dec = parseInt(p1, 16);
-		var dec_str = '&#'+dec.toString()+';';
-		Mojo.Log.info('AFTER DEC:', dec_str);
-		return dec_str;
-	}
-	
-	str = str.replace(/\\u([0-9a-f]{4})/gi, hex2dec);
-	Mojo.Log.info(str);
-	obj = JSON.parse_orig(str);
-	Mojo.Log.info(obj);
-	return obj;
-};
