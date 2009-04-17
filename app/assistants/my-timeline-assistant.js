@@ -388,7 +388,7 @@ MyTimelineAssistant.prototype.renderTweets = function(tweets, render_callback, f
 			} else if (!thisA.getEntryElementByStatusId(this.id)) {
 				
 				dump('adding '+this.id+':');
-				dump(this);
+				// dump(this);
 				
 				/*
 					add to tweetsModel

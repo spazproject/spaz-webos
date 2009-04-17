@@ -213,7 +213,7 @@ StartAssistant.prototype.setup = function() {
 		listen for trends data updates
 	*/
 	jQuery().bind('new_trends_data', {thisAssistant:this}, function(e, trends) {
-		e.data.thisAssistant.hideInlineSpinner('#trends-list');
+		e.data.thisAssistant.hideInlineSpinner('#trends-spinner-container');
 		
 		/*
 			some trends are wrapped in double-quotes, so we need to turn then into entities
@@ -229,7 +229,7 @@ StartAssistant.prototype.setup = function() {
 		jQuery('#trends-list .trend-item').fadeIn(500);
 	});
 	
-	this.showInlineSpinner('#trends-list', 'Loading…');
+	this.showInlineSpinner('#trends-spinner-container', 'Loading…');
 	sc.app.twit.getTrends();
 	
 
@@ -246,9 +246,6 @@ StartAssistant.prototype.activate = function(argFromPusher) {
 	
 	/* put in event handlers here that should only be in effect when this scene is active. For
 	   example, key handlers that are observing the document */
-
-	// this.model.username = sc.app.prefs.get('username');
-	// this.model.password = sc.app.prefs.get('password');
 
 	/*
 		don't use this anymore, but patching it over so it breaks stuff less
@@ -364,7 +361,7 @@ StartAssistant.prototype.toggleSearchPanel = function(event) {
 StartAssistant.prototype.toggleTrendsPanel = function(event) {
 	var thisA = this;		
 	this.togglePanel('#trends-panel', '#show-trends-button', function() {
-		thisA.showInlineSpinner('#trends-list', 'Loading…');
+		thisA.showInlineSpinner('#trends-spinner-container', 'Loading…');
 		sc.app.twit.getTrends();
 	});
 }

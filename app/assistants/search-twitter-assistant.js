@@ -331,12 +331,14 @@ SearchTwitterAssistant.prototype.search = function(e, type) {
 	
 	if (type && type.toLowerCase() !== 'refresh') { // empty unless this is a refresh
 		jQuery('#search-timeline').empty();
+		dump('Emptied #search-timeline');
 	} else {
 		sch.markAllAsRead('#search-timeline>div.timeline-entry');
+		dump('Marked all as read in #search-timeline>div.timeline-entry');
 	}
 		
 	if (sch.isString(e)) {
-		dump(e);
+		dump("Searching for:", e);
 		this.lastQuery = e;
 		this.twit.search(e);
 		/*

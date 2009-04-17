@@ -767,6 +767,7 @@ scene_helpers.addCommonSceneMethods = function(assistant) {
 		'</div>';
 		jQuery(container).prepend(html);
 		jQuery('.inline-spinner', container).show('blind', 'fast');
+		dump("SPINNER CONTAINER HTML (start):"+jQuery(container).get(0).outerHTML);
 		// jQuery('.inline-spinner', container).fadeIn('fast');
 		
 	};
@@ -797,7 +798,9 @@ scene_helpers.addCommonSceneMethods = function(assistant) {
 	assistant.hideInlineSpinner = function(container, message) {
 		// jQuery('.inline-spinner', container).fadeOut('fast');
 		jQuery('.inline-spinner', container).hide('blind', 'fast', function() {
-			jQuery(this).remove();
+			dump("SPINNER CONTAINER HTML (hide):"+jQuery(container).get(0).outerHTML);
+			jQuery(container).empty();
+
 		});
 		
 	};
