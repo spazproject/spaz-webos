@@ -56,45 +56,6 @@ StartAssistant.prototype.setup = function() {
 		'always-go-to-my-timeline':false
 	};
 	
-	// this.spinnerModel = {
-	// 	'spinning':false
-	// }
-	
-	
-	// /**
-	//  * Mojo Widgets 
-	//  */
-	// 
-	// /*
-	// 	Username
-	// */
-	// this.controller.setupWidget('username',
-	// 	this.atts = {
-	// 		// hintText: 'enter username',
-	// 		enterSubmits: true,
-	// 		modelProperty:'username', 
-	// 		changeOnKeyPress: true,
-	// 		focusMode:	Mojo.Widget.focusSelectMode,
-	// 		multiline:		false,
-	// 	},
-	// 	this.model
-	// );
-	// 
-	// /*
-	// 	Password
-	// */
-	// this.controller.setupWidget('password',
-	//     this.atts = {
-	//         // hintText: 'enter password',
-	//         label: "password",
-	// 		enterSubmits: true,
-	// 		modelProperty:		'password',
-	// 		changeOnKeyPress: true, 
-	// 		focusMode:		Mojo.Widget.focusSelectMode,
-	// 		multiline:		false,
-	// 	},
-	// 	this.model
-	//     );
 	
 	/*
 		checkbox to go to my timeline
@@ -199,10 +160,10 @@ StartAssistant.prototype.setup = function() {
 	Mojo.Event.listen($('start-search-button'), Mojo.Event.tap, this.showSearch.bind(this));
 	Mojo.Event.listen($('back-search-button'), Mojo.Event.tap, this.showStart.bind(this));
 	Mojo.Event.listen($('back-login-button'), Mojo.Event.tap, this.showStart.bind(this));
+	Mojo.Event.listen($('reload-trends-button'), Mojo.Event.tap, function() {
+		thisA.refreshTrends();
+	});
 	
-	
-	
-	Mojo.Event.listen($('login-button'), Mojo.Event.tap, this.handleLogin.bind(this));
 	this.controller.listen('goToMyTimelineCheckbox', Mojo.Event.propertyChange, function() {
 		var state = thisA.model['always-go-to-my-timeline'];
 		sc.app.prefs.set('always-go-to-my-timeline', state);
@@ -213,7 +174,7 @@ StartAssistant.prototype.setup = function() {
 		listen for trends data updates
 	*/
 	jQuery().bind('new_trends_data', {thisAssistant:this}, function(e, trends) {
-		e.data.thisAssistant.hideInlineSpinner('#trends-spinner-container');
+		thisA.hideInlineSpinner('#trends-spinner-container');
 		
 		/*
 			some trends are wrapped in double-quotes, so we need to turn then into entities
@@ -229,8 +190,7 @@ StartAssistant.prototype.setup = function() {
 		jQuery('#trends-list .trend-item').fadeIn(500);
 	});
 	
-	this.showInlineSpinner('#trends-spinner-container', 'Loading…');
-	sc.app.twit.getTrends();
+	this.refreshTrends();
 	
 
 	
@@ -293,21 +253,11 @@ StartAssistant.prototype.cleanup = function(event) {
 }
 
 
-// StartAssistant.prototype.showSection = function(from, to) {
-// 	jQuery(from).hide('drop', 'up', function() {
-// 		jQuery(to).show('drop', 'down');
-// 	});
-// 	jQuery(to).show('drop', 'down'); 
-// }
-// 
-// StartAssistant.prototype.showLogin  = function() {
-// 	this.showSection('#start-section', '#login-section');
-// 	var thisA = this;
-// 	// jQuery().bind(Mojo.Event.back, function() {
-// 	// 	thisA.showStart();
-// 	// 	jQuery().unbind(Mojo.Event.back);
-// 	// });
-// };
+StartAssistant.prototype.refreshTrends = function() {
+	this.showInlineSpinner('#trends-spinner-container', 'Loading…');
+	sc.app.twit.getTrends();
+};
+
 
 StartAssistant.prototype.showLogin = function() { 
 	this.showSection('start-section', 'login-section');
