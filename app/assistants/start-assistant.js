@@ -93,6 +93,9 @@ StartAssistant.prototype.setup = function() {
 	);
 	
 	
+	/*
+		Tap on list
+	*/
     Mojo.Event.listen($('accountList'), Mojo.Event.listTap, function(e) {
 		// sc.app.twit.setCredentials(e.item.username, e.item.password);
 		sc.app.username = e.item.username;
@@ -102,6 +105,10 @@ StartAssistant.prototype.setup = function() {
 				
 		Mojo.Controller.stageController.pushScene('my-timeline');
 	});
+	
+	/*
+		add to list
+	*/
     Mojo.Event.listen($('accountList'), Mojo.Event.listAdd, function(e) {
 		// alert("This would show a popup for input of a username and password. When submitted, the popup would verify the credentials. If successful, it would be added to the list");
 		
@@ -112,12 +119,26 @@ StartAssistant.prototype.setup = function() {
 	    });
 	 
 	});
+	
+	/*
+		Change list
+	*/
     Mojo.Event.listen($('accountList'), Mojo.Event.listChange, function(e) {
 	});
+	
+	/*
+		delete from list
+	*/
     Mojo.Event.listen($('accountList'), Mojo.Event.listDelete, function(e) {
+		dump(thisA.accountsModel.items);
 		thisA.accountsModel.items.splice(thisA.accountsModel.items.indexOf(e.item), 1);
+		dump(thisA.accountsModel.items);
 		thisA.Users.setAll(thisA.accountsModel.items);
 	});
+	
+	/*
+		Reorder list
+	*/
     Mojo.Event.listen($('accountList'), Mojo.Event.listReorder, function(e) {
 		thisA.accountsModel.items.splice(thisA.accountsModel.items.indexOf(e.item), 1);
 		thisA.accountsModel.items.splice(e.toIndex, 0, e.item);
