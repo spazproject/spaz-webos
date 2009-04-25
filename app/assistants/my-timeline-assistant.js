@@ -178,7 +178,7 @@ MyTimelineAssistant.prototype.activate = function(event) {
 		Mojo.Controller.stageController.pushScene('message-detail', {'status_id':status_id, 'isdm':isdm, 'status_obj':status_obj});
 	});
 	
-	jQuery('div.timeline-entry>.status>.meta', this.scroller).live(Mojo.Event.tap, function(e) {
+	jQuery('div.timeline-entry .meta', this.scroller).live(Mojo.Event.tap, function(e) {
 		var status_id = jQuery(this).attr('data-status-id');
 		var isdm = false;
 		var status_obj = null;
@@ -193,23 +193,6 @@ MyTimelineAssistant.prototype.activate = function(event) {
 		Mojo.Controller.stageController.pushScene('message-detail', {'status_id':status_id, 'isdm':isdm, 'status_obj':status_obj});
 	});
 	
-	
-	
-	
-	// jQuery('a[href]', this.scroller).live(Mojo.Event.tap, function(e) {
-	// 	e.preventDefault();
-	// 	var href = jQuery(this).attr('href');
-	// 	Mojo.Controller.stageController.pushScene('webview', {'url':href});
-	// 	return false;
-	// });
-	
-	
-	// jQuery('div.timeline-entry', this.scroller).live(Mojo.Event.dragStart, function(e) {
-	// 	alert('dragStart!');
-	// });
-	// jQuery('div.timeline-entry', this.scroller).live(Mojo.Event.hold, function(e) {
-	// 	alert('hold!');
-	// });
 	
 
 	if (this.loadOnActivate) {
@@ -246,8 +229,7 @@ MyTimelineAssistant.prototype.deactivate = function(event) {
 	jQuery('.username.clickable', this.scroller).die(Mojo.Event.tap);
 	jQuery('.hashtag.clickable', this.scroller).die(Mojo.Event.tap);
 	jQuery('div.timeline-entry', this.scroller).die(Mojo.Event.hold);
-	jQuery('div.timeline-entry>.status>.meta', this.scroller).die(Mojo.Event.tap);
-	jQuery('a[href]', this.scroller).die(Mojo.Event.tap);
+	jQuery('div.timeline-entry .meta', this.scroller).die(Mojo.Event.tap);
 	
 	
 }

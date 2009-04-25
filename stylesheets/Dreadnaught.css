@@ -7,19 +7,13 @@ BODY, BODY>div[x-mojo-element=Scroller] {
 }
 
 BODY {
-/*	background: -webkit-gradient(linear, 100% 0, 0 100%, from(#000), to(#333)) !important;*/
-/*	-webkit-background-size:480px !important;*/
 }
 
 .view-menu .palm-menu-fade {
-/*	background: transparent url("../images/theme/view-menu-gradient.png") no-repeat !important;*/
 	background: transparent!important;
-/*	border-bottom:2px solid #111100;*/
 }
 .command-menu .palm-menu-fade {
-/*	background: transparent url("../images/theme/command-menu-gradient.png") no-repeat !important;*/
 	background: transparent !important;
-/*	border-top:2px solid #111100;	*/
 }
 
 a:link {
@@ -27,19 +21,6 @@ a:link {
 	text-decoration:none;
 	cursor:pointer;
 }
-
-/*div.view-menu {
-	background-image: none !important;
-	height:48px;
-}*/
-
-/*div.command-menu {
-	background-image: none !important;
-	background-color: rgba(50,50,14,.4) !important;
-	border-top:2px solid rgba(0,0,0,.4);
-	height:48px;
-
-}*/
 
 #menu {
 	position:relative;
@@ -86,7 +67,7 @@ div.timeline-entry {
 		overflow:hidden;
 		min-height:64px;
 		color:#000 !important;
-		background:#FFFF66 !important;
+		background:#AAAA99 !important;
 		position:relative;
 		margin:0;		
 	}
@@ -611,6 +592,8 @@ div.spaz-drawer {
 		margin-bottom:0px;
 		font-size:11pt;
 		line-height:13pt;
+		border-width:6px;
+		padding:0px;
 	}
 	
 	#post-panel-counter {

@@ -262,7 +262,7 @@ scene_helpers.addCommonSceneMethods = function(assistant) {
 		if (!this.scroller) {
 			this.scroller = this.controller.getSceneScroller();
 		}
-		var num_new   = jQuery('.timeline>div.timeline-entry.new:visible:last', this.scroller).length;
+		var num_new   = jQuery('.timeline>div.timeline-entry.new:visible', this.scroller).length;
 		var first_new = jQuery('.timeline>div.timeline-entry.new:visible:last', this.scroller).get(0);
 		
 		if (first_new) {

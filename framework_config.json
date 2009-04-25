@@ -1,7 +1,7 @@
 {
-"logLevel": 0,
+"logLevel": 99,
 "timingEnabled": false,
 "useNativeJSONParser":false,
-"debuggingEnabled":false,
+"debuggingEnabled":true,
 "logEvents":false
 }
