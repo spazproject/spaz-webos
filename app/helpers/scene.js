@@ -1170,3 +1170,6 @@ var makeItemsClickable = function(str) {
 	return str;
 };
 
+
+
+var dump = sc.helpers.dump;
