@@ -396,6 +396,10 @@ MyTimelineAssistant.prototype.renderTweets = function(tweets, render_callback, f
 				*/
 				var jqitem = jQuery(itemhtml);
 
+				if (!from_cache) {
+					jqitem.addClass('new');
+				}
+
 				if (this.SC_is_reply) {
 					jqitem.addClass('reply');
 				}
@@ -408,6 +412,7 @@ MyTimelineAssistant.prototype.renderTweets = function(tweets, render_callback, f
 				/*
 					put item on timeline
 				*/
+
 				jQuery('#my-timeline', thisA.scroller).prepend(jqitem);
 			} else {
 				dump('Tweet ('+this.id+') already is in timeline');

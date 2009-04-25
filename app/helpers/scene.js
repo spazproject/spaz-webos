@@ -515,7 +515,7 @@ scene_helpers.addCommonSceneMethods = function(assistant) {
 		
 		dump(data);
 
-		var itemhtml = Mojo.View.render({object: data, template: 'shared/tweet'});
+		var itemhtml = sc.app.tpl.parseTemplate('tweet', data);
 		
 
 

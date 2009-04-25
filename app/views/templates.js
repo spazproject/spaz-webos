@@ -118,7 +118,7 @@ sc.app.tpl.addTemplateMethod('tweet', function(d) {
 	var html = '';
 	
 
-	html += '<div class="timeline-entry new" data-status-id="'+d.id+'" data-user-id="'+d.user.id+'" data-user-screen_name="'+d.user.screen_name+'" data-timestamp="'+d.created_at_unixtime+'">';
+	html += '<div class="timeline-entry" data-status-id="'+d.id+'" data-user-id="'+d.user.id+'" data-user-screen_name="'+d.user.screen_name+'" data-timestamp="'+d.created_at_unixtime+'">';
 	html += '	<div class="user" data-user-id="'+d.user.id+'" data-user-screen_name="'+d.user.screen_name+'">';
 	html += '		<img src="'+d.user.profile_image_url+'" title="'+d.user.screen_name+'" />';
 	html += '	</div>';
@@ -139,7 +139,7 @@ sc.app.tpl.addTemplateMethod('tweet', function(d) {
 sc.app.tpl.addTemplateMethod('dm', function(d) {
 	var html = '';
 
-	html += '<div class="timeline-entry new" data-isdm="true" data-status-id="'+d.id+'" data-user-id="'+d.sender.id+'" data-user-screen_name="'+d.sender.screen_name+'" data-timestamp="'+d.created_at_unixtime+'">';
+	html += '<div class="timeline-entry" data-isdm="true" data-status-id="'+d.id+'" data-user-id="'+d.sender.id+'" data-user-screen_name="'+d.sender.screen_name+'" data-timestamp="'+d.created_at_unixtime+'">';
 	html += '	<div class="user" data-user-id="'+d.sender.id+'" data-user-screen_name="'+d.sender.screen_name+'">';
 	html += '		<img src="'+d.sender.profile_image_url+'" title="'+d.sender.screen_name+'" />';
 	html += '	</div>';
@@ -162,7 +162,7 @@ sc.app.tpl.addTemplateMethod('dm', function(d) {
 sc.app.tpl.addTemplateMethod('search-item', function(d) {
 	var html = '';
 
-	html += '<div class="timeline-entry new" data-issearch="true" data-status-id="'+d.id+'" data-user-id="'+d.from_user_id+'" data-user-screen_name="'+d.from_user+'" data-timestamp="'+d.created_at_unixtime+'">';
+	html += '<div class="timeline-entry" data-issearch="true" data-status-id="'+d.id+'" data-user-id="'+d.from_user_id+'" data-user-screen_name="'+d.from_user+'" data-timestamp="'+d.created_at_unixtime+'">';
 	html += '	<div class="user" data-user-id="'+d.from_user_id+'" data-user-screen_name="'+d.from_user+'">';
 	html += '		<img src="'+d.profile_image_url+'" title="'+d.from_user+'" />';
 	html += '	</div>';
