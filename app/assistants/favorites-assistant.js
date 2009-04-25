@@ -71,8 +71,8 @@ FavoritesAssistant.prototype.activate = function(event) {
 		/*
 			Update relative dates
 		*/
-		sch.updateRelativeTimes('#favorites-timeline>div.timeline-entry>.status>.meta>.date', 'data-created_at');
-		thisA.hideInlineSpinner('#favorites-timeline');
+		sch.updateRelativeTimes('#favorites-timeline>div.timeline-entry .meta>.date', 'data-created_at');
+		thisA.hideInlineSpinner('#favorites-spinner-container');
 	});
 	
 	
@@ -125,8 +125,8 @@ FavoritesAssistant.prototype.activate = function(event) {
 		/*
 			Update relative dates
 		*/
-		sch.updateRelativeTimes('#favorites-timeline>div.timeline-entry>.status>.meta>.date', 'data-created_at');
-		thisA.hideInlineSpinner('#favorites-timeline');
+		sch.updateRelativeTimes('#favorites-timeline>div.timeline-entry .meta>.date', 'data-created_at');
+		thisA.hideInlineSpinner('#favorites-spinner-container');
 		
 	});
 	

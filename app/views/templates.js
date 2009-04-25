@@ -123,11 +123,13 @@ sc.app.tpl.addTemplateMethod('tweet', function(d) {
 	html += '		<img src="'+d.user.profile_image_url+'" title="'+d.user.screen_name+'" />';
 	html += '	</div>';
 	html += '	<div class="status">';
-	html += '		<div class="screen-name">'+d.user.screen_name+'</div>';
+	html += '		<div class="meta-wrapper">';
+	html += '			<div class="screen-name">'+d.user.screen_name+'</div>';
+	html += '			<div class="meta" data-status-id="'+d.id+'"><span class="date" data-created_at="'+d.created_at+'">'+d.relative_time+'</span></div>';
+	html += '		</div>';
 	html += '	 	<div class="text">';
 	html += '			'+d.text+'';
 	html += '		</div>';
-	html += '		<div class="meta" data-status-id="'+d.id+'"><span class="date" data-created_at="'+d.created_at+'">'+d.relative_time+'</span></div>';
 	html += '	</div>';
 	html += '</div>';
 
@@ -142,11 +144,13 @@ sc.app.tpl.addTemplateMethod('dm', function(d) {
 	html += '		<img src="'+d.sender.profile_image_url+'" title="'+d.sender.screen_name+'" />';
 	html += '	</div>';
 	html += '	<div class="status">';
-	html += '		<div class="screen-name">'+d.sender.screen_name+'</div>';
+	html += '		<div class="meta-wrapper">';
+	html += '			<div class="screen-name">'+d.sender.screen_name+'</div>';
+	html += '			<div class="meta" data-status-id="'+d.id+'"><span class="date" data-created_at="'+d.created_at+'">'+d.relative_time+'</span></div>';
+	html += '		</div>';
 	html += '	 	<div class="text">';
 	html += '			'+d.text+'';
 	html += '		</div>';
-	html += '		<div class="meta" data-status-id="'+d.id+'"><span class="date" data-created_at="'+d.created_at+'">'+d.relative_time+'</span></div>';
 	html += '	</div>';
 	// html += '  <div class="entry-json" style="display:none">'+sch.enJSON(d)+'</div>';
 	html += '  <div class="entry-json" style="display:none"></div>';
@@ -163,11 +167,13 @@ sc.app.tpl.addTemplateMethod('search-item', function(d) {
 	html += '		<img src="'+d.profile_image_url+'" title="'+d.from_user+'" />';
 	html += '	</div>';
 	html += '	<div class="status">';
-	html += '		<div class="screen-name">'+d.from_user+'</div>';
+	html += '		<div class="meta-wrapper">';
+	html += '			<div class="screen-name">'+d.from_user+'</div>';
+	html += '			<div class="meta" data-status-id="'+d.id+'"><span class="date" data-created_at="'+d.created_at+'">'+d.relative_time+'</span></div>';
+	html += '		</div>';
 	html += '	 	<div class="text">';
 	html += '			'+d.text+'';
 	html += '		</div>';
-	html += '		<div class="meta" data-status-id="'+d.id+'"><span class="date" data-created_at="'+d.created_at+'">'+d.relative_time+'</span> &#x2192;</div>';
 	html += '	</div>';
 	html += '</div>';
 

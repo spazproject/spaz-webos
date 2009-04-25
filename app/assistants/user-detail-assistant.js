@@ -99,7 +99,7 @@ UserDetailAssistant.prototype.setup = function() {
 		/*
 			Update relative dates
 		*/
-		sch.updateRelativeTimes('#user-timeline>div.timeline-entry>.status>.meta>.date', 'data-created_at');
+		sch.updateRelativeTimes('#user-timeline>div.timeline-entry .meta>.date', 'data-created_at');
 
 	});
 	

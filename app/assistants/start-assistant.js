@@ -6,6 +6,8 @@ function StartAssistant(argFromPusher) {
 	
 	Mojo.Log.info("Logging from StartAssistant Constructor");
 	
+	jQuery('#start-scene').hide();
+	
 	if (argFromPusher && argFromPusher.firstload) {
 		if (sc.app.prefs.get('always-go-to-my-timeline')) {
 			
@@ -29,8 +31,19 @@ function StartAssistant(argFromPusher) {
 			}
 			
 			
+		} else {
+			
+			jQuery('#start-scene').show();
+			
 		}
+		
+	} else {
+		
+		jQuery('#start-scene').show();
+		
 	}
+	
+	
 	
 	scene_helpers.addCommonSceneMethods(this);
 }
@@ -222,6 +235,12 @@ StartAssistant.prototype.setup = function() {
 
 
 StartAssistant.prototype.activate = function(argFromPusher) {
+	
+	/*
+		We may still be hidden if we went directly to an account's timeline, so 
+		make sure to .show() just in case
+	*/
+	jQuery('#start-scene').show();
 	
 	Mojo.Log.info("Logging from StartAssistant Activate");
 	

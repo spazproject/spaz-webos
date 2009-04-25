@@ -160,6 +160,7 @@ MyTimelineAssistant.prototype.activate = function(event) {
 	jQuery('.hashtag.clickable', this.scroller).live(Mojo.Event.tap, function(e) {
 		var hashtag = jQuery(this).attr('data-hashtag');
 		thisA.searchFor('#'+hashtag);
+		return false;
 	});
 
 	jQuery('div.timeline-entry', this.scroller).live(Mojo.Event.hold, function(e) {
@@ -441,9 +442,11 @@ MyTimelineAssistant.prototype.renderTweets = function(tweets, render_callback, f
 		dump("sc.app.prefs.get('timeline-scrollonupdate'):"+sc.app.prefs.get('timeline-scrollonupdate'));
 		
 		
-		
-		
-		if ( tweets_added > 0 && !from_cache && sc.app.prefs.get('timeline-scrollonupdate') ) {
+		var num_entries = jQuery('#my-timeline div.timeline-entry').length;
+		dump("num_entries:"+num_entries);
+		var old_entries = num_entries - tweets_added;
+		dump("old_entries:"+old_entries);
+		if ( tweets_added > 0 && old_entries > 0 && !from_cache && sc.app.prefs.get('timeline-scrollonupdate') ) {
 			dump("I'm going to scroll to new in 500ms!");
 			setTimeout(function() { thisA.scrollToNew() }, 500);
 		} else {
@@ -458,11 +461,6 @@ MyTimelineAssistant.prototype.renderTweets = function(tweets, render_callback, f
 	/*
 		remove extra items
 	*/
-	// sch.removeExtraElements('#my-timeline>div.timeline-entry', sc.app.prefs.get('timeline-maxentries'));
-	
-	// sch.removeExtraElements('#my-timeline>div.timeline-entry:not(.reply):not(.dm)', sc.app.prefs.get('timeline-maxentries'));
-	// sch.removeExtraElements('#my-timeline>div.timeline-entry.reply', sc.app.prefs.get('timeline-maxentries-reply'));
-	// sch.removeExtraElements('#my-timeline>div.timeline-entry.dm', sc.app.prefs.get('timeline-maxentries-dm'));
 	thisA.removeExtraItems();
 
 	/*

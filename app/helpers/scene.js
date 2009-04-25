@@ -262,13 +262,16 @@ scene_helpers.addCommonSceneMethods = function(assistant) {
 		if (!this.scroller) {
 			this.scroller = this.controller.getSceneScroller();
 		}
-		
+		var num_new   = jQuery('.timeline>div.timeline-entry.new:visible:last', this.scroller).length;
 		var first_new = jQuery('.timeline>div.timeline-entry.new:visible:last', this.scroller).get(0);
 		
 		if (first_new) {
 			dump('Scrolling to first new item');
-			jQuery(this.scroller).scrollTo(first_new, { axis:'y', duration:0, offset:{top:-100} });
-			// jQuery(this.scroller).scrollTo(first_new, { axis:'y', duration:0 });
+			if (num_new == 1) { // if only one new, just scroll to the top
+				this.scrollToTop();
+			} else {
+				jQuery(this.scroller).scrollTo(first_new, { axis:'y', duration:0, offset:{top:-100} });				
+			}
 		} else {
 			dump('No new items to scroll to');
 		}
@@ -539,7 +542,7 @@ scene_helpers.addCommonSceneMethods = function(assistant) {
 		/*
 			Update relative dates
 		*/
-		sch.updateRelativeTimes('div.timeline-entry>.status>.meta>.date', 'data-created_at');
+		sch.updateRelativeTimes('div.timeline-entry .meta>.date', 'data-created_at');
 		
 		/*
 			re-apply filtering

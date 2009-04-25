@@ -88,7 +88,7 @@ SearchTwitterAssistant.prototype.setup = function() {
 				{
 					items: [
 						{label:$L('Update'),   icon:'sync', command:'refresh', shortcut:'R'},
-						{label:$L('Trends'),   iconPath:'images/theme/menu-icon-trends.png', command:'search-trends'},
+						// {label:$L('Trends'),   iconPath:'images/theme/menu-icon-trends.png', command:'search-trends'},
 					]
 				}
 			]
@@ -106,7 +106,7 @@ SearchTwitterAssistant.prototype.setup = function() {
 					items: [
 						{label:$L('Compose'),  icon:'compose', command:'compose', shortcut:'N'},
 						{label:$L('Update'),   icon:'sync', command:'refresh', shortcut:'R'},
-						{label:$L('Trends'),   iconPath:'images/theme/menu-icon-trends.png', command:'search-trends'}
+						// {label:$L('Trends'),   iconPath:'images/theme/menu-icon-trends.png', command:'search-trends'}
 					]
 				}
 			],
@@ -185,7 +185,7 @@ SearchTwitterAssistant.prototype.activate = function(event) {
 		/*
 			Update relative dates
 		*/
-		sch.updateRelativeTimes('#search-timeline>div.timeline-entry>.status>.meta>.date', 'data-created_at');
+		sch.updateRelativeTimes('#search-timeline>div.timeline-entry .meta>.date', 'data-created_at');
 		e.data.thisAssistant.hideInlineSpinner('#search-spinner-container');
 		e.data.thisAssistant.startRefresher();
 	});
@@ -237,7 +237,7 @@ SearchTwitterAssistant.prototype.activate = function(event) {
 		/*
 			Update relative dates
 		*/
-		sch.updateRelativeTimes('#search-timeline>div.timeline-entry>.status>.meta>.date', 'data-created_at');
+		sch.updateRelativeTimes('#search-timeline>div.timeline-entry .meta>.date', 'data-created_at');
 		e.data.thisAssistant.hideInlineSpinner('#search-spinner-container');
 		e.data.thisAssistant.startRefresher();
 		
