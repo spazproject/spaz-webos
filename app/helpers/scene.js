@@ -801,10 +801,20 @@ scene_helpers.addCommonSceneMethods = function(assistant) {
 	assistant.hideInlineSpinner = function(container, message) {
 		// jQuery('.inline-spinner', container).fadeOut('fast');
 		jQuery('.inline-spinner', container).hide('blind', 'fast', function() {
-			dump("SPINNER CONTAINER HTML (hide):"+jQuery(container).get(0).outerHTML);
+			// dump("SPINNER CONTAINER HTML (hide):"+jQuery(container).get(0).outerHTML);
 			jQuery(container).empty();
 
 		});
+		
+	};
+
+	/**
+	 *  immediately DESTROYS an existing spinner
+	 */
+	assistant.clearInlineSpinner = function(container) {
+		// jQuery('.inline-spinner', container).fadeOut('fast');
+		// dump("SPINNER CONTAINER HTML (hide):"+jQuery(container).get(0).outerHTML);
+		jQuery(container).empty();
 		
 	};
 	
@@ -1162,7 +1172,7 @@ var findAndSwapScene = function(targetScene, returnValue) {
  */
 var makeItemsClickable = function(str) {
 	
-	str = sch.autolink(str);
+	str = sch.autolink(str, null, null, 20);
 	str = sch.autolinkTwitterScreenname(str, '<span class="username clickable" data-user-screen_name="#username#">@#username#</span>');
 	str = sch.autolinkTwitterHashtag(str, '<span class="hashtag clickable" data-hashtag="#hashtag#">##hashtag#</span>');
 

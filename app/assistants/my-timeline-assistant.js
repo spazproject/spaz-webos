@@ -85,6 +85,7 @@ MyTimelineAssistant.prototype.setup = function() {
 	/* setup widgets here */
 	
 	jQuery().bind('load_from_mytimeline_cache_done', function() {
+		thisA.clearInlineSpinner('#my-timeline-spinner-container');
 		if (thisA.activateStarted === true) {
 			dump('getting data!');
 			thisA.getData();
@@ -244,6 +245,8 @@ MyTimelineAssistant.prototype.cleanup = function(event) {
 MyTimelineAssistant.prototype.loadTimelineCache = function() {
 
 	var thisA = this;
+
+	this.showInlineSpinner('#my-timeline-spinner-container', 'Loading cached tweets…');
 
 	this.cacheDepot.simpleGet(sc.app.username,
 		function(data) {
