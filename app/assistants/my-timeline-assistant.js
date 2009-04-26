@@ -192,15 +192,12 @@ MyTimelineAssistant.prototype.activate = function(event) {
 		var isdm = false;
 		var status_obj = null;
 		
-		// dump("ISDM:"+jQuery(this).parent().parent().hasClass('dm'));
-		
 		if (jQuery(this).hasClass('dm')) {
 			isdm = true;
-			// status_obj = sch.deJSON( jQuery(this).parent().parent().children('.entry-json').text() );
 			status_obj = thisA.getTweet(parseInt(status_id));
 		}
 		Mojo.Controller.stageController.pushScene('message-detail', {'status_id':status_id, 'isdm':isdm, 'status_obj':status_obj});
-	});	
+	});
 
 
 	if (this.loadOnActivate) {

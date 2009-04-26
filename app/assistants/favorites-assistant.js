@@ -48,6 +48,8 @@ FavoritesAssistant.prototype.setup = function() {
 	/* setup widgets here */
 	
 	/* add event handlers to listen to events from widgets */
+	
+	this.refreshOnActivate = true;
 }
 
 FavoritesAssistant.prototype.activate = function(event) {
@@ -136,26 +138,38 @@ FavoritesAssistant.prototype.activate = function(event) {
 	jQuery('div.timeline-entry>.user', this.scroller).live(Mojo.Event.tap, function(e) {
 		var userid = jQuery(this).attr('data-user-screen_name');
 		Mojo.Controller.stageController.pushScene('user-detail', userid);
+		e.stopImediatePropagation();
 	});
 	
 	jQuery('.username.clickable', this.scroller).live(Mojo.Event.tap, function(e) {
 		var userid = jQuery(this).attr('data-user-screen_name');
 		Mojo.Controller.stageController.pushScene('user-detail', userid);
+		e.stopImediatePropagation();
 	});
 
 	jQuery('.hashtag.clickable', this.scroller).live(Mojo.Event.tap, function(e) {
 		var hashtag = jQuery(this).attr('data-hashtag');
 		thisA.searchFor('#'+hashtag);
+		e.stopImediatePropagation();
 	});
 
 	jQuery('div.timeline-entry>.status>.meta', this.scroller).live(Mojo.Event.tap, function(e) {
 		var statusid = jQuery(this).attr('data-status-id');
 		Mojo.Controller.stageController.pushScene('message-detail', statusid);
+		e.stopImediatePropagation();
 	});
 
+
+	jQuery('div.timeline-entry', this.scroller).live(Mojo.Event.tap, function(e) {
+		var statusid = jQuery(this).attr('data-status-id');
+		Mojo.Controller.stageController.pushScene('message-detail', statusid);
+	});
 	
+	if (this.refreshOnActivate) {
+		this.refresh();
+		this.refreshOnActivate = false;
+	}
 	
-	this.refresh();
 
 	
 }
@@ -172,6 +186,7 @@ FavoritesAssistant.prototype.deactivate = function(event) {
 	jQuery('.username.clickable', this.scroller).die(Mojo.Event.tap);
 	jQuery('.hashtag.clickable', this.scroller).die(Mojo.Event.tap);
 	jQuery('div.timeline-entry>.status>.meta', this.scroller).die(Mojo.Event.tap);
+	jQuery('div.timeline-entry', this.scroller).die(Mojo.Event.tap);
 	
 	
 }

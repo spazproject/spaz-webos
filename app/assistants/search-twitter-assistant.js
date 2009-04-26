@@ -33,38 +33,6 @@ function SearchTwitterAssistant(args) {
 }
 
 
-// SearchTwitterAssistant.prototype.initPrefs = function() {
-// 	/*
-// 		load our prefs
-// 		default_preferences is from default_preferences.js, loaded in index.html
-// 	*/
-// 	if (!sc.app.prefs) {
-// 		
-// 		/*
-// 			We can't go to the login screen until the 
-// 			prefs have fully loaded
-// 		*/
-// 		var thisSA = this;
-// 		jQuery().bind('spazprefs_loaded', function() {
-// 
-// 			// var username = sc.app.prefs.get('username');
-// 			// var password = sc.app.prefs.get('password');
-// 
-// 			if (!sc.app.twit) {
-// 				sc.app.twit = new scTwit();
-// 
-// 				if (sc.app.username && sc.app.password) {
-// 					sc.app.twit.setCredentials(sc.app.username, sc.app.password);
-// 				}
-// 			}		
-// 
-// 		});
-// 		
-// 		sc.app.prefs = new scPrefs(default_preferences);
-// 		sc.app.prefs.load();
-// 	}
-// };
-
 
 SearchTwitterAssistant.prototype.setup = function() {
 	/* this function is for setup tasks that have to happen when the scene is first created */
@@ -256,6 +224,10 @@ SearchTwitterAssistant.prototype.activate = function(event) {
 		e.data.thisAssistant.refresh();
 	});
 	
+	jQuery().bind('search_twitter_refresh', { thisAssistant:this }, function(e) {
+		e.data.thisAssistant.startRefresher();
+	});
+	
 	
 	/*
 		listen for clicks on user avatars
@@ -263,11 +235,13 @@ SearchTwitterAssistant.prototype.activate = function(event) {
 	jQuery('div.timeline-entry>.user', this.scroller).live(Mojo.Event.tap, function(e) {
 		var userid = jQuery(this).attr('data-user-screen_name');
 		Mojo.Controller.stageController.pushScene('user-detail', userid);
+		e.stopImediatePropagation();
 	});
 	
 	jQuery('.username.clickable', this.scroller).live(Mojo.Event.tap, function(e) {
 		var userid = jQuery(this).attr('data-user-screen_name');
 		Mojo.Controller.stageController.pushScene('user-detail', userid);
+		e.stopImediatePropagation();
 	});
 
 	jQuery('.hashtag.clickable', this.scroller).live(Mojo.Event.tap, function(e) {
@@ -278,26 +252,21 @@ SearchTwitterAssistant.prototype.activate = function(event) {
 		};
 		
 		thisA.searchFor('#'+hashtag, scene_type);
+		e.stopImediatePropagation();
 	});
 
 	jQuery('div.timeline-entry>.status>.meta', this.scroller).live(Mojo.Event.tap, function(e) {
 		var statusid = jQuery(this).attr('data-status-id');
 		Mojo.Controller.stageController.pushScene('message-detail', statusid);
-	});
-	
-	// jQuery('#search-twitter-textfield', this.scroller).bind('focus', function(e) {
-	// 	jQuery('#submit-search-button').fadeIn('fast');
-	// });
-	// 
-	// jQuery('#search-twitter-textfield', this.scroller).bind('blur', function(e) {
-	// 	jQuery('#submit-search-button').fadeOut('fast');
-	// });
-	
-	
-	jQuery().bind('search_twitter_refresh', { thisAssistant:this }, function(e) {
-		e.data.thisAssistant.startRefresher();
+		e.stopImediatePropagation();
 	});
 
+	jQuery('div.timeline-entry', this.scroller).live(Mojo.Event.tap, function(e) {
+		var statusid = jQuery(this).attr('data-status-id');
+		Mojo.Controller.stageController.pushScene('message-detail', statusid);
+	});
+
+		
 }
 
 

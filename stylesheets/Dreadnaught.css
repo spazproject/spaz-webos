@@ -93,7 +93,7 @@ div.timeline-entry {
 	*/
 	div.timeline-entry.reply:nth-of-type(odd),
 	div.timeline-entry.reply:nth-of-type(even) {
-		background-color: #EEEECC;
+		background-color: #FFFFBB;
 		background-image: none;
 	}
 	/*
@@ -101,15 +101,13 @@ div.timeline-entry {
 	*/
 	div.timeline-entry.dm:nth-of-type(odd),
 	div.timeline-entry.dm:nth-of-type(even) {
-		background-color: #EECCCC;
+		background-color: #FFBBBB;
 		background-image: none;
 	}
 	
 	div.timeline-entry.new {
 		color:#000;
-		border-color: #111;
-/*		padding: 10px 7px;*/
-		
+		border-color: #111;		
 	}
 		div.timeline-entry.new:nth-of-type(odd) {
 			background-color: #fefbd9;

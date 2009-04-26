@@ -8,7 +8,6 @@
 * User Detail
 	* Need to listen for Ajax errors on user timeline
 * Search
-	* Trends button needs to actually do something
 * Preferences
 
 
@@ -30,6 +29,7 @@ SpazTwit
 	* Data timeline should only load on request
 	* add ability to view user's favorites
 * Search
+	* Trends button needs to actually do something
 * Preferences
 	* Twitter API Base URL
 * Notifications
