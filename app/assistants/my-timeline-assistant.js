@@ -151,33 +151,21 @@ MyTimelineAssistant.prototype.activate = function(event) {
 	jQuery('div.timeline-entry>.user', this.scroller).live(Mojo.Event.tap, function(e) {
 		var userid = jQuery(this).attr('data-user-screen_name');
 		Mojo.Controller.stageController.pushScene('user-detail', userid);
+		e.stopImediatePropagation();
 	});
 	
 	jQuery('.username.clickable', this.scroller).live(Mojo.Event.tap, function(e) {
 		var userid = jQuery(this).attr('data-user-screen_name');
 		Mojo.Controller.stageController.pushScene('user-detail', userid);
+		e.stopImediatePropagation();
 	});
 	
 	jQuery('.hashtag.clickable', this.scroller).live(Mojo.Event.tap, function(e) {
 		var hashtag = jQuery(this).attr('data-hashtag');
 		thisA.searchFor('#'+hashtag);
-		return false;
+		e.stopImediatePropagation();
 	});
 
-	jQuery('div.timeline-entry', this.scroller).live(Mojo.Event.hold, function(e) {
-		var status_id = jQuery(this).attr('data-status-id');
-		var isdm = false;
-		var status_obj = null;
-		
-		// dump("ISDM:"+jQuery(this).parent().parent().hasClass('dm'));
-		
-		if (jQuery(this).hasClass('dm')) {
-			isdm = true;
-			// status_obj = sch.deJSON( jQuery(this).parent().parent().children('.entry-json').text() );
-			status_obj = thisA.getTweet(parseInt(status_id));
-		}
-		Mojo.Controller.stageController.pushScene('message-detail', {'status_id':status_id, 'isdm':isdm, 'status_obj':status_obj});
-	});
 	
 	jQuery('div.timeline-entry .meta', this.scroller).live(Mojo.Event.tap, function(e) {
 		var status_id = jQuery(this).attr('data-status-id');
@@ -192,9 +180,28 @@ MyTimelineAssistant.prototype.activate = function(event) {
 			status_obj = thisA.getTweet(parseInt(status_id));
 		}
 		Mojo.Controller.stageController.pushScene('message-detail', {'status_id':status_id, 'isdm':isdm, 'status_obj':status_obj});
+		e.stopImediatePropagation();
+	});
+
+	jQuery('div.timeline-entry a[href]', this.scroller).live(Mojo.Event.tap, function(e) {
+		e.stopImediatePropagation();
 	});
 	
-	
+	jQuery('div.timeline-entry', this.scroller).live(Mojo.Event.tap, function(e) {
+		var status_id = jQuery(this).attr('data-status-id');
+		var isdm = false;
+		var status_obj = null;
+		
+		// dump("ISDM:"+jQuery(this).parent().parent().hasClass('dm'));
+		
+		if (jQuery(this).hasClass('dm')) {
+			isdm = true;
+			// status_obj = sch.deJSON( jQuery(this).parent().parent().children('.entry-json').text() );
+			status_obj = thisA.getTweet(parseInt(status_id));
+		}
+		Mojo.Controller.stageController.pushScene('message-detail', {'status_id':status_id, 'isdm':isdm, 'status_obj':status_obj});
+	});	
+
 
 	if (this.loadOnActivate) {
 		/*
@@ -229,8 +236,8 @@ MyTimelineAssistant.prototype.deactivate = function(event) {
 	jQuery('div.timeline-entry>.user', this.scroller).die(Mojo.Event.tap);
 	jQuery('.username.clickable', this.scroller).die(Mojo.Event.tap);
 	jQuery('.hashtag.clickable', this.scroller).die(Mojo.Event.tap);
-	jQuery('div.timeline-entry', this.scroller).die(Mojo.Event.hold);
 	jQuery('div.timeline-entry .meta', this.scroller).die(Mojo.Event.tap);
+	jQuery('div.timeline-entry', this.scroller).die(Mojo.Event.tap);
 	
 	
 }
