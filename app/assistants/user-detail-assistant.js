@@ -120,6 +120,7 @@ UserDetailAssistant.prototype.setup = function() {
 	});
 	
 	
+	
 	jQuery().bind('get_user_failed', function(e, error_obj) {
 		// error_obj.url
 		// error_obj.xhr

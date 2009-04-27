@@ -39,7 +39,7 @@ SearchTwitterAssistant.prototype.setup = function() {
 		
 	/* use Mojo.View.render to render view templates and add them to the scene, if needed. */
 
-	var thisA = this;	
+	var thisA = this;
 	
 	this.initTwit();
 	

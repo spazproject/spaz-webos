@@ -172,16 +172,16 @@ MyTimelineAssistant.prototype.activate = function(event) {
 		var isdm = false;
 		var status_obj = null;
 		
-		// dump("ISDM:"+jQuery(this).parent().parent().hasClass('dm'));
+		status_obj = thisA.getTweetFromModel(parseInt(status_id));
 		
 		if (jQuery(this).parent().parent().hasClass('dm')) {
 			isdm = true;
-			// status_obj = sch.deJSON( jQuery(this).parent().parent().children('.entry-json').text() );
-			status_obj = thisA.getTweet(parseInt(status_id));
 		}
+		
 		Mojo.Controller.stageController.pushScene('message-detail', {'status_id':status_id, 'isdm':isdm, 'status_obj':status_obj});
 		e.stopImediatePropagation();
 	});
+	
 
 	jQuery('div.timeline-entry a[href]', this.scroller).live(Mojo.Event.tap, function(e) {
 		e.stopImediatePropagation();
@@ -192,9 +192,10 @@ MyTimelineAssistant.prototype.activate = function(event) {
 		var isdm = false;
 		var status_obj = null;
 		
+		status_obj = thisA.getTweetFromModel(parseInt(status_id));
+		
 		if (jQuery(this).hasClass('dm')) {
 			isdm = true;
-			status_obj = thisA.getTweet(parseInt(status_id));
 		}
 		Mojo.Controller.stageController.pushScene('message-detail', {'status_id':status_id, 'isdm':isdm, 'status_obj':status_obj});
 	});
@@ -531,7 +532,7 @@ MyTimelineAssistant.prototype.stopRefresher = function() {
 /**
  * Gets tweet from this.tweetsModel, or false if DNE 
  */
-MyTimelineAssistant.prototype.getTweet = function(id) {
+MyTimelineAssistant.prototype.getTweetFromModel = function(id) {
 	
 	for(var i=0; i < this.tweetsModel.length; i++) {
 		if (this.tweetsModel[i].id == id) {
@@ -570,7 +571,7 @@ MyTimelineAssistant.prototype.removeExtraItems = function() {
 	Mojo.Timing.resume('syncModel');
 	jQuery('#my-timeline>div.timeline-entry').each( function() {
 		var id = jQuery(this).attr('data-status-id');
-		var this_obj = thisA.getTweet(id);
+		var this_obj = thisA.getTweetFromModel(id);
 		new_model.push(this_obj);
 	} );
 	this.tweetsModel = new_model.reverse();

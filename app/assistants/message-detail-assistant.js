@@ -114,7 +114,11 @@ MessageDetailAssistant.prototype.activate = function(event) {
 			return;
 		}
 	} else {
-		this.twit.getOne(this.status_id);
+		if (this.status_obj){
+			jQuery().trigger('get_one_status_succeeded', [this.status_obj]);
+		} else {
+			this.twit.getOne(this.status_id);
+		}
 	}
 	
 
