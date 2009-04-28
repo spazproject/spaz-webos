@@ -1118,6 +1118,20 @@ scene_helpers.addCommonSceneMethods = function(assistant) {
 		return stagename;
 	};
 
+
+
+	assistant.openInBrowser = function(url) {
+		this.controller.serviceRequest("palm://com.palm.applicationManager", {
+		  method: "open",
+		  parameters:  {
+		      id: 'com.palm.app.browser',
+		      params: {
+		          target: url
+		      }
+		  }
+		});
+	};
+	
 	
 }
 
@@ -1179,7 +1193,5 @@ var makeItemsClickable = function(str) {
 	
 	return str;
 };
-
-
 
 var dump = sc.helpers.dump;

@@ -7,6 +7,8 @@ function HelpAssistant() {
 }
 
 HelpAssistant.prototype.setup = function() {
+
+	
 	this.scroller = this.controller.getSceneScroller();
 	this.initAppMenu();
 
@@ -19,8 +21,8 @@ HelpAssistant.prototype.setup = function() {
 			}
 		]
 	});
-
-
+	
+		
 	/* this function is for setup tasks that have to happen when the scene is first created */
 		
 	/* use Mojo.View.render to render view templates and add them to the scene, if needed. */
@@ -31,8 +33,24 @@ HelpAssistant.prototype.setup = function() {
 }
 
 HelpAssistant.prototype.activate = function(event) {
+	var thisA = this;
+
 	/* put in event handlers here that should only be in effect when this scene is active. For
 	   example, key handlers that are observing the document */
+	
+	Mojo.Event.listen($("help-wiki-button"), Mojo.Event.tap, function() {
+		thisA.openInBrowser('http://funkatron.com/spaz-webos/wiki');
+	});
+    Mojo.Event.listen($("help-group-button"),  Mojo.Event.tap, function() {
+		thisA.openInBrowser('http://funkatron.com/spaz-webos/group');
+	});
+    Mojo.Event.listen($("help-issues-button"), Mojo.Event.tap, function() {
+		thisA.openInBrowser('http://funkatron.com/spaz-webos/issues');
+	});
+	Mojo.Event.listen($("help-source-button"), Mojo.Event.tap, function() {
+		thisA.openInBrowser('http://funkatron.com/spaz-webos/source');
+	});
+	
 }
 
 
