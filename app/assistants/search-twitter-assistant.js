@@ -283,6 +283,7 @@ SearchTwitterAssistant.prototype.deactivate = function(event) {
 	jQuery('.username.clickable', this.scroller).die(Mojo.Event.tap);
 	jQuery('.hashtag.clickable', this.scroller).die(Mojo.Event.tap);
 	jQuery('div.timeline-entry>.status>.meta', this.scroller).die(Mojo.Event.tap);
+	jQuery('div.timeline-entry', this.scroller).die(Mojo.Event.tap);
 	
 	this.removePostPopup();
 }

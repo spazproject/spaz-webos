@@ -264,7 +264,14 @@ StartAssistant.prototype.activate = function(argFromPusher) {
 		thisA.searchFor(term, 'lightweight');
 	});
 
-	jQuery('#app-version').text("v"+Mojo.appInfo.version);
+	jQuery('#app-version').text("v"+Mojo.appInfo.version+" Beta");
+	
+	/*
+		Get application news
+	*/
+	jQuery.get('http://funkatron.com/spaz-webos/appnews', function() {
+		// don't actually do anything with this yet
+	})
 
 	
 }
