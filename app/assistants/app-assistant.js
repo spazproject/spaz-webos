@@ -22,9 +22,9 @@ function AppAssistant(appController) {
 	
 
 	/*
-		model for saving Tweets to Depot
+		model for saving Tweets to Depot. We replace on every start to make sure we don't go over-budget
 	*/
-	sc.app.Tweets = new Tweets();
+	sc.app.Tweets = new Tweets(true);
 
 	sc.app.search_cards = [];
 	sc.app.new_search_card = 0;

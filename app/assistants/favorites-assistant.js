@@ -111,7 +111,7 @@ FavoritesAssistant.prototype.activate = function(event) {
 				/*
 					save this tweet to Depot
 				*/
-				// sc.app.Tweets.save(this);
+				sc.app.Tweets.save(this);
 			
 			
 				/*

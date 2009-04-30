@@ -85,7 +85,7 @@ MyTimelineAssistant.prototype.setup = function() {
 	/* setup widgets here */
 	
 	jQuery().bind('load_from_mytimeline_cache_done', function() {
-		thisA.clearInlineSpinner('#my-timeline-spinner-container');
+		// thisA.stopInlineSpinner('#my-timeline-spinner-container', "Cache Loaded");
 		if (thisA.activateStarted === true) {
 			dump('getting data!');
 			thisA.getData();
@@ -121,7 +121,7 @@ MyTimelineAssistant.prototype.activate = function(event) {
 	jQuery().bind('error_combined_timeline_data', { thisAssistant:this }, function(e, error_array) {
 		dump('error_combined_timeline_data - response:');
 		dump(error_array);
-		thisA.hideInlineSpinner('#my-timeline-spinner-container');
+		thisA.hideInlineSpinner('#my-timeline-spinner-container', null, true);
 		thisA.startRefresher();
 
 		var err_msg = $L("There were errors retrieving your combined timeline");
@@ -250,8 +250,8 @@ MyTimelineAssistant.prototype.cleanup = function(event) {
 MyTimelineAssistant.prototype.loadTimelineCache = function() {
 
 	var thisA = this;
-
-	this.showInlineSpinner('#my-timeline-spinner-container', 'Loading cached tweets…');
+	
+	this.showInlineSpinner('#my-timeline-spinner-container', 'Loading cached tweets…', true);
 
 	this.cacheDepot.simpleGet(sc.app.username,
 		function(data) {
@@ -416,7 +416,7 @@ MyTimelineAssistant.prototype.renderTweets = function(tweets, render_callback, f
 					jqitem.addClass('dm');
 				}
 
-
+				sc.app.Tweets.save(this);
 				/*
 					put item on timeline
 				*/
@@ -483,15 +483,17 @@ MyTimelineAssistant.prototype.renderTweets = function(tweets, render_callback, f
 		thisA.playAudioCue('newmsg');		
 	}
 
-	thisA.hideInlineSpinner('#my-timeline-spinner-container');
+	// thisA.hideInlineSpinner('#my-timeline-spinner-container');
 	thisA.startRefresher();
 	
 	/*
 		Save this in case we need to load from cache
 	*/
 	if (!from_cache) {
+		thisA.hideInlineSpinner('#my-timeline-spinner-container');
 		thisA.saveTimelineCache();
 	} else {
+		thisA.clearInlineSpinner('#my-timeline-spinner-container');
 		jQuery().trigger('load_from_mytimeline_cache_done');
 	}
 	

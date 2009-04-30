@@ -758,18 +758,26 @@ scene_helpers.addCommonSceneMethods = function(assistant) {
 	/**
 	 *  destroys and existing spinners and creates a new one, showing it
 	 */
-	assistant.showInlineSpinner = function(container, message) {
+	assistant.showInlineSpinner = function(container, message, nofadein) {
+		dump('showing!'+"\n"+container+"\n"+message+"\n"+nofadein);
+
 		/*
 			remove any existing
 		*/
-		jQuery('.inline-spinner', container).remove(); 
+		jQuery(container).empty();
+		// jQuery('.inline-spinner', container).remove(); 
 		
 		var html = '<div class="inline-spinner" style="display:none">'+
 			'<img src="images/theme/loading.gif" class="inline-spinner-spinner" />'+
 			'<span class="inline-spinner-label">'+message+'</span>'+
 		'</div>';
-		jQuery(container).prepend(html);
-		jQuery('.inline-spinner', container).show('blind', 'fast');
+		jQuery(container).html(html);
+		if (!nofadein) {
+			jQuery('.inline-spinner', container).show('blind', 'fast');
+		} else {
+			jQuery('.inline-spinner', container).show();
+		}
+		
 		dump("SPINNER CONTAINER HTML (start):"+jQuery(container).get(0).outerHTML);
 		// jQuery('.inline-spinner', container).fadeIn('fast');
 		
@@ -780,7 +788,7 @@ scene_helpers.addCommonSceneMethods = function(assistant) {
 	 */
 	assistant.stopInlineSpinner = function(container, message) {
 		// jQuery('.inline-spinner', container).fadeOut('fast');
-		jQuery('.inline-spinner-spinner', container).hide('blind', 'fast');
+		// jQuery('.inline-spinner-spinner', container).hide('blind', 'fast');
 		jQuery('.inline-spinner-label', container).html(message);
 	};
 
@@ -790,7 +798,9 @@ scene_helpers.addCommonSceneMethods = function(assistant) {
 	 */
 	assistant.startInlineSpinner = function(container, message) {
 		// jQuery('.inline-spinner', container).fadeOut('fast');
-		jQuery('.inline-spinner', container).show('blind', 'fast');
+		if (!jQuery('.inline-spinner', container).is(':visible')) {
+			jQuery('.inline-spinner', container).show('blind', 'fast');
+		}
 		jQuery('.inline-spinner-label', container).html(message);
 	};
 
@@ -798,13 +808,16 @@ scene_helpers.addCommonSceneMethods = function(assistant) {
 	/**
 	 *  hides and DESTROYS an existing spinner
 	 */
-	assistant.hideInlineSpinner = function(container, message) {
-		// jQuery('.inline-spinner', container).fadeOut('fast');
-		jQuery('.inline-spinner', container).hide('blind', 'fast', function() {
-			// dump("SPINNER CONTAINER HTML (hide):"+jQuery(container).get(0).outerHTML);
+	assistant.hideInlineSpinner = function(container, message, nofadeout) {
+		dump('hiding!'+"\n"+container+"\n"+message+"\n"+nofadeout);
+		
+		if (!nofadeout) {
+			jQuery('.inline-spinner', container).hide('blind', 'fast', function() {
+				jQuery(container).empty();
+			});
+		} else {
 			jQuery(container).empty();
-
-		});
+		}
 		
 	};
 
@@ -812,10 +825,8 @@ scene_helpers.addCommonSceneMethods = function(assistant) {
 	 *  immediately DESTROYS an existing spinner
 	 */
 	assistant.clearInlineSpinner = function(container) {
-		// jQuery('.inline-spinner', container).fadeOut('fast');
-		// dump("SPINNER CONTAINER HTML (hide):"+jQuery(container).get(0).outerHTML);
-		jQuery(container).empty();
-		
+		dump("clearing inline spinner");
+		jQuery(container).empty();		
 	};
 	
 	

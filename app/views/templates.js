@@ -65,6 +65,17 @@ sc.app.tpl.addTemplateMethod('message-detail-dm', function(d) {
 	return html;
 });
 
+
+/*
+	@TODO
+*/
+sc.app.tpl.addTemplateMethod('message-detail-searchresult', function(d) {
+	var html = 'Search result detail not finished yet';
+	return html;
+});
+
+
+
 sc.app.tpl.addTemplateMethod('user-detail', function(d) {
 	var html = '';
 	

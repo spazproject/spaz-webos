@@ -2,19 +2,23 @@
  * A model for interfacing with the Tweets depot
  * 
  */
-var Tweets = function() {
+var Tweets = function(replace) {
 	
 	this.bucket = "tweets";
 	this.dm_bucket = "dms";
 	
-	this._init();
+	this._init(replace);
 };
 
-Tweets.prototype._init  = function() {
+Tweets.prototype._init  = function(replace) {
 	var opts = {
 		'name'    : 'SpazDepotTweets',
 		'replace' : false
 	};
+	
+	if (replace === true) {
+		opts.replace = true;
+	}
 	
 	if (!this.mojoDepot) {
 		this.mojoDepot = new Mojo.Depot(opts);
@@ -22,6 +26,12 @@ Tweets.prototype._init  = function() {
 };
 
 Tweets.prototype.get    = function(id, is_dm, onSuccess, onFailure) {
+
+	/*
+		make sure this is an integer
+	*/	
+	id = parseInt(id);
+	
 	if (!is_dm) {
 		this.mojoDepot.getSingle(this.bucket, id, onSuccess, onFailure);
 	} else {
@@ -37,6 +47,12 @@ Tweets.prototype.getMultiple = function(type, since_id) {
 
 Tweets.prototype.save   = function(object, onSuccess, onFailure) {
 	var objid = object.id;
+	
+	/*
+		make sure this is an integer
+	*/
+	objid = parseInt(objid);
+	
 	dump("Saving id "+objid);
 	if (!object.SC_is_dm) {
 		dump("Saving TWEET "+objid);

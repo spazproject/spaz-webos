@@ -17,13 +17,13 @@ StageAssistant.prototype.setup = function() {
 	/*
 		model for saving Tweets to Depot
 	*/
-	sc.app.Tweets = new Tweets();
+	// sc.app.Tweets = new Tweets();
 
-	sc.app.search_cards = [];
-	sc.app.new_search_card = 0;
-
-	sc.app.username = null;
-	sc.app.password = null;
+	// sc.app.search_cards = [];
+	// sc.app.new_search_card = 0;
+	// 
+	// sc.app.username = null;
+	// sc.app.password = null;
 	
 	
 	/*

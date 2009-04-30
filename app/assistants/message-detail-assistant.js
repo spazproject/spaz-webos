@@ -117,7 +117,17 @@ MessageDetailAssistant.prototype.activate = function(event) {
 		if (this.status_obj){
 			jQuery().trigger('get_one_status_succeeded', [this.status_obj]);
 		} else {
-			this.twit.getOne(this.status_id);
+			sc.app.Tweets.get(this.status_id, this.isdm,
+				function(data) {
+					jQuery().trigger('get_one_status_succeeded', [data]);
+				},
+				function(message) {
+					dump('Couldn\'t retrieve message from Depot:'+message)
+					this.twit.getOne(this.status_id);
+				}
+			);
+			
+
 		}
 	}
 	
@@ -220,7 +230,7 @@ MessageDetailAssistant.prototype.processStatusReturn = function(e, statusobj) {
 	/*
 		save this tweet to Depot
 	*/
-	// sc.app.Tweets.save(this);
+	sc.app.Tweets.save(statusobj);
 	
 	
 	// var itemhtml = Mojo.View.render({object:e.data.thisAssistant.statusobj, template: 'message-detail/message-detail'});
