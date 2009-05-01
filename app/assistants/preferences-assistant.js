@@ -19,7 +19,7 @@ PreferencesAssistant.prototype.setup = function() {
 		viewMenuItems: [
 			{
 				items: [
-					{label:$L('Back'),        icon:'back', command:'back'},
+					// {label:$L('Back'),        icon:'back', command:'back'},
 					{label:$L('Preferences'), command:'scroll-top'}
 				]
 			}

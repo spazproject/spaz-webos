@@ -10,10 +10,6 @@
         "source": "app\/assistants\/help-assistant.js"
     },
     {
-        "scene": "login",
-        "source": "app\/assistants\/login-assistant.js"
-    },
-    {
         "scene": "message-detail",
         "source": "app\/assistants\/message-detail-assistant.js"
     },
@@ -40,5 +36,13 @@
     {
         "scenes": "about",
         "source": "app\/assistants\/about-assistant.js"
+    },
+    {
+        "scenes": "startlogin",
+        "source": "app\/assistants\/startlogin-assistant.js"
+    },
+    {
+        "scenes": "startsearch",
+        "source": "app\/assistants\/startsearch-assistant.js"
     }
 ]

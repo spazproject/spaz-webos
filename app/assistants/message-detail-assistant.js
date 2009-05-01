@@ -36,7 +36,7 @@ MessageDetailAssistant.prototype.setup = function() {
 			viewMenuItems: [
 				{
 					items: [
-						{label:$L('Back'),        icon:'back', command:'back'},
+						// {label:$L('Back'),        icon:'back', command:'back'},
 						{label:$L('Message Detail'), command:'scroll-top'}
 					]
 				},
@@ -53,7 +53,7 @@ MessageDetailAssistant.prototype.setup = function() {
 			viewMenuItems: [
 				{
 					items: [
-						{label:$L('Back'),        icon:'back', command:'back'},
+						// {label:$L('Back'),        icon:'back', command:'back'},
 						{label:$L('Message Detail'), command:'scroll-top'}
 					]
 				}
@@ -119,7 +119,12 @@ MessageDetailAssistant.prototype.activate = function(event) {
 		} else {
 			sc.app.Tweets.get(this.status_id, this.isdm,
 				function(data) {
-					jQuery().trigger('get_one_status_succeeded', [data]);
+					if (data !== null) {
+						jQuery().trigger('get_one_status_succeeded', [data]);
+					} else { // if nothing is returned, get it from Twitter
+						thisA.twit.getOne(thisA.status_id);
+					}
+					
 				},
 				function(message) {
 					dump('Couldn\'t retrieve message from Depot:'+message)

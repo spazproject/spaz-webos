@@ -33,7 +33,7 @@ UserDetailAssistant.prototype.setup = function() {
 			viewMenuItems: [
 				{
 					items: [
-						{label:$L('Back'),        icon:'back', command:'back'},
+						// {label:$L('Back'),        icon:'back', command:'back'},
 						{label:$L('User Detail'), command:'scroll-top'}
 					]
 				},
@@ -50,7 +50,7 @@ UserDetailAssistant.prototype.setup = function() {
 			viewMenuItems: [
 				{
 					items: [
-						{label:$L('Back'),        icon:'back', command:'back'},
+						// {label:$L('Back'),        icon:'back', command:'back'},
 						{label:$L('User Detail'), command:'scroll-top'}
 					]
 				}
@@ -84,7 +84,7 @@ UserDetailAssistant.prototype.setup = function() {
 			/*
 				save this tweet to Depot
 			*/
-			// sc.app.Tweets.save(this);
+			sc.app.Tweets.save(this);
 			
 		});
 
@@ -219,25 +219,75 @@ UserDetailAssistant.prototype.activate = function(event) {
 	});
 
 
-	jQuery('#user-detail-container .username.clickable', this.scroller).live(Mojo.Event.tap, function(e) {
-		var userid = jQuery(this).attr('data-user-screen_name');
-		Mojo.Controller.stageController.pushScene('user-detail', userid);
-	});
-
-	jQuery('#user-detail-container .hashtag.clickable', this.scroller).live(Mojo.Event.tap, function(e) {
-		var hashtag = jQuery(this).attr('data-hashtag');
-		thisA.searchFor('#'+hashtag);
-	});
-
-	jQuery('#user-detail-container div.timeline-entry>.status>.meta', this.scroller).live(Mojo.Event.tap, function(e) {
-		var statusid = jQuery(this).attr('data-status-id');
-		Mojo.Controller.stageController.pushScene('message-detail', statusid);
-	});
-
 	jQuery('#user-detail-container div.timeline-entry', this.scroller).live(Mojo.Event.tap, function(e) {
-		var statusid = jQuery(this).attr('data-status-id');
-		Mojo.Controller.stageController.pushScene('message-detail', statusid);
+		var jqtarget = jQuery(e.target);
+
+		e.stopImmediatePropagation();
+		
+		if (jqtarget.is('div.timeline-entry>.user') || jqtarget.is('div.timeline-entry>.user img')) {
+			var userid = jQuery(this).attr('data-user-screen_name');
+			Mojo.Controller.stageController.pushScene('user-detail', userid);
+			return;
+			
+		} else if (jqtarget.is('.username.clickable')) {
+			var userid = jqtarget.attr('data-user-screen_name');
+			Mojo.Controller.stageController.pushScene('user-detail', userid);
+			return;
+			
+		} else if (jqtarget.is('.hashtag.clickable')) {
+			var hashtag = jqtarget.attr('data-hashtag');
+			thisA.searchFor('#'+hashtag);
+			return;
+			
+		} else if (jqtarget.is('div.timeline-entry .meta')) {
+			var status_id = jqtarget.attr('data-status-id');
+			var isdm = false;
+			var status_obj = null;
+
+			if (jqtarget.parent().parent().hasClass('dm')) {
+				isdm = true;
+			}
+
+			Mojo.Controller.stageController.pushScene('message-detail', {'status_id':status_id, 'isdm':isdm, 'status_obj':status_obj});
+			return;
+			
+		} else if (jqtarget.is('div.timeline-entry a[href]')) {
+			return;
+
+		} else {
+			var status_id = jQuery(this).attr('data-status-id');
+			var isdm = false;
+			var status_obj = null;
+
+			if (jQuery(this).hasClass('dm')) {
+				isdm = true;
+			}
+			
+			Mojo.Controller.stageController.pushScene('message-detail', {'status_id':status_id, 'isdm':isdm, 'status_obj':status_obj});
+			return;
+		}
 	});
+
+
+	// jQuery('#user-detail-container .username.clickable', this.scroller).live(Mojo.Event.tap, function(e) {
+	// 	var userid = jQuery(this).attr('data-user-screen_name');
+	// 	Mojo.Controller.stageController.pushScene('user-detail', userid);
+	// });
+	// 
+	// jQuery('#user-detail-container .hashtag.clickable', this.scroller).live(Mojo.Event.tap, function(e) {
+	// 	var hashtag = jQuery(this).attr('data-hashtag');
+	// 	thisA.searchFor('#'+hashtag);
+	// });
+	// 
+	// jQuery('#user-detail-container div.timeline-entry>.status>.meta', this.scroller).live(Mojo.Event.tap, function(e) {
+	// 	var statusid = jQuery(this).attr('data-status-id');
+	// 	Mojo.Controller.stageController.pushScene('message-detail', statusid);
+	// });
+	// 
+	// jQuery('#user-detail-container div.timeline-entry', this.scroller).live(Mojo.Event.tap, function(e) {
+	// 	var statusid = jQuery(this).attr('data-status-id');
+	// 	Mojo.Controller.stageController.pushScene('message-detail', statusid);
+	// });
 
 	if (!this.userRetrieved) {
 		this.twit.getUser(this.userid);
@@ -270,9 +320,9 @@ UserDetailAssistant.prototype.deactivate = function(event) {
 	jQuery('#user-detail-actions #follow-user', this.scroller).die(Mojo.Event.tap);
 	jQuery('#user-detail-actions #block-user', this.scroller).die(Mojo.Event.tap);
 	
-	jQuery('#user-detail-container .username.clickable', this.scroller).die(Mojo.Event.tap);
-	jQuery('#user-detail-container .hashtag.clickable', this.scroller).die(Mojo.Event.tap);
-	jQuery('#user-detail-container div.timeline-entry>.status>.meta', this.scroller).die(Mojo.Event.tap);
+	// jQuery('#user-detail-container .username.clickable', this.scroller).die(Mojo.Event.tap);
+	// jQuery('#user-detail-container .hashtag.clickable', this.scroller).die(Mojo.Event.tap);
+	// jQuery('#user-detail-container div.timeline-entry>.status>.meta', this.scroller).die(Mojo.Event.tap);
 	jQuery('#user-detail-container div.timeline-entry', this.scroller).die(Mojo.Event.tap);
 }
 

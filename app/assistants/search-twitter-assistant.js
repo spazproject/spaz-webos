@@ -255,8 +255,6 @@ SearchTwitterAssistant.prototype.activate = function(event) {
 			var isdm = false;
 			var status_obj = null;
 
-			status_obj = thisA.getTweetFromModel(parseInt(status_id));
-
 			if (jqtarget.parent().parent().hasClass('dm')) {
 				isdm = true;
 			}

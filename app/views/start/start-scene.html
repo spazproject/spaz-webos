@@ -1,5 +1,5 @@
 
-<div id="start-scene">
+<div id="start-scene" style="display:none">
 	
 	<div id="start-section" style="text-align:center">
 		<div>
@@ -15,54 +15,5 @@
 	
 	</div> <!-- start-section end -->
 
-	<div id="login-section" style="display:none">
-	
-		<button class="palm-button dismiss" id="back-login-button">&laquo; Back</button>
-		
-		<div id="accountList" name="userlist" x-mojo-element='List'></div>
-		<div class="checkbox-container">
-			<div x-mojo-element="CheckBox" id="goToMyTimelineCheckbox"></div>
-			<div class="checkbox-label">Always go to My Timeline</div>
-		</div>
-	</div> <!-- login-section end -->
-
-
-	<div id="search-section" style="display:none">
-
-		<button class="palm-button dismiss" id="back-search-button">&laquo; Back</button>
-	
-		<div class="palm-group palm-group-spaz">
-			<div class="palm-group-title" id="search-toggle" x-mojo-loc=''>Search Twitter</div>
-			<div class="palm-list" id="search-panel">
-		   		<div class="palm-row single">
-					<div class="palm-row-wrapper textfield-group" x-mojo-focus-highlight="true">
-						<div class="title">
-								<div class="label">
-									search terms
-								</div>
-		      				<div id="search" name="search"  x-mojo-element="TextField"></div>
-						</div>
-					</div>
-				</div>
-
-		   		<div class="palm-row single">
-					<button class="palm-button" id="search-button">Search</button>
-				</div>
-			</div>
-		</div>	
-		<div class="palm-group palm-group-spaz">
-			<div class="palm-group-title" x-mojo-loc=''>Current Trends on Twitter</div>
-			<div class="palm-list">
-				<div id="trends-list"></div>
-				<div id="trends-spinner-container"></div>
-				<div class="palm-row single">
-					<button class="palm-button" id="reload-trends-button">Update</button>
-				</div>
-			</div>
-		</div>
-
-
-	
-	</div> <!-- search-section end -->
 
 </div>
