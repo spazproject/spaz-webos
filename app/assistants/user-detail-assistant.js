@@ -219,17 +219,22 @@ UserDetailAssistant.prototype.activate = function(event) {
 	});
 
 
-	jQuery('.username.clickable', this.scroller).live(Mojo.Event.tap, function(e) {
+	jQuery('#user-detail-container .username.clickable', this.scroller).live(Mojo.Event.tap, function(e) {
 		var userid = jQuery(this).attr('data-user-screen_name');
 		Mojo.Controller.stageController.pushScene('user-detail', userid);
 	});
 
-	jQuery('.hashtag.clickable', this.scroller).live(Mojo.Event.tap, function(e) {
+	jQuery('#user-detail-container .hashtag.clickable', this.scroller).live(Mojo.Event.tap, function(e) {
 		var hashtag = jQuery(this).attr('data-hashtag');
 		thisA.searchFor('#'+hashtag);
 	});
 
-	jQuery('div.timeline-entry>.status>.meta', this.scroller).live(Mojo.Event.tap, function(e) {
+	jQuery('#user-detail-container div.timeline-entry>.status>.meta', this.scroller).live(Mojo.Event.tap, function(e) {
+		var statusid = jQuery(this).attr('data-status-id');
+		Mojo.Controller.stageController.pushScene('message-detail', statusid);
+	});
+
+	jQuery('#user-detail-container div.timeline-entry', this.scroller).live(Mojo.Event.tap, function(e) {
 		var statusid = jQuery(this).attr('data-status-id');
 		Mojo.Controller.stageController.pushScene('message-detail', statusid);
 	});
@@ -265,9 +270,10 @@ UserDetailAssistant.prototype.deactivate = function(event) {
 	jQuery('#user-detail-actions #follow-user', this.scroller).die(Mojo.Event.tap);
 	jQuery('#user-detail-actions #block-user', this.scroller).die(Mojo.Event.tap);
 	
-	jQuery('.username.clickable', this.scroller).die(Mojo.Event.tap);
-	jQuery('.hashtag.clickable', this.scroller).die(Mojo.Event.tap);
-	jQuery('div.timeline-entry>.status>.meta', this.scroller).die(Mojo.Event.tap);
+	jQuery('#user-detail-container .username.clickable', this.scroller).die(Mojo.Event.tap);
+	jQuery('#user-detail-container .hashtag.clickable', this.scroller).die(Mojo.Event.tap);
+	jQuery('#user-detail-container div.timeline-entry>.status>.meta', this.scroller).die(Mojo.Event.tap);
+	jQuery('#user-detail-container div.timeline-entry', this.scroller).die(Mojo.Event.tap);
 }
 
 UserDetailAssistant.prototype.cleanup = function(event) {

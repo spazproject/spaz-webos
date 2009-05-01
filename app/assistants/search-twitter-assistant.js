@@ -227,44 +227,101 @@ SearchTwitterAssistant.prototype.activate = function(event) {
 	jQuery().bind('search_twitter_refresh', { thisAssistant:this }, function(e) {
 		e.data.thisAssistant.startRefresher();
 	});
-	
-	
-	/*
-		listen for clicks on user avatars
-	*/
-	jQuery('div.timeline-entry>.user', this.scroller).live(Mojo.Event.tap, function(e) {
-		var userid = jQuery(this).attr('data-user-screen_name');
-		Mojo.Controller.stageController.pushScene('user-detail', userid);
-		e.stopImediatePropagation();
-	});
-	
-	jQuery('.username.clickable', this.scroller).live(Mojo.Event.tap, function(e) {
-		var userid = jQuery(this).attr('data-user-screen_name');
-		Mojo.Controller.stageController.pushScene('user-detail', userid);
-		e.stopImediatePropagation();
-	});
 
-	jQuery('.hashtag.clickable', this.scroller).live(Mojo.Event.tap, function(e) {
-		var hashtag = jQuery(this).attr('data-hashtag');
+
+
+	jQuery('#search-timeline div.timeline-entry', this.scroller).live(Mojo.Event.tap, function(e) {
+		var jqtarget = jQuery(e.target);
+
+		e.stopImmediatePropagation();
 		
-		if (thisA.lightweight) {
-			var scene_type = 'lightweight';
-		};
-		
-		thisA.searchFor('#'+hashtag, scene_type);
-		e.stopImediatePropagation();
-	});
+		if (jqtarget.is('div.timeline-entry>.user') || jqtarget.is('div.timeline-entry>.user img')) {
+			var userid = jQuery(this).attr('data-user-screen_name');
+			Mojo.Controller.stageController.pushScene('user-detail', userid);
+			return;
+			
+		} else if (jqtarget.is('.username.clickable')) {
+			var userid = jqtarget.attr('data-user-screen_name');
+			Mojo.Controller.stageController.pushScene('user-detail', userid);
+			return;
+			
+		} else if (jqtarget.is('.hashtag.clickable')) {
+			var hashtag = jqtarget.attr('data-hashtag');
+			thisA.searchFor('#'+hashtag);
+			return;
+			
+		} else if (jqtarget.is('div.timeline-entry .meta')) {
+			var status_id = jqtarget.attr('data-status-id');
+			var isdm = false;
+			var status_obj = null;
 
-	jQuery('div.timeline-entry>.status>.meta', this.scroller).live(Mojo.Event.tap, function(e) {
-		var statusid = jQuery(this).attr('data-status-id');
-		Mojo.Controller.stageController.pushScene('message-detail', statusid);
-		e.stopImediatePropagation();
-	});
+			status_obj = thisA.getTweetFromModel(parseInt(status_id));
 
-	jQuery('div.timeline-entry', this.scroller).live(Mojo.Event.tap, function(e) {
-		var statusid = jQuery(this).attr('data-status-id');
-		Mojo.Controller.stageController.pushScene('message-detail', statusid);
+			if (jqtarget.parent().parent().hasClass('dm')) {
+				isdm = true;
+			}
+
+			Mojo.Controller.stageController.pushScene('message-detail', {'status_id':status_id, 'isdm':isdm, 'status_obj':status_obj});
+			return;
+			
+		} else if (jqtarget.is('div.timeline-entry a[href]')) {
+			return;
+
+		} else {
+			var status_id = jQuery(this).attr('data-status-id');
+			var isdm = false;
+			var status_obj = null;
+
+			if (jQuery(this).hasClass('dm')) {
+				isdm = true;
+			}
+			
+			Mojo.Controller.stageController.pushScene('message-detail', {'status_id':status_id, 'isdm':isdm, 'status_obj':status_obj});
+			return;
+		}
 	});
+	
+	
+	// /*
+	// 	listen for clicks on user avatars
+	// */
+	// jQuery('div.timeline-entry>.user', this.scroller).live(Mojo.Event.tap, function(e) {
+	// 	var userid = jQuery(this).attr('data-user-screen_name');
+	// 	Mojo.Controller.stageController.pushScene('user-detail', userid);
+	// 	e.stopImmediatePropagation();
+	// });
+	// 
+	// jQuery('.username.clickable', this.scroller).live(Mojo.Event.tap, function(e) {
+	// 	var userid = jQuery(this).attr('data-user-screen_name');
+	// 	Mojo.Controller.stageController.pushScene('user-detail', userid);
+	// 	e.stopImmediatePropagation();
+	// });
+	// 
+	// jQuery('.hashtag.clickable', this.scroller).live(Mojo.Event.tap, function(e) {
+	// 	var hashtag = jQuery(this).attr('data-hashtag');
+	// 	
+	// 	if (thisA.lightweight) {
+	// 		var scene_type = 'lightweight';
+	// 	};
+	// 	
+	// 	thisA.searchFor('#'+hashtag, scene_type);
+	// 	e.stopImmediatePropagation();
+	// });
+	// 
+	// jQuery('div.timeline-entry>.status>.meta', this.scroller).live(Mojo.Event.tap, function(e) {
+	// 	var statusid = jQuery(this).attr('data-status-id');
+	// 	Mojo.Controller.stageController.pushScene('message-detail', statusid);
+	// 	e.stopImmediatePropagation();
+	// });
+	// 
+	// jQuery('div.timeline-entry', this.scroller).live(Mojo.Event.tap, function(e) {
+	// 	var jqtarget = jQuery(e.target);		
+	// 	if (!jqtarget.is('div.timeline-entry .text') && !jqtarget.is('div.timeline-entry')) {
+	// 		return;
+	// 	}
+	// 	var statusid = jQuery(this).attr('data-status-id');
+	// 	Mojo.Controller.stageController.pushScene('message-detail', statusid);
+	// });
 
 		
 }
@@ -279,11 +336,13 @@ SearchTwitterAssistant.prototype.deactivate = function(event) {
 	jQuery().unbind('new_search_timeline_data');
 	jQuery().unbind('error_search_timeline_data');
 	
-	jQuery('div.timeline-entry>.user', this.scroller).die(Mojo.Event.tap);
-	jQuery('.username.clickable', this.scroller).die(Mojo.Event.tap);
-	jQuery('.hashtag.clickable', this.scroller).die(Mojo.Event.tap);
-	jQuery('div.timeline-entry>.status>.meta', this.scroller).die(Mojo.Event.tap);
-	jQuery('div.timeline-entry', this.scroller).die(Mojo.Event.tap);
+	// jQuery('div.timeline-entry>.user', this.scroller).die(Mojo.Event.tap);
+	// jQuery('.username.clickable', this.scroller).die(Mojo.Event.tap);
+	// jQuery('.hashtag.clickable', this.scroller).die(Mojo.Event.tap);
+	// jQuery('div.timeline-entry>.status>.meta', this.scroller).die(Mojo.Event.tap);
+	// jQuery('div.timeline-entry a[href]', this.scroller).die(Mojo.Event.tap);
+	jQuery('#search-timeline div.timeline-entry', this.scroller).die(Mojo.Event.tap);
+
 	
 	this.removePostPopup();
 }

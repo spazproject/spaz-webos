@@ -123,7 +123,7 @@ MessageDetailAssistant.prototype.activate = function(event) {
 				},
 				function(message) {
 					dump('Couldn\'t retrieve message from Depot:'+message)
-					this.twit.getOne(this.status_id);
+					thisA.twit.getOne(thisA.status_id);
 				}
 			);
 			
@@ -132,7 +132,7 @@ MessageDetailAssistant.prototype.activate = function(event) {
 	}
 	
 
-	jQuery('.in-reply-to-link', this.scroller).live(Mojo.Event.tap, function(e) {
+	jQuery('#message-detail-container .in-reply-to-link', this.scroller).live(Mojo.Event.tap, function(e) {
 		var statusid = jQuery(this).attr('data-irt-status-id');
 		Mojo.Controller.stageController.pushScene('message-detail', statusid);
 	});
@@ -167,17 +167,17 @@ MessageDetailAssistant.prototype.activate = function(event) {
 	});
 	
 	
-	jQuery('.username.clickable', this.scroller).live(Mojo.Event.tap, function(e) {
+	jQuery('#message-detail-container .username.clickable', this.scroller).live(Mojo.Event.tap, function(e) {
 		var userid = jQuery(this).attr('data-user-screen_name');
 		Mojo.Controller.stageController.pushScene('user-detail', userid);
 	});
 
-	jQuery('.hashtag.clickable', this.scroller).live(Mojo.Event.tap, function(e) {
+	jQuery('#message-detail-container .hashtag.clickable', this.scroller).live(Mojo.Event.tap, function(e) {
 		var hashtag = jQuery(this).attr('data-hashtag');
 		thisA.searchFor('#'+hashtag);
 	});
 
-	jQuery('div.timeline-entry>.status>.meta', this.scroller).live(Mojo.Event.tap, function(e) {
+	jQuery('#message-detail-container div.timeline-entry>.status>.meta', this.scroller).live(Mojo.Event.tap, function(e) {
 		var statusid = jQuery(this).attr('data-status-id');
 		Mojo.Controller.stageController.pushScene('message-detail', statusid);
 	});
@@ -197,16 +197,16 @@ MessageDetailAssistant.prototype.deactivate = function(event) {
 	
 	// jQuery().unbind('get_one_status_succeeded', this.processStatusReturn);
 	
-	jQuery('.in-reply-to-link', this.scroller).die(Mojo.Event.tap);
+	jQuery('#message-detail-container .in-reply-to-link', this.scroller).die(Mojo.Event.tap);
 	jQuery('#message-detail-image', this.scroller).die(Mojo.Event.tap);
 	jQuery('#message-detail-action-reply', this.scroller).die(Mojo.Event.tap);
 	jQuery('#message-detail-action-retweet', this.scroller).die(Mojo.Event.tap);
 	jQuery('#message-detail-action-dm', this.scroller).die(Mojo.Event.tap);
 	jQuery('#message-detail-action-favorite', this.scroller).die(Mojo.Event.tap);
 	
-	jQuery('.username.clickable', this.scroller).die(Mojo.Event.tap);
-	jQuery('.hashtag.clickable', this.scroller).die(Mojo.Event.tap);
-	jQuery('div.timeline-entry>.status>.meta', this.scroller).die(Mojo.Event.tap);
+	jQuery('#message-detail-container .username.clickable', this.scroller).die(Mojo.Event.tap);
+	jQuery('#message-detail-container .hashtag.clickable', this.scroller).die(Mojo.Event.tap);
+	jQuery('#message-detail-container div.timeline-entry>.status>.meta', this.scroller).die(Mojo.Event.tap);
 }
 
 MessageDetailAssistant.prototype.cleanup = function(event) {

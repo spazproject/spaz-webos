@@ -97,6 +97,11 @@ MyTimelineAssistant.prototype.setup = function() {
 	
 	
 	
+
+	
+	
+	
+	
 	/* add event handlers to listen to events from widgets */
 	dump('Loading Timeline Cache ###################################');
 	this.loadTimelineCache();
@@ -145,60 +150,57 @@ MyTimelineAssistant.prototype.activate = function(event) {
 	});
 	
 	
-	/*
-		listen for clicks on user avatars
-	*/
-	jQuery('div.timeline-entry>.user', this.scroller).live(Mojo.Event.tap, function(e) {
-		var userid = jQuery(this).attr('data-user-screen_name');
-		Mojo.Controller.stageController.pushScene('user-detail', userid);
-		e.stopImediatePropagation();
-	});
-	
-	jQuery('.username.clickable', this.scroller).live(Mojo.Event.tap, function(e) {
-		var userid = jQuery(this).attr('data-user-screen_name');
-		Mojo.Controller.stageController.pushScene('user-detail', userid);
-		e.stopImediatePropagation();
-	});
-	
-	jQuery('.hashtag.clickable', this.scroller).live(Mojo.Event.tap, function(e) {
-		var hashtag = jQuery(this).attr('data-hashtag');
-		thisA.searchFor('#'+hashtag);
-		e.stopImediatePropagation();
-	});
+	jQuery('#my-timeline div.timeline-entry', this.scroller).live(Mojo.Event.tap, function(e) {
+		var jqtarget = jQuery(e.target);
 
-	
-	jQuery('div.timeline-entry .meta', this.scroller).live(Mojo.Event.tap, function(e) {
-		var status_id = jQuery(this).attr('data-status-id');
-		var isdm = false;
-		var status_obj = null;
+		e.stopImmediatePropagation();
 		
-		status_obj = thisA.getTweetFromModel(parseInt(status_id));
-		
-		if (jQuery(this).parent().parent().hasClass('dm')) {
-			isdm = true;
+		if (jqtarget.is('div.timeline-entry>.user') || jqtarget.is('div.timeline-entry>.user img')) {
+			var userid = jQuery(this).attr('data-user-screen_name');
+			Mojo.Controller.stageController.pushScene('user-detail', userid);
+			return;
+			
+		} else if (jqtarget.is('.username.clickable')) {
+			var userid = jqtarget.attr('data-user-screen_name');
+			Mojo.Controller.stageController.pushScene('user-detail', userid);
+			return;
+			
+		} else if (jqtarget.is('.hashtag.clickable')) {
+			var hashtag = jqtarget.attr('data-hashtag');
+			thisA.searchFor('#'+hashtag);
+			return;
+			
+		} else if (jqtarget.is('div.timeline-entry .meta')) {
+			var status_id = jqtarget.attr('data-status-id');
+			var isdm = false;
+			var status_obj = null;
+
+			status_obj = thisA.getTweetFromModel(parseInt(status_id));
+
+			if (jqtarget.parent().parent().hasClass('dm')) {
+				isdm = true;
+			}
+
+			Mojo.Controller.stageController.pushScene('message-detail', {'status_id':status_id, 'isdm':isdm, 'status_obj':status_obj});
+			return;
+			
+		} else if (jqtarget.is('div.timeline-entry a[href]')) {
+			return;
+
+		} else {
+			var status_id = jQuery(this).attr('data-status-id');
+			var isdm = false;
+			var status_obj = null;
+
+			if (jQuery(this).hasClass('dm')) {
+				isdm = true;
+			}
+			Mojo.Controller.stageController.pushScene('message-detail', {'status_id':status_id, 'isdm':isdm, 'status_obj':status_obj});
+			return;
 		}
-		
-		Mojo.Controller.stageController.pushScene('message-detail', {'status_id':status_id, 'isdm':isdm, 'status_obj':status_obj});
-		e.stopImediatePropagation();
 	});
 	
 
-	jQuery('div.timeline-entry a[href]', this.scroller).live(Mojo.Event.tap, function(e) {
-		e.stopImediatePropagation();
-	});
-	
-	jQuery('div.timeline-entry', this.scroller).live(Mojo.Event.tap, function(e) {
-		var status_id = jQuery(this).attr('data-status-id');
-		var isdm = false;
-		var status_obj = null;
-		
-		status_obj = thisA.getTweetFromModel(parseInt(status_id));
-		
-		if (jQuery(this).hasClass('dm')) {
-			isdm = true;
-		}
-		Mojo.Controller.stageController.pushScene('message-detail', {'status_id':status_id, 'isdm':isdm, 'status_obj':status_obj});
-	});
 
 
 	if (this.loadOnActivate) {
@@ -231,11 +233,14 @@ MyTimelineAssistant.prototype.deactivate = function(event) {
 	jQuery().unbind('my_timeline_refresh');
 	jQuery().unbind('load_from_mytimeline_cache_done');
 	
-	jQuery('div.timeline-entry>.user', this.scroller).die(Mojo.Event.tap);
-	jQuery('.username.clickable', this.scroller).die(Mojo.Event.tap);
-	jQuery('.hashtag.clickable', this.scroller).die(Mojo.Event.tap);
-	jQuery('div.timeline-entry .meta', this.scroller).die(Mojo.Event.tap);
-	jQuery('div.timeline-entry', this.scroller).die(Mojo.Event.tap);
+	// jQuery('div.timeline-entry>.user', this.scroller).die(Mojo.Event.tap);
+	// jQuery('.username.clickable', this.scroller).die(Mojo.Event.tap);
+	// jQuery('.hashtag.clickable', this.scroller).die(Mojo.Event.tap);
+	// jQuery('div.timeline-entry .meta', this.scroller).die(Mojo.Event.tap);
+	// jQuery('div.timeline-entry a[href]', this.scroller).die(Mojo.Event.tap);
+	jQuery('#my-timeline div.timeline-entry', this.scroller).die(Mojo.Event.tap);	
+
+	
 	
 	
 }
@@ -243,6 +248,9 @@ MyTimelineAssistant.prototype.deactivate = function(event) {
 MyTimelineAssistant.prototype.cleanup = function(event) {
 	/* this function should do any cleanup needed before the scene is destroyed as 
 	   a result of being popped off the scene stack */
+	
+
+	
 	this.stopRefresher();
 }
 

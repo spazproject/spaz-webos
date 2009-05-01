@@ -511,7 +511,7 @@ scene_helpers.addCommonSceneMethods = function(assistant) {
 		/*
 			save this tweet to Depot
 		*/
-		// sc.app.Tweets.save(data);
+		sc.app.Tweets.save(data);
 		
 		dump(data);
 
