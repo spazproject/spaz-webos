@@ -581,12 +581,12 @@ div.spaz-drawer {
 			}
 		
 	#post-panel-textarea {
-		width:265px;
-		height:5.3em;
+		width:97%;
+		height:7.3em;
 		margin-bottom:0px;
-		font-size:14px;
-		line-height:14px;
-		border-width:6px;
+		font-size:15px;
+		line-height:15px;
+		border-width:6px 4px 4px 2px;
 		padding:0px;
 	}
 	
