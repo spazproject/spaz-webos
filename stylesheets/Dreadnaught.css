@@ -852,14 +852,18 @@ div.error_info {
 /*
 	Help scene
 */
-* /* Put Application specific CSS here. */
+
+#help-scene .palm-body-text {
+	color:#BBB;
+}
+
 .img_icon {
 	position:absolute;
 	left:10px;
 	top:5px;
 	width:32px; 
 	height:32px;
-	background: url(../images/helpIcon.png) no-repeat center ;
+	background: url(../images/spaz-icon-alpha_32.png) no-repeat center ;
 	padding: 10px 0px 0px 5px;
 	float:left;	
 }
