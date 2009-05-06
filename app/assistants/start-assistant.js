@@ -268,7 +268,7 @@ StartAssistant.prototype.activate = function(argFromPusher) {
 	// 	thisA.searchFor(term, 'lightweight');
 	// });
 
-	jQuery('#app-version').text("v"+Mojo.appInfo.version+" Beta");
+	jQuery('#app-version').text("v"+Mojo.appInfo.version);
 	
 	/*
 		Get application news

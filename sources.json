@@ -5,6 +5,7 @@
         "scene": "favorites",
         "source": "app\/assistants\/favorites-assistant.js"
     },
+    {"source": "support_info.js"},
     {
         "scene": "help",
         "source": "app\/assistants\/help-assistant.js"
