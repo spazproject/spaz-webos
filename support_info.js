@@ -12,9 +12,9 @@ _APP_Support_Email = 'spaz-webos@funkatron.com'        // label = ÒSend EmailÓ
 // Optional
 _APP_Publisher_URL = 'http://www.funkatron.com' // label = _APP_PublisherName + ÒWebsiteÓ
 _APP_Help_Resource = [
-					 	{ type: 'web', label: 'Wiki', url: 'http://funkatron.com/spaz-webos/wiki'},
-					 	{ type: 'web', label: 'User Discussion Group', url: 'http://funkatron.com/spaz-webos/group'},
-					 	{ type: 'web', label: 'Issue Tracker', url: 'http://funkatron.com/spaz-webos/issues'},
-					 	{ type: 'web', label: 'Source Code', url: 'http://funkatron.com/spaz-webos/source'},
+					 	{ type: 'web', label: 'Wiki', url: 'funkatron.com/spaz-webos/wiki'},
+					 	{ type: 'web', label: 'User Discussion Group', url: 'funkatron.com/spaz-webos/group'},
+					 	{ type: 'web', label: 'Issue Tracker', url: 'funkatron.com/spaz-webos/issues'},
+					 	{ type: 'web', label: 'Source Code', url: 'funkatron.com/spaz-webos/source'},
 						
 					 ];
