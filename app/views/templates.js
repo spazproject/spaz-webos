@@ -47,7 +47,7 @@ sc.app.tpl.addTemplateMethod('message-detail-dm', function(d) {
 	html += '		<div class="screen_name" data-screen_name="'+d.sender.screen_name+'">'+d.sender.screen_name+'</div>';
 	html += '		<div class="text">'+d.text+'</div>';
 	html += '		<div class="meta" data-status-id="'+d.id+'">';
-	html += '			<div class="date"><strong>Posted</strong> <span class="date-relative" data-created_at="'+d.created_at+'">'+d.relative_time+'</span></div>';
+	html += '			<div class="date"><strong>Direct message sent</strong> <span class="date-relative" data-created_at="'+d.created_at+'">'+d.relative_time+'</span></div>';
 	html += '		</div>';
 	html += '	</div>';
 	if (sc.app.username && sc.app.password) {
@@ -101,7 +101,7 @@ sc.app.tpl.addTemplateMethod('user-detail', function(d) {
 	html += '		<div id="user-detail-actions">';
 	// html += '			<div class="spaz-button-group">';
 	html += '				<button id="view-user-posts" class="palm-button" data-screen_name="'+d.screen_name+'">View user\'s recent posts</button>';
-	html += '				<button id="user-timeline" data-screen_name="'+d.screen_name+'" style="display:none"></button>';
+	html += '				<div id="user-timeline" data-screen_name="'+d.screen_name+'" style="display:none"></div>';
 	html += '				<button id="search-user"class="palm-button" data-screen_name="'+d.screen_name+'">Search for user</button>';
 	// html += '			</div>';
 	if (sc.app.username && sc.app.password) {
