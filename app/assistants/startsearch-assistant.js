@@ -12,21 +12,6 @@ StartsearchAssistant.prototype.setup = function() {
 	this.scroller = this.controller.getSceneScroller();
 	
 	this.initAppMenu();
-
-	// this.setupCommonMenus({
-	// 	viewMenuItems: [
-	// 		{
-	// 			items: [
-	// 				// {label:$L('Back'),        icon:'back', command:'back'},
-	// 				{label:$L('Search & Explore'), command:'scroll-top'}
-	// 			]
-	// 		}
-	// 	],
-	// 	cmdMenuItems: [{ items:
-	// 		[]
-	// 	}]
-	// });
-	
 	
 	/*
 		Initialize the model
@@ -125,6 +110,12 @@ StartsearchAssistant.prototype.deactivate = function(event) {
 StartsearchAssistant.prototype.cleanup = function(event) {
 	/* this function should do any cleanup needed before the scene is destroyed as 
 	   a result of being popped off the scene stack */
+	
+	Mojo.Event.stopListening($('reload-trends-button'), Mojo.Event.tap, function() {
+		thisA.refreshTrends();
+	});
+	Mojo.Event.stopListening($('search-button'), Mojo.Event.tap, this.handleSearch);
+	jQuery().unbind('new_trends_data');
 }
 
 
@@ -147,14 +138,15 @@ StartsearchAssistant.prototype.propertyChanged = function(event) {
 
 StartsearchAssistant.prototype.activateSpinner = function() {
 	this.buttonWidget = this.controller.get('reload-trends-button');
-	console.dir(this.buttonWidget);
 	this.buttonWidget.mojo.activate();
 }
 
 StartsearchAssistant.prototype.deactivateSpinner = function() {
+	dump("Deactivating spinner reload-trends-button");
 	this.buttonWidget = this.controller.get('reload-trends-button');
-	console.dir(this.buttonWidget);
 	this.buttonWidget.mojo.deactivate();
+	dump("Deactivated spinner reload-trends-button");
+	
 }
 
 

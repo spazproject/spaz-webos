@@ -112,8 +112,21 @@ MessageDetailAssistant.prototype.activate = function(event) {
 		if (this.status_obj){
 			jQuery().trigger('get_one_status_succeeded', [this.status_obj]);
 		} else {
-			Mojo.Controller.notYetImplemented();
-			return;
+			sc.app.Tweets.get(this.status_id, this.isdm,
+				function(data) {
+					if (data !== null) {
+						jQuery().trigger('get_one_status_succeeded', [data]);
+					} else { // if nothing is returned, get it from Twitter
+						// thisA.twit.getOne(thisA.status_id);
+						this.showAlert($L('There was an error retrieving the message data'));
+					}
+					
+				},
+				function(message) {
+					dump('Couldn\'t retrieve message from Depot:'+message)
+					this.showAlert($L('There was an error retrieving the message data'));
+				}
+			);
 		}
 	} else {
 		if (this.status_obj){

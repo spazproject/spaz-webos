@@ -101,7 +101,6 @@ SearchTwitterAssistant.prototype.setup = function() {
 	};
 	
 	this.controller.setupWidget('submit-search-button', this.searchButtonAttributes, this.searchButtonModel);
-	
 
 	// this.refresh();
 
@@ -158,10 +157,11 @@ SearchTwitterAssistant.prototype.activate = function(event) {
 			reverse the tweets for collection rendering (faster)
 		*/
 		var rendertweets = tweets;
-
+		var new_count = 0;
 		jQuery.each( rendertweets, function() {
-
+			
 			if (!thisA.getEntryElementByStatusId(this.id)) {
+				new_count++;
 				this.text = makeItemsClickable(this.text);
 			
 				// var itemhtml = Mojo.View.render({object: this, template: 'search-twitter/search-item'});
@@ -200,9 +200,9 @@ SearchTwitterAssistant.prototype.activate = function(event) {
 		e.data.thisAssistant.deactivateSpinner();
 		e.data.thisAssistant.startRefresher();
 		
-		
-		var new_count = jQuery('#search-timeline>div.timeline-entry.new:visible').length;
+		alert("new_count:"+new_count+"  query:"+e.data.thisAssistant.lastQuery);
 		if (new_count > 0) {
+			
 			thisA.newSearchResultsBanner(new_count, e.data.thisAssistant.lastQuery);
 			thisA.playAudioCue('newmsg');
 		}
@@ -433,13 +433,11 @@ SearchTwitterAssistant.prototype.getEntryElementByStatusId = function(id) {
 
 SearchTwitterAssistant.prototype.activateSpinner = function() {
 	this.buttonWidget = this.controller.get('submit-search-button');
-	console.dir(this.buttonWidget);
 	this.buttonWidget.mojo.activate();
 }
 
 SearchTwitterAssistant.prototype.deactivateSpinner = function() {
 	this.buttonWidget = this.controller.get('submit-search-button');
-	console.dir(this.buttonWidget);
 	this.buttonWidget.mojo.deactivate();
 }
 

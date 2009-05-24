@@ -1488,7 +1488,6 @@ var PostDialogAssistant = Class.create({
 	
 	deactivateSpinner: function() {
 		this.buttonWidget = this.controller.get('post-send-button');
-
 		this.buttonWidget.mojo.deactivate();
 	}
 	

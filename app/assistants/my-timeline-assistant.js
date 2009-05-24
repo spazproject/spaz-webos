@@ -12,7 +12,7 @@ function MyTimelineAssistant(argFromPusher) {
 	scene_helpers.addCommonSceneMethods(this);
 	
 	if (argFromPusher && argFromPusher.firstload === true) {
-		console.debug();
+		// console.debug();
 		// this.clearTimelineCache();
 	}
 	
@@ -105,6 +105,8 @@ MyTimelineAssistant.prototype.setup = function() {
 MyTimelineAssistant.prototype.activate = function(event) {
 	/* add event handlers to listen to events from widgets */
 	
+	this.active = true;
+	
 	if (this.loadTimelineCacheOnActivate === true) {
 		dump('Loading Timeline Cache ###################################');
 		this.loadTimelineCache();
@@ -131,7 +133,7 @@ MyTimelineAssistant.prototype.activate = function(event) {
 	jQuery().bind('error_combined_timeline_data', { thisAssistant:this }, function(e, error_array) {
 		dump('error_combined_timeline_data - response:');
 		dump(error_array);
-		thisA.hideInlineSpinner('activity-spinner-my-timeline', null, true);
+		thisA.hideInlineSpinner('activity-spinner-my-timeline');
 		thisA.startRefresher();
 
 		var err_msg = $L("There were errors retrieving your combined timeline");
@@ -226,6 +228,9 @@ MyTimelineAssistant.prototype.activate = function(event) {
 
 
 MyTimelineAssistant.prototype.deactivate = function(event) {
+	
+	this.active = false;
+	
 	/* remove any event handlers you added in activate and do any other cleanup that should happen before
 	   this scene is popped or another scene is pushed on top */
 	
@@ -491,7 +496,7 @@ MyTimelineAssistant.prototype.renderTweets = function(tweets, render_callback, f
 	
 	var new_count = jQuery('#my-timeline>div.timeline-entry.new:visible').length;
 	
-	if (!from_cache && new_count > 0) {
+	if (!from_cache && new_count > 0 && !thisA.active) {
 		thisA.newMsgBanner(new_count);
 		thisA.playAudioCue('newmsg');		
 	}
