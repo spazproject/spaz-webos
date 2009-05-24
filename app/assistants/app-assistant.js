@@ -6,7 +6,14 @@ function AppAssistant(appController) {
 		Remap JSON parser because JSON2.js one was causing probs with unicode
 	*/
 	sc.helpers.deJSON = function(str) {
-		return Mojo.parseJSON(str);
+		try {
+			var obj = Mojo.parseJSON(str);
+			return obj;
+		} catch(e) {
+			dump('There was a problem decoding the JSON string');
+			return null;
+		}
+		
 	};
 	sc.helpers.enJSON = function(obj) {
 		var json = obj.toJSON();

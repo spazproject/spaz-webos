@@ -200,9 +200,7 @@ SearchTwitterAssistant.prototype.activate = function(event) {
 		e.data.thisAssistant.deactivateSpinner();
 		e.data.thisAssistant.startRefresher();
 		
-		alert("new_count:"+new_count+"  query:"+e.data.thisAssistant.lastQuery);
-		if (new_count > 0) {
-			
+		if (new_count > 0) {			
 			thisA.newSearchResultsBanner(new_count, e.data.thisAssistant.lastQuery);
 			thisA.playAudioCue('newmsg');
 		}
