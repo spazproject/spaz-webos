@@ -20,11 +20,11 @@ scene_helpers.addCommonSceneMethods = function(assistant) {
 			visible: true,
 			
 			items: [
-				{ label: $L('About Spaz'),		command: 'appmenu-about' },
 				Mojo.Menu.editItem,
+				{ label: $L('New Search Card'),	command: 'new-search-card' },
 				{ label: $L('Preferences...'),	command:Mojo.Menu.prefsCmd },
-				{ label: $L('Help...'),			command:Mojo.Menu.helpCmd },
-				{ label: $L('New Search Card'),	command: 'new-search-card' }
+				{ label: $L('About Spaz'),		command: 'appmenu-about' },
+				{ label: $L('Help...'),			command:Mojo.Menu.helpCmd }
 			]
 		};
 
@@ -316,60 +316,67 @@ scene_helpers.addCommonSceneMethods = function(assistant) {
 	 *  
 	 */
 	assistant.addPostPopup = function(event) {
+
+		alert('DEPRECATED');
+
+		// var thisA = this; // use for closures below
+
+			
+		
+		
 		/*
 			add a container within the current scene
 		*/
-		var scroll_el = this.controller.getSceneScroller();
-		
-		var thisA = this; // use for closures below
-
-		/*
-			destroy any existing post popups
-		*/
-		jQuery('#post-popup-container').remove();
-		
-		jQuery(scroll_el).append("<div id='post-popup-container'></div>");
-		
-		var itemhtml = Mojo.View.render({object: {'username':sc.app.username}, template: 'shared/post-popup'});
-		jQuery('#post-popup-container', scroll_el).html(itemhtml);
-		
-		Mojo.Event.listen($('post-send-button'), Mojo.Event.tap, this.sendPost.bind(this));
-		Mojo.Event.listen($('post-cancel-button'), Mojo.Event.tap, this.cancelPost.bind(this));
-
-		
-		/*
-			if update succeeds
-		*/
-		jQuery().bind('update_succeeded', { thisAssistant:this }, function(e, data) {
-			e.data.thisAssistant.renderSuccessfulPost(e, data);
-		});
-
-		/*
-			if update fails
-		*/
-		jQuery().bind('update_failed', { thisAssistant:this }, function(e, error_obj) {
-			e.data.thisAssistant.reportFailedPost(error_obj);
-		});
-		
+		// var scroll_el = this.controller.getSceneScroller();
 		
 
-				
-		jQuery('#post-panel-textarea').bind('keyup',   function(e) {
-			thisA._updateCharCount();
-		});
-		jQuery('#post-panel-textarea').bind('keydown', function(e) {
-			thisA._updateCharCount();
-		});
-		jQuery('#post-panel-textarea').bind('blur',    function(e) {
-			thisA._updateCharCount();
-		});
-		jQuery('#post-panel-textarea').bind('focus',   function(e) {
-			thisA._updateCharCount();
-		});
-				
-		jQuery('#post-panel-irt-dismiss').bind(Mojo.Event.tap, function(e) {
-			thisA.clearPostIRT();
-		});
+		// /*
+		// 	destroy any existing post popups
+		// */
+		// jQuery('#post-popup-container').remove();
+		// 
+		// jQuery(scroll_el).append("<div id='post-popup-container'></div>");
+		// 
+		// var itemhtml = Mojo.View.render({object: {'username':sc.app.username}, template: 'shared/post-popup'});
+		// jQuery('#post-popup-container', scroll_el).html(itemhtml);
+		
+		// Mojo.Event.listen($('post-send-button'), Mojo.Event.tap, this.sendPost.bind(this));
+		// // Mojo.Event.listen($('post-cancel-button'), Mojo.Event.tap, this.cancelPost.bind(this));
+		// 
+		// 
+		// /*
+		// 	if update succeeds
+		// */
+		// jQuery().bind('update_succeeded', { thisAssistant:this }, function(e, data) {
+		// 	e.data.thisAssistant.renderSuccessfulPost(e, data);
+		// });
+		// 
+		// /*
+		// 	if update fails
+		// */
+		// jQuery().bind('update_failed', { thisAssistant:this }, function(e, error_obj) {
+		// 	e.data.thisAssistant.reportFailedPost(error_obj);
+		// });
+		// 
+		// 
+		// 
+		// 		
+		// jQuery('#post-panel-textarea').bind('keyup',   function(e) {
+		// 	thisA._updateCharCount();
+		// });
+		// jQuery('#post-panel-textarea').bind('keydown', function(e) {
+		// 	thisA._updateCharCount();
+		// });
+		// jQuery('#post-panel-textarea').bind('blur',    function(e) {
+		// 	thisA._updateCharCount();
+		// });
+		// jQuery('#post-panel-textarea').bind('focus',   function(e) {
+		// 	thisA._updateCharCount();
+		// });
+		// 		
+		// jQuery('#post-panel-irt-dismiss').bind(Mojo.Event.tap, function(e) {
+		// 	thisA.clearPostIRT();
+		// });
 		
 		
 	}
@@ -395,189 +402,194 @@ scene_helpers.addCommonSceneMethods = function(assistant) {
 	 *  
 	 */
 	assistant.removePostPopup = function(event) {
-		Mojo.Event.stopListening($('post-send-button'), Mojo.Event.tap, this.sendPost); 
-		Mojo.Event.stopListening($('post-cancel-button'), Mojo.Event.tap, this.cancelPost);
 		
-		jQuery('#post-panel-textarea').unbind('keyup');
-		jQuery('#post-panel-textarea').unbind('keydown');
-		jQuery('#post-panel-textarea').unbind('blur');
-		jQuery('#post-panel-textarea').unbind('focus');
+		alert('DEPRECATED');
 		
-		jQuery('#post-panel-irt-dismiss').unbind(Mojo.Event.tap);
-		
-		jQuery().unbind('update_succeeded');
-		jQuery().unbind('update_failed');
-		/*
-			add a container within the current scene
-		*/
-		var scroll_el = this.controller.getSceneScroller();
-
-		/*
-			destroy any existing post popups
-		*/
-		jQuery('#post-popup-container', scroll_el).remove();
+		// Mojo.Event.stopListening($('post-send-button'), Mojo.Event.tap, this.sendPost); 
+		// // Mojo.Event.stopListening($('post-cancel-button'), Mojo.Event.tap, this.cancelPost);
+		// 
+		// jQuery('#post-panel-textarea').unbind('keyup');
+		// jQuery('#post-panel-textarea').unbind('keydown');
+		// jQuery('#post-panel-textarea').unbind('blur');
+		// jQuery('#post-panel-textarea').unbind('focus');
+		// 
+		// jQuery('#post-panel-irt-dismiss').unbind(Mojo.Event.tap);
+		// 
+		// jQuery().unbind('update_succeeded');
+		// jQuery().unbind('update_failed');
+		// /*
+		// 	add a container within the current scene
+		// */
+		// var scroll_el = this.controller.getSceneScroller();
+		// 
+		// /*
+		// 	destroy any existing post popups
+		// */
+		// jQuery('#post-popup-container', scroll_el).remove();
 	}
 
 
-	/**
-	 * this hides and clears the post panel
-	 */
-	assistant.cancelPost = function() {
-		this.hidePostPanel();
-		this.clearPostPanel();
-	};
-
-
-	/**
-	 *  
-	 */
-	assistant.hidePostPanel = function(event) {
-		
-		
-		jQuery('#palm-dialog-box.post-panel', this.controller.getSceneScroller()).fadeOut('fast');
-		
-	}
-
-	assistant.clearPostPanel = function() {
-		this.clearPostIRT();
-		jQuery('#post-panel-textarea', this.controller.getSceneScroller()).val('');
-		this._updateCharCount();
-	};
-
-	/**
-	 *  
-	 */
+	// /**
+	//  * this hides and clears the post panel
+	//  */
+	// assistant.cancelPost = function() {
+	// 	this.hidePostPanel();
+	// 	this.clearPostPanel();
+	// };
+	// 
+	// 
+	// /**
+	//  *  
+	//  */
+	// assistant.hidePostPanel = function(event) {
+	// 	
+	// 	
+	// 	jQuery('#palm-dialog-box.post-panel', this.controller.getSceneScroller()).fadeOut('fast');
+	// 	
+	// }
+	// 
+	// assistant.clearPostPanel = function() {
+	// 	this.clearPostIRT();
+	// 	jQuery('#post-panel-textarea', this.controller.getSceneScroller()).val('');
+	// 	this._updateCharCount();
+	// };
+	// 
+	// /**
+	//  *  
+	//  */
 	assistant.showPostPanel = function(event) {
-		jQuery('#palm-dialog-box.post-panel', this.controller.getSceneScroller()).fadeIn('fast');
-		jQuery('#post-panel-textarea', this.controller.getSceneScroller()).focus();
-		jQuery('#post-send-button', this.controller.getSceneScroller()).attr('disabled', '');
+		this.controller.showDialog({
+	          template: 'shared/post-popup',
+	          assistant: new PostDialogAssistant(this),
+	          preventCancel:false
+	    });
 	}
-	
-	/**
-	 * @private 
-	 */
-	assistant._updateCharCount = function() {
-		var charcount = (140 - jQuery('#post-panel-textarea', this.controller.getSceneScroller()).val().length);
-		jQuery('#post-panel-counter-number', this.controller.getSceneScroller()).text(charcount.toString());
-		if (charcount < 0) {
-			jQuery('#post-panel-counter', this.controller.getSceneScroller()).addClass('over-limit');
-			/*
-				disable post send button
-			*/
-			jQuery('#post-send-button', this.controller.getSceneScroller()).attr('disabled', 'disabled');
-		} else {
-			jQuery('#post-panel-counter', this.controller.getSceneScroller()).removeClass('over-limit');
-			/*
-				enable post send button
-			*/
-			jQuery('#post-send-button', this.controller.getSceneScroller()).attr('disabled', '');
-		}
-	};
-
-
-
-	/**
-	 *  
-	 */
-	assistant.sendPost = function(event) {
-		this.showInlineSpinner('#post-panel-spinner-container', "Posting…");
-		var status = jQuery('#post-panel-textarea').val();
-
-		if (status.length > 0) {
-			
-			var in_reply_to = parseInt(jQuery('#post-panel-irt-message', this.controller.getSceneScroller()).attr('data-status-id'));
-			
-			if (in_reply_to > 0) {
-				this.twit.update(status, null, in_reply_to);
-			} else {
-				this.twit.update(status, null, null);
-			}
-			
-		}
-	}
-	
-	
-
-	/**
-	 *  
-	 */
-	assistant.renderSuccessfulPost = function(event, data) {
-		if (sch.isArray(data)) {
-			data = data[0];
-		}
-
-		data.text = makeItemsClickable(data.text);
-		
-		/*
-			save this tweet to Depot
-		*/
-		sc.app.Tweets.save(data);
-		
-		dump(data);
-
-		var itemhtml = sc.app.tpl.parseTemplate('tweet', data);
-		
-
-
-		/*
-			prepend the rendered markup to the timeline, so it shows on top
-		*/
-		if (jQuery('#my-timeline').length == 1) {
-			jQuery('#my-timeline').prepend(itemhtml);
-		}
-			
-		
-
-
-		/*
-			remove extra items
-		*/
-		// sch.removeExtraElements('#my-timeline>div.timeline-entry', sc.app.prefs.get('timeline-maxentries'));
-		
-		sch.removeExtraElements('#my-timeline>div.timeline-entry:not(.reply):not(.dm)', sc.app.prefs.get('timeline-maxentries'));
-		sch.removeExtraElements('#my-timeline>div.timeline-entry.reply', sc.app.prefs.get('timeline-maxentries-reply'));
-		sch.removeExtraElements('#my-timeline>div.timeline-entry.dm', sc.app.prefs.get('timeline-maxentries-dm'));
-		
-
-		/*
-			Update relative dates
-		*/
-		sch.updateRelativeTimes('div.timeline-entry .meta>.date', 'data-created_at');
-		
-		/*
-			re-apply filtering
-		*/
-		this.filterTimeline();
-
-		this.playAudioCue('send');
-		
-		this.hideInlineSpinner('#post-panel-spinner-container');			
-		this.hidePostPanel(event);
-		this.clearPostPanel(event);
-		// this.controller.showAlertDialog({
-		//     title: $L("Posting success"),
-		//     message: $L("Twitter got your post. wikked!"),
-		//     choices:[
-		//          {label:$L("OK"), value:"ok", type:'dismiss'}    
-		//     ]
-		// });
-		
-
-
-	}
-	
-	
-	/**
-	 *  
-	 */
-	assistant.reportFailedPost = function(error_obj) {
-		this.hideInlineSpinner('#post-panel-spinner-container');			
-		this.hidePostPanel(event);
-		this.clearPostPanel(event);
-		
-		var err_msg = $L("There was a problem posting your status");
-		this.displayErrorInfo(err_msg, error_obj);
-	}
+	// 
+	// // /**
+	// //  * @private 
+	// //  */
+	// // assistant._updateCharCount = function() {
+	// // 	var charcount = (140 - jQuery('#post-panel-textarea', this.controller.getSceneScroller()).val().length);
+	// // 	jQuery('#post-panel-counter-number', this.controller.getSceneScroller()).text(charcount.toString());
+	// // 	if (charcount < 0) {
+	// // 		jQuery('#post-panel-counter', this.controller.getSceneScroller()).addClass('over-limit');
+	// // 		/*
+	// // 			disable post send button
+	// // 		*/
+	// // 		jQuery('#post-send-button', this.controller.getSceneScroller()).attr('disabled', 'disabled');
+	// // 	} else {
+	// // 		jQuery('#post-panel-counter', this.controller.getSceneScroller()).removeClass('over-limit');
+	// // 		/*
+	// // 			enable post send button
+	// // 		*/
+	// // 		jQuery('#post-send-button', this.controller.getSceneScroller()).attr('disabled', '');
+	// // 	}
+	// // };
+	// 
+	// 
+	// 
+	// /**
+	//  *  
+	//  */
+	// assistant.sendPost = function(event) {
+	// 	this.showInlineSpinner('#post-panel-spinner-container', "Posting…");
+	// 	var status = jQuery('#post-panel-textarea').val();
+	// 
+	// 	if (status.length > 0) {
+	// 		
+	// 		var in_reply_to = parseInt(jQuery('#post-panel-irt-message', this.controller.getSceneScroller()).attr('data-status-id'));
+	// 		
+	// 		if (in_reply_to > 0) {
+	// 			this.twit.update(status, null, in_reply_to);
+	// 		} else {
+	// 			this.twit.update(status, null, null);
+	// 		}
+	// 		
+	// 	}
+	// }
+	// 
+	// 
+	// 
+	// /**
+	//  *  
+	//  */
+	// assistant.renderSuccessfulPost = function(event, data) {
+	// 	if (sch.isArray(data)) {
+	// 		data = data[0];
+	// 	}
+	// 
+	// 	data.text = makeItemsClickable(data.text);
+	// 	
+	// 	/*
+	// 		save this tweet to Depot
+	// 	*/
+	// 	sc.app.Tweets.save(data);
+	// 	
+	// 	dump(data);
+	// 
+	// 	var itemhtml = sc.app.tpl.parseTemplate('tweet', data);
+	// 	
+	// 
+	// 
+	// 	/*
+	// 		prepend the rendered markup to the timeline, so it shows on top
+	// 	*/
+	// 	if (jQuery('#my-timeline').length == 1) {
+	// 		jQuery('#my-timeline').prepend(itemhtml);
+	// 	}
+	// 		
+	// 	
+	// 
+	// 
+	// 	/*
+	// 		remove extra items
+	// 	*/
+	// 	// sch.removeExtraElements('#my-timeline>div.timeline-entry', sc.app.prefs.get('timeline-maxentries'));
+	// 	
+	// 	sch.removeExtraElements('#my-timeline>div.timeline-entry:not(.reply):not(.dm)', sc.app.prefs.get('timeline-maxentries'));
+	// 	sch.removeExtraElements('#my-timeline>div.timeline-entry.reply', sc.app.prefs.get('timeline-maxentries-reply'));
+	// 	sch.removeExtraElements('#my-timeline>div.timeline-entry.dm', sc.app.prefs.get('timeline-maxentries-dm'));
+	// 	
+	// 
+	// 	/*
+	// 		Update relative dates
+	// 	*/
+	// 	sch.updateRelativeTimes('div.timeline-entry .meta>.date', 'data-created_at');
+	// 	
+	// 	/*
+	// 		re-apply filtering
+	// 	*/
+	// 	this.filterTimeline();
+	// 
+	// 	this.playAudioCue('send');
+	// 	
+	// 	this.hideInlineSpinner('#post-panel-spinner-container');			
+	// 	this.hidePostPanel(event);
+	// 	this.clearPostPanel(event);
+	// 	// this.controller.showAlertDialog({
+	// 	//     title: $L("Posting success"),
+	// 	//     message: $L("Twitter got your post. wikked!"),
+	// 	//     choices:[
+	// 	//          {label:$L("OK"), value:"ok", type:'dismiss'}    
+	// 	//     ]
+	// 	// });
+	// 	
+	// 
+	// 
+	// }
+	// 
+	// 
+	// /**
+	//  *  
+	//  */
+	// assistant.reportFailedPost = function(error_obj) {
+	// 	this.hideInlineSpinner('#post-panel-spinner-container');			
+	// 	this.hidePostPanel(event);
+	// 	this.clearPostPanel(event);
+	// 	
+	// 	var err_msg = $L("There was a problem posting your status");
+	// 	this.displayErrorInfo(err_msg, error_obj);
+	// }
 	
 	
 	
@@ -590,7 +602,7 @@ scene_helpers.addCommonSceneMethods = function(assistant) {
 		eb.val('');
 		eb[0].setSelectionRange(0, 0);
 		
-		this._updateCharCount();
+		// this._updateCharCount();
 
 	};
 
@@ -614,7 +626,7 @@ scene_helpers.addCommonSceneMethods = function(assistant) {
 		eb.val(rtstr);
 		eb[0].setSelectionRange(eb.val().length, eb.val().length);
 		
-		this._updateCharCount();
+		// this._updateCharCount();
 
 	};
 
@@ -633,7 +645,7 @@ scene_helpers.addCommonSceneMethods = function(assistant) {
 	        eb[0].setSelectionRange(2, eb.val().length);
 	    }
 	
-		this._updateCharCount();
+		// this._updateCharCount();
 
 	};
 
@@ -655,7 +667,7 @@ scene_helpers.addCommonSceneMethods = function(assistant) {
 	        return false;
 	    }
 	
-		this._updateCharCount();
+		// this._updateCharCount();
 
 	}
 
@@ -697,7 +709,7 @@ scene_helpers.addCommonSceneMethods = function(assistant) {
 			
 		}
 		
-		this._updateCharCount();
+		// this._updateCharCount();
 	};
 
 
@@ -755,71 +767,92 @@ scene_helpers.addCommonSceneMethods = function(assistant) {
 
 
 
-	/**
-	 *  destroys and existing spinners and creates a new one, showing it
-	 */
-	assistant.showInlineSpinner = function(container, message, nofadein) {
-		dump('showing!'+"\n"+container+"\n"+message+"\n"+nofadein);
-
-		/*
-			remove any existing
-		*/
-		jQuery(container).empty();
-		// jQuery('.inline-spinner', container).remove(); 
-		
-		var html = '<div class="inline-spinner" style="display:none">'+
-			'<img src="images/theme/loading.gif" class="inline-spinner-spinner" />'+
-			'<span class="inline-spinner-label">'+message+'</span>'+
-		'</div>';
-		jQuery(container).html(html);
-		if (!nofadein) {
-			jQuery('.inline-spinner', container).show('blind', 'fast');
-		} else {
-			jQuery('.inline-spinner', container).show();
-		}
-		
-		dump("SPINNER CONTAINER HTML (start):"+jQuery(container).get(0).outerHTML);
-		// jQuery('.inline-spinner', container).fadeIn('fast');
-		
+	// /**
+	//  *  destroys and existing spinners and creates a new one, showing it
+	//  */
+	// assistant.showInlineSpinner = function(container, message, nofadein) {
+	// 	dump('showing!'+"\n"+container+"\n"+message+"\n"+nofadein);
+	// 	
+	// 	/*
+	// 		remove any existing
+	// 	*/
+	// 	jQuery(container).empty();
+	// 	// jQuery('.inline-spinner', container).remove(); 
+	// 	
+	// 	var html = '<div class="inline-spinner" style="display:none">'+
+	// 		'<img src="images/theme/loading.gif" class="inline-spinner-spinner" />'+
+	// 		'<span class="inline-spinner-label">'+message+'</span>'+
+	// 	'</div>';
+	// 	jQuery(container).html(html);
+	// 	if (!nofadein) {
+	// 		jQuery('.inline-spinner', container).show('blind', 'fast');
+	// 	} else {
+	// 		jQuery('.inline-spinner', container).show();
+	// 	}
+	// 	
+	// 	dump("SPINNER CONTAINER HTML (start):"+jQuery(container).get(0).outerHTML);
+	// 	// jQuery('.inline-spinner', container).fadeIn('fast');
+	// 	
+	// };
+	
+	
+	assistant.setupInlineSpinner = function(id) {
+		// alert('setup:'+id);
+		this.controller.setupWidget(id, {spinnerSize: Mojo.Widget.spinnerSmall}, {});
 	};
+	
+	assistant.showInlineSpinner = function(id, message) {
+		// alert('showing!'+"\n"+id+"\n"+message);
+
+		jQuery('#'+id+'-title').text(message);
+		jQuery('#'+id+'-container').show();
+		$(id).mojo.start();
+		
+		dump("SPINNER CONTAINER HTML (start):"+jQuery('#'+id+'-container').get(0).outerHTML);
+	};
+	
+	
+
 
 	/**
 	 *  stops, but does not remove, the spinner
 	 */
-	assistant.stopInlineSpinner = function(container, message) {
-		// jQuery('.inline-spinner', container).fadeOut('fast');
-		// jQuery('.inline-spinner-spinner', container).hide('blind', 'fast');
-		jQuery('.inline-spinner-label', container).html(message);
+	assistant.stopInlineSpinner = function(id, message) {
+		jQuery('#'+id+'-title').text(message);
+		jQuery('#'+id).get(0).mojo.stop();
 	};
 
 
 	/**
 	 *  starts an existing spinner
 	 */
-	assistant.startInlineSpinner = function(container, message) {
-		// jQuery('.inline-spinner', container).fadeOut('fast');
-		if (!jQuery('.inline-spinner', container).is(':visible')) {
-			jQuery('.inline-spinner', container).show('blind', 'fast');
-		}
-		jQuery('.inline-spinner-label', container).html(message);
+	assistant.startInlineSpinner = function(id, message) {
+		jQuery('#'+id+'-title').text(message);
+		jQuery('#'+id+'-container').show();
+		jQuery('#'+id).get(0).mojo.start();
 	};
 
 
 	/**
 	 *  hides and DESTROYS an existing spinner
 	 */
-	assistant.hideInlineSpinner = function(container, message, nofadeout) {
-		dump('hiding!'+"\n"+container+"\n"+message+"\n"+nofadeout);
-		
-		if (!nofadeout) {
-			jQuery('.inline-spinner', container).hide('blind', 'fast', function() {
-				jQuery(container).empty();
-			});
-		} else {
-			jQuery(container).empty();
-		}
-		
-	};
+	// assistant.hideInlineSpinner = function(container, message, nofadeout) {
+	// 	dump('hiding!'+"\n"+container+"\n"+message+"\n"+nofadeout);
+	// 	
+	// 	if (!nofadeout) {
+	// 		jQuery('.inline-spinner', container).hide('blind', 'fast', function() {
+	// 			jQuery(container).empty();
+	// 		});
+	// 	} else {
+	// 		jQuery(container).empty();
+	// 	}
+	// 	
+	// };
+	assistant.hideInlineSpinner = function(id) {
+		jQuery('#'+id).get(0).mojo.stop();
+		jQuery('#'+id+'-container').hide();
+	}
+	
 
 	/**
 	 *  immediately DESTROYS an existing spinner
@@ -1206,3 +1239,259 @@ var makeItemsClickable = function(str) {
 };
 
 var dump = sc.helpers.dump;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/*
+	Small controller class used for the new account dialog
+*/
+var PostDialogAssistant = Class.create({
+	
+	initialize: function(sceneAssistant) {
+		this.sceneAssistant = sceneAssistant;
+		this.controller = sceneAssistant.controller;
+	},
+	
+	setup : function(widget) {
+		this.widget = widget;
+		
+		this.postButtonAttributes = {
+			type: Mojo.Widget.activityButton
+		};
+		this.postButtonModel = {
+			buttonLabel : "Post",
+			buttonClass: 'Primary'
+		};
+		
+		this.controller.setupWidget('post-send-button', this.postButtonAttributes, this.postButtonModel);
+
+		
+	},
+	
+	activate: function() {
+		var thisA = this;
+		/*
+			What to do if we succeed
+			Note that we pass the assistant object as data into the closure
+		*/				
+
+		Mojo.Event.listen($('post-send-button'), Mojo.Event.tap, this.sendPost.bind(this));
+		// Mojo.Event.listen($('post-cancel-button'), Mojo.Event.tap, this.cancelPost.bind(this));
+
+		jQuery('#post-panel-username').text(sc.app.username);
+
+		
+		/*
+			if update succeeds
+		*/
+		jQuery().bind('update_succeeded', { thisAssistant:this }, function(e, data) {
+			e.data.thisAssistant.renderSuccessfulPost(e, data);
+		});
+
+		/*
+			if update fails
+		*/
+		jQuery().bind('update_failed', { thisAssistant:this }, function(e, error_obj) {
+			e.data.thisAssistant.reportFailedPost(error_obj);
+		});
+		
+		
+
+				
+		jQuery('#post-panel-textarea').bind('keyup',   function(e) {
+			thisA._updateCharCount();
+		});
+		jQuery('#post-panel-textarea').bind('keydown', function(e) {
+			thisA._updateCharCount();
+		});
+		jQuery('#post-panel-textarea').bind('blur',    function(e) {
+			thisA._updateCharCount();
+		});
+		jQuery('#post-panel-textarea').bind('focus',   function(e) {
+			thisA._updateCharCount();
+		});
+				
+		jQuery('#post-panel-irt-dismiss').bind(Mojo.Event.tap, function(e) {
+			thisA.clearPostIRT();
+		});
+
+
+	},
+	
+	
+	deactivate: function() {
+		Mojo.Event.stopListening($('post-send-button'), Mojo.Event.tap, this.sendPost); 
+		// Mojo.Event.stopListening($('post-cancel-button'), Mojo.Event.tap, this.cancelPost);
+		
+		jQuery('#post-panel-textarea').unbind('keyup');
+		jQuery('#post-panel-textarea').unbind('keydown');
+		jQuery('#post-panel-textarea').unbind('blur');
+		jQuery('#post-panel-textarea').unbind('focus');
+		
+		jQuery('#post-panel-irt-dismiss').unbind(Mojo.Event.tap);
+		
+		jQuery().unbind('update_succeeded');
+		jQuery().unbind('update_failed');
+		
+	},
+	
+	
+	
+	
+	/**
+	 * @private 
+	 */
+	_updateCharCount: function() {
+		var charcount = (140 - jQuery('#post-panel-textarea', this.controller.getSceneScroller()).val().length);
+		jQuery('#post-panel-counter-number', this.controller.getSceneScroller()).text(charcount.toString());
+		if (charcount < 0) {
+			jQuery('#post-panel-counter', this.controller.getSceneScroller()).addClass('over-limit');
+			/*
+				disable post send button
+			*/
+			jQuery('#post-send-button', this.controller.getSceneScroller()).attr('disabled', 'disabled');
+		} else {
+			jQuery('#post-panel-counter', this.controller.getSceneScroller()).removeClass('over-limit');
+			/*
+				enable post send button
+			*/
+			jQuery('#post-send-button', this.controller.getSceneScroller()).attr('disabled', '');
+		}
+	},
+	
+	
+	
+	clearPostPanel: function() {
+		this.clearPostIRT();
+		jQuery('#post-panel-textarea', this.controller.getSceneScroller()).val('');
+		this._updateCharCount();
+	},
+
+
+	clearPostIRT: function() {
+		jQuery('#post-panel-irt', this.controller.getSceneScroller()).slideUp('fast');
+		jQuery('#post-panel-irt-message').html('').attr('data-status-id', '0');
+	},
+
+
+	/**
+	 *  
+	 */
+	sendPost: function(event) {
+		var status = jQuery('#post-panel-textarea').val();
+
+		if (status.length > 0) {
+			
+			var in_reply_to = parseInt(jQuery('#post-panel-irt-message', this.controller.getSceneScroller()).attr('data-status-id'));
+			
+			if (in_reply_to > 0) {
+				this.sceneAssistant.twit.update(status, null, in_reply_to);
+			} else {
+				this.sceneAssistant.twit.update(status, null, null);
+			}
+			
+		}
+	},
+	
+	
+
+	/**
+	 *  
+	 */
+	renderSuccessfulPost: function(event, data) {
+		if (sch.isArray(data)) {
+			data = data[0];
+		}
+
+		data.text = makeItemsClickable(data.text);
+		
+		/*
+			save this tweet to Depot
+		*/
+		sc.app.Tweets.save(data);
+		
+		dump(data);
+
+		var itemhtml = sc.app.tpl.parseTemplate('tweet', data);
+		
+
+
+		/*
+			prepend the rendered markup to the timeline, so it shows on top
+		*/
+		if (jQuery('#my-timeline').length == 1) {
+			jQuery('#my-timeline').prepend(itemhtml);
+		}
+			
+		
+
+
+		/*
+			remove extra items
+		*/
+		// sch.removeExtraElements('#my-timeline>div.timeline-entry', sc.app.prefs.get('timeline-maxentries'));
+		
+		sch.removeExtraElements('#my-timeline>div.timeline-entry:not(.reply):not(.dm)', sc.app.prefs.get('timeline-maxentries'));
+		sch.removeExtraElements('#my-timeline>div.timeline-entry.reply', sc.app.prefs.get('timeline-maxentries-reply'));
+		sch.removeExtraElements('#my-timeline>div.timeline-entry.dm', sc.app.prefs.get('timeline-maxentries-dm'));
+		
+
+		/*
+			Update relative dates
+		*/
+		sch.updateRelativeTimes('div.timeline-entry .meta>.date', 'data-created_at');
+		
+		/*
+			re-apply filtering
+		*/
+		this.sceneAssistant.filterTimeline();
+
+		this.sceneAssistant.playAudioCue('send');
+		
+		this.deactivateSpinner();
+		
+				
+		this.hidePostPanel(event);
+		// this.clearPostPanel(event);
+
+	},
+	
+	
+	/**
+	 *  
+	 */
+	reportFailedPost: function(error_obj) {
+		this.deactivateSpinner();
+
+		// this.clearPostPanel(event);
+		
+		var err_msg = $L("There was a problem posting your status");
+		this.sceneAssistant.displayErrorInfo(err_msg, error_obj);
+		this.hidePostPanel(event);
+	},
+	
+	hidePostPanel: function() {
+		this.widget.mojo.close();
+	},
+	
+	deactivateSpinner: function() {
+		this.buttonWidget = this.controller.get('post-send-button');
+
+		this.buttonWidget.mojo.deactivate();
+	}
+	
+	
+	
+});

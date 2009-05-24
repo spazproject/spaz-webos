@@ -33,34 +33,36 @@ MessageDetailAssistant.prototype.setup = function() {
 	
 	if (sc.app.username && sc.app.password) {
 		this.setupCommonMenus({
-			viewMenuItems: [
-				{
-					items: [
-						// {label:$L('Back'),        icon:'back', command:'back'},
-						{label:$L('Message Detail'), command:'scroll-top'}
-					]
-				},
+			// viewMenuItems: [
+			// 	{
+			// 		items: [
+			// 			// {label:$L('Back'),        icon:'back', command:'back'},
+			// 			{label:$L('User Detail'), command:'scroll-top'}
+			// 		]
+			// 	}
+			// ],
+			cmdMenuItems:[
 				{
 					items: [
 						{label:$L('Compose'),  icon:'compose', command:'compose', shortcut:'N'},
+						{}
 					]
 				}
-			
-			]
-		});
+
+			],
+		});		
 	} else {
 		this.setupCommonMenus({
-			viewMenuItems: [
-				{
-					items: [
-						// {label:$L('Back'),        icon:'back', command:'back'},
-						{label:$L('Message Detail'), command:'scroll-top'}
-					]
-				}
-			]
+			// viewMenuItems: [
+			// 	{
+			// 		items: [
+			// 			// {label:$L('Back'),        icon:'back', command:'back'},
+			// 			{label:$L('User Detail'), command:'scroll-top'}
+			// 		]
+			// 	}
+			// ]
 		});	
-	};
-	
+	};	
 	
 	jQuery().bind('get_one_status_succeeded', { thisAssistant:this }, this.processStatusReturn);
 
@@ -187,7 +189,7 @@ MessageDetailAssistant.prototype.activate = function(event) {
 		Mojo.Controller.stageController.pushScene('message-detail', statusid);
 	});
 	
-	this.addPostPopup();
+	// this.addPostPopup();
 }
 
 
@@ -197,7 +199,7 @@ MessageDetailAssistant.prototype.deactivate = function(event) {
 	
 	// alert('MessageDetailAssistant.prototype.deactivate');
 	
-	this.removePostPopup();
+	// this.removePostPopup();
 	
 	
 	// jQuery().unbind('get_one_status_succeeded', this.processStatusReturn);

@@ -1,9 +1,10 @@
-<div id="palm-dialog-box" class="palm-dialog-box post-panel">
-	<div class="palm-dialog-wrapper">
+<div id='post-popup-container' class="palm-dark">
+<!-- <div id="palm-dialog-box" class="palm-dialog-box post-panel">
+	<div class="palm-dialog-wrapper"> -->
  
 		<div id="palm-dialog-content" class="palm-dialog-content">
 			<div class="dialog-title">
-				Post as #{username}
+				Post as <span id="post-panel-username"></span>
 			</div>
 			<div class="palm-dialog-separator"></div>
 			<div class="dialog-message">
@@ -19,11 +20,9 @@
 		</div>
 		
 		<div class="palm-dialog-buttons">
-			<div>
-				<button id="post-send-button" class="palm-button">Post</button>
-				<button id="post-cancel-button" class="palm-button dismiss">Cancel</button>
-			</div>
+			<div x-mojo-element="Button" id='post-send-button'></div>
 		</div>
 		
-	</div>
+	<!-- </div>
+</div> -->
 </div>

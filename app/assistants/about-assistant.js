@@ -10,15 +10,15 @@ AboutAssistant.prototype.setup = function() {
 	this.scroller = this.controller.getSceneScroller();
 	this.initAppMenu();
 
-	this.setupCommonMenus({
-		viewMenuItems: [
-			{
-				items: [
-					{label: "About Spaz", command:'scroll-top'}
-				]
-			}
-		]
-	});
+	// this.setupCommonMenus({
+	// 	viewMenuItems: [
+	// 		{
+	// 			items: [
+	// 				{label: "About Spaz", command:'scroll-top'}
+	// 			]
+	// 		}
+	// 	]
+	// });
 	/* this function is for setup tasks that have to happen when the scene is first created */
 		
 	/* use Mojo.View.render to render view templates and add them to the scene, if needed. */

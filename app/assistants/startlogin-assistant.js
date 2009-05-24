@@ -14,19 +14,19 @@ StartloginAssistant.prototype.setup = function() {
 	
 	this.initAppMenu();
 
-	this.setupCommonMenus({
-		viewMenuItems: [
-			{
-				items: [
-					// {label:$L('Back'),        icon:'back', command:'back'},
-					{label:$L('Log-in'), command:'scroll-top'}
-				]
-			}
-		],
-		cmdMenuItems: [{ items:
-			[]
-		}]
-	});
+	// this.setupCommonMenus({
+	// 	viewMenuItems: [
+	// 		{
+	// 			items: [
+	// 				// {label:$L('Back'),        icon:'back', command:'back'},
+	// 				{label:$L('Log-in'), command:'scroll-top'}
+	// 			]
+	// 		}
+	// 	],
+	// 	cmdMenuItems: [{ items:
+	// 		[]
+	// 	}]
+	// });
 	
 
 	/*
@@ -230,10 +230,10 @@ var NewAccountDialogAssistant = Class.create({
 							Mojo.Event.tap,
 							this.handleVerifyPassword.bindAsEventListener(this)
 						);
-		$('cancelSaveAccountButton').addEventListener(
-							Mojo.Event.tap,
-							this.handleCancel.bindAsEventListener(this)
-						);
+		// $('cancelSaveAccountButton').addEventListener(
+		// 					Mojo.Event.tap,
+		// 					this.handleCancel.bindAsEventListener(this)
+		// 				);
 		
 		
 		this.newAccountModel = {
@@ -275,6 +275,19 @@ var NewAccountDialogAssistant = Class.create({
 			this.newAccountModel
 		    );
 		
+		
+		this.verifyButtonAttributes = {
+			type: Mojo.Widget.activityButton
+		};
+		this.verifyButtonModel = {
+			buttonLabel : "Verify and Save Account",
+			buttonClass: 'Primary'
+		};
+		
+		this.controller.setupWidget('saveAccountButton', this.verifyButtonAttributes, this.verifyButtonModel);
+		
+		
+		
 	},
 	
 	
@@ -285,7 +298,8 @@ var NewAccountDialogAssistant = Class.create({
 			Note that we pass the assistant object as data into the closure
 		*/				
 		jQuery().bind('verify_credentials_succeeded', function(e) {
-			thisA.sceneAssistant.hideInlineSpinner('#new-account-spinner-container');
+			jQuery('#new-account-errormsg').html('');
+			thisA.deactivateSpinner();
 			
 			var newItem = {
 							id:thisA.newAccountModel.username.toLowerCase(),
@@ -310,8 +324,8 @@ var NewAccountDialogAssistant = Class.create({
 				and fail the login, e.data.thisAssistant will not have
 				its controller property. WHY?
 			*/
-
-			thisA.sceneAssistant.stopInlineSpinner('#new-account-spinner-container', 'Verification failed!');
+			jQuery('#new-account-errormsg').text($L('Verification failed!'));
+			thisA.deactivateSpinner();
 		});
 	},
 	
@@ -319,8 +333,19 @@ var NewAccountDialogAssistant = Class.create({
 	deactivate: function() {
 		jQuery().unbind('verify_credentials_succeeded');
 		jQuery().unbind('verify_credentials_failed');
+		jQuery('#new-account-errormsg').html('');
 	},
 	
+	
+	cleanup: function(event) {
+		/* this function should do any cleanup needed before the scene is destroyed as 
+		   a result of being popped off the scene stack */
+		
+		$('saveAccountButton').removeEventListener(
+							Mojo.Event.tap,
+							this.handleVerifyPassword
+						);
+	},
 	
 	
 	
@@ -330,15 +355,31 @@ var NewAccountDialogAssistant = Class.create({
 	},
 	
 	handleVerifyPassword: function() {
+		jQuery('#new-account-errormsg').html('');
 		/*
 			Turn on the spinner and set the message
 		*/
-		this.sceneAssistant.showInlineSpinner('#new-account-spinner-container', 'Verifying credentials');
+		// this.sceneAssistant.showInlineSpinner('#new-account-spinner-container', 'Verifying credentials');
 		
 		/*
 			now verify credentials against the Twitter API
 		*/
-		sc.app.twit.verifyCredentials(this.newAccountModel.username.toLowerCase(), this.newAccountModel.password);
+		if (this.newAccountModel.username && this.newAccountModel.password) {
+			sc.app.twit.verifyCredentials(this.newAccountModel.username.toLowerCase(), this.newAccountModel.password);
+		} else {
+			this.deactivateSpinner();
+		}
+		
+	},
+	
+	activateSpinner: function() {
+		this.buttonWidget = this.controller.get('saveAccountButton');
+		this.buttonWidget.mojo.activate();
+	},
+	
+	deactivateSpinner: function() {
+		this.buttonWidget = this.controller.get('saveAccountButton');
+		this.buttonWidget.mojo.deactivate();
 	}
 	
 	

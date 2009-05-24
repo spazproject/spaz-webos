@@ -30,16 +30,19 @@ UserDetailAssistant.prototype.setup = function() {
 	
 	if (sc.app.username && sc.app.password) {
 		this.setupCommonMenus({
-			viewMenuItems: [
-				{
-					items: [
-						// {label:$L('Back'),        icon:'back', command:'back'},
-						{label:$L('User Detail'), command:'scroll-top'}
-					]
-				},
+			// viewMenuItems: [
+			// 	{
+			// 		items: [
+			// 			// {label:$L('Back'),        icon:'back', command:'back'},
+			// 			{label:$L('User Detail'), command:'scroll-top'}
+			// 		]
+			// 	}
+			// ],
+			cmdMenuItems:[
 				{
 					items: [
 						{label:$L('Compose'),  icon:'compose', command:'compose', shortcut:'N'},
+						{}
 					]
 				}
 
@@ -47,14 +50,14 @@ UserDetailAssistant.prototype.setup = function() {
 		});		
 	} else {
 		this.setupCommonMenus({
-			viewMenuItems: [
-				{
-					items: [
-						// {label:$L('Back'),        icon:'back', command:'back'},
-						{label:$L('User Detail'), command:'scroll-top'}
-					]
-				}
-			]
+			// viewMenuItems: [
+			// 	{
+			// 		items: [
+			// 			// {label:$L('Back'),        icon:'back', command:'back'},
+			// 			{label:$L('User Detail'), command:'scroll-top'}
+			// 		]
+			// 	}
+			// ]
 		});	
 	};
 	
@@ -293,7 +296,7 @@ UserDetailAssistant.prototype.activate = function(event) {
 		this.twit.getUser(this.userid);
 	}
 	
-	this.addPostPopup();
+	// this.addPostPopup();
 
 }
 
@@ -308,7 +311,7 @@ UserDetailAssistant.prototype.deactivate = function(event) {
 	// alert('UserDetailAssistant.prototype.deactivate');
 	
 	
-	this.removePostPopup();
+	// this.removePostPopup();
 	
 	/*
 		We have to unbind our event listeners or weird/bad things happen

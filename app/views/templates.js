@@ -22,13 +22,13 @@ sc.app.tpl.addTemplateMethod('message-detail', function(d) {
 	if (sc.app.username && sc.app.password) {
 		html += '	<div id="message-detail-actions">';
 		html += '		<div class="spaz-button-group">';
-		html += '			<div class="spaz-button-wide" id="message-detail-action-reply" data-status-id="'+d.id+'" data-screen_name="'+d.user.screen_name+'">@Reply to this message</div>';
-		html += '			<div class="spaz-button-wide" id="message-detail-action-retweet" data-status-id="'+d.id+'">ReTweet this message</div>';
-		html += '			<div class="spaz-button-wide" id="message-detail-action-dm" data-screen_name="'+d.user.screen_name+'">Direct message this user</div>';
+		html += '			<button class="palm-button" id="message-detail-action-reply" data-status-id="'+d.id+'" data-screen_name="'+d.user.screen_name+'">@Reply to this message</button>';
+		html += '			<button class="palm-button" id="message-detail-action-retweet" data-status-id="'+d.id+'">ReTweet this message</button>';
+		html += '			<button class="palm-button" id="message-detail-action-dm" data-screen_name="'+d.user.screen_name+'">Direct message this user</button>';
 		if (d.favorited) {
-			html += '			<div class="spaz-button-wide" id="message-detail-action-favorite" data-status-id="'+d.id+'" data-screen_name="'+d.user.screen_name+'" data-favorited="true">Remove as favorite</div>';
+			html += '			<button class="palm-button" id="message-detail-action-favorite" data-status-id="'+d.id+'" data-screen_name="'+d.user.screen_name+'" data-favorited="true">Remove as favorite</button>';
 		} else {
-			html += '			<div class="spaz-button-wide" id="message-detail-action-favorite" data-status-id="'+d.id+'" data-screen_name="'+d.user.screen_name+'" data-favorited="false">Add as favorite</div>';
+			html += '			<button class="palm-button" id="message-detail-action-favorite" data-status-id="'+d.id+'" data-screen_name="'+d.user.screen_name+'" data-favorited="false">Add as favorite</button>';
 		}
 		html += '		</div>';
 		html += '	</div>';
@@ -53,7 +53,7 @@ sc.app.tpl.addTemplateMethod('message-detail-dm', function(d) {
 	if (sc.app.username && sc.app.password) {
 		html += '	<div id="message-detail-actions">';
 		html += '		<div class="spaz-button-group">';
-		html += '			<div class="spaz-button-wide" id="message-detail-action-dm" data-screen_name="'+d.sender.screen_name+'">Direct message this user</div>';
+		html += '			<button class="palm-button" id="message-detail-action-dm" data-screen_name="'+d.sender.screen_name+'">Direct message this user</button>';
 		html += '		</div>';
 		html += '	</div>';
 	};
@@ -99,24 +99,24 @@ sc.app.tpl.addTemplateMethod('user-detail', function(d) {
 	}
 	html += '		</div>';
 	html += '		<div id="user-detail-actions">';
-	html += '			<div class="spaz-button-group">';
-	html += '				<div id="view-user-posts" class="spaz-button-wide" data-screen_name="'+d.screen_name+'">View user\'s recent posts</div>';
-	html += '				<div id="user-timeline" data-screen_name="'+d.screen_name+'" style="display:none"></div>';
-	html += '				<div id="search-user"class="spaz-button-wide" data-screen_name="'+d.screen_name+'">Search for user</div>';
-	html += '			</div>';
+	// html += '			<div class="spaz-button-group">';
+	html += '				<button id="view-user-posts" class="palm-button" data-screen_name="'+d.screen_name+'">View user\'s recent posts</button>';
+	html += '				<button id="user-timeline" data-screen_name="'+d.screen_name+'" style="display:none"></button>';
+	html += '				<button id="search-user"class="palm-button" data-screen_name="'+d.screen_name+'">Search for user</button>';
+	// html += '			</div>';
 	if (sc.app.username && sc.app.password) {
-		html += '			<div class="spaz-button-group">';
-		html += '				<div id="reply-to-user" class="spaz-button-wide" data-screen_name="'+d.screen_name+'">@reply to user</div>';
-		html += '				<div id="dm-user" class="spaz-button-wide" data-screen_name="'+d.screen_name+'">Send direct message to user</div>';
-		html += '			</div>';
-		html += '			<div class="spaz-button-group">';
+		// html += '			<div class="spaz-button-group">';
+		html += '				<button id="reply-to-user" class="palm-button" data-screen_name="'+d.screen_name+'">@reply to user</button>';
+		html += '				<button id="dm-user" class="palm-button" data-screen_name="'+d.screen_name+'">Send direct message to user</button>';
+		// html += '			</div>';
+		// html += '			<div class="spaz-button-group">';
 		if (d.following) {
-			html += '				<div id="follow-user" class="spaz-button-wide" data-screen_name="'+d.screen_name+'" data-following="true">Stop following user</div>';
+			html += '				<button id="follow-user" class="palm-button" data-screen_name="'+d.screen_name+'" data-following="true">Stop following user</button>';
 		} else {
-			html += '				<div id="follow-user" class="spaz-button-wide" data-screen_name="'+d.screen_name+'" data-following="false">Follow user</div>';
+			html += '				<button id="follow-user" class="palm-button" data-screen_name="'+d.screen_name+'" data-following="false">Follow user</button>';
 		}
-		html += '				<div id="block-user" class="spaz-button-wide" data-screen_name="'+d.screen_name+'" data-blocked="false">Block user</div>';
-		html += '			</div>';
+		html += '				<button id="block-user" class="palm-button" data-screen_name="'+d.screen_name+'" data-blocked="false">Block user</button>';
+		// html += '			</div>';
 	};
 	html += '		</div>';
 	html += '	</div>';

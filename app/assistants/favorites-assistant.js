@@ -14,31 +14,21 @@ FavoritesAssistant.prototype.setup = function() {
 
 
 	this.setupCommonMenus({
-		viewMenuItems: [
+		// viewMenuItems: [
+		// 	{label: "Favorites", command:'scroll-top', 'class':"palm-header left", width:320}
+		// ],
+		cmdMenuItems: [
+			{label:$L('Compose'),  icon:'compose', command:'compose', shortcut:'N'},
 			{
+				toggleCmd:'IGNORE',
 				items: [
-					{label: "Favorites", command:'scroll-top'}
+					{label:$L('My Timeline'), icon:'conversation', command:'my-timeline', shortcut:'T'},
+					{label:$L('Favorites'), iconPath:'images/theme/menu-icon-favorite.png', command:'IGNORE', shortcut:'F', 'class':"palm-header left"},
+					{label:$L('Search'),      icon:'search', command:'search', shortcut:'S'},
 				]
 			},
-			{
-				items: [
-					{label:$L('Compose'),  icon:'compose', command:'compose', shortcut:'N'},
-					{label:$L('Update'),   icon:'sync', command:'refresh', shortcut:'R'}					
-				]
-			}
-			
-		],
-		cmdMenuItems: [{ items:
-			[
-				{},
-				// {label:$L('Home'),        iconPath:'images/theme/menu-icon-home.png', command:'home', shortcut:'H'},
-				{label:$L('My Timeline'), icon:'conversation', command:'my-timeline', shortcut:'T'},
-				{label:$L('Favorites'), iconPath:'images/theme/menu-icon-favorite.png', command:'favorites', shortcut:'F', disabled:true},
-				{label:$L('Search'),      icon:'search', command:'search', shortcut:'S'},
-				// {label:$L('Followers'),   icon:'remove-vip', command:'followers', shortcut:'L'},
-				{}
-			]
-		}]
+			{label:$L('Refresh'),   icon:'sync', command:'refresh', shortcut:'R'}					
+		]
 	});
 	
 	/* this function is for setup tasks that have to happen when the scene is first created */
@@ -49,6 +39,8 @@ FavoritesAssistant.prototype.setup = function() {
 	
 	/* add event handlers to listen to events from widgets */
 	
+	this.setupInlineSpinner('activity-spinner-favorites');
+	
 	this.refreshOnActivate = true;
 }
 
@@ -56,7 +48,7 @@ FavoritesAssistant.prototype.activate = function(event) {
 	/* put in event handlers here that should only be in effect when this scene is active. For
 	   example, key handlers that are observing the document */
 	
-	this.addPostPopup();
+	// this.addPostPopup();
 
 
 	var thisA = this; // for closures below
@@ -74,7 +66,7 @@ FavoritesAssistant.prototype.activate = function(event) {
 			Update relative dates
 		*/
 		sch.updateRelativeTimes('#favorites-timeline>div.timeline-entry .meta>.date', 'data-created_at');
-		thisA.hideInlineSpinner('#favorites-spinner-container');
+		thisA.hideInlineSpinner('activity-spinner-favorites');
 	});
 	
 	
@@ -128,7 +120,7 @@ FavoritesAssistant.prototype.activate = function(event) {
 			Update relative dates
 		*/
 		sch.updateRelativeTimes('#favorites-timeline>div.timeline-entry .meta>.date', 'data-created_at');
-		thisA.hideInlineSpinner('#favorites-spinner-container');
+		thisA.hideInlineSpinner('activity-spinner-favorites');
 		
 	});
 	
@@ -228,7 +220,7 @@ FavoritesAssistant.prototype.refresh = function(event) {
 
 FavoritesAssistant.prototype.getData = function() {
 	sc.helpers.markAllAsRead('#favorites-timeline>div.timeline-entry');
-	this.showInlineSpinner('#favorites-spinner-container', 'Loading favorite tweets…');
+	this.showInlineSpinner('activity-spinner-favorites', 'Loading favorite tweets…');
 	
 	this.twit.getFavorites();
 };

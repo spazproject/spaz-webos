@@ -47,48 +47,26 @@ SearchTwitterAssistant.prototype.setup = function() {
 	
 	if (this.lightweight) {
 		this.setupCommonMenus({
-			viewMenuItems: [
-				{
-					items: [
-						{label:$L('Search Twitter'), command:'scroll-top', 'class':"palm-header left"},
-					]
-				},
-				{
-					items: [
-						{label:$L('Update'),   icon:'sync', command:'refresh', shortcut:'R'},
-						// {label:$L('Trends'),   iconPath:'images/theme/menu-icon-trends.png', command:'search-trends'},
-					]
-				}
+			cmdMenuItems: [
+				{},
+				{label:$L('Refresh'),   icon:'sync', command:'refresh', shortcut:'R'}					
 			]
+			
 		});
 	} else {
 		this.setupCommonMenus({
-			viewMenuItems: [
+			cmdMenuItems: [
+				{label:$L('Compose'),  icon:'compose', command:'compose', shortcut:'N'},
 				{
+					toggleCmd:'IGNORE',
 					items: [
-						{label:$L('Search Twitter'), command:'scroll-top', 'class':"palm-header left"},
-						// {label: $L('Show me'), iconPath:'images/theme/menu-icon-triangle-down.png', submenu:'filter-menu'},
+						{label:$L('My Timeline'), icon:'conversation', command:'my-timeline', shortcut:'T'},
+						{label:$L('Favorites'), iconPath:'images/theme/menu-icon-favorite.png', command:'favorites', shortcut:'F'},
+						{label:$L('Search'),      icon:'search', command:'IGNORE', shortcut:'S', 'class':"palm-depressed selected"},
 					]
 				},
-				{
-					items: [
-						{label:$L('Compose'),  icon:'compose', command:'compose', shortcut:'N'},
-						{label:$L('Update'),   icon:'sync', command:'refresh', shortcut:'R'},
-						// {label:$L('Trends'),   iconPath:'images/theme/menu-icon-trends.png', command:'search-trends'}
-					]
-				}
-			],
-			cmdMenuItems: [{ items:
-				[
-					{},
-					// {label:$L('Home'),        iconPath:'images/theme/menu-icon-home.png', command:'home', shortcut:'H'},
-					{label:$L('My Timeline'), icon:'conversation', command:'my-timeline', shortcut:'T'},
-					{label:$L('Favorites'), iconPath:'images/theme/menu-icon-favorite.png', command:'favorites', shortcut:'F'},
-					{label:$L('Search'),      icon:'search', command:'search', shortcut:'S', disabled:true},
-					// {label:$L('Followers'),   icon:'remove-vip', command:'followers', shortcut:'L'},
-					{}
-				]
-			}]
+				{label:$L('Refresh'),   icon:'sync', command:'refresh', shortcut:'R'}					
+			]
 		});
 	}
 
@@ -97,7 +75,7 @@ SearchTwitterAssistant.prototype.setup = function() {
 	
 	
 	this.searchBoxAttr = {
-		"hintText":	      'Enter search terms…',
+		"hintText":	      'Enter search terms',
 		"focusMode":      Mojo.Widget.focusSelectMode,
 		"fieldName":'search-twitter',
 		"changeOnKeyPress": true
@@ -113,6 +91,17 @@ SearchTwitterAssistant.prototype.setup = function() {
 	jQuery('#submit-search-button').bind(Mojo.Event.tap, function() {
 		thisA.search.call(thisA, thisA.searchBoxModel.value);
 	});
+	
+	this.searchButtonAttributes = {
+		type: Mojo.Widget.activityButton
+	};
+	this.searchButtonModel = {
+		buttonLabel : "Search",
+		buttonClass: 'Primary'
+	};
+	
+	this.controller.setupWidget('submit-search-button', this.searchButtonAttributes, this.searchButtonModel);
+	
 
 	// this.refresh();
 
@@ -137,7 +126,7 @@ SearchTwitterAssistant.prototype.activate = function(event) {
 		this.passedSearch = null; // eliminate this so it isn't used anymore
 	}
 	
-	this.addPostPopup();
+	// this.addPostPopup();
 	
 	
 	var thisA = this; // for closures below
@@ -154,7 +143,8 @@ SearchTwitterAssistant.prototype.activate = function(event) {
 			Update relative dates
 		*/
 		sch.updateRelativeTimes('#search-timeline>div.timeline-entry .meta>.date', 'data-created_at');
-		e.data.thisAssistant.hideInlineSpinner('#search-spinner-container');
+		// e.data.thisAssistant.hideInlineSpinner('#search-spinner-container');
+		e.data.thisAssistant.deactivateSpinner();
 		e.data.thisAssistant.startRefresher();
 	});
 	
@@ -206,7 +196,8 @@ SearchTwitterAssistant.prototype.activate = function(event) {
 			Update relative dates
 		*/
 		sch.updateRelativeTimes('#search-timeline>div.timeline-entry .meta>.date', 'data-created_at');
-		e.data.thisAssistant.hideInlineSpinner('#search-spinner-container');
+		// e.data.thisAssistant.hideInlineSpinner('#search-spinner-container');
+		e.data.thisAssistant.deactivateSpinner();
 		e.data.thisAssistant.startRefresher();
 		
 		
@@ -342,7 +333,7 @@ SearchTwitterAssistant.prototype.deactivate = function(event) {
 	jQuery('#search-timeline div.timeline-entry', this.scroller).die(Mojo.Event.tap);
 
 	
-	this.removePostPopup();
+	// this.removePostPopup();
 }
 
 SearchTwitterAssistant.prototype.cleanup = function(event) {
@@ -372,7 +363,7 @@ SearchTwitterAssistant.prototype.search = function(e, type) {
 			clear any existing results
 		*/
 		
-		this.showInlineSpinner('#search-spinner-container', 'Looking for results…');
+		this.activateSpinner();
 		
 	} else if (e.value) {
 		this.lastQuery = e.value;
@@ -381,9 +372,9 @@ SearchTwitterAssistant.prototype.search = function(e, type) {
 			clear any existing results
 		*/
 
-		this.showInlineSpinner('#search-spinner-container', 'Looking for results…');
+		this.activateSpinner();
 		
-		jQuery('#submit-search-button').hide();
+		// jQuery('#submit-search-button').hide();
 	}
 }
 
@@ -426,9 +417,9 @@ SearchTwitterAssistant.prototype.stopRefresher = function() {
 
 SearchTwitterAssistant.prototype.searchboxFocusChange = function(el) {
 	if (el) { // focusIN -- something gained focus
-		jQuery('#submit-search-button').show('blind');
+		// jQuery('#submit-search-button').show('blind');
 	} else { // focusOut -- blur
-		jQuery('#submit-search-button').hide('blind');
+		// jQuery('#submit-search-button').hide('blind');
 	}
 };
 
@@ -439,3 +430,18 @@ SearchTwitterAssistant.prototype.getEntryElementByStatusId = function(id) {
 	return el;
 	
 };
+
+SearchTwitterAssistant.prototype.activateSpinner = function() {
+	this.buttonWidget = this.controller.get('submit-search-button');
+	console.dir(this.buttonWidget);
+	this.buttonWidget.mojo.activate();
+}
+
+SearchTwitterAssistant.prototype.deactivateSpinner = function() {
+	this.buttonWidget = this.controller.get('submit-search-button');
+	console.dir(this.buttonWidget);
+	this.buttonWidget.mojo.deactivate();
+}
+
+
+

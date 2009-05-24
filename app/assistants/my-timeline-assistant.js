@@ -48,44 +48,45 @@ MyTimelineAssistant.prototype.setup = function() {
 
 
 	this.setupCommonMenus({
-		viewMenuItems: [
+		// viewMenuItems: [
+		// 	{
+		// 		items: [
+		// 			{label: sc.app.username, command:'scroll-top', width:260},
+		// 			
+		// 		]
+		// 	}
+		// ],
+		cmdMenuItems: [
+			{label:$L('Compose'),  icon:'compose', command:'compose', shortcut:'N'},
 			{
+				/*
+					So we don't get the hard-to-see disabled look on the selected button,
+					we make the current toggle command "IGNORE", which will not trigger an action
+				*/
+				toggleCmd:'IGNORE',
 				items: [
-					{label: sc.app.username, command:'scroll-top'},
-					{label: $L('Filter timeline'), iconPath:'images/theme/menu-icon-triangle-down.png', submenu:'filter-menu'},
+					{label:$L('My Timeline'), icon:'conversation', command:'IGNORE', shortcut:'T', 'class':"palm-header left"},
+					{label:$L('Favorites'), iconPath:'images/theme/menu-icon-favorite.png', command:'favorites', shortcut:'F'},
+					{label:$L('Search'),      icon:'search', command:'search', shortcut:'S'},
 				]
 			},
-			{
-				items: [
-					{label:$L('Compose'),  icon:'compose', command:'compose', shortcut:'N'},
-					{label:$L('Update'),   icon:'sync', command:'refresh', shortcut:'R'}					
-				]
-			}
+			{label: $L('Filter timeline'), iconPath:'images/theme/menu-icon-triangle-down.png', submenu:'filter-menu'},	
+			{label: $L('Refresh'),   icon:'sync', command:'refresh', shortcut:'R'}					
 			
-		],
-		cmdMenuItems: [{ items:
-			[
-				{},
-				// {label:$L('Home'),        iconPath:'images/theme/menu-icon-home.png', command:'home', shortcut:'H'},
-				{label:$L('My Timeline'), icon:'conversation', command:'my-timeline', shortcut:'T', disabled:true},
-				{label:$L('Favorites'), iconPath:'images/theme/menu-icon-favorite.png', command:'favorites', shortcut:'F'},
-				{label:$L('Search'),      icon:'search', command:'search', shortcut:'S'},
-				// {label:$L('Followers'),   icon:'remove-vip', command:'followers', shortcut:'L'},
-				{}
-			]
-		}]
+		]
 	});
 
 	this.scroller = this.controller.getSceneScroller();
 
 
+
 	
+	this.setupInlineSpinner('activity-spinner-my-timeline');
 	
 	
 	/* setup widgets here */
 	
 	jQuery().bind('load_from_mytimeline_cache_done', function() {
-		// thisA.stopInlineSpinner('#my-timeline-spinner-container', "Cache Loaded");
 		if (thisA.activateStarted === true) {
 			dump('getting data!');
 			thisA.getData();
@@ -94,31 +95,35 @@ MyTimelineAssistant.prototype.setup = function() {
 			thisA.loadOnActivate = true;
 		}
 	});
-	
-	
-	
 
-	
-	
-	
-	
-	/* add event handlers to listen to events from widgets */
-	dump('Loading Timeline Cache ###################################');
-	this.loadTimelineCache();
+	this.loadTimelineCacheOnActivate = true;
 	
 }
 
 
 
 MyTimelineAssistant.prototype.activate = function(event) {
+	/* add event handlers to listen to events from widgets */
+	
+	if (this.loadTimelineCacheOnActivate === true) {
+		dump('Loading Timeline Cache ###################################');
+		this.loadTimelineCache();
+		this.loadTimelineCacheOnActivate = false;
+	}
+
+
 	/* put in event handlers here that should only be in effect when this scene is active. For
 	   example, key handlers that are observing the document */
 	this.activateStarted = true;
 	
-	this.addPostPopup();
+	// this.addPostPopup();
 
 	
 	var thisA = this; // for closures
+	
+	
+	jQuery('#my-timeline-username').text(sc.app.username);
+	
 	
 	/*
 		Listen for error
@@ -126,7 +131,7 @@ MyTimelineAssistant.prototype.activate = function(event) {
 	jQuery().bind('error_combined_timeline_data', { thisAssistant:this }, function(e, error_array) {
 		dump('error_combined_timeline_data - response:');
 		dump(error_array);
-		thisA.hideInlineSpinner('#my-timeline-spinner-container', null, true);
+		thisA.hideInlineSpinner('activity-spinner-my-timeline', null, true);
 		thisA.startRefresher();
 
 		var err_msg = $L("There were errors retrieving your combined timeline");
@@ -224,7 +229,7 @@ MyTimelineAssistant.prototype.deactivate = function(event) {
 	/* remove any event handlers you added in activate and do any other cleanup that should happen before
 	   this scene is popped or another scene is pushed on top */
 	
-	this.removePostPopup();
+	// this.removePostPopup();
 	
 	jQuery().unbind('error_user_timeline_data');
 	jQuery().unbind('new_combined_timeline_data');
@@ -259,7 +264,7 @@ MyTimelineAssistant.prototype.loadTimelineCache = function() {
 
 	var thisA = this;
 	
-	this.showInlineSpinner('#my-timeline-spinner-container', 'Loading cached tweets…', true);
+	this.showInlineSpinner('activity-spinner-my-timeline', 'Loading cached tweets…', true);
 
 	this.cacheDepot.simpleGet(sc.app.username,
 		function(data) {
@@ -337,7 +342,7 @@ MyTimelineAssistant.prototype.getEntryElementByStatusId = function(id) {
 
 MyTimelineAssistant.prototype.getData = function() {
 	sch.markAllAsRead('#my-timeline>div.timeline-entry');
-	this.showInlineSpinner('#my-timeline-spinner-container', 'Looking for new tweets…');
+	this.showInlineSpinner('activity-spinner-my-timeline', 'Looking for new tweets…');
 	
 	/*
 		friends_count is the only one that gets used currently
@@ -498,10 +503,10 @@ MyTimelineAssistant.prototype.renderTweets = function(tweets, render_callback, f
 		Save this in case we need to load from cache
 	*/
 	if (!from_cache) {
-		thisA.hideInlineSpinner('#my-timeline-spinner-container');
+		thisA.hideInlineSpinner('activity-spinner-my-timeline');
 		thisA.saveTimelineCache();
 	} else {
-		thisA.clearInlineSpinner('#my-timeline-spinner-container');
+		thisA.clearInlineSpinner('activity-spinner-my-timeline');
 		jQuery().trigger('load_from_mytimeline_cache_done');
 	}
 	

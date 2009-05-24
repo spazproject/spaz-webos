@@ -13,19 +13,19 @@ StartsearchAssistant.prototype.setup = function() {
 	
 	this.initAppMenu();
 
-	this.setupCommonMenus({
-		viewMenuItems: [
-			{
-				items: [
-					// {label:$L('Back'),        icon:'back', command:'back'},
-					{label:$L('Search & Explore'), command:'scroll-top'}
-				]
-			}
-		],
-		cmdMenuItems: [{ items:
-			[]
-		}]
-	});
+	// this.setupCommonMenus({
+	// 	viewMenuItems: [
+	// 		{
+	// 			items: [
+	// 				// {label:$L('Back'),        icon:'back', command:'back'},
+	// 				{label:$L('Search & Explore'), command:'scroll-top'}
+	// 			]
+	// 		}
+	// 	],
+	// 	cmdMenuItems: [{ items:
+	// 		[]
+	// 	}]
+	// });
 	
 	
 	/*
@@ -44,8 +44,7 @@ StartsearchAssistant.prototype.setup = function() {
 	*/
 	this.controller.setupWidget('search',
 	    this.atts = {
-	        // hintText: 'enter search terms',
-	        label: "search terms",
+	        hintText: 'enter search terms',
 			enterSubmits: true,
 			modelProperty:		'search',
 			changeOnKeyPress: true, 
@@ -54,6 +53,17 @@ StartsearchAssistant.prototype.setup = function() {
 		},
 		this.model
     );
+	
+	
+	this.postButtonAttributes = {
+		type: Mojo.Widget.activityButton
+	};
+	this.postButtonModel = {
+		buttonLabel : "Update Trends",
+		buttonClass: 'Primary'
+	};
+	
+	this.controller.setupWidget('reload-trends-button', this.postButtonAttributes, this.postButtonModel);
 	
 	
 	Mojo.Event.listen($('reload-trends-button'), Mojo.Event.tap, function() {
@@ -66,7 +76,7 @@ StartsearchAssistant.prototype.setup = function() {
 		listen for trends data updates
 	*/
 	jQuery().bind('new_trends_data', {thisAssistant:this}, function(e, trends) {
-		thisA.hideInlineSpinner('#trends-spinner-container');
+		thisA.deactivateSpinner();
 		
 		/*
 			some trends are wrapped in double-quotes, so we need to turn then into entities
@@ -119,7 +129,7 @@ StartsearchAssistant.prototype.cleanup = function(event) {
 
 
 StartsearchAssistant.prototype.refreshTrends = function() {
-	this.showInlineSpinner('#trends-spinner-container', 'Loading…');
+	// this.showInlineSpinner('#trends-spinner-container', 'Loading…');
 	sc.app.twit.getTrends();
 };
 
@@ -134,5 +144,18 @@ StartsearchAssistant.prototype.handleSearch = function(event) {
 StartsearchAssistant.prototype.propertyChanged = function(event) {
 	dump("********* property Change *************");
 }
+
+StartsearchAssistant.prototype.activateSpinner = function() {
+	this.buttonWidget = this.controller.get('reload-trends-button');
+	console.dir(this.buttonWidget);
+	this.buttonWidget.mojo.activate();
+}
+
+StartsearchAssistant.prototype.deactivateSpinner = function() {
+	this.buttonWidget = this.controller.get('reload-trends-button');
+	console.dir(this.buttonWidget);
+	this.buttonWidget.mojo.deactivate();
+}
+
 
 

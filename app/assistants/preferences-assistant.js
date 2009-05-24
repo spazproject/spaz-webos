@@ -15,19 +15,19 @@ PreferencesAssistant.prototype.setup = function() {
 	
 	this.initAppMenu();
 
-	this.setupCommonMenus({
-		viewMenuItems: [
-			{
-				items: [
-					// {label:$L('Back'),        icon:'back', command:'back'},
-					{label:$L('Preferences'), command:'scroll-top'}
-				]
-			}
-		],
-		cmdMenuItems: [{ items:
-			[]
-		}]
-	});
+	// this.setupCommonMenus({
+	// 	viewMenuItems: [
+	// 		{
+	// 			items: [
+	// 				// {label:$L('Back'),        icon:'back', command:'back'},
+	// 				{label:$L('Preferences'), command:'scroll-top'}
+	// 			]
+	// 		}
+	// 	],
+	// 	cmdMenuItems: [{ items:
+	// 		[]
+	// 	}]
+	// });
 
 
 	
