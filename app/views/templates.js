@@ -128,8 +128,14 @@ sc.app.tpl.addTemplateMethod('user-detail', function(d) {
 sc.app.tpl.addTemplateMethod('tweet', function(d) {
 	var html = '';
 	
-
-	html += '<div class="timeline-entry" data-status-id="'+d.id+'" data-user-id="'+d.user.id+'" data-user-screen_name="'+d.user.screen_name+'" data-timestamp="'+d.created_at_unixtime+'">';
+	html += '<div class="timeline-entry';
+	if (!d.from_cache) {
+		html += ' new';
+	}
+	if (d.SC_is_reply) {
+		html += ' reply'
+	}
+	html += '" data-status-id="'+d.id+'" data-user-id="'+d.user.id+'" data-user-screen_name="'+d.user.screen_name+'" data-timestamp="'+d.created_at_unixtime+'">';
 	html += '	<div class="user" data-user-id="'+d.user.id+'" data-user-screen_name="'+d.user.screen_name+'">';
 	html += '		<img src="'+d.user.profile_image_url+'" title="'+d.user.screen_name+'" />';
 	html += '	</div>';
@@ -150,7 +156,11 @@ sc.app.tpl.addTemplateMethod('tweet', function(d) {
 sc.app.tpl.addTemplateMethod('dm', function(d) {
 	var html = '';
 
-	html += '<div class="timeline-entry" data-isdm="true" data-status-id="'+d.id+'" data-user-id="'+d.sender.id+'" data-user-screen_name="'+d.sender.screen_name+'" data-timestamp="'+d.created_at_unixtime+'">';
+	html += '<div class="timeline-entry dm';
+	if (!d.from_cache) {
+		html + ' new';
+	}
+	html += '" data-isdm="true" data-status-id="'+d.id+'" data-user-id="'+d.sender.id+'" data-user-screen_name="'+d.sender.screen_name+'" data-timestamp="'+d.created_at_unixtime+'">';
 	html += '	<div class="user" data-user-id="'+d.sender.id+'" data-user-screen_name="'+d.sender.screen_name+'">';
 	html += '		<img src="'+d.sender.profile_image_url+'" title="'+d.sender.screen_name+'" />';
 	html += '	</div>';
