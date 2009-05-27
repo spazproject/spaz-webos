@@ -943,6 +943,22 @@ scene_helpers.addCommonSceneMethods = function(assistant) {
 	};
 	
 	
+	assistant.trackStageActiveState = function() {
+		this.isFullScreen = true;
+
+		this._setNotFullScreen = function(event) {
+			this.isFullScreen = false;//send notifications
+		};
+		this._setFullScreen = function(event) {
+			this.isFullScreen = true; //dont send notifications
+		};
+
+		this.controller.listen(this.controller.sceneElement, Mojo.Event.stageDeactivate, this._setNotFullScreen.bind(this));
+		this.controller.listen(this.controller.sceneElement, Mojo.Event.stageActivate, this._setFullScreen.bind(this));
+	};
+
+	
+	
 }
 
 

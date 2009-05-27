@@ -129,7 +129,7 @@ sc.app.tpl.addTemplateMethod('tweet', function(d) {
 	var html = '';
 	
 	html += '<div class="timeline-entry';
-	if (!d.from_cache) {
+	if (!d.not_new) {
 		html += ' new';
 	}
 	if (d.SC_is_reply) {

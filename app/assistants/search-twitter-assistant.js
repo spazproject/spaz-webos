@@ -45,6 +45,8 @@ SearchTwitterAssistant.prototype.setup = function() {
 	
 	this.initAppMenu();
 	
+	this.trackStageActiveState();
+	
 	if (this.lightweight) {
 		this.setupCommonMenus({
 			cmdMenuItems: [
@@ -200,9 +202,11 @@ SearchTwitterAssistant.prototype.activate = function(event) {
 		e.data.thisAssistant.deactivateSpinner();
 		e.data.thisAssistant.startRefresher();
 		
-		if (new_count > 0) {			
+		if (new_count > 0 && !thisA.isFullScreen) {
 			thisA.newSearchResultsBanner(new_count, e.data.thisAssistant.lastQuery);
 			thisA.playAudioCue('newmsg');
+		} else if (thisA.isFullScreen) {
+			dump("I am not showing a banner! in "+thisA.controller.sceneElement.id);
 		}
 		
 	});

@@ -87,7 +87,10 @@ FavoritesAssistant.prototype.activate = function(event) {
 			if (!thisA.getEntryElementByStatusId(this.id)) {
 			
 				this.text = makeItemsClickable(this.text);
-			
+				
+				// we set this so the tweets come out as not marked new
+				this.not_new = true;
+				
 				var itemhtml = sc.app.tpl.parseTemplate('tweet', this);
 			
 				/*

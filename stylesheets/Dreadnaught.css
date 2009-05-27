@@ -27,7 +27,7 @@ div.palm-page-header.spaz-page-header {
 	}
 
 a:link, a:visited, .clickable {
-	color:#6666FF;
+	color:#9999FF;
 	text-decoration:underline;
 }
 
@@ -66,35 +66,21 @@ div.timeline-entry {
 	color:#FFF;
 	position:relative;
 	margin:0;
+	background-image: url('../images/theme/entry-gradient-bg.png');
+	background-repeat: repeat-x;
+	background-color:#222211;
 }
-	div.timeline-entry:active {
-/*		padding: 6px 3px;
-		border-width: 1px 0 1px 0;
-		border-style: solid;
-		border-color: #EEEEEE !important;
-		clear:both;
-		overflow:hidden;
-		min-height:64px;
-		color:#EEEEEE !important;
-		background-color: #30344F !important;
-		background-image: url('../images/theme/entry-selected-bg.png') !important;
-		position:relative;
-		margin:0;		
-*/	}
+	div.timeline-entry:active {	}
 
 	/*
 		the .even and .odd classes are really only used in the timelines, but 
 		they're usedful and probably could be reused elsewhere.
 	*/
 	div.timeline-entry:nth-of-type(odd), .odd {
-		background-color: #4F686E;
-		background-image: url('../images/theme/entry-odd-bg.png');
-		background-repeat: repeat-x;
+		background-color: #37494D;
 	}
 	div.timeline-entry:nth-of-type(even), .even {
-		background-color: #6A4C45;
-		background-image: url('../images/theme/entry-even-bg.png');
-		background-repeat: repeat-x;
+		background-color: #263344;
 	}
 	
 	/*
@@ -103,31 +89,29 @@ div.timeline-entry {
 	div.timeline-entry.reply:nth-of-type(odd),
 	div.timeline-entry.reply:nth-of-type(even) {
 		background-color: #404030;
-		background-image: url('../images/theme/entry-reply-bg.png');
-
 	}
 	/*
 		Entries that are direct messages to the user
 	*/
 	div.timeline-entry.dm:nth-of-type(odd),
 	div.timeline-entry.dm:nth-of-type(even) {
-		background-color: #403030;
-		background-image: url('../images/theme/entry-dm-bg.png');
+		background-color: #551818;
 	}
 	
 	div.timeline-entry.new {
-		color:#FFF;
-/*		border-color: #111;		*/
+		color:#FFFFCC;
+		border-bottom:2px dotted #FFFFCC;
 	}
+		div.timeline-entry.new:last-of-type {
+			color:#FFFFCC;
+			border-top:   2px dotted #FFFFCC;
+			border-bottom:2px dotted #FFFFCC;
+		}
 		div.timeline-entry.new:nth-of-type(odd) {
-			background-color: #fefbd9;
-			background-image: url('../images/theme/entry-odd-new-bg.png');
-			background-repeat: repeat-x;
+			background-color: #42585D;
 		}
 		div.timeline-entry.new:nth-of-type(even) {
-			background-color: #dcdff7;
-			background-image: url('../images/theme/entry-even-new-bg.png');
-			background-repeat: repeat-x;
+			background-color: #324155;
 		}
 
 		/*
@@ -135,16 +119,14 @@ div.timeline-entry {
 		*/
 		div.timeline-entry.reply.new:nth-of-type(odd),
 		div.timeline-entry.reply.new:nth-of-type(even) {
-			background-color: #EEEEAA;
-			background-image: url('../images/theme/entry-reply-bg.png');
+			background-color: #404030;
 		}
 		/*
 			Entries that are direct messages to the user
 		*/
 		div.timeline-entry.dm.new:nth-of-type(odd),
 		div.timeline-entry.dm.new:nth-of-type(even) {
-			background-color: #EEAAAA;
-			background-image: url('../images/theme/entry-dm-bg.png');
+			background-color: #551818;
 		}
 		
 

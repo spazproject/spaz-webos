@@ -45,7 +45,12 @@ MyTimelineAssistant.prototype.setup = function() {
 	this.initAppMenu();
 
 	this.initTwit();
-
+	
+	/*
+		this will set the state for this.isFullScreen
+	*/
+	this.trackStageActiveState();
+	
 
 	this.setupCommonMenus({
 		// viewMenuItems: [
@@ -104,8 +109,6 @@ MyTimelineAssistant.prototype.setup = function() {
 
 MyTimelineAssistant.prototype.activate = function(event) {
 	/* add event handlers to listen to events from widgets */
-	
-	this.active = true;
 	
 	if (this.loadTimelineCacheOnActivate === true) {
 		dump('Loading Timeline Cache ###################################');
@@ -228,8 +231,6 @@ MyTimelineAssistant.prototype.activate = function(event) {
 
 
 MyTimelineAssistant.prototype.deactivate = function(event) {
-	
-	this.active = false;
 	
 	/* remove any event handlers you added in activate and do any other cleanup that should happen before
 	   this scene is popped or another scene is pushed on top */
@@ -418,7 +419,7 @@ MyTimelineAssistant.prototype.renderTweets = function(tweets, render_callback, f
 				time.stop('makeItemsClickable');
 
 				if (from_cache) {
-					this.from_cache = true;
+					this.not_new = true;
 				}
 
 				/*
@@ -527,10 +528,16 @@ MyTimelineAssistant.prototype.renderTweets = function(tweets, render_callback, f
 	
 	var new_count = jQuery('#my-timeline>div.timeline-entry.new:visible').length;
 	
-	if (!from_cache && new_count > 0 && !thisA.active) {
+	alert("new_count:"+new_count);
+	alert("fullscreen"+thisA.isFullScreen);
+	
+	if (!from_cache && new_count > 0 && !thisA.isFullScreen) {
 		thisA.newMsgBanner(new_count);
 		thisA.playAudioCue('newmsg');		
+	} else if (thisA.isFullScreen) {
+		dump("I am not showing a banner! in "+thisA.controller.sceneElement.id);
 	}
+	
 
 	// thisA.hideInlineSpinner('#my-timeline-spinner-container');
 	thisA.startRefresher();
@@ -682,3 +689,30 @@ MyTimelineAssistant.prototype.removeExtraItems = function() {
 	
 	
 };
+
+
+
+
+// MyTimelineAssistant.prototype.trackStageActiveState = function() {
+// 	var thisA = this;
+// 	this.isFullScreen = true;
+// 	alert('Tracking ' + this.controller.sceneElement.id);
+// 	jQuery.bind(Mojo.Event.stageDeactivate, function(event) {
+// 		thisA.isFullScreen = false;//send notifications
+// 		alert("thisA.isFullScreen = false in "+thisA.controller.sceneElement.id);
+// 	});
+// 	jQuery.bind(Mojo.Event.stageActivate, function(event) {
+// 		thisA.isFullScreen = true; //dont send notifications
+// 		alert("thisA.isFullScreen = true in "+thisA.controller.sceneElement.id);
+// 	});
+// 	Mojo.Event.listen($('mojo-scene-my-timeline'), Mojo.Event.stageDeactivate, this._setNotFullScreen);
+// 	Mojo.Event.listen($('mojo-scene-my-timeline'), Mojo.Event.stageActivate, this._setIsFullScreen);
+// };
+// MyTimelineAssistant.prototype._setNotFullScreen = function(event) {
+// 	this.isFullScreen = false;//send notifications
+// 	alert("this.isFullScreen = false in "+this.controller.sceneElement.id);
+// }
+// MyTimelineAssistant.prototype._setIsFullScreen = function(event) {
+// 	this.isFullScreen = true; //dont send notifications
+// 	alert("this.isFullScreen = true in "+this.controller.sceneElement.id);
+// }
