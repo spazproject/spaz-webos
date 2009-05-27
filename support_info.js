@@ -1,6 +1,6 @@
 // Required
 _APP_Name = 'Spaz'
-_APP_VersionNumber = '0.3.9'
+_APP_VersionNumber = '0.3.10'
 _APP_PublisherName = 'Funkatron Productions'
 _APP_Copyright = '&copy; Copyright 2009 Funkatron Productions.'
 

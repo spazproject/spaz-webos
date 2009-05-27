@@ -328,6 +328,7 @@ scene_helpers.addCommonSceneMethods = function(assistant) {
 		// var password = sc.app.prefs.get('password');
 
 		this.twit = new scTwit();
+		this.twit.setSource(sc.app.prefs.get('twitter-source'));
 
 		if (sc.app.username && sc.app.password) {
 			// alert('seetting credentials for '+sc.app.username);
