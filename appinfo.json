@@ -1,6 +1,6 @@
 {
 	"title": "Spaz",
-	"version": "0.3.11",
+	"version": "0.3.12",
 	"type": "web",
 	"main": "index.html",
 	"id": "com.funkatron.app.spaz",
