@@ -108,7 +108,11 @@ MyTimelineAssistant.prototype.setup = function() {
 
 
 MyTimelineAssistant.prototype.activate = function(event) {
+
+	var thisA = this; // for closures
+
 	/* add event handlers to listen to events from widgets */
+
 	
 	if (this.loadTimelineCacheOnActivate === true) {
 		dump('Loading Timeline Cache ###################################');
@@ -124,7 +128,7 @@ MyTimelineAssistant.prototype.activate = function(event) {
 	// this.addPostPopup();
 
 	
-	var thisA = this; // for closures
+
 	
 	
 	jQuery('#my-timeline-username').text(sc.app.username);
@@ -249,8 +253,7 @@ MyTimelineAssistant.prototype.deactivate = function(event) {
 	// jQuery('.hashtag.clickable', this.scroller).die(Mojo.Event.tap);
 	// jQuery('div.timeline-entry .meta', this.scroller).die(Mojo.Event.tap);
 	// jQuery('div.timeline-entry a[href]', this.scroller).die(Mojo.Event.tap);
-	jQuery('#my-timeline div.timeline-entry', this.scroller).die(Mojo.Event.tap);	
-
+	jQuery('#my-timeline div.timeline-entry', this.scroller).die(Mojo.Event.tap);
 	
 	
 	
@@ -528,8 +531,8 @@ MyTimelineAssistant.prototype.renderTweets = function(tweets, render_callback, f
 	
 	var new_count = jQuery('#my-timeline>div.timeline-entry.new:visible').length;
 	
-	alert("new_count:"+new_count);
-	alert("fullscreen"+thisA.isFullScreen);
+	// alert("new_count:"+new_count);
+	// alert("fullscreen"+thisA.isFullScreen);
 	
 	if (!from_cache && new_count > 0 && !thisA.isFullScreen) {
 		thisA.newMsgBanner(new_count);

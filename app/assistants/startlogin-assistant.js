@@ -67,7 +67,7 @@ StartloginAssistant.prototype.setup = function() {
 			addItemLabel: $L('Add account…'),
 			swipeToDelete: true,
 			autoconfirmDelete: false,
-			reorderable: true
+			reorderable: false
 		},
 		this.accountsModel = {
 			listTitle: $L('Accounts'),
@@ -107,6 +107,7 @@ StartloginAssistant.prototype.setup = function() {
 		Change list
 	*/
     Mojo.Event.listen($('accountList'), Mojo.Event.listChange, function(e) {
+		dump("list change!");
 	});
 	
 	/*
