@@ -9,15 +9,33 @@ BODY, BODY>div[x-mojo-element=Scroller] {
 BODY {
 }
 
+/*
+	This is so we can have the view menu floating over the palm-page-header
+*/
+.palm-hasheader>.palm-menu-spacer {
+	height:0px !important;
+}
+	/*
+		view menu button needs to be smaller
+	*/
+	.view-menu .palm-menu-button {
+		-webkit-border-image: url(../images/theme/spaz-view-menu-button.png) 0 25 200 25 repeat repeat;
+	}
+		.view-menu .palm-menu-button.selected {
+			-webkit-border-image: url(../images/theme/spaz-view-menu-button.png) 50 25 150 25 repeat repeat;
+		}
+	
 .view-menu .palm-menu-fade {
 	background: transparent!important;
 }
+
 .command-menu .palm-menu-fade {
 	background-image: url('../images/theme/command-menu-gradient.png') !important;
 	background-repeat: repeat-x !important;
 	background-position-x: 0% !important;
 	background-position-y: 100% !important;
 }
+
 div.palm-page-header.spaz-page-header {
 	-webkit-border-image:url('../images/theme/palm-page-header.png') 35 24 13 24 repeat stretch !important;
 }
