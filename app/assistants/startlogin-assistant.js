@@ -268,6 +268,7 @@ var NewAccountDialogAssistant = Class.create({
 		        // hintText: 'enter password',
 		        label: "password",
 				enterSubmits: true,
+				requiresEnterKey: true,
 				modelProperty:		'password',
 				changeOnKeyPress: true, 
 				focusMode:		Mojo.Widget.focusSelectMode,
@@ -328,6 +329,15 @@ var NewAccountDialogAssistant = Class.create({
 			jQuery('#new-account-errormsg').text($L('Verification failed!'));
 			thisA.deactivateSpinner();
 		});
+		
+		/*
+			Listen for enter on new-password
+		*/
+		Mojo.Event.listen(this.controller.get('new-password'),
+			Mojo.Event.propertyChange,
+			this.passwordPropertyChangeListener.bindAsEventListener(this),
+			true
+		);
 	},
 	
 	
@@ -348,8 +358,17 @@ var NewAccountDialogAssistant = Class.create({
 						);
 	},
 	
-	
-	
+	/**
+	 * mainly this exists to initiate the login process if "enter" is hit inside the password field 
+	 */
+	passwordPropertyChangeListener : function(event) {
+		// If the password field has focus and Enter is pressed then simulate tapping on "Sign In"
+		if (event && Mojo.Char.isEnterKey(event.originalEvent.keyCode)) {
+			this.controller.get('saveAccountButton').mojo.activate();
+			this.handleVerifyPassword.call(this);
+			return;
+		}
+	},
 	
 	handleCancel: function() {
 		this.widget.mojo.close();
