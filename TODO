@@ -4,7 +4,6 @@
 	* insert way to pull news to send out updates
 * My Timeline
 * Message Detail
-	* Should pull passed data, not pull from network
 * User Detail
 	* Need to listen for Ajax errors on user timeline
 * Search
@@ -49,7 +48,7 @@ SpazTwit
 	* User lookup shortcut (from App menu)
 	* Photo posting
 	* Photo taking and posting
-	* Search history and saved searches
+	* Search history and saved searches (use API)
 	* Updating location with GPS services
 	* View User's favs
 	* Ping.fm posting
