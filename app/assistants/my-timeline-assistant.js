@@ -22,6 +22,10 @@ function MyTimelineAssistant(argFromPusher) {
 	*/
 	this.refresher = null;
 	
+
+	this.cacheVersion = 1;  // we increment this when we change how the cache works
+	
+	
 	this.cacheDepot = new Mojo.Depot({
 		name:'SpazDepotTimelineCache',
 		displayName:'SpazDepotTimelineCache',
@@ -274,6 +278,12 @@ MyTimelineAssistant.prototype.loadTimelineCache = function() {
 		function(data) {
 			dump('loading cache');
 			
+			if (!data.version || (data.version < thisA.cacheVersion)) {
+				dump('Cache version out of date (or empty), not loading');
+				jQuery().trigger('load_from_mytimeline_cache_done');
+				return;
+			}
+			
 			var tl_data = null;
 			
 			try {
@@ -303,6 +313,7 @@ MyTimelineAssistant.prototype.loadTimelineCache = function() {
 				dump(tl_data);
 				thisA.renderTweets(tl_data,
 					function() {
+						document.getElementById('my-timeline').innerHTML = data.tweets_html;
 						sch.markAllAsRead('#my-timeline>div.timeline-entry');
 					},
 					true // we are loading from cache
@@ -317,11 +328,16 @@ MyTimelineAssistant.prototype.loadTimelineCache = function() {
 	
 };
 
-MyTimelineAssistant.prototype.saveTimelineCache = function() {	
+MyTimelineAssistant.prototype.saveTimelineCache = function() {
+	
+	var tweetsModel_html = document.getElementById('my-timeline').innerHTML;
 	var tweetsModel_json = sch.enJSON(this.tweetsModel);
 	
-	var twitdata = {}
+	
+	var twitdata = {};
+	twitdata['version']                            = this.cacheVersion || -1;
 	twitdata['tweets_json']                        = tweetsModel_json;
+	twitdata['tweets_html']                        = tweetsModel_html;
 	twitdata[SPAZCORE_SECTION_FRIENDS + '_lastid'] = this.twit.getLastId(SPAZCORE_SECTION_FRIENDS);
 	twitdata[SPAZCORE_SECTION_REPLIES + '_lastid'] = this.twit.getLastId(SPAZCORE_SECTION_REPLIES);
 	twitdata[SPAZCORE_SECTION_DMS     + '_lastid'] = this.twit.getLastId(SPAZCORE_SECTION_DMS);
@@ -401,69 +417,75 @@ MyTimelineAssistant.prototype.renderTweets = function(tweets, render_callback, f
 				dump("Tweet object was FALSE; skipping");
 			} else if (!thisA.getEntryElementByStatusId(this.id)) {
 				time.start('render-one');
-				dump('adding '+this.id+':');
-				// dump(this);
+				dump('adding '+this.id);
 				
 				/*
 					add to tweetsModel
 				*/
-				time.start('addTweetToModel');
 				thisA.addTweetToModel(this);
 				tweets_added++;
-				time.stop('addTweetToModel');
 				
-				time.start('makeItemsClickable');
-				this.text = makeItemsClickable(this.text);
-				time.stop('makeItemsClickable');
+				/*
+					skip rendering if we are loading from cache, as per new
+					approach of storing HTML timeline as well.
+				*/
+				
+				if (!from_cache) {
 
-				if (from_cache) {
-					this.not_new = true;
+					time.start('makeItemsClickable');
+					this.text = makeItemsClickable(this.text);
+					time.stop('makeItemsClickable');
+
+					if (from_cache) {
+						this.not_new = true;
+					}
+
+					/*
+						Render the tweet
+					*/
+					time.start('render_tweet');
+					if (this.SC_is_dm) {
+						var itemhtml = sc.app.tpl.parseTemplate('dm', this);
+					} else {
+						var itemhtml = sc.app.tpl.parseTemplate('tweet', this);
+					}
+					time.stop('render_tweet');
+
+					/*
+						make jQuery obj
+					*/
+					time.start('makeJQitem');
+					// var jqitem = jQuery(itemhtml);
+
+					// if (!from_cache) {
+					// 	jqitem.addClass('new');
+					// }
+
+					// if (this.SC_is_reply) {
+					// 	jqitem.addClass('reply');
+					// }
+
+					// if (this.SC_is_dm) {
+					// 	jqitem.addClass('dm');
+					// }
+					time.stop('makeJQitem');
+
+					time.start('sc.app.Tweets.save');
+					sc.app.Tweets.save(this);
+					time.stop('sc.app.Tweets.save');
+					/*
+						put item on timeline
+					*/
+					time.start('prepend');
+					var tlel = document.getElementById('my-timeline');
+					jQuery('#my-timeline').prepend(itemhtml);
+					time.stop('prepend');
 				}
-
-				/*
-					Render the tweet
-				*/
-				time.start('render_tweet');
-				if (this.SC_is_dm) {
-					var itemhtml = sc.app.tpl.parseTemplate('dm', this);
-				} else {
-					var itemhtml = sc.app.tpl.parseTemplate('tweet', this);
-				}
-				time.stop('render_tweet');
-
-				/*
-					make jQuery obj
-				*/
-				time.start('makeJQitem');
-				// var jqitem = jQuery(itemhtml);
-
-				// if (!from_cache) {
-				// 	jqitem.addClass('new');
-				// }
-
-				// if (this.SC_is_reply) {
-				// 	jqitem.addClass('reply');
-				// }
-
-				// if (this.SC_is_dm) {
-				// 	jqitem.addClass('dm');
-				// }
-				time.stop('makeJQitem');
-
-				time.start('sc.app.Tweets.save');
-				sc.app.Tweets.save(this);
-				time.stop('sc.app.Tweets.save');
-				/*
-					put item on timeline
-				*/
-				time.start('prepend');
-				var tlel = document.getElementById('my-timeline');
-				jQuery('#my-timeline').prepend(itemhtml);
-				time.stop('prepend');
 				time.stop('render-one');
 			} else {
 				dump('Tweet ('+this.id+') already is in timeline');
 			}
+
 			
 		});
 
@@ -687,30 +709,3 @@ MyTimelineAssistant.prototype.removeExtraItems = function() {
 	
 	
 };
-
-
-
-
-// MyTimelineAssistant.prototype.trackStageActiveState = function() {
-// 	var thisA = this;
-// 	this.isFullScreen = true;
-// 	alert('Tracking ' + this.controller.sceneElement.id);
-// 	jQuery.bind(Mojo.Event.stageDeactivate, function(event) {
-// 		thisA.isFullScreen = false;//send notifications
-// 		alert("thisA.isFullScreen = false in "+thisA.controller.sceneElement.id);
-// 	});
-// 	jQuery.bind(Mojo.Event.stageActivate, function(event) {
-// 		thisA.isFullScreen = true; //dont send notifications
-// 		alert("thisA.isFullScreen = true in "+thisA.controller.sceneElement.id);
-// 	});
-// 	Mojo.Event.listen($('mojo-scene-my-timeline'), Mojo.Event.stageDeactivate, this._setNotFullScreen);
-// 	Mojo.Event.listen($('mojo-scene-my-timeline'), Mojo.Event.stageActivate, this._setIsFullScreen);
-// };
-// MyTimelineAssistant.prototype._setNotFullScreen = function(event) {
-// 	this.isFullScreen = false;//send notifications
-// 	alert("this.isFullScreen = false in "+this.controller.sceneElement.id);
-// }
-// MyTimelineAssistant.prototype._setIsFullScreen = function(event) {
-// 	this.isFullScreen = true; //dont send notifications
-// 	alert("this.isFullScreen = true in "+this.controller.sceneElement.id);
-// }
