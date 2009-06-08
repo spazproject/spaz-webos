@@ -485,8 +485,8 @@ scene_helpers.addCommonSceneMethods = function(assistant) {
 	            eb.val(newText + eb.val());
 	            eb[0].setSelectionRange(eb.val().length, eb.val().length);
 	        } else {
-	            eb.val('@' + username + ' ...');
-	            eb[0].setSelectionRange(eb.val().length - 3, eb.val().length);
+	            eb.val(newText);
+	            eb[0].setSelectionRange(eb.val().length, eb.val().length);
 	        }
 	    } else {
 	        var newText = '@';
