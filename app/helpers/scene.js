@@ -11,6 +11,24 @@ scene_helpers.addCommonSceneMethods = function(assistant) {
 	
 	
 	assistant.initAppMenu = function(opts) {
+
+		var default_items = [
+			Mojo.Menu.editItem,
+			{ label: $L('New Search Card'),	command: 'new-search-card' },
+			{ label: $L('Preferences...'),	command:Mojo.Menu.prefsCmd },
+			{ label: $L('About Spaz'),		command: 'appmenu-about' },
+			{ label: $L('Help...'),			command:Mojo.Menu.helpCmd }
+		];
+		
+		
+		if (!opts) {
+			opts = {
+				'items':default_items
+			};
+		} else if (!opts.items) {
+			opts.items = default_items;
+		}
+		
 		// the initial app/scene commands set into the class's appMenuModel for the beverage:
 		this.appMenuAttr  = {
 			omitDefaultItems: true
@@ -18,14 +36,7 @@ scene_helpers.addCommonSceneMethods = function(assistant) {
 		
 		this.appMenuModel = {
 			visible: true,
-			
-			items: [
-				Mojo.Menu.editItem,
-				{ label: $L('New Search Card'),	command: 'new-search-card' },
-				{ label: $L('Preferences...'),	command:Mojo.Menu.prefsCmd },
-				{ label: $L('About Spaz'),		command: 'appmenu-about' },
-				{ label: $L('Help...'),			command:Mojo.Menu.helpCmd }
-			]
+			items: opts.items
 		};
 
 		// good to go, set up the almighty Application Menu:
@@ -177,7 +188,10 @@ scene_helpers.addCommonSceneMethods = function(assistant) {
 					Mojo.Controller.stageController.pushScene("help", this);
 					// findAndSwapScene("preferences", this);
 					break;
-
+				case 'update-location':
+					this.showLocationPanel();
+					break;
+					
 				/*
 					Compose a new message
 				*/
@@ -311,6 +325,16 @@ scene_helpers.addCommonSceneMethods = function(assistant) {
 	};
 	
 	
+	
+	assistant.showLocationPanel = function(event) {
+		this.controller.showDialog({
+	          template: 'shared/location-popup',
+	          assistant: new LocationDialogAssistant(this),
+	          preventCancel:false
+	    });
+	};
+	
+	
 
 	/**
 	 *  
@@ -350,13 +374,21 @@ scene_helpers.addCommonSceneMethods = function(assistant) {
 	}
 
 
+	assistant.showLocationPanel = function(event) {
+		this.controller.showDialog({
+	          template: 'shared/location-popup',
+	          assistant: new LocationDialogAssistant(this),
+	          preventCancel:false
+	    });
+	};
+	
 	assistant.showPostPanel = function(event) {
 		this.controller.showDialog({
 	          template: 'shared/post-popup',
 	          assistant: new PostDialogAssistant(this),
 	          preventCancel:false
 	    });
-	}
+	};
 	
 	
 	/**
@@ -368,8 +400,6 @@ scene_helpers.addCommonSceneMethods = function(assistant) {
 		eb.val('');
 		eb[0].setSelectionRange(0, 0);
 		
-		// this._updateCharCount();
-
 	};
 
 	
@@ -1136,21 +1166,33 @@ var PostDialogAssistant = Class.create({
 	 * @private 
 	 */
 	_updateCharCount: function() {
-		var charcount = (140 - jQuery('#post-panel-textarea', this.controller.getSceneScroller()).val().length);
-		jQuery('#post-panel-counter-number', this.controller.getSceneScroller()).text(charcount.toString());
-		if (charcount < 0) {
-			jQuery('#post-panel-counter', this.controller.getSceneScroller()).addClass('over-limit');
-			/*
-				disable post send button
-			*/
-			jQuery('#post-send-button', this.controller.getSceneScroller()).attr('disabled', 'disabled');
-		} else {
-			jQuery('#post-panel-counter', this.controller.getSceneScroller()).removeClass('over-limit');
-			/*
-				enable post send button
-			*/
-			jQuery('#post-send-button', this.controller.getSceneScroller()).attr('disabled', '');
+		var thisA = this;
+		
+		if (thisA._updateCharCountTimeout) {
+			clearTimeout(thisA._updateCharCountTimeout);
 		}
+
+		function _updateCharCountNow() {
+			var charcount = (140 - jQuery('#post-panel-textarea', thisA.controller.getSceneScroller()).val().length);
+			jQuery('#post-panel-counter-number', thisA.controller.getSceneScroller()).text(charcount.toString());
+			if (charcount < 0) {
+				jQuery('#post-panel-counter', thisA.controller.getSceneScroller()).addClass('over-limit');
+				/*
+					disable post send button
+				*/
+				jQuery('#post-send-button', thisA.controller.getSceneScroller()).attr('disabled', 'disabled');
+			} else {
+				jQuery('#post-panel-counter', thisA.controller.getSceneScroller()).removeClass('over-limit');
+				/*
+					enable post send button
+				*/
+				jQuery('#post-send-button', thisA.controller.getSceneScroller()).attr('disabled', '');
+			}	
+		};
+		
+		this._updateCharCountTimeout = setTimeout(_updateCharCountNow, 300);
+		
+		
 	},
 	
 	
@@ -1274,5 +1316,92 @@ var PostDialogAssistant = Class.create({
 	}
 	
 	
+	
+});
+
+
+
+
+
+
+/*
+	Small controller class used for the update location account dialog
+*/
+var LocationDialogAssistant = Class.create({
+	
+	initialize: function(sceneAssistant) {
+		this.sceneAssistant = sceneAssistant;
+		this.controller = sceneAssistant.controller;
+	},
+	
+	setup : function(widget) {
+		this.widget = widget;
+		
+		/*
+			update button
+		*/
+		this.updateButtonAttributes = {
+			type: Mojo.Widget.activityButton
+		};
+		this.updateButtonModel = {
+			buttonLabel : "Update Location",
+			buttonClass: 'Primary'
+		};
+		this.controller.setupWidget('update-location-button', this.updateButtonAttributes, this.updateButtonModel);
+
+		/*
+			get location button
+		*/
+		this.getLocationButtonAttributes = {
+			type: Mojo.Widget.activityButton
+		};
+		this.getLocationButtonModel = {
+			buttonLabel : "Get Location",
+			buttonClass: 'Secondary'
+		};
+		this.controller.setupWidget('get-location-button', this.getLocationButtonAttributes, this.getLocationButtonModel);
+		
+		/*
+			location text field
+		*/
+		this.locationBoxAttr = {
+			"hintText":	      'Enter new location',
+			"focusMode":      Mojo.Widget.focusSelectMode,
+			"fieldName": 	  'update-location-textfield',
+			"changeOnKeyPress": true
+		};
+		this.locationBoxModel = {
+			'value':     '',
+			'disabled':  false
+		}
+		this.controller.setupWidget('update-location-textfield', this.locationBoxAttr, this.locationBoxModel);
+		
+		
+	},
+	
+	activate: function() {
+		var thisA = this;
+	},
+	
+	deactivate: function() {
+		var thisA = this;
+	},
+	
+	getLocation: function() {
+		var thisA = this;
+		sc.helpers.getCurrentLocation(
+			function() { // onsuccess
+				
+			},
+			function() { // onerror
+				
+			}
+		);
+	},
+	
+	updateLocation: function() {
+		var thisA = this;
+		
+	}
 	
 });
