@@ -17,6 +17,9 @@ sc.app.tpl.addTemplateMethod('message-detail', function(d) {
 	if (d.in_reply_to_status_id) {
 		html += '			<div class="in-reply-to"><strong>In-reply-to</strong>: <span class="in-reply-to-link clickable" data-irt-status-id="'+d.in_reply_to_status_id+'">@'+d.in_reply_to_screen_name+'</span></div>';
 	}
+	if (d.user.protected) {
+		html += '			<div class="protected-icon">Protected user</div>';
+	}
 	html += '		</div>';
 	html += '	</div>';
 	if (sc.app.username && sc.app.password) {
@@ -97,6 +100,9 @@ sc.app.tpl.addTemplateMethod('user-detail', function(d) {
 	if (d.url) {
 		html += '			<div><a id="user-detail-homepage" href="'+d.url+'" title="Open user\'s homepage">Homepage</a></div>';
 	}
+	if (d.protected) {
+		html += '			<div class="protected-icon">Protected user</div>';
+	}
 	html += '		</div>';
 	html += '		<div id="user-detail-actions">';
 	// html += '			<div class="spaz-button-group">';
@@ -141,7 +147,11 @@ sc.app.tpl.addTemplateMethod('tweet', function(d) {
 	html += '	</div>';
 	html += '	<div class="status">';
 	html += '		<div class="meta-wrapper">';
-	html += '			<div class="screen-name">'+d.user.screen_name+'</div>';
+	html += '			<div class="screen-name">'+d.user.screen_name;
+	if (d.user.protected) {
+		html += '			<div class="protected-icon"></div>';
+	}
+	html += '			</div>';
 	html += '			<div class="meta" data-status-id="'+d.id+'"><span class="date" data-created_at="'+d.created_at+'">'+d.relative_time+'</span></div>';
 	html += '		</div>';
 	html += '	 	<div class="text">';

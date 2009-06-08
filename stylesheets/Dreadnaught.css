@@ -42,6 +42,7 @@ div.palm-page-header.spaz-page-header {
 	div.palm-page-header.spaz-page-header .title {
 		color:#FFFFFF;
 		text-shadow: rgb(0,0,0) 0px 1px 0px;
+		text-transform: none;
 	}
 
 a:link, a:visited, .clickable {
@@ -219,10 +220,18 @@ div.timeline-entry {
 				color:#FFFFCC;
 			}
 	
+	div.timeline-entry div.protected-icon {
+		height:12px;
+		width: 11px;
+		display:inline-block;
+		margin-left:5px;
+		background-image: url(../images/theme/tiny-lock-icon.png);
+		background-repeat: no-repeat;
+	}
+	
 /*
 	login scene stuff
 */
-
 #start-scene {
 	color:#CCC;
 }
@@ -400,6 +409,15 @@ div.spaz-drawer {
 /*					-webkit-border-image: url(../images/theme/text-link-bg-active.png) 0 7 0 7;*/
 				}
 
+			#message-detail .status .meta .protected-icon {
+				display:block;
+				margin:5px 0px;
+				padding-left:18px;
+				background-image: url(../images/theme/tiny-lock-icon.png);
+				background-repeat: no-repeat;
+				background-position: 0px 2px;
+			}
+
 
 	#message-detail-actions {
 		clear:both;
@@ -459,6 +477,16 @@ div.spaz-drawer {
 		margin-right:10px;
 		overflow:visible;		
 	}
+
+		#user-detail-info .protected-icon {
+			display:block;
+			margin:5px 0px;
+			padding-left:18px;
+			background-image: url(../images/theme/tiny-lock-icon.png);
+			background-repeat: no-repeat;
+			background-position: 0px 2px;
+			font-size: 10pt;
+		}
 
 		#user-detail-info a:link,
 		#user-detail-info a:visited,
