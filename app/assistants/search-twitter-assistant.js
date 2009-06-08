@@ -91,8 +91,6 @@ SearchTwitterAssistant.prototype.setup = function() {
 	}
 	this.controller.setupWidget('search-twitter-textfield', this.searchBoxAttr, this.searchBoxModel);
 
-	Mojo.Event.listenForFocusChanges($('search-twitter-textfield'), this.searchboxFocusChange.bind(this));
-
 	jQuery('#submit-search-button').bind(Mojo.Event.tap, function() {
 		thisA.search.call(thisA, thisA.searchBoxModel.value);
 	});
@@ -136,9 +134,6 @@ SearchTwitterAssistant.prototype.activate = function(event) {
 	var thisA = this; // for closures below
 	
 	jQuery().bind('error_search_timeline_data', { thisAssistant:this }, function(e, error_obj) {
-		// error_obj.url
-		// error_obj.xhr
-		// error_obj.msg
 		
 		var error_msg = $L("There was an error retrieving search results");
 		thisA.displayErrorInfo(error_msg, error_obj);
@@ -147,7 +142,6 @@ SearchTwitterAssistant.prototype.activate = function(event) {
 			Update relative dates
 		*/
 		sch.updateRelativeTimes('#search-timeline>div.timeline-entry .meta>.date', 'data-created_at');
-		// e.data.thisAssistant.hideInlineSpinner('#search-spinner-container');
 		e.data.thisAssistant.deactivateSpinner();
 		e.data.thisAssistant.startRefresher();
 	});
@@ -275,47 +269,6 @@ SearchTwitterAssistant.prototype.activate = function(event) {
 		}
 	});
 	
-	
-	// /*
-	// 	listen for clicks on user avatars
-	// */
-	// jQuery('div.timeline-entry>.user', this.scroller).live(Mojo.Event.tap, function(e) {
-	// 	var userid = jQuery(this).attr('data-user-screen_name');
-	// 	Mojo.Controller.stageController.pushScene('user-detail', userid);
-	// 	e.stopImmediatePropagation();
-	// });
-	// 
-	// jQuery('.username.clickable', this.scroller).live(Mojo.Event.tap, function(e) {
-	// 	var userid = jQuery(this).attr('data-user-screen_name');
-	// 	Mojo.Controller.stageController.pushScene('user-detail', userid);
-	// 	e.stopImmediatePropagation();
-	// });
-	// 
-	// jQuery('.hashtag.clickable', this.scroller).live(Mojo.Event.tap, function(e) {
-	// 	var hashtag = jQuery(this).attr('data-hashtag');
-	// 	
-	// 	if (thisA.lightweight) {
-	// 		var scene_type = 'lightweight';
-	// 	};
-	// 	
-	// 	thisA.searchFor('#'+hashtag, scene_type);
-	// 	e.stopImmediatePropagation();
-	// });
-	// 
-	// jQuery('div.timeline-entry>.status>.meta', this.scroller).live(Mojo.Event.tap, function(e) {
-	// 	var statusid = jQuery(this).attr('data-status-id');
-	// 	Mojo.Controller.stageController.pushScene('message-detail', statusid);
-	// 	e.stopImmediatePropagation();
-	// });
-	// 
-	// jQuery('div.timeline-entry', this.scroller).live(Mojo.Event.tap, function(e) {
-	// 	var jqtarget = jQuery(e.target);		
-	// 	if (!jqtarget.is('div.timeline-entry .text') && !jqtarget.is('div.timeline-entry')) {
-	// 		return;
-	// 	}
-	// 	var statusid = jQuery(this).attr('data-status-id');
-	// 	Mojo.Controller.stageController.pushScene('message-detail', statusid);
-	// });
 
 		
 }
@@ -325,26 +278,19 @@ SearchTwitterAssistant.prototype.deactivate = function(event) {
 	/* remove any event handlers you added in activate and do any other cleanup that should happen before
 	   this scene is popped or another scene is pushed on top */
 	
-	Mojo.Event.stopListening($('submit-search-button'), Mojo.Event.tap, this.search);	
-	
 	jQuery().unbind('new_search_timeline_data');
 	jQuery().unbind('error_search_timeline_data');
-	
-	// jQuery('div.timeline-entry>.user', this.scroller).die(Mojo.Event.tap);
-	// jQuery('.username.clickable', this.scroller).die(Mojo.Event.tap);
-	// jQuery('.hashtag.clickable', this.scroller).die(Mojo.Event.tap);
-	// jQuery('div.timeline-entry>.status>.meta', this.scroller).die(Mojo.Event.tap);
-	// jQuery('div.timeline-entry a[href]', this.scroller).die(Mojo.Event.tap);
+	jQuery().unbind('search_timeline_refresh');	
 	jQuery('#search-timeline div.timeline-entry', this.scroller).die(Mojo.Event.tap);
-
-	
-	// this.removePostPopup();
 }
+
 
 SearchTwitterAssistant.prototype.cleanup = function(event) {
 	/* this function should do any cleanup needed before the scene is destroyed as 
 	   a result of being popped off the scene stack */
-	jQuery().unbind('search_timeline_refresh');
+
+	jQuery('#submit-search-button').unbind(Mojo.Event.tap);
+	
 }
 
 
@@ -403,10 +349,12 @@ SearchTwitterAssistant.prototype.startRefresher = function() {
 	var time = sc.app.prefs.get('network-searchrefreshinterval');
 	
 	if (time > 0) {
-		this.refresher = setInterval(function() {
-				jQuery().trigger('search_timeline_refresh');
-			}, time
-		)
+		this.refresher = setInterval(
+			function() {
+				jQuery().trigger('search_timeline_refresh')
+			},
+			time
+		);
 	} else {
 		this.refresher = null;
 	}
@@ -420,20 +368,9 @@ SearchTwitterAssistant.prototype.stopRefresher = function() {
 	clearInterval(this.refresher);
 };
 
-SearchTwitterAssistant.prototype.searchboxFocusChange = function(el) {
-	if (el) { // focusIN -- something gained focus
-		// jQuery('#submit-search-button').show('blind');
-	} else { // focusOut -- blur
-		// jQuery('#submit-search-button').hide('blind');
-	}
-};
-
-SearchTwitterAssistant.prototype.getEntryElementByStatusId = function(id) {
-	
+SearchTwitterAssistant.prototype.getEntryElementByStatusId = function(id) {	
 	var el = jQuery('#search-timeline div.timeline-entry[data-status-id='+id+']', this.scroller).get(0);
-	
 	return el;
-	
 };
 
 SearchTwitterAssistant.prototype.activateSpinner = function() {

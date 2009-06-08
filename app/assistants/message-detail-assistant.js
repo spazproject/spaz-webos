@@ -119,6 +119,7 @@ MessageDetailAssistant.prototype.activate = function(event) {
 			sc.app.Tweets.get(this.status_id, this.isdm,
 				function(data) {
 					if (data !== null) {
+						dump('Message '+this.status_id+' pulled from DB');
 						jQuery().trigger('get_one_status_succeeded', [data]);
 					} else { // if nothing is returned, get it from Twitter
 						// thisA.twit.getOne(thisA.status_id);
@@ -139,14 +140,16 @@ MessageDetailAssistant.prototype.activate = function(event) {
 			sc.app.Tweets.get(this.status_id, this.isdm,
 				function(data) {
 					if (data !== null) {
+						dump('Message '+this.status_id+' pulled from DB');
 						jQuery().trigger('get_one_status_succeeded', [data]);
 					} else { // if nothing is returned, get it from Twitter
+						dump('Message '+this.status_id+' missing from DB; retrieving from Twitter');
 						thisA.twit.getOne(thisA.status_id);
 					}
 					
 				},
 				function(message) {
-					dump('Couldn\'t retrieve message from Depot:'+message)
+					dump('Couldn\'t retrieve message '+this.status_id+' from Depot:'+message)
 					thisA.twit.getOne(thisA.status_id);
 				}
 			);
