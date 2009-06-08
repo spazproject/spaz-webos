@@ -1132,8 +1132,6 @@ var PostDialogAssistant = Class.create({
 		jQuery().bind('update_failed', { thisAssistant:this }, function(e, error_obj) {
 			e.data.thisAssistant.reportFailedPost(error_obj);
 		});
-		
-		
 
 				
 		jQuery('#post-panel-textarea').bind('keyup',   function(e) {
@@ -1187,8 +1185,9 @@ var PostDialogAssistant = Class.create({
 		}
 
 		function _updateCharCountNow() {
-			var charcount = (140 - jQuery('#post-panel-textarea', thisA.controller.getSceneScroller()).val().length);
-			jQuery('#post-panel-counter-number', thisA.controller.getSceneScroller()).text(charcount.toString());
+			var numchars  = document.getElementById('post-panel-textarea').value.length;
+			var charcount = 140 - numchars;
+			document.getElementById('post-panel-counter-number').innerHTML = charcount.toString();
 			if (charcount < 0) {
 				jQuery('#post-panel-counter', thisA.controller.getSceneScroller()).addClass('over-limit');
 				/*
@@ -1204,7 +1203,7 @@ var PostDialogAssistant = Class.create({
 			}	
 		};
 		
-		this._updateCharCountTimeout = setTimeout(_updateCharCountNow, 300);
+		this._updateCharCountTimeout = setTimeout(_updateCharCountNow, 500);
 		
 		
 	},
