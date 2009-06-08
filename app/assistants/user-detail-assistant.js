@@ -22,12 +22,8 @@ function UserDetailAssistant(argFromPusher) {
 UserDetailAssistant.prototype.setup = function() {
 	var thisA = this;
 	
-	this.initAppMenu();
-	
 	this.initTwit();
-	
-	
-	
+
 	if (sc.app.username && sc.app.password) {
 		this.setupCommonMenus({
 			// viewMenuItems: [

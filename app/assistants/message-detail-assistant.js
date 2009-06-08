@@ -25,7 +25,7 @@ MessageDetailAssistant.prototype.setup = function() {
 
 	// alert('MessageDetailAssistant.prototype.setup');
 	
-	this.initAppMenu();
+	this.initTwit();
 	
 	this.scroller = this.controller.getSceneScroller();
 	
