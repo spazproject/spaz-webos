@@ -43,8 +43,6 @@ SearchTwitterAssistant.prototype.setup = function() {
 	
 	this.initTwit();
 	
-	this.initAppMenu();
-	
 	this.trackStageActiveState();
 	
 	if (this.lightweight) {
@@ -55,6 +53,9 @@ SearchTwitterAssistant.prototype.setup = function() {
 			]
 			
 		});
+		
+		this.initAppMenu();
+		
 	} else {
 		this.setupCommonMenus({
 			cmdMenuItems: [
@@ -70,6 +71,8 @@ SearchTwitterAssistant.prototype.setup = function() {
 				{label:$L('Refresh'),   icon:'sync', command:'refresh', shortcut:'R'}					
 			]
 		});
+		
+		this.initAppMenu({ 'items':loggedin_appmenu_items });
 	}
 
 	this.scroller = this.controller.getSceneScroller();

@@ -27,8 +27,6 @@ MessageDetailAssistant.prototype.setup = function() {
 	
 	this.initAppMenu();
 	
-	this.initTwit();
-	
 	this.scroller = this.controller.getSceneScroller();
 	
 	if (sc.app.username && sc.app.password) {
@@ -50,7 +48,10 @@ MessageDetailAssistant.prototype.setup = function() {
 				}
 
 			],
-		});		
+		});
+		
+		this.initAppMenu({ 'items':loggedin_appmenu_items });
+		
 	} else {
 		this.setupCommonMenus({
 			// viewMenuItems: [
@@ -62,6 +63,9 @@ MessageDetailAssistant.prototype.setup = function() {
 			// 	}
 			// ]
 		});	
+		
+		this.initAppMenu();
+		
 	};	
 	
 	jQuery().bind('get_one_status_succeeded', { thisAssistant:this }, this.processStatusReturn);

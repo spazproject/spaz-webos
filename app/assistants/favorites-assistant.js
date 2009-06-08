@@ -9,7 +9,7 @@ function FavoritesAssistant() {
 FavoritesAssistant.prototype.setup = function() {
 
 	this.scroller = this.controller.getSceneScroller();
-	this.initAppMenu();
+	this.initAppMenu({ 'items':loggedin_appmenu_items });
 	this.initTwit();
 
 

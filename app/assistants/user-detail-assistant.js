@@ -47,7 +47,9 @@ UserDetailAssistant.prototype.setup = function() {
 				}
 
 			],
-		});		
+		});
+		this.initAppMenu({ 'items':loggedin_appmenu_items });
+			
 	} else {
 		this.setupCommonMenus({
 			// viewMenuItems: [
@@ -59,6 +61,8 @@ UserDetailAssistant.prototype.setup = function() {
 			// 	}
 			// ]
 		});	
+		
+		this.initAppMenu();
 	};
 	
 
