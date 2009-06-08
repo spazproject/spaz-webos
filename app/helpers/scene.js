@@ -3,6 +3,7 @@
  */
 var scene_helpers = {}
 
+
 /**
  * This adds a number of common scene methods to the passed scene assistant
  * @param {object} assistant a scene assistant
@@ -19,8 +20,7 @@ scene_helpers.addCommonSceneMethods = function(assistant) {
 			{ label: $L('About Spaz'),		command: 'appmenu-about' },
 			{ label: $L('Help...'),			command:Mojo.Menu.helpCmd }
 		];
-		
-		
+
 		if (!opts) {
 			opts = {
 				'items':default_items
@@ -657,6 +657,20 @@ scene_helpers.addCommonSceneMethods = function(assistant) {
 		dump("clearing inline spinner");
 		jQuery(container).empty();		
 	};
+	
+	
+	
+	
+	assistant.activateButtonSpinner = function(id) {
+		var buttonWidget = this.controller.get(button);
+		buttonWidget.mojo.activate();
+	}
+
+	assistant.deactivateButtonSpinner = function(id) {
+		var buttonWidget = this.controller.get(button);
+		buttonWidget.mojo.deactivate();
+	}
+	
 	
 	
 	
@@ -1345,9 +1359,11 @@ var LocationDialogAssistant = Class.create({
 		};
 		this.updateButtonModel = {
 			buttonLabel : "Update Location",
-			buttonClass: 'Primary'
+			buttonClass: 'primary'
 		};
 		this.controller.setupWidget('update-location-button', this.updateButtonAttributes, this.updateButtonModel);
+		
+
 
 		/*
 			get location button
@@ -1357,9 +1373,12 @@ var LocationDialogAssistant = Class.create({
 		};
 		this.getLocationButtonModel = {
 			buttonLabel : "Get Location",
-			buttonClass: 'Secondary'
+			buttonClass: 'secondary'
 		};
 		this.controller.setupWidget('get-location-button', this.getLocationButtonAttributes, this.getLocationButtonModel);
+		
+		
+
 		
 		/*
 			location text field
@@ -1381,22 +1400,63 @@ var LocationDialogAssistant = Class.create({
 	
 	activate: function() {
 		var thisA = this;
+		Mojo.Event.listen($('update-location-button'), Mojo.Event.tap, this.updateLocation.bind(this));
+		Mojo.Event.listen($('get-location-button'), Mojo.Event.tap, this.getLocation.bind(this));
 	},
 	
 	deactivate: function() {
 		var thisA = this;
+		Mojo.Event.stopListening($('update-location-button'), Mojo.Event.tap, this.updateLocation.bind(this));
+		Mojo.Event.stopListening($('get-location-button'), Mojo.Event.tap, this.getLocation.bind(this));
 	},
 	
 	getLocation: function() {
+		
+		jQuery().bind('location_retrieved_success', function(geoloc, data) {
+			alert(geoloc);
+		});
+		jQuery().bind('location_retrieved_failure', function(errorcode) {
+			alert(errorcode);
+		});
+		
 		var thisA = this;
-		sc.helpers.getCurrentLocation(
-			function() { // onsuccess
-				
-			},
-			function() { // onerror
-				
+		// thisA.activateButtonSpinner('get-location-button');
+
+
+		var on_success = function(data) { // onsuccess
+			dump(data);
+			thisA.locationBoxModel.value = data.latitude.toString() + ',' + data.longitude.toString();
+			thisA.controller.modelChanged(thisA.locationBoxModel);
+			thisA.controller.get('get-location-button').mojo.deactivate();
+		};
+		var on_error = function(data) { // onerror
+			dump(data);
+			thisA.controller.get('get-location-button').mojo.deactivate();
+		};
+		
+		var loc = new Mojo.Service.Request('palm://com.palm.location', {
+				method:"getCurrentPosition",
+				parameters:{
+					'accuracy':     1,
+					'responseTime': 1,
+					'maximumAge':  30 // seconds
+				},
+				'onSuccess':on_success,
+				'onFailure':on_error
 			}
 		);
+		
+		// sch.getCurrentLocation(
+		// 	function() { // onsuccess
+		// 		this.locationBoxModel.value = this.locationBoxModel;
+		// 		this.controller.modelChanged(this.locationBoxModel);
+		// 		thisA.deactivateButtonSpinner('get-location-button');
+		// 	},
+		// 	function() { // onerror
+		// 		// no error message yet
+		// 		thisA.deactivateButtonSpinner('get-location-button');
+		// 	}
+		// );
 	},
 	
 	updateLocation: function() {

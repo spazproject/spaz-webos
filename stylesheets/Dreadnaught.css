@@ -544,8 +544,15 @@ div.spaz-drawer {
 
 
 
-
-
+/*
+	Palm dialog text field stuff
+*/
+#palm-dialog-content .textfield-group .truncating-text {
+	color:#333;
+}
+#palm-dialog-content .textfield-group .hint-text {
+	color:#AAA;
+}
 
 /*
 	Post panel styles

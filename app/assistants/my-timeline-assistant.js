@@ -46,7 +46,7 @@ MyTimelineAssistant.prototype.setup = function() {
 	
 	/* this function is for setup tasks that have to happen when the scene is first created */
 
-	this.initAppMenu();
+	this.initAppMenu({ 'items':loggedin_appmenu_items });
 
 	this.initTwit();
 	
@@ -59,6 +59,7 @@ MyTimelineAssistant.prototype.setup = function() {
 	this.setupCommonMenus({
 		viewMenuItems: [
 			{},
+			{label: $L('Location'), command:'update-location' },
 			{label: $L('Filter timeline'), iconPath:'images/theme/menu-icon-triangle-down.png', submenu:'filter-menu'}
 		],
 		cmdMenuItems: [
