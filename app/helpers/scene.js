@@ -1387,7 +1387,9 @@ var LocationDialogAssistant = Class.create({
 			"hintText":	      'Enter new location',
 			"focusMode":      Mojo.Widget.focusSelectMode,
 			"fieldName": 	  'update-location-textfield',
-			"changeOnKeyPress": true
+			"changeOnKeyPress": true,
+			"maxLength":      30,
+			"autoReplace":    false
 		};
 		this.locationBoxModel = {
 			'value':     '',
@@ -1412,12 +1414,12 @@ var LocationDialogAssistant = Class.create({
 	
 	getLocation: function() {
 		
-		jQuery().bind('location_retrieved_success', function(geoloc, data) {
-			alert(geoloc);
-		});
-		jQuery().bind('location_retrieved_failure', function(errorcode) {
-			alert(errorcode);
-		});
+		// jQuery().bind('location_retrieved_success', function(geoloc, data) {
+		// 	// alert(geoloc);
+		// });
+		// jQuery().bind('location_retrieved_failure', function(errorcode) {
+		// 	// alert(errorcode);
+		// });
 		
 		var thisA = this;
 		// thisA.activateButtonSpinner('get-location-button');
@@ -1425,13 +1427,16 @@ var LocationDialogAssistant = Class.create({
 
 		var on_success = function(data) { // onsuccess
 			dump(data);
-			thisA.locationBoxModel.value = data.latitude.toString() + ',' + data.longitude.toString();
+			var lat_str = data.latitude.toPrecision(10).toString();
+			var lon_str = data.longitude.toPrecision(10).toString();
+			thisA.locationBoxModel.value = lat_str + ',' + lon_str;
 			thisA.controller.modelChanged(thisA.locationBoxModel);
 			thisA.controller.get('get-location-button').mojo.deactivate();
 		};
 		var on_error = function(data) { // onerror
 			dump(data);
 			thisA.controller.get('get-location-button').mojo.deactivate();
+			jQuery('#location-popup-error').html($L('Could not get current location. You may need to accept terms and conditions in <strong>Location Services</strong>'));
 		};
 		
 		var loc = new Mojo.Service.Request('palm://com.palm.location', {
@@ -1439,28 +1444,29 @@ var LocationDialogAssistant = Class.create({
 				parameters:{
 					'accuracy':     1,
 					'responseTime': 1,
-					'maximumAge':  30 // seconds
+					'maximumAge':  60 // seconds
 				},
 				'onSuccess':on_success,
 				'onFailure':on_error
 			}
 		);
-		
-		// sch.getCurrentLocation(
-		// 	function() { // onsuccess
-		// 		this.locationBoxModel.value = this.locationBoxModel;
-		// 		this.controller.modelChanged(this.locationBoxModel);
-		// 		thisA.deactivateButtonSpinner('get-location-button');
-		// 	},
-		// 	function() { // onerror
-		// 		// no error message yet
-		// 		thisA.deactivateButtonSpinner('get-location-button');
-		// 	}
-		// );
 	},
 	
 	updateLocation: function() {
 		var thisA = this;
+		
+		jQuery().bind('update_location_succeeded', function() {
+			thisA.controller.get('update-location-button').mojo.deactivate();
+			thisA.widget.mojo.close();
+		});
+		jQuery().bind('update_location_failed', function() {
+			thisA.controller.get('update-location-button').mojo.deactivate();
+			jQuery('#location-popup-error').html($L('Updating location on Twitter failed or timed-out'));
+		});
+		
+		this.sceneAssistant.twit.updateLocation(this.locationBoxModel.value);
+		
+		
 		
 	}
 	

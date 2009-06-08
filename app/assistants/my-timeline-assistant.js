@@ -59,7 +59,7 @@ MyTimelineAssistant.prototype.setup = function() {
 	this.setupCommonMenus({
 		viewMenuItems: [
 			{},
-			{label: $L('Location'), command:'update-location' },
+			// {label: $L('Location'), command:'update-location' },
 			{label: $L('Filter timeline'), iconPath:'images/theme/menu-icon-triangle-down.png', submenu:'filter-menu'}
 		],
 		cmdMenuItems: [
@@ -279,7 +279,7 @@ MyTimelineAssistant.prototype.loadTimelineCache = function() {
 		function(data) {
 			dump('loading cache');
 			
-			if (!data.version || (data.version < thisA.cacheVersion)) {
+			if (!data || !data.version || (data.version < thisA.cacheVersion)) {
 				dump('Cache version out of date (or empty), not loading');
 				jQuery().trigger('load_from_mytimeline_cache_done');
 				return;
