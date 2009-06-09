@@ -7,7 +7,7 @@ function StageAssistant () {
 		so we want to make sure we're using the same one, even
 		in different stages
 	*/
-	var sc = Mojo.Controller.getAppController().assistant.sc;
+	// var sc = Mojo.Controller.getAppController().assistant.sc;
 }
 
 StageAssistant.prototype.setup = function() {
@@ -57,4 +57,10 @@ StageAssistant.prototype.cleanup = function() {
 	jQuery().unbind('spazprefs_loaded');
 	
 	var sc = null;
+	
+	/*
+		try to clean up ALL jQuery listeners everywhere
+	*/
+	jQuery().unbind();
+	jQuery().die();
 }

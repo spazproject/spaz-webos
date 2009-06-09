@@ -1,6 +1,6 @@
 /**
  * events raised here:
- * 'search_twitter_refresh' 
+ * 'search_timeline_refresh' 
  */
 
 function SearchTwitterAssistant(args) {
@@ -214,12 +214,6 @@ SearchTwitterAssistant.prototype.activate = function(event) {
 		e.data.thisAssistant.refresh();
 	});
 	
-	jQuery().bind('search_twitter_refresh', { thisAssistant:this }, function(e) {
-		e.data.thisAssistant.startRefresher();
-	});
-
-
-
 	jQuery('#search-timeline div.timeline-entry', this.scroller).live(Mojo.Event.tap, function(e) {
 		var jqtarget = jQuery(e.target);
 

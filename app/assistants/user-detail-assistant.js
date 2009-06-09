@@ -338,6 +338,7 @@ UserDetailAssistant.prototype.cleanup = function(event) {
 	jQuery().unbind('get_user_failed');
 	jQuery().unbind('create_friendship_succeeded');
 	jQuery().unbind('destroy_friendship_succeeded');
-
+	jQuery().unbind('create_block_succeeded');
+	jQuery().unbind('destroy_block_succeeded');
 	
 }

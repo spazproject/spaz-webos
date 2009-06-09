@@ -1117,7 +1117,6 @@ var PostDialogAssistant = Class.create({
 		*/				
 
 		Mojo.Event.listen($('post-send-button'), Mojo.Event.tap, this.sendPost.bind(this));
-		// Mojo.Event.listen($('post-cancel-button'), Mojo.Event.tap, this.cancelPost.bind(this));
 
 		jQuery('#post-panel-username').text(sc.app.username);
 
@@ -1160,8 +1159,7 @@ var PostDialogAssistant = Class.create({
 	
 	deactivate: function() {
 		Mojo.Event.stopListening($('post-send-button'), Mojo.Event.tap, this.sendPost); 
-		// Mojo.Event.stopListening($('post-cancel-button'), Mojo.Event.tap, this.cancelPost);
-		
+				
 		jQuery('#post-panel-textarea').unbind('keyup');
 		jQuery('#post-panel-textarea').unbind('keydown');
 		jQuery('#post-panel-textarea').unbind('blur');
@@ -1315,8 +1313,6 @@ var PostDialogAssistant = Class.create({
 	reportFailedPost: function(error_obj) {
 		this.deactivateSpinner();
 
-		// this.clearPostPanel(event);
-		
 		var err_msg = $L("There was a problem posting your status");
 		this.sceneAssistant.displayErrorInfo(err_msg, error_obj);
 		this.hidePostPanel(event);
@@ -1415,17 +1411,8 @@ var LocationDialogAssistant = Class.create({
 	},
 	
 	getLocation: function() {
-		
-		// jQuery().bind('location_retrieved_success', function(geoloc, data) {
-		// 	// alert(geoloc);
-		// });
-		// jQuery().bind('location_retrieved_failure', function(errorcode) {
-		// 	// alert(errorcode);
-		// });
-		
+	
 		var thisA = this;
-		// thisA.activateButtonSpinner('get-location-button');
-
 
 		var on_success = function(data) { // onsuccess
 			dump(data);
@@ -1468,9 +1455,6 @@ var LocationDialogAssistant = Class.create({
 		});
 		
 		this.sceneAssistant.twit.updateLocation(this.locationBoxModel.value);
-		
-		
-		
 	}
 	
 });

@@ -151,4 +151,22 @@ PreferencesAssistant.prototype.deactivate = function(event) {
 PreferencesAssistant.prototype.cleanup = function(event) {
 	/* this function should do any cleanup needed before the scene is destroyed as 
 	   a result of being popped off the scene stack */
+	
+	this.controller.stopListening('network-refreshinterval', Mojo.Event.propertyChange, this.selectorChanged);
+	this.controller.stopListening('network-searchrefreshinterval', Mojo.Event.propertyChange, this.selectorChanged);
+
+
+	Mojo.Event.stopListening($('clear-cache-button'), Mojo.Event.tap, function(e) {
+		thisA.clearTimelineCache();
+	});
+
+	this.controller.stopListening('checkbox-sound-enabled', Mojo.Event.propertyChange, function() {
+		var state = thisA.model['sound-enabled'];
+		sc.app.prefs.set('sound-enabled', state);
+	});
+	this.controller.stopListening('checkbox-timeline-scrollonupdate', Mojo.Event.propertyChange, function() {
+		var state = thisA.model['timeline-scrollonupdate'];
+		sc.app.prefs.set('timeline-scrollonupdate', state);
+	});
+	
 }

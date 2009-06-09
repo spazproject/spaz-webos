@@ -241,10 +241,8 @@ MyTimelineAssistant.prototype.deactivate = function(event) {
 	
 	// this.removePostPopup();
 	
-	jQuery().unbind('error_user_timeline_data');
+	jQuery().unbind('error_combined_timeline_data');
 	jQuery().unbind('new_combined_timeline_data');
-	jQuery().unbind('update_succeeded');
-	jQuery().unbind('update_failed');
 	jQuery().unbind('my_timeline_refresh');
 	
 	

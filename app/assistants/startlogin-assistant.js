@@ -164,11 +164,7 @@ StartloginAssistant.prototype.deactivate = function(event) {
 	this.model.username = '';
 	this.model.password = '';
 	this.controller.modelChanged( this.model );
-	// this.hideStatusPanel();
-	
-	jQuery().unbind('verify_credentials_succeeded');
-	jQuery().unbind('verify_credentials_failed');
-	
+
 }
 
 StartloginAssistant.prototype.cleanup = function(event) {
@@ -231,11 +227,6 @@ var NewAccountDialogAssistant = Class.create({
 							Mojo.Event.tap,
 							this.handleVerifyPassword.bindAsEventListener(this)
 						);
-		// $('cancelSaveAccountButton').addEventListener(
-		// 					Mojo.Event.tap,
-		// 					this.handleCancel.bindAsEventListener(this)
-		// 				);
-		
 		
 		this.newAccountModel = {
 			'username':false,
