@@ -43,6 +43,7 @@ MyTimelineAssistant.prototype.setup = function() {
 	
 	this.tweetsModel = [];
 
+	this.scroller = this.controller.getSceneScroller();
 	
 	/* this function is for setup tasks that have to happen when the scene is first created */
 
@@ -54,6 +55,9 @@ MyTimelineAssistant.prototype.setup = function() {
 		this will set the state for this.isFullScreen
 	*/
 	this.trackStageActiveState();
+
+
+
 	
 
 	this.setupCommonMenus({
@@ -81,8 +85,20 @@ MyTimelineAssistant.prototype.setup = function() {
 		]
 	});
 
-	this.scroller = this.controller.getSceneScroller();
 
+	this.timelineFilterMenuModel = {
+		items: [
+				{label:$L('Show All Messages'),				secondaryIconPath:'', command:'filter-timeline-all'}, 
+				{label:$L('Replies and Direct Messages'),	secondaryIconPath:'', command:'filter-timeline-replies-dm'}, 
+				{label:$L('Just Replies'),					secondaryIconPath:'', command:'filter-timeline-replies'}, 
+				{label:$L('Just Direct Messages'),			secondaryIconPath:'', command:'filter-timeline-dms'}, 
+		]
+	};
+
+	// Set up submenu widget that was wired into the viewMenu above
+	this.controller.setupWidget("filter-menu", undefined, this.timelineFilterMenuModel);
+	
+	
 
 
 	
@@ -655,27 +671,7 @@ MyTimelineAssistant.prototype.removeExtraItems = function() {
 	} );
 	this.tweetsModel = new_model.reverse();
 	
-	// Mojo.Timing.pause('syncModel');
-	// alert(Mojo.Timing.reportTiming("syncModel", "syncModel Timing -- \n"));
 
-	
-	
-	
-	
-	
-	// for (var i=this.tweetsModel.length-1; i >=0; i--) {
-	// 	var this_item = this.tweetsModel[i];
-	// 	if (!this.getEntryElementByStatusId(this_item.id)) {
-	// 		var deleted = this.tweetsModel.splice(i, 1)[0];
-	// 		dump("deleted entry "+this_item.id+" in model");
-	// 		dump(deleted);
-	// 	} else {
-	// 		dump("keeping "+this_item.id);
-	// 		dump(this_item);
-	// 	}
-	// 	
-	// }
-	
 	var html_count  = jQuery('#my-timeline>div.timeline-entry').length;
 	var norm_count  = jQuery('#my-timeline>div.timeline-entry:not(.reply):not(.dm)').length;
 	var reply_count = jQuery('#my-timeline>div.timeline-entry.reply').length;
@@ -689,24 +685,38 @@ MyTimelineAssistant.prototype.removeExtraItems = function() {
 	dump('REPLY COUNT:'+reply_count);
 	dump('DM COUNT:'+dm_count);
 	dump('MODEL COUNT:'+model_count);
+};
+
+
+
+/**
+ *  
+ */
+MyTimelineAssistant.prototype.filterTimeline = function(command) {
 	
-	// var last_normal = jQuery('#my-timeline>div.timeline-entry:not(.reply):not(.dm):last');
-	// var last_normal = jQuery('#my-timeline>div.timeline-entry:not(.reply):not(.dm):last');
-	// 
-	// 
-	// 
-	// function removeFromModel(tweet_array, key, value) {
-	// 	var matching_tweets
-	// 	
-	// 	for (var i=0; i < tweet_array.length; i++) {
-	// 		
-	// 		if (tweet_array[i][key] == value) {
-	// 			
-	// 		}
-	// 		
-	// 	}
-	// }
-	// 
+	if (!command) {
+		command = this._filterState;
+	}
 	
+	switch (command) {
+		case 'filter-timeline-all':
+			jQuery('#my-timeline div.timeline-entry').show();
+			break;
+		case 'filter-timeline-replies-dm':
+			jQuery('#my-timeline div.timeline-entry').hide();
+			jQuery('#my-timeline div.timeline-entry.reply, #my-timeline div.timeline-entry.dm').show();
+			break;
+		case 'filter-timeline-replies':
+			jQuery('#my-timeline div.timeline-entry').hide();
+			jQuery('#my-timeline div.timeline-entry.reply').show();
+			break;
+		case 'filter-timeline-dms':
+			jQuery('#my-timeline div.timeline-entry').hide();
+			jQuery('#my-timeline div.timeline-entry.dm').show();
+			break;
+		default:
+			jQuery('#my-timeline div.timeline-entry').show();
+	}
 	
+	this._filterState = command;	
 };

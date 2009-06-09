@@ -70,11 +70,6 @@ scene_helpers.addCommonSceneMethods = function(assistant) {
 		}
 		
 
-		
-		
-
-
-
 		/*
 			Command menu at bottom of screen
 		*/
@@ -87,46 +82,12 @@ scene_helpers.addCommonSceneMethods = function(assistant) {
 			this.controller.setupWidget(Mojo.Menu.commandMenu, undefined, this.cmdMenuModel);
 		}
 
-
-
-
-		this.timelineFilterMenuModel = {
-			items: [
-					{label:$L('Show All Messages'),				secondaryIconPath:'', command:'filter-timeline-all'}, 
-					{label:$L('Replies and Direct Messages'),	secondaryIconPath:'', command:'filter-timeline-replies-dm'}, 
-					{label:$L('Just Replies'),					secondaryIconPath:'', command:'filter-timeline-replies'}, 
-					{label:$L('Just Direct Messages'),			secondaryIconPath:'', command:'filter-timeline-dms'}, 
-			]
-		};
-
-		// Set up submenu widget that was wired into the viewMenu above
-		this.controller.setupWidget("filter-menu", undefined, this.timelineFilterMenuModel);
-
-		
-		/*
-			Spinner
-		*/
-		
-		/*
-			This gets the sceneName before it's defined
-		*/
-		var spinner_id = this.scroller.id.replace(/mojo-scene-([a-z_-]+)-scene-scroller/gi, "$1")+'-spinner';
-		
-		this.spinnerModel = {
-			'spinning':false
-		}
-		this.controller.setupWidget(spinner_id, {
-				property: 'spinning'
-			},
-			this.spinnerModel
-		);
-
 	};
 
 
 	assistant.createStage = function(sceneName, sceneArgs, stageName) {
 		// "nocache:true" tells sysmanager to not use the card caching strategy on compose cards
-		var params = {name: stageName, assistantName:'StageLightweightSearchAssistant', nocache: true };
+		var params = {name: stageName, assistantName:'StageLightweightSearchAssistant'};
 		var callback = function(stageController) {
 			stageController.pushScene(sceneName, sceneArgs, stageName);
 		};
@@ -149,6 +110,9 @@ scene_helpers.addCommonSceneMethods = function(assistant) {
 				case 'filter-timeline-replies-dm':
 				case 'filter-timeline-replies':
 				case 'filter-timeline-dms':
+					/*
+						This is actually only defined in MyTimeline
+					*/
 					this.filterTimeline(event.command);
 					break;
 				
@@ -172,7 +136,6 @@ scene_helpers.addCommonSceneMethods = function(assistant) {
 					sc.app.new_search_card++;
 					this.createStage('search-twitter', { 'lightweight':true }, sc.app.search_card_prefix+sc.app.new_search_card);
 
-					// findAndSwapScene("search-twitter", this);
 					break;
 				case 'followers':
 					findAndSwapScene("manage-followers", this);
@@ -399,7 +362,6 @@ scene_helpers.addCommonSceneMethods = function(assistant) {
 		var eb = jQuery('#post-panel-textarea', this.controller.getSceneScroller());
 		eb.val('');
 		eb[0].setSelectionRange(0, 0);
-		
 	};
 
 	

@@ -40,11 +40,16 @@ SearchTwitterAssistant.prototype.setup = function() {
 	/* use Mojo.View.render to render view templates and add them to the scene, if needed. */
 
 	var thisA = this;
+
+	this.scroller = this.controller.getSceneScroller();
 	
 	this.initTwit();
 	
 	this.trackStageActiveState();
 	
+	/*
+		view and command menus
+	*/
 	if (this.lightweight) {
 		this.setupCommonMenus({
 			cmdMenuItems: [
@@ -75,10 +80,13 @@ SearchTwitterAssistant.prototype.setup = function() {
 		this.initAppMenu({ 'items':loggedin_appmenu_items });
 	}
 
-	this.scroller = this.controller.getSceneScroller();
-	
-	
-	
+
+
+
+
+	/*
+		search textbox
+	*/
 	this.searchBoxAttr = {
 		"hintText":	      'Enter search terms',
 		"focusMode":      Mojo.Widget.focusSelectMode,
@@ -91,6 +99,9 @@ SearchTwitterAssistant.prototype.setup = function() {
 	}
 	this.controller.setupWidget('search-twitter-textfield', this.searchBoxAttr, this.searchBoxModel);
 
+	/*
+		search button
+	*/
 	jQuery('#submit-search-button').bind(Mojo.Event.tap, function() {
 		thisA.search.call(thisA, thisA.searchBoxModel.value);
 	});
