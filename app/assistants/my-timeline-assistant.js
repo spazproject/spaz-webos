@@ -246,7 +246,7 @@ MyTimelineAssistant.prototype.deactivate = function(event) {
 	jQuery().unbind('update_succeeded');
 	jQuery().unbind('update_failed');
 	jQuery().unbind('my_timeline_refresh');
-	jQuery().unbind('load_from_mytimeline_cache_done');
+	
 	
 	// jQuery('div.timeline-entry>.user', this.scroller).die(Mojo.Event.tap);
 	// jQuery('.username.clickable', this.scroller).die(Mojo.Event.tap);
@@ -263,7 +263,9 @@ MyTimelineAssistant.prototype.cleanup = function(event) {
 	/* this function should do any cleanup needed before the scene is destroyed as 
 	   a result of being popped off the scene stack */
 	
+	jQuery().unbind('load_from_mytimeline_cache_done');
 
+	this.stopTrackingStageActiveState();
 	
 	this.stopRefresher();
 }

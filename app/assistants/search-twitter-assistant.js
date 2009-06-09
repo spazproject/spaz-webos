@@ -291,6 +291,8 @@ SearchTwitterAssistant.prototype.cleanup = function(event) {
 
 	jQuery('#submit-search-button').unbind(Mojo.Event.tap);
 	
+	this.stopTrackingStageActiveState();
+	
 }
 
 

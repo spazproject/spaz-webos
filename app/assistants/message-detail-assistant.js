@@ -22,8 +22,6 @@ function MessageDetailAssistant(argFromPusher) {
 MessageDetailAssistant.prototype.setup = function() {
 
 	var thisA = this;
-
-	// alert('MessageDetailAssistant.prototype.setup');
 	
 	this.initTwit();
 	
@@ -31,14 +29,6 @@ MessageDetailAssistant.prototype.setup = function() {
 	
 	if (sc.app.username && sc.app.password) {
 		this.setupCommonMenus({
-			// viewMenuItems: [
-			// 	{
-			// 		items: [
-			// 			// {label:$L('Back'),        icon:'back', command:'back'},
-			// 			{label:$L('User Detail'), command:'scroll-top'}
-			// 		]
-			// 	}
-			// ],
 			cmdMenuItems:[
 				{
 					items: [
@@ -54,14 +44,6 @@ MessageDetailAssistant.prototype.setup = function() {
 		
 	} else {
 		this.setupCommonMenus({
-			// viewMenuItems: [
-			// 	{
-			// 		items: [
-			// 			// {label:$L('Back'),        icon:'back', command:'back'},
-			// 			{label:$L('User Detail'), command:'scroll-top'}
-			// 		]
-			// 	}
-			// ]
 		});	
 		
 		this.initAppMenu();
@@ -71,13 +53,8 @@ MessageDetailAssistant.prototype.setup = function() {
 	jQuery().bind('get_one_status_succeeded', { thisAssistant:this }, this.processStatusReturn);
 
 	jQuery().bind('get_one_status_failed', { thisAssistant:this }, function(e, error_obj) {
-		// error_obj.url
-		// error_obj.xhr
-		// error_obj.msg
-
 		var err_msg = $L("There was an error retrieving this status");
-		thisA.displayErrorInfo(err_msg, error_obj);
-		
+		thisA.displayErrorInfo(err_msg, error_obj);		
 	});
 
 	
@@ -214,16 +191,6 @@ MessageDetailAssistant.prototype.activate = function(event) {
 
 
 MessageDetailAssistant.prototype.deactivate = function(event) {
-	/* remove any event handlers you added in activate and do any other cleanup that should happen before
-	   this scene is popped or another scene is pushed on top */
-	
-	// alert('MessageDetailAssistant.prototype.deactivate');
-	
-	// this.removePostPopup();
-	
-	
-	// jQuery().unbind('get_one_status_succeeded', this.processStatusReturn);
-	
 	jQuery('#message-detail-container .in-reply-to-link', this.scroller).die(Mojo.Event.tap);
 	jQuery('#message-detail-image', this.scroller).die(Mojo.Event.tap);
 	jQuery('#message-detail-action-reply', this.scroller).die(Mojo.Event.tap);
@@ -237,8 +204,10 @@ MessageDetailAssistant.prototype.deactivate = function(event) {
 }
 
 MessageDetailAssistant.prototype.cleanup = function(event) {
-	/* this function should do any cleanup needed before the scene is destroyed as 
-	   a result of being popped off the scene stack */
+	jQuery().unbind('get_one_status_succeeded');
+	jQuery().unbind('get_one_status_failed');
+	jQuery().unbind('uncreate_favorite_succeeded');
+	jQuery().unbind('destroy_favorite_succeeded');
 }
 
 
@@ -258,10 +227,7 @@ MessageDetailAssistant.prototype.processStatusReturn = function(e, statusobj) {
 		save this tweet to Depot
 	*/
 	sc.app.Tweets.save(statusobj);
-	
-	
-	// var itemhtml = Mojo.View.render({object:e.data.thisAssistant.statusobj, template: 'message-detail/message-detail'});
-	
+		
 	if (e.data.thisAssistant.isdm) {
 		var itemhtml = sc.app.tpl.parseTemplate('message-detail-dm', e.data.thisAssistant.statusobj);
 	} else {
