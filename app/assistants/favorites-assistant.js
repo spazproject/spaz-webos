@@ -198,10 +198,7 @@ FavoritesAssistant.prototype.deactivate = function(event) {
 	
 	jQuery().unbind('new_favorites_timeline_data');
 	jQuery().unbind('error_favorites_timeline_data');
-	// jQuery('div.timeline-entry>.user', this.scroller).die(Mojo.Event.tap);
-	// jQuery('.username.clickable', this.scroller).die(Mojo.Event.tap);
-	// jQuery('.hashtag.clickable', this.scroller).die(Mojo.Event.tap);
-	// jQuery('div.timeline-entry>.status>.meta', this.scroller).die(Mojo.Event.tap);
+
 	jQuery('#favorites-timeline div.timeline-entry', this.scroller).die(Mojo.Event.tap);
 	
 	

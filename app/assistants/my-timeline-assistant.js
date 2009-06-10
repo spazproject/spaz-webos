@@ -261,12 +261,6 @@ MyTimelineAssistant.prototype.deactivate = function(event) {
 	jQuery().unbind('new_combined_timeline_data');
 	jQuery().unbind('my_timeline_refresh');
 	
-	
-	// jQuery('div.timeline-entry>.user', this.scroller).die(Mojo.Event.tap);
-	// jQuery('.username.clickable', this.scroller).die(Mojo.Event.tap);
-	// jQuery('.hashtag.clickable', this.scroller).die(Mojo.Event.tap);
-	// jQuery('div.timeline-entry .meta', this.scroller).die(Mojo.Event.tap);
-	// jQuery('div.timeline-entry a[href]', this.scroller).die(Mojo.Event.tap);
 	jQuery('#my-timeline div.timeline-entry', this.scroller).die(Mojo.Event.tap);
 	
 	

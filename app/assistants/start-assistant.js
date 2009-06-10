@@ -101,8 +101,8 @@ StartAssistant.prototype.deactivate = function(event) {
 StartAssistant.prototype.cleanup = function(event) {
 	/* this function should do any cleanup needed before the scene is destroyed as 
 	   a result of being popped off the scene stack */
-	Mojo.Event.removeListener($('start-login-button'), Mojo.Event.tap, this.showLogin);
-	Mojo.Event.removeListener($('start-search-button'), Mojo.Event.tap, this.showSearch);
+	Mojo.Event.stopListening($('start-login-button'), Mojo.Event.tap, this.showLogin);
+	Mojo.Event.stopListening($('start-search-button'), Mojo.Event.tap, this.showSearch);
 	
 }
 

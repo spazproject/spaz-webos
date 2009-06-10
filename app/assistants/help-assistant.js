@@ -6,14 +6,7 @@ function HelpAssistant() {
 }
 
 HelpAssistant.prototype.setup = function(){
-	/* this function is for setup tasks that have to happen when the scene is first created */
-	
-	/* use Mojo.View.render to render view templates and add them to the scene, if needed. */
-	
-	/* setup widgets here */
-	
-	/* add event handlers to listen to events from widgets */
-	
+
 	this.controller.setupWidget(Mojo.Menu.appMenu, this.attributes = {
 		omitDefaultItems: true
 		}, this.model = {
@@ -133,7 +126,7 @@ HelpAssistant.prototype.cleanup = function(event) {
 	/* this function should do any cleanup needed before the scene is destroyed as 
 	   a result of being popped off the scene stack */
 	
-	Mojo.Event.removeListener(this.controller.get('AppHelp_list'),Mojo.Event.listTap,this.handleListTap);
-	Mojo.Event.removeListener(this.controller.get('AppSupport_list'),Mojo.Event.listTap,this.handleListTap);
+	Mojo.Event.stopListening(this.controller.get('AppHelp_list'),Mojo.Event.listTap,this.handleListTap);
+	Mojo.Event.stopListening(this.controller.get('AppSupport_list'),Mojo.Event.listTap,this.handleListTap);
 	
 }
