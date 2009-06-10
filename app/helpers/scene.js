@@ -1001,6 +1001,10 @@ var makeItemsClickable = function(str) {
 	return str;
 };
 
+
+/*
+	map sc.helpers.dump() to dump() for extra succinctness
+*/
 var dump = sc.helpers.dump;
 
 

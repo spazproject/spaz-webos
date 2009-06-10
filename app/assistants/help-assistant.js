@@ -33,7 +33,7 @@ HelpAssistant.prototype.setup = function(){
 		var helpitems = [];
 		i = 0;
 		for (j = 0; j < _APP_Help_Resource.length; j++) {
-			console.log('SETUP ' + _APP_Help_Resource[j].type)
+			dump('SETUP ' + _APP_Help_Resource[j].type)
 			if (_APP_Help_Resource[j].type == 'web') 
 				helpitems[i++] = {
 					text: _APP_Help_Resource[j].label,
