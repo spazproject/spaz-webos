@@ -1,8 +1,8 @@
 
 var loggedin_appmenu_items = [
 	Mojo.Menu.editItem,
-	{ label: $L('Update Location'),	command: 'update-location' },
-	{ label: $L('New Search Card'),	command: 'new-search-card' },
+	{ label: $L('Update Location...'),	command: 'update-location' },
+	// { label: $L('New Search Card'),	command: 'new-search-card' },
 	{ label: $L('Preferences...'),	command:Mojo.Menu.prefsCmd },
 	{ label: $L('About Spaz'),		command: 'appmenu-about' },
 	{ label: $L('Help...'),			command:Mojo.Menu.helpCmd }
@@ -77,3 +77,29 @@ AppAssistant.prototype.handleLaunch = function(launchParams) {
 	}
 
 };
+
+
+/**
+ *  
+ */
+AppAssistant.prototype.handleCommand = function(event){
+	
+	dump(event.command);
+	
+	if (event.type == Mojo.Event.command) {
+		switch (event.command) {
+			/*
+				back
+			*/
+			case 'back':
+				Mojo.Controller.stageController.popScene();
+				break;
+
+
+			case 'search-trends':
+				Mojo.Controller.notYetImplemented();
+				break;
+
+		}
+	}
+}

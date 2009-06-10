@@ -21,15 +21,7 @@ StageAssistant.prototype.setup = function() {
 	jQuery().bind('spazprefs_loaded', function() {
 		Mojo.Log.info("Prefs loaded!");
 		
-		// var username = sc.app.prefs.get('username');
-		// var password = sc.app.prefs.get('password');
-	
 		sc.app.twit = new scTwit();
-	
-		// if (username && password) {
-		// 	sc.app.twit.setCredentials(username, password);
-		// }
-		
 	
 		if (thisSA.firstload) {
 			dump('FIRSTLOAD ----------------------');
@@ -64,3 +56,17 @@ StageAssistant.prototype.cleanup = function() {
 	jQuery().unbind();
 	jQuery().die();
 }
+
+
+StageAssistant.prototype.handleCommand = function(event){
+	
+	dump(event.command);
+	
+	if (event.type == Mojo.Event.command) {
+		switch (event.command) {
+			default:
+				break;			
+		}
+	}
+}
+

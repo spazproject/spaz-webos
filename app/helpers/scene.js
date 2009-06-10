@@ -15,7 +15,7 @@ scene_helpers.addCommonSceneMethods = function(assistant) {
 
 		var default_items = [
 			Mojo.Menu.editItem,
-			{ label: $L('New Search Card'),	command: 'new-search-card' },
+			// { label: $L('New Search Card'),	command: 'new-search-card' },
 			{ label: $L('Preferences...'),	command:Mojo.Menu.prefsCmd },
 			{ label: $L('About Spaz'),		command: 'appmenu-about' },
 			{ label: $L('Help...'),			command:Mojo.Menu.helpCmd }
@@ -525,34 +525,6 @@ scene_helpers.addCommonSceneMethods = function(assistant) {
 
 
 
-	// /**
-	//  *  destroys and existing spinners and creates a new one, showing it
-	//  */
-	// assistant.showInlineSpinner = function(container, message, nofadein) {
-	// 	dump('showing!'+"\n"+container+"\n"+message+"\n"+nofadein);
-	// 	
-	// 	/*
-	// 		remove any existing
-	// 	*/
-	// 	jQuery(container).empty();
-	// 	// jQuery('.inline-spinner', container).remove(); 
-	// 	
-	// 	var html = '<div class="inline-spinner" style="display:none">'+
-	// 		'<img src="images/theme/loading.gif" class="inline-spinner-spinner" />'+
-	// 		'<span class="inline-spinner-label">'+message+'</span>'+
-	// 	'</div>';
-	// 	jQuery(container).html(html);
-	// 	if (!nofadein) {
-	// 		jQuery('.inline-spinner', container).show('blind', 'fast');
-	// 	} else {
-	// 		jQuery('.inline-spinner', container).show();
-	// 	}
-	// 	
-	// 	dump("SPINNER CONTAINER HTML (start):"+jQuery(container).get(0).outerHTML);
-	// 	// jQuery('.inline-spinner', container).fadeIn('fast');
-	// 	
-	// };
-	
 	
 	assistant.setupInlineSpinner = function(id) {
 		// alert('setup:'+id);
