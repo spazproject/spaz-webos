@@ -91,6 +91,8 @@ SearchTwitterAssistant.prototype.setup = function() {
 		"hintText":	      'Enter search terms',
 		"focusMode":      Mojo.Widget.focusSelectMode,
 		"fieldName":'search-twitter',
+		enterSubmits: true,
+		requiresEnterKey: true,
 		"changeOnKeyPress": true
 	};
 	this.searchBoxModel = {
@@ -274,6 +276,11 @@ SearchTwitterAssistant.prototype.activate = function(event) {
 		}
 	});
 	
+	
+	this.listenForEnter('search-twitter-textfield', function() {
+		this.controller.get('submit-search-button').mojo.activate();
+		this.search(this.searchBoxModel.value);
+	});
 
 		
 }
@@ -295,6 +302,8 @@ SearchTwitterAssistant.prototype.cleanup = function(event) {
 	   a result of being popped off the scene stack */
 
 	jQuery('#submit-search-button').unbind(Mojo.Event.tap);
+	
+	this.stopListeningForEnter('search-twitter-textfield');
 	
 	this.stopTrackingStageActiveState();
 	
@@ -383,12 +392,13 @@ SearchTwitterAssistant.prototype.getEntryElementByStatusId = function(id) {
 SearchTwitterAssistant.prototype.activateSpinner = function() {
 	this.buttonWidget = this.controller.get('submit-search-button');
 	this.buttonWidget.mojo.activate();
-}
+};
 
 SearchTwitterAssistant.prototype.deactivateSpinner = function() {
 	this.buttonWidget = this.controller.get('submit-search-button');
 	this.buttonWidget.mojo.deactivate();
-}
+};
+
 
 
 
