@@ -177,19 +177,16 @@ PreferencesAssistant.prototype.cleanup = function(event) {
 	
 	this.controller.stopListening('network-refreshinterval', Mojo.Event.propertyChange, this.saveSettings);
 	this.controller.stopListening('network-searchrefreshinterval', Mojo.Event.propertyChange, this.saveSettings);
+	this.controller.stopListening('timeline-friends-getcount', Mojo.Event.propertyChange, this.saveSettings);
+	this.controller.stopListening('timeline-replies-getcount', Mojo.Event.propertyChange, this.saveSettings);
+	this.controller.stopListening('timeline-dm-getcount', Mojo.Event.propertyChange, this.saveSettings);
 
 
 	Mojo.Event.stopListening($('clear-cache-button'), Mojo.Event.tap, function(e) {
 		thisA.clearTimelineCache();
 	});
 
-	this.controller.stopListening('checkbox-sound-enabled', Mojo.Event.propertyChange, function() {
-		var state = thisA.model['sound-enabled'];
-		sc.app.prefs.set('sound-enabled', state);
-	});
-	this.controller.stopListening('checkbox-timeline-scrollonupdate', Mojo.Event.propertyChange, function() {
-		var state = thisA.model['timeline-scrollonupdate'];
-		sc.app.prefs.set('timeline-scrollonupdate', state);
-	});
+	this.controller.stopListening('checkbox-sound-enabled', Mojo.Event.propertyChange, this.saveSettings);
+	this.controller.stopListening('checkbox-timeline-scrollonupdate', Mojo.Event.propertyChange, this.saveSettings);
 	
 };
