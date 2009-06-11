@@ -100,13 +100,13 @@ MessageDetailAssistant.prototype.activate = function(event) {
 						jQuery().trigger('get_one_status_succeeded', [data]);
 					} else { // if nothing is returned, get it from Twitter
 						// thisA.twit.getOne(thisA.status_id);
-						this.showAlert($L('There was an error retrieving the message data'));
+						thisA.showAlert($L('There was an error retrieving this direct message'));
 					}
 					
 				},
 				function(message) {
-					dump('Couldn\'t retrieve message from Depot:'+message)
-					this.showAlert($L('There was an error retrieving the message data'));
+					dump('Couldn\'t retrieve message from Depot:'+message);
+					thisA.showAlert($L('There was an error retrieving the message data'));
 				}
 			);
 		}

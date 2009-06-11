@@ -563,21 +563,6 @@ scene_helpers.addCommonSceneMethods = function(assistant) {
 	};
 
 
-	/**
-	 *  hides and DESTROYS an existing spinner
-	 */
-	// assistant.hideInlineSpinner = function(container, message, nofadeout) {
-	// 	dump('hiding!'+"\n"+container+"\n"+message+"\n"+nofadeout);
-	// 	
-	// 	if (!nofadeout) {
-	// 		jQuery('.inline-spinner', container).hide('blind', 'fast', function() {
-	// 			jQuery(container).empty();
-	// 		});
-	// 	} else {
-	// 		jQuery(container).empty();
-	// 	}
-	// 	
-	// };
 	assistant.hideInlineSpinner = function(id) {
 		jQuery('#'+id).get(0).mojo.stop();
 		jQuery('#'+id+'-container').hide();
@@ -635,25 +620,7 @@ scene_helpers.addCommonSceneMethods = function(assistant) {
 	
 	assistant.showNotification = function(msg) {
 		
-		// var kDashboardStageName = 'spaz-dashboard'
-		// 
-		// var appController = Mojo.Controller.getAppController();
-		// this.controller.commitChanges();
-		// appController.showBanner(msg, {banner: msg});
-		// var stageController = Mojo.Controller.getAppController().getStageController(kDashboardStageName);
-		// if (stageController) {
-		// 	stageController.delegateToSceneAssistant("update", msg, new Date());
-		// } else {
-		// 	this.notificationCreatedHandler = this.notificationCreated.bind(this, msg);
-		// 	Mojo.Controller.getAppController().createStageWithCallback({name: kDashboardStageName, lightweight: true}, 
-		// 		this.notificationCreatedHandler, "dashboard");			
-		// }
 	};
-	
-	// assistant.notificationCreated = function(text, stageController) {
-	// 	stageController.pushScene('dashboard', text, new Date())
-	// };
-	
 	
 	
 	
@@ -875,23 +842,22 @@ scene_helpers.addCommonSceneMethods = function(assistant) {
 	 * @param {string} title  optional 
 	 * @param {function} ok_cb  callback like function(value) where value is value assigned to OK button. Optional
 	 */
-	assistant.showAlert = function(msg, title, ok_cb) {
-
-		var opts = {};
-
-		if (title) { opts['title'] = title };
-		if (ok_cb) { opts['onChoose'] = okcb }
-
+	assistant.showAlert = function(msg, title, ok_cb, choices) {
+		
+		var default_choices = [
+			{label:$L('Okay'), value:"okay", type:'dismiss'}
+		];
+		
+		opts.title    = title   || 'Alert';
+		opts.msg      = msg     || '';
+		opts.onChoose = ok_cb   || function() {};
+		opts.choices  = choices || default_choices;
+		
 		this.controller.showAlertDialog({
-			onChoose: function(value) {this.outputDisplay.innerHTML = $L("Alert result = ") + value;},
-			title: $L("Filet Mignon"),
-			message: $L("How would you like your steak done?"),
-			choices:[
-				{label:$L('Rare'), value:"refresh", type:'affirmative'},  
-				{label:$L("Medium"), value:"don't refresh"},
-				{label:$L("Overcooked"), value:"don't refresh", type:'negative'},    
-				{label:$L("Nevermind"), value:"maybe refresh", type:'dismiss'}    
-			]
+			'onChoose':opts.onChoose,
+			'title':   $L(opts.title),
+			'message': $L(opts.msg),
+			'choices': opts.choices
 		});
 	};
 	
