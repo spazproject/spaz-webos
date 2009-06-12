@@ -31,7 +31,6 @@ StartsearchAssistant.prototype.setup = function() {
 	    this.atts = {
 	        hintText: 'enter search terms',
 			enterSubmits: true,
-			requiresEnterKey: true,
 			modelProperty:		'search',
 			changeOnKeyPress: true, 
 			focusMode:		Mojo.Widget.focusSelectMode,
@@ -40,9 +39,6 @@ StartsearchAssistant.prototype.setup = function() {
 		this.model
     );
 	
-	this.listenForEnter('search', function() {
-		this.handleSearch.call(this);
-	});
 	
 	this.postButtonAttributes = {
 		type: Mojo.Widget.activityButton
@@ -114,8 +110,6 @@ StartsearchAssistant.prototype.deactivate = function(event) {
 StartsearchAssistant.prototype.cleanup = function(event) {
 	/* this function should do any cleanup needed before the scene is destroyed as 
 	   a result of being popped off the scene stack */
-	
-	this.stopListeningForEnter('search');
 	
 	Mojo.Event.stopListening($('reload-trends-button'), Mojo.Event.tap, function() {
 		thisA.refreshTrends();

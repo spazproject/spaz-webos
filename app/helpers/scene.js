@@ -95,16 +95,14 @@ scene_helpers.addCommonSceneMethods = function(assistant) {
 	};
 
 	/**
-	 * these are all sceneAssistant-specific calls. More are in Stage and App assistants
+	 *  
 	 */
 	assistant.handleCommand = function(event){
 		
-		dump(event)
 		dump(event.command);
 		
 		if (event.type == Mojo.Event.command) {
 			switch (event.command) {
-
 				/*
 					timeline filtering
 				*/
@@ -118,13 +116,41 @@ scene_helpers.addCommonSceneMethods = function(assistant) {
 					this.filterTimeline(event.command);
 					break;
 				
+				/*
+					Navigation
+				*/
+				case 'home':
+					findAndSwapScene("login", this);
+					break;
+				case 'my-timeline':
+					findAndSwapScene("my-timeline", this);
+					break;
+				case 'favorites':
+					findAndSwapScene("favorites", this);
+					break;
+				case 'search':
+					findAndSwapScene("search-twitter", this);
+					break;
 				case 'new-search-card':
 
 					sc.app.new_search_card++;
 					this.createStage('search-twitter', { 'lightweight':true }, sc.app.search_card_prefix+sc.app.new_search_card);
 
 					break;
-					
+				case 'followers':
+					findAndSwapScene("manage-followers", this);
+					break;
+
+				case 'appmenu-about':
+					Mojo.Controller.stageController.pushScene("about", this);
+					break;
+				case Mojo.Menu.prefsCmd:
+					Mojo.Controller.stageController.pushScene("preferences", this);
+					break;
+				case Mojo.Menu.helpCmd:
+					Mojo.Controller.stageController.pushScene("help", this);
+					// findAndSwapScene("preferences", this);
+					break;
 				case 'update-location':
 					this.showLocationPanel();
 					break;
@@ -161,10 +187,22 @@ scene_helpers.addCommonSceneMethods = function(assistant) {
 
 				
 				/*
+					back
+				*/
+				case 'back':
+					Mojo.Controller.stageController.popScene();
+					break;
+
+
+				/*
 					This would refresh the current view
 				*/
 				case 'refresh':
 					this.refresh(); // need to have a "refresh" method defined for each scene asst
+					break;
+
+				case 'search-trends':
+					Mojo.Controller.notYetImplemented();
 					break;
 
 			}
@@ -796,48 +834,6 @@ scene_helpers.addCommonSceneMethods = function(assistant) {
 	}
 	
 	
-	/**
-	 * This helps us set up listening for the Enter key in a textbox
-	 * 
-	 * the callback function's 'this' references the assistant 
-	 * 
-	 * make sure to call stopListeningForEnter when done with the
-	 * correct ID so the listener is unbound
-	 * 
-	 * @param {string} id
-	 * @param {function} callback
-	 */
-	assistant.listenForEnter = function (id, callback){
-		Mojo.Event.listen(this.controller.get(id),
-			Mojo.Event.propertyChange,
-			this._listenerForEnter.bind(this, callback),
-			true
-		);
-	}
-	assistant._listenerForEnter = function(callback, event) {
-		dump("DUMPING EVENT");
-		dump(event);
-		dump(event.originalEvent);
-		dump("DUMPING CALLBACK");
-		dump(callback);
-		if (event && Mojo.Char.isEnterKey(event.originalEvent.keyCode)) {
-			dump("CALLING CALLBACK");
-			callback.call(this);
-			return;
-		}
-	};
-	
-	/**
-	 * removes the listener set up by listenForEnter
-	 * 
-	 * @param {string} id
-	 */
-	assistant.stopListeningForEnter = function(id) {
-		Mojo.Event.stopListening(this.controller.get(id),
-			Mojo.Event.propertyChange,
-			this._listenerForEnter
-		);
-	}
 	
 	
 	/**
@@ -911,6 +907,74 @@ scene_helpers.addCommonSceneMethods = function(assistant) {
 	
 	
 }
+
+
+
+
+
+
+
+/************************************
+ * global scene helper functions
+ ************************************/
+
+/**
+ * This helper looks through the array of scenes and looks for an existing instance of 
+ * the given targetScene. If one exists, we pop all scenes before it to return to it. Otherwise
+ * we swap to a new instance of the scene
+ * 
+ * @param {string} targetScene the scene name
+ * @param {many} returnValue a return value passed to the pop or swap call
+ */
+var findAndSwapScene = function(targetScene, returnValue) {
+	/*
+		initialize
+	*/
+	var scene_exists = false;
+	
+	/*
+		get an array of existing scenes
+	*/
+	var scenes = Mojo.Controller.stageController.getScenes();
+	
+
+	for (var k=0; k<scenes.length; k++) {
+		if (scenes[k].sceneName == targetScene) { // this scene already exists, so popScenesTo it
+			scene_exists = true;
+		}
+	}
+	
+	if (scene_exists) {
+		Mojo.Controller.stageController.popScenesTo(targetScene, returnValue);
+	} else {
+		Mojo.Controller.stageController.swapScene(targetScene, returnValue);
+	}
+};
+
+
+/**
+ * converts various items in a timeline entry's text into clickables
+ * @param {string} str
+ * @return {string}
+ */
+var makeItemsClickable = function(str) {
+	
+	str = sch.autolink(str, null, null, 20);
+	str = sch.autolinkTwitterScreenname(str, '<span class="username clickable" data-user-screen_name="#username#">@#username#</span>');
+	str = sch.autolinkTwitterHashtag(str, '<span class="hashtag clickable" data-hashtag="#hashtag#">##hashtag#</span>');
+
+	
+	return str;
+};
+
+
+/*
+	map sc.helpers.dump() to dump() for extra succinctness
+*/
+var dump = sc.helpers.dump;
+
+
+
 
 
 

@@ -62,45 +62,11 @@ StageAssistant.prototype.handleCommand = function(event){
 	
 	dump(event.command);
 	
-	var active_scene = this.controller.activeScene();
-	
 	if (event.type == Mojo.Event.command) {
 		switch (event.command) {
-			
-			
-			/*
-				Navigation
-			*/
-			case 'home':
-				findAndSwapScene("startlogin", active_scene);
-				break;
-			case 'my-timeline':
-				findAndSwapScene("my-timeline", active_scene);
-				break;
-			case 'favorites':
-				findAndSwapScene("favorites", active_scene);
-				break;
-			case 'search':
-				findAndSwapScene("search-twitter", active_scene);
-				break;
-			case 'followers':
-				findAndSwapScene("manage-followers", active_scene);
-				break;
-			case 'appmenu-about':
-				Mojo.Controller.stageController.pushScene("about", active_scene);
-				break;
-			case Mojo.Menu.prefsCmd:
-				Mojo.Controller.stageController.pushScene("preferences", active_scene);
-				break;
-			case Mojo.Menu.helpCmd:
-				Mojo.Controller.stageController.pushScene("help", active_scene);
-				break;
-		
-			
 			default:
 				break;			
 		}
-		
 	}
 }
 
