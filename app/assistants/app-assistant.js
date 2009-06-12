@@ -10,6 +10,7 @@ var loggedin_appmenu_items = [
 
 
 function AppAssistant(appController) {
+	
 	Mojo.Log.info("Logging from AppAssistant Constructor");
 	var thisSA = this;	
 

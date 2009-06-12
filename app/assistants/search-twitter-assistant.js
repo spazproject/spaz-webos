@@ -135,13 +135,11 @@ SearchTwitterAssistant.prototype.activate = function(event) {
 	
 	
 	if (this.passedSearch) {
-		this.searchBoxModel.value = this.passedSearch;
+		this.searchBoxModel.value = this.passedSearch.replace(/&quot;/gi, '"'); // convert the entities back into "'s
 		this.controller.modelChanged(this.searchBoxModel);
 		this.search(this.passedSearch);
 		this.passedSearch = null; // eliminate this so it isn't used anymore
 	}
-	
-	// this.addPostPopup();
 	
 	
 	var thisA = this; // for closures below

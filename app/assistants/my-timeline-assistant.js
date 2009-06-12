@@ -410,7 +410,9 @@ MyTimelineAssistant.prototype.renderTweets = function(tweets, render_callback, f
 	*/
 	// if (tweets && tweets.length>0) {
 	if (tweets && tweets.length>0) {
-
+		
+		// console.profile();
+		
 		var rendertweets = tweets;
 		
 		var tweets_added = 0;
@@ -418,7 +420,7 @@ MyTimelineAssistant.prototype.renderTweets = function(tweets, render_callback, f
 		Mojo.Timing.get('my_timeline_render');
 		Mojo.Timing.resume('my_timeline_render');
 		
-		time.start('my_timeline_render');
+		var timeline_html = '';
 		
 		jQuery.each( rendertweets, function() {
 			/*
@@ -427,7 +429,6 @@ MyTimelineAssistant.prototype.renderTweets = function(tweets, render_callback, f
 			if (this == false) {
 				dump("Tweet object was FALSE; skipping");
 			} else if (!thisA.getEntryElementByStatusId(this.id)) {
-				time.start('render-one');
 				dump('adding '+this.id);
 				
 				/*
@@ -442,10 +443,7 @@ MyTimelineAssistant.prototype.renderTweets = function(tweets, render_callback, f
 				*/
 				
 				if (!from_cache) {
-
-					time.start('makeItemsClickable');
 					this.text = makeItemsClickable(this.text);
-					time.stop('makeItemsClickable');
 
 					if (from_cache) {
 						this.not_new = true;
@@ -454,65 +452,31 @@ MyTimelineAssistant.prototype.renderTweets = function(tweets, render_callback, f
 					/*
 						Render the tweet
 					*/
-					time.start('render_tweet');
 					if (this.SC_is_dm) {
 						var itemhtml = sc.app.tpl.parseTemplate('dm', this);
 					} else {
 						var itemhtml = sc.app.tpl.parseTemplate('tweet', this);
 					}
-					time.stop('render_tweet');
 
-					/*
-						make jQuery obj
-					*/
-					time.start('makeJQitem');
-					// var jqitem = jQuery(itemhtml);
-
-					// if (!from_cache) {
-					// 	jqitem.addClass('new');
-					// }
-
-					// if (this.SC_is_reply) {
-					// 	jqitem.addClass('reply');
-					// }
-
-					// if (this.SC_is_dm) {
-					// 	jqitem.addClass('dm');
-					// }
-					time.stop('makeJQitem');
-
-					time.start('sc.app.Tweets.save');
 					sc.app.Tweets.save(this);
-					time.stop('sc.app.Tweets.save');
+
 					/*
-						put item on timeline
+						put item on timeline_html glob
 					*/
-					time.start('prepend');
-					var tlel = document.getElementById('my-timeline');
-					jQuery('#my-timeline').prepend(itemhtml);
-					time.stop('prepend');
+					timeline_html = itemhtml + timeline_html;
 				}
-				time.stop('render-one');
 			} else {
 				dump('Tweet ('+this.id+') already is in timeline');
 			}
 
 			
 		});
-
-		time.stop('my_timeline_render');
-		time.setReportMethod(function(l) {
-			Mojo.Log.info("TIMER====================\n" + l.join("\n"))
-		});
-		time.setLineReportMethod(function(l) {
-			Mojo.Log.info(l)
-		});
-
-		time.report();
 		
-		Mojo.Timing.pause('my_timeline_render');
-		Mojo.Log.info(Mojo.Timing.reportTiming("my_timeline_render", "my_timeline_render -- \n"));
+		if (timeline_html.length > 1) {
+			jQuery('#my-timeline').prepend(timeline_html);
+		}
 		
+
 		dump("tweets_added:"+tweets_added);
 		dump("from_cache:"+from_cache);
 		dump("sc.app.prefs.get('timeline-scrollonupdate'):"+sc.app.prefs.get('timeline-scrollonupdate'));
@@ -529,6 +493,7 @@ MyTimelineAssistant.prototype.renderTweets = function(tweets, render_callback, f
 			dump("Not scrolling to new!");
 		}
 		
+		// console.profileEnd();
 		
 	} else {
 		dump("no new tweets");
