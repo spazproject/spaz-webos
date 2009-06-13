@@ -422,6 +422,21 @@ MyTimelineAssistant.prototype.renderTweets = function(tweets, render_callback, f
 		
 		var timeline_html = [];
 		
+		var added_ids = [];
+		
+		
+		function already_exists(id) {
+			
+			if (thisA.getEntryElementByStatusId(rendertweets[i].id)) {
+				return true;
+			}
+			if ( added_ids.indexOf(id) > -1 ) {
+				return true;
+			}
+			return false;
+			
+		}
+		
 		
 		for (var i=0; i < rendertweets.length; i++) {
 						
@@ -429,8 +444,13 @@ MyTimelineAssistant.prototype.renderTweets = function(tweets, render_callback, f
 				check to see if this item exists
 			*/
 			if (this == false) {
+
 				dump("Tweet object was FALSE; skipping");
-			} else if (!thisA.getEntryElementByStatusId(rendertweets[i].id)) {
+
+			} else if (!already_exists(rendertweets[i].id)) {
+				
+				added_ids.push(rendertweets[i].id);
+				
 				dump('adding '+rendertweets[i].id);
 				
 				/*

@@ -946,21 +946,21 @@ div.error_info {
 	Filtering for timelines
 */
 .filter-timeline-all {}
-	.filter-timeline-all div.timeline-entry { display:block; }
+	.filter-timeline-all div.timeline-entry       { display:block; }
 	.filter-timeline-all div.timeline-entry.reply { display:block; }
-	.filter-timeline-all div.timeline-entry.dm { display:block; }
+	.filter-timeline-all div.timeline-entry.dm    { display:block; }
 
 .filter-timeline-replies-dm {}
-	.filter-timeline-replies-dm div.timeline-entry { display:none; }
+	.filter-timeline-replies-dm div.timeline-entry       { display:none; }
 	.filter-timeline-replies-dm div.timeline-entry.reply { display:block; }
-	.filter-timeline-replies-dm div.timeline-entry.dm { display:block; }
+	.filter-timeline-replies-dm div.timeline-entry.dm    { display:block; }
 
 .filter-timeline-replies {}
-	.filter-timeline-replies div.timeline-entry { display:none; }
+	.filter-timeline-replies div.timeline-entry       { display:none; }
 	.filter-timeline-replies div.timeline-entry.reply { display:block; }
-	.filter-timeline-replies div.timeline-entry.dm { display:none; }
+	.filter-timeline-replies div.timeline-entry.dm    { display:none; }
 	
 .filter-timeline-dms {}
-	.filter-timeline-replies div.timeline-entry { display:none; }
+	.filter-timeline-replies div.timeline-entry       { display:none; }
 	.filter-timeline-replies div.timeline-entry.reply { display:none; }
-	.filter-timeline-replies div.timeline-entry.dm { display:block; }
+	.filter-timeline-replies div.timeline-entry.dm    { display:block; }
