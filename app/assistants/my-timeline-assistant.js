@@ -411,7 +411,7 @@ MyTimelineAssistant.prototype.renderTweets = function(tweets, render_callback, f
 	// if (tweets && tweets.length>0) {
 	if (tweets && tweets.length>0) {
 		
-		// console.profile();
+		profile();
 		
 		var rendertweets = tweets;
 		
@@ -420,21 +420,23 @@ MyTimelineAssistant.prototype.renderTweets = function(tweets, render_callback, f
 		Mojo.Timing.get('my_timeline_render');
 		Mojo.Timing.resume('my_timeline_render');
 		
-		var timeline_html = '';
+		var timeline_html = [];
 		
-		jQuery.each( rendertweets, function() {
+		
+		for (var i=0; i < rendertweets.length; i++) {
+						
 			/*
 				check to see if this item exists
 			*/
 			if (this == false) {
 				dump("Tweet object was FALSE; skipping");
-			} else if (!thisA.getEntryElementByStatusId(this.id)) {
-				dump('adding '+this.id);
+			} else if (!thisA.getEntryElementByStatusId(rendertweets[i].id)) {
+				dump('adding '+rendertweets[i].id);
 				
 				/*
 					add to tweetsModel
 				*/
-				thisA.addTweetToModel(this);
+				thisA.addTweetToModel(rendertweets[i]);
 				tweets_added++;
 				
 				/*
@@ -443,37 +445,37 @@ MyTimelineAssistant.prototype.renderTweets = function(tweets, render_callback, f
 				*/
 				
 				if (!from_cache) {
-					this.text = makeItemsClickable(this.text);
+					rendertweets[i].text = makeItemsClickable(rendertweets[i].text);
 
 					if (from_cache) {
-						this.not_new = true;
+						rendertweets[i].not_new = true;
 					}
 
 					/*
 						Render the tweet
 					*/
-					if (this.SC_is_dm) {
-						var itemhtml = sc.app.tpl.parseTemplate('dm', this);
+					if (rendertweets[i].SC_is_dm) {
+						var itemhtml = sc.app.tpl.parseTemplate('dm', rendertweets[i]);
 					} else {
-						var itemhtml = sc.app.tpl.parseTemplate('tweet', this);
+						var itemhtml = sc.app.tpl.parseTemplate('tweet', rendertweets[i]);
 					}
 
-					sc.app.Tweets.save(this);
+					sc.app.Tweets.save(rendertweets[i]);
 
 					/*
 						put item on timeline_html glob
 					*/
-					timeline_html = itemhtml + timeline_html;
+					timeline_html[i] = itemhtml;
 				}
 			} else {
-				dump('Tweet ('+this.id+') already is in timeline');
+				dump('Tweet ('+rendertweets[i].id+') already is in timeline');
 			}
 
-			
-		});
+		};
 		
 		if (timeline_html.length > 1) {
-			jQuery('#my-timeline').prepend(timeline_html);
+			timeline_html.reverse();
+			jQuery('#my-timeline').prepend(timeline_html.join(''));
 		}
 		
 
@@ -493,11 +495,13 @@ MyTimelineAssistant.prototype.renderTweets = function(tweets, render_callback, f
 			dump("Not scrolling to new!");
 		}
 		
-		// console.profileEnd();
+		profileEnd();
 		
 	} else {
 		dump("no new tweets");
 	}
+	
+	profile();
 	
 	/*
 		remove extra items
@@ -549,7 +553,7 @@ MyTimelineAssistant.prototype.renderTweets = function(tweets, render_callback, f
 		jQuery().trigger('load_from_mytimeline_cache_done');
 	}
 	
-
+	profileEnd();
 
 };
 
@@ -655,27 +659,45 @@ MyTimelineAssistant.prototype.filterTimeline = function(command) {
 	
 	if (!command) {
 		command = this._filterState;
+		return;
 	}
 	
-	switch (command) {
-		case 'filter-timeline-all':
-			jQuery('#my-timeline div.timeline-entry').show();
-			break;
-		case 'filter-timeline-replies-dm':
-			jQuery('#my-timeline div.timeline-entry').hide();
-			jQuery('#my-timeline div.timeline-entry.reply, #my-timeline div.timeline-entry.dm').show();
-			break;
-		case 'filter-timeline-replies':
-			jQuery('#my-timeline div.timeline-entry').hide();
-			jQuery('#my-timeline div.timeline-entry.reply').show();
-			break;
-		case 'filter-timeline-dms':
-			jQuery('#my-timeline div.timeline-entry').hide();
-			jQuery('#my-timeline div.timeline-entry.dm').show();
-			break;
-		default:
-			jQuery('#my-timeline div.timeline-entry').show();
-	}
+	
+	var states = [
+					'filter-timeline-all',
+					'filter-timeline-replies-dm',
+					'filter-timeline-replies',
+					'filter-timeline-dms'
+	];
+	
+	for (var i=0; i < states.length; i++) {
+		if (command === states[i]) {
+			jQuery('#my-timeline').addClass(states[i]);
+		} else {
+			jQuery('#my-timeline').removeClass(states[i]);
+		}
+	};
+	
+	
+	// switch (command) {
+	// 	case 'filter-timeline-all':
+	// 		jQuery('#my-timeline').show();
+	// 		break;
+	// 	case 'filter-timeline-replies-dm':
+	// 		jQuery('#my-timeline div.timeline-entry').hide();
+	// 		jQuery('#my-timeline div.timeline-entry.reply, #my-timeline div.timeline-entry.dm').show();
+	// 		break;
+	// 	case 'filter-timeline-replies':
+	// 		jQuery('#my-timeline div.timeline-entry').hide();
+	// 		jQuery('#my-timeline div.timeline-entry.reply').show();
+	// 		break;
+	// 	case 'filter-timeline-dms':
+	// 		jQuery('#my-timeline div.timeline-entry').hide();
+	// 		jQuery('#my-timeline div.timeline-entry.dm').show();
+	// 		break;
+	// 	default:
+	// 		jQuery('#my-timeline div.timeline-entry').show();
+	// }
 	
 	this._filterState = command;	
 };

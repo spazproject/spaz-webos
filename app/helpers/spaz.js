@@ -56,3 +56,14 @@ var makeItemsClickable = function(str) {
 	map sc.helpers.dump() to dump() for extra succinctness
 */
 var dump = sc.helpers.dump;
+
+
+var profile = function() {
+	if (console && console.profile)
+		console.profile();	
+};
+
+var profileEnd = function() {
+	if (console && console.profileEnd)
+		console.profileEnd();
+};
