@@ -417,9 +417,6 @@ MyTimelineAssistant.prototype.renderTweets = function(tweets, render_callback, f
 		
 		var tweets_added = 0;
 		
-		Mojo.Timing.get('my_timeline_render');
-		Mojo.Timing.resume('my_timeline_render');
-		
 		var timeline_html = [];
 		
 		var added_ids = [];
@@ -515,13 +512,9 @@ MyTimelineAssistant.prototype.renderTweets = function(tweets, render_callback, f
 			dump("Not scrolling to new!");
 		}
 		
-		profileEnd();
-		
 	} else {
 		dump("no new tweets");
 	}
-	
-	profile();
 	
 	/*
 		remove extra items
@@ -646,7 +639,7 @@ MyTimelineAssistant.prototype.removeExtraItems = function() {
 	*/
 	var thisA = this;
 	var new_model = [];
-	// Mojo.Timing.resume('syncModel');
+
 	jQuery('#my-timeline>div.timeline-entry').each( function() {
 		var id = jQuery(this).attr('data-status-id');
 		var this_obj = thisA.getTweetFromModel(id);
