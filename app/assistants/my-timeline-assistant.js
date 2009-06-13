@@ -353,6 +353,9 @@ MyTimelineAssistant.prototype.saveTimelineCache = function() {
 	twitdata[SPAZCORE_SECTION_REPLIES + '_lastid'] = this.twit.getLastId(SPAZCORE_SECTION_REPLIES);
 	twitdata[SPAZCORE_SECTION_DMS     + '_lastid'] = this.twit.getLastId(SPAZCORE_SECTION_DMS);
 	
+	dump('Saving this data to My Timeline Cache ===========================================');
+	dump(twitdata);
+	dump('=================================================================================');
 	
 	this.cacheDepot.simpleAdd(sc.app.username, twitdata,
 		function() { dump('My Timeline Cache Saved') },
@@ -398,6 +401,12 @@ MyTimelineAssistant.prototype.refresh = function(e) {
 
 MyTimelineAssistant.prototype.renderTweets = function(tweets, render_callback, from_cache) {
 	
+	
+	dump('Rendering these tweets ==========================================================');
+	dump(tweets);
+	dump('=================================================================================');
+	
+	
 	if (from_cache !== true) {
 		from_cache = false;
 	}
@@ -438,9 +447,9 @@ MyTimelineAssistant.prototype.renderTweets = function(tweets, render_callback, f
 		for (var i=0; i < rendertweets.length; i++) {
 						
 			/*
-				check to see if this item exists
+				check to see if this tweet exists
 			*/
-			if (this == false) {
+			if (rendertweets[i] == false) {
 
 				dump("Tweet object was FALSE; skipping");
 

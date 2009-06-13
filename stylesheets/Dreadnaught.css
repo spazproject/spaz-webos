@@ -119,12 +119,12 @@ div.timeline-entry {
 	
 	div.timeline-entry.new {
 		color:#FFFFCC;
-		border-bottom:2px dotted #FFFFCC;
+		border-bottom:1px solid #FFFFCC;
 	}
-		div.timeline-entry.new:last-of-type {
+		div.timeline-entry.new:first-of-type {
 			color:#FFFFCC;
-			border-top:   2px dotted #FFFFCC;
-			border-bottom:2px dotted #FFFFCC;
+			border-top:   1px solid #FFFFCC;
+			border-bottom:1px solid #FFFFCC;
 		}
 		div.timeline-entry.new:nth-of-type(odd) {
 			background-color: #42585D;
