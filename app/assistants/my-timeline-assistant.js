@@ -325,7 +325,7 @@ MyTimelineAssistant.prototype.loadTimelineCache = function() {
 				thisA.renderTweets(tl_data,
 					function() {
 						document.getElementById('my-timeline').innerHTML = data.tweets_html;
-						sch.markAllAsRead('#my-timeline>div.timeline-entry');
+						sch.markAllAsRead('#my-timeline div.timeline-entry');
 					},
 					true // we are loading from cache
 				);
@@ -375,7 +375,7 @@ MyTimelineAssistant.prototype.getEntryElementByStatusId = function(id) {
 
 
 MyTimelineAssistant.prototype.getData = function() {
-	sch.markAllAsRead('#my-timeline>div.timeline-entry');
+	sch.markAllAsRead('#my-timeline div.timeline-entry');
 	this.showInlineSpinner('activity-spinner-my-timeline', 'Looking for new tweets…');
 	
 	/*
@@ -492,7 +492,12 @@ MyTimelineAssistant.prototype.renderTweets = function(tweets, render_callback, f
 		
 		if (timeline_html.length > 1) {
 			timeline_html.reverse();
-			jQuery('#my-timeline').prepend(timeline_html.join(''));
+			/*
+				we wrap this in a simple <div> in order to get a big
+				speed increase when we prepend, but it does mean we 
+				can't assume #my-timeline>div.timeline-entry will work
+			*/
+			jQuery('#my-timeline').prepend('<div>'+timeline_html.join('')+'</div>');
 		}
 		
 
@@ -539,7 +544,7 @@ MyTimelineAssistant.prototype.renderTweets = function(tweets, render_callback, f
 		render_callback();
 	}
 	
-	var new_count = jQuery('#my-timeline>div.timeline-entry.new:visible').length;
+	var new_count = jQuery('#my-timeline div.timeline-entry.new:visible').length;
 	
 	// alert("new_count:"+new_count);
 	// alert("fullscreen"+thisA.isFullScreen);
@@ -629,9 +634,9 @@ MyTimelineAssistant.prototype.removeExtraItems = function() {
 	/*
 		from html timeline
 	*/
-	sch.removeExtraElements('#my-timeline>div.timeline-entry:not(.reply):not(.dm)', sc.app.prefs.get('timeline-maxentries'));
-	sch.removeExtraElements('#my-timeline>div.timeline-entry.reply', sc.app.prefs.get('timeline-maxentries-reply'));
-	sch.removeExtraElements('#my-timeline>div.timeline-entry.dm', sc.app.prefs.get('timeline-maxentries-dm'));
+	sch.removeExtraElements('#my-timeline div.timeline-entry:not(.reply):not(.dm)', sc.app.prefs.get('timeline-maxentries'));
+	sch.removeExtraElements('#my-timeline div.timeline-entry.reply', sc.app.prefs.get('timeline-maxentries-reply'));
+	sch.removeExtraElements('#my-timeline div.timeline-entry.dm', sc.app.prefs.get('timeline-maxentries-dm'));
 	
 	/*
 		now sync the local model to the html
@@ -640,7 +645,7 @@ MyTimelineAssistant.prototype.removeExtraItems = function() {
 	var thisA = this;
 	var new_model = [];
 
-	jQuery('#my-timeline>div.timeline-entry').each( function() {
+	jQuery('#my-timeline div.timeline-entry').each( function() {
 		var id = jQuery(this).attr('data-status-id');
 		var this_obj = thisA.getTweetFromModel(id);
 		new_model.push(this_obj);
@@ -648,10 +653,10 @@ MyTimelineAssistant.prototype.removeExtraItems = function() {
 	this.tweetsModel = new_model.reverse();
 	
 
-	var html_count  = jQuery('#my-timeline>div.timeline-entry').length;
-	var norm_count  = jQuery('#my-timeline>div.timeline-entry:not(.reply):not(.dm)').length;
-	var reply_count = jQuery('#my-timeline>div.timeline-entry.reply').length;
-	var dm_count    = jQuery('#my-timeline>div.timeline-entry.dm').length;
+	var html_count  = jQuery('#my-timeline div.timeline-entry').length;
+	var norm_count  = jQuery('#my-timeline div.timeline-entry:not(.reply):not(.dm)').length;
+	var reply_count = jQuery('#my-timeline div.timeline-entry.reply').length;
+	var dm_count    = jQuery('#my-timeline div.timeline-entry.dm').length;
 	
 	
 	var model_count = this.tweetsModel.length;
