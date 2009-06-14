@@ -23,6 +23,7 @@ function AppAssistant(appController) {
 			return obj;
 		} catch(e) {
 			dump('There was a problem decoding the JSON string');
+			dump('Here is the JSON string: '+str);
 			return null;
 		}
 		

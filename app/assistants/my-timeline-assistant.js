@@ -23,7 +23,7 @@ function MyTimelineAssistant(argFromPusher) {
 	this.refresher = null;
 	
 
-	this.cacheVersion = 1;  // we increment this when we change how the cache works
+	this.cacheVersion = 3;  // we increment this when we change how the cache works
 	
 	
 	this.cacheDepot = new Mojo.Depot({
@@ -572,11 +572,11 @@ MyTimelineAssistant.prototype.renderTweets = function(tweets, render_callback, f
 	/*
 		Save this in case we need to load from cache
 	*/
-	if (!from_cache) {
+	if (!from_cache) {		
 		thisA.hideInlineSpinner('activity-spinner-my-timeline');
 		thisA.saveTimelineCache();
 	} else {
-		thisA.clearInlineSpinner('activity-spinner-my-timeline');
+		// thisA.clearInlineSpinner('activity-spinner-my-timeline');
 		jQuery().trigger('load_from_mytimeline_cache_done');
 	}
 	
