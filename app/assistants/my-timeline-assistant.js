@@ -344,6 +344,8 @@ MyTimelineAssistant.prototype.saveTimelineCache = function() {
 	var tweetsModel_html = document.getElementById('my-timeline').innerHTML;
 	var tweetsModel_json = sch.enJSON(this.tweetsModel);
 	
+	dump('this.tweetsModel');
+	dump(this.tweetsModel);
 	
 	var twitdata = {};
 	twitdata['version']                            = this.cacheVersion || -1;
@@ -459,11 +461,7 @@ MyTimelineAssistant.prototype.renderTweets = function(tweets, render_callback, f
 				
 				dump('adding '+rendertweets[i].id);
 				
-				/*
-					add to tweetsModel
-				*/
-				thisA.addTweetToModel(rendertweets[i]);
-				tweets_added++;
+;
 				
 				/*
 					skip rendering if we are loading from cache, as per new
@@ -486,20 +484,27 @@ MyTimelineAssistant.prototype.renderTweets = function(tweets, render_callback, f
 						var itemhtml = sc.app.tpl.parseTemplate('tweet', rendertweets[i]);
 					}
 
-					sc.app.Tweets.save(rendertweets[i]);
-
 					/*
 						put item on timeline_html glob
 					*/
 					timeline_html[i] = itemhtml;
 				}
+				
+				/*
+					add to tweetsModel
+				*/
+				this.addTweetToModel(rendertweets[i]);
+				tweets_added++;
+				
+				sc.app.Tweets.save(rendertweets[i]);
+				
 			} else {
 				dump('Tweet ('+rendertweets[i].id+') already is in timeline');
 			}
 
 		};
 		
-		if (timeline_html.length > 1) {
+		if (timeline_html.length > 0) {
 			timeline_html.reverse();
 			/*
 				we wrap this in a simple <div> in order to get a big
@@ -514,36 +519,23 @@ MyTimelineAssistant.prototype.renderTweets = function(tweets, render_callback, f
 		dump("from_cache:"+from_cache);
 		dump("sc.app.prefs.get('timeline-scrollonupdate'):"+sc.app.prefs.get('timeline-scrollonupdate'));
 		
-		
-		var num_entries = jQuery('#my-timeline div.timeline-entry').length;
-		dump("num_entries:"+num_entries);
-		var old_entries = num_entries - tweets_added;
-		dump("old_entries:"+old_entries);
-		if ( tweets_added > 0 && old_entries > 0 && !from_cache && sc.app.prefs.get('timeline-scrollonupdate') ) {
-			dump("I'm going to scroll to new in 500ms!");
-			setTimeout(function() { thisA.scrollToNew() }, 500);
-		} else {
-			dump("Not scrolling to new!");
+		if (!from_cache) {
+			var num_entries = jQuery('#my-timeline div.timeline-entry').length;
+			dump("num_entries:"+num_entries);
+			var old_entries = num_entries - tweets_added;
+			dump("old_entries:"+old_entries);
+			if ( tweets_added > 0 && old_entries > 0 && !from_cache && sc.app.prefs.get('timeline-scrollonupdate') ) {
+				dump("I'm going to scroll to new in 500ms!");
+				setTimeout(function() { thisA.scrollToNew() }, 500);
+			} else {
+				dump("Not scrolling to new!");
+			}
 		}
 		
 	} else {
 		dump("no new tweets");
 	}
 	
-	/*
-		remove extra items
-	*/
-	thisA.removeExtraItems();
-
-	/*
-		Update relative dates
-	*/
-	sch.updateRelativeTimes('div.timeline-entry .meta>.date', 'data-created_at');
-	
-	/*
-		re-apply filtering
-	*/
-	thisA.filterTimeline();
 	
 	/*
 		we are done rendering, so call the optional callback
@@ -553,30 +545,45 @@ MyTimelineAssistant.prototype.renderTweets = function(tweets, render_callback, f
 		render_callback();
 	}
 	
+	/*
+		remove extra items
+	*/
+	this.removeExtraItems();
+
+	/*
+		Update relative dates
+	*/
+	sch.updateRelativeTimes('div.timeline-entry .meta>.date', 'data-created_at');
+	
+	/*
+		re-apply filtering
+	*/
+	this.filterTimeline();
+	
 	var new_count = jQuery('#my-timeline div.timeline-entry.new:visible').length;
 	
 	// alert("new_count:"+new_count);
-	// alert("fullscreen"+thisA.isFullScreen);
+	// alert("fullscreen"+this.isFullScreen);
 	
-	if (!from_cache && new_count > 0 && !thisA.isFullScreen) {
-		thisA.newMsgBanner(new_count);
-		thisA.playAudioCue('newmsg');		
-	} else if (thisA.isFullScreen) {
-		dump("I am not showing a banner! in "+thisA.controller.sceneElement.id);
+	if (!from_cache && new_count > 0 && !this.isFullScreen) {
+		this.newMsgBanner(new_count);
+		this.playAudioCue('newmsg');		
+	} else if (this.isFullScreen) {
+		dump("I am not showing a banner! in "+this.controller.sceneElement.id);
 	}
 	
 
-	// thisA.hideInlineSpinner('#my-timeline-spinner-container');
-	thisA.startRefresher();
+	// this.hideInlineSpinner('#my-timeline-spinner-container');
+	this.startRefresher();
 	
 	/*
 		Save this in case we need to load from cache
 	*/
 	if (!from_cache) {		
-		thisA.hideInlineSpinner('activity-spinner-my-timeline');
-		thisA.saveTimelineCache();
+		this.hideInlineSpinner('activity-spinner-my-timeline');
+		this.saveTimelineCache();
 	} else {
-		// thisA.clearInlineSpinner('activity-spinner-my-timeline');
+		// this.clearInlineSpinner('activity-spinner-my-timeline');
 		jQuery().trigger('load_from_mytimeline_cache_done');
 	}
 	
@@ -657,7 +664,11 @@ MyTimelineAssistant.prototype.removeExtraItems = function() {
 	jQuery('#my-timeline div.timeline-entry').each( function() {
 		var id = jQuery(this).attr('data-status-id');
 		var this_obj = thisA.getTweetFromModel(id);
-		new_model.push(this_obj);
+		if (this_obj != false) {
+			new_model.push(this_obj);
+		} else {
+			console.error('False was returned by thisA.getTweetFromModel(id). id='+id);
+		}
 	} );
 	this.tweetsModel = new_model.reverse();
 	
