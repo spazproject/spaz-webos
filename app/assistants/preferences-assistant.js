@@ -93,7 +93,7 @@ PreferencesAssistant.prototype.setup = function() {
 	this.controller.setupWidget('timeline-replies-getcount',
 		{
 			label: $L('@Mentions'),
-			choices: this.validInitialLoads,
+			choices: this.validInitialLoadsDmReply,
 			modelProperty:'timeline-replies-getcount'
 		},
 		this.model
@@ -101,7 +101,7 @@ PreferencesAssistant.prototype.setup = function() {
 	this.controller.setupWidget('timeline-dm-getcount',
 		{
 			label: $L('Direct Msgs'),
-			choices: this.validInitialLoads,
+			choices: this.validInitialLoadsDmReply,
 			modelProperty:'timeline-dm-getcount'
 		},
 		this.model
@@ -156,6 +156,12 @@ PreferencesAssistant.prototype.setupChoices = function(){
 		{label:$L('60'), value:60}
 	];
 	
+	this.validInitialLoadsDmReply = [
+		{label:$L('2'), value:2},
+		{label:$L('5'), value:5},
+		{label:$L('10'), value:10},
+		{label:$L('20'), value:20},
+	];
 };
 
 

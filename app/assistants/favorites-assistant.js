@@ -81,44 +81,47 @@ FavoritesAssistant.prototype.activate = function(event) {
 			reverse the tweets for collection rendering (faster)
 		*/
 		var rendertweets = tweets;
-
-		jQuery.each( rendertweets, function() {
+		
+		if (rendertweets && rendertweets.length > 0) {
+		
+			jQuery.each( rendertweets, function() {
 			
-			if (!thisA.getEntryElementByStatusId(this.id)) {
+				if (!thisA.getEntryElementByStatusId(this.id)) {
 			
-				this.text = makeItemsClickable(this.text);
+					this.text = makeItemsClickable(this.text);
 				
-				// we set this so the tweets come out as not marked new
-				this.not_new = true;
+					// we set this so the tweets come out as not marked new
+					this.not_new = true;
 				
-				var itemhtml = sc.app.tpl.parseTemplate('tweet', this);
+					var itemhtml = sc.app.tpl.parseTemplate('tweet', this);
 			
-				/*
-					make jQuery obj
-				*/
-				var jqitem = jQuery(itemhtml);
+					/*
+						make jQuery obj
+					*/
+					var jqitem = jQuery(itemhtml);
 			
-				/*
-					attach data object to item html
-				*/
-				jqitem.data('item', this);
+					/*
+						attach data object to item html
+					*/
+					jqitem.data('item', this);
 			
-				/*
-					save this tweet to Depot
-				*/
-				sc.app.Tweets.save(this);
+					/*
+						save this tweet to Depot
+					*/
+					sc.app.Tweets.save(this);
 			
 			
-				/*
-					put item on timeline
-				*/
-				jQuery('#favorites-timeline').prepend(jqitem);
-			} else {
-				dump('Tweet ('+this.id+') already is in favorites timeline');
-			}
-		});
-
-
+					/*
+						put item on timeline
+					*/
+					jQuery('#favorites-timeline').prepend(jqitem);
+				} else {
+					dump('Tweet ('+this.id+') already is in favorites timeline');
+				}
+			});
+			
+		}
+		
 		/*
 			Update relative dates
 		*/

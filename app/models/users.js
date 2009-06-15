@@ -15,11 +15,30 @@ var Users = function(prefsObj) {
 
 Users.prototype.load	= function() { 
 	this._users = this.prefs.get('users');
+	this.fixIDs();
 };
+
+
+Users.prototype.fixIDs  = function() {
+	
+	for (i=0; i<this._users.length; i++) {
+		if (this._users[i].id.toLowerCase() === this._users[i].username.toLowerCase()) {
+			dump('user '+this._users[i].username + ' has an old, identical id');
+			this._users[i].id = this.generateID(this._users[i].username, this._users[i].type);
+			this.save();
+		}
+	}
+	dump('done fixing IDs in user hash');
+	
+}
 
 
 Users.prototype.save	= function() {
 	this.prefs.set('users', this._users);
+	dump('saved users to users pref');
+	for (var x in this._users) {
+		dump(this._users[x].id)
+	};
 };
 
 
@@ -33,6 +52,10 @@ Users.prototype.getAll	= function() {
 Users.prototype.setAll	= function(userhash) {
 	this._users = userhash;
 	this.save();
+	dump("Saved these users:");
+	for (var x in this._users) {
+		dump(this._users[x].id)
+	};
 };
 
 Users.prototype.initUsers	= function(onSuccess, onFailure) {
@@ -42,14 +65,15 @@ Users.prototype.initUsers	= function(onSuccess, onFailure) {
 
 
 Users.prototype.add			= function(username, password, type) {
-	username = username.toLowerCase();
+	var username = username.toLowerCase();
 	this._users.push = {
+		'id':this.generateID(username, type),
 		'username':username,
 		'password':password,
 		'type':type
 	};
-	this.saveUsers();
-	dump("Added new user:"+username);
+	this.save();
+	dump("Added new user:"+this.generateID(username, type));
 };
 
 
@@ -60,14 +84,21 @@ Users.prototype.getByType	= function(type) {
 	
 };
 
-
-Users.prototype.getUser		= function(username) {
-	username = username.toLowerCase();
+/**
+ * retrives the user object by user and type
+ * @param {string} username
+ * @param {string} type 
+ */
+Users.prototype.getUser		= function(username, type) {
+	var username = username.toLowerCase();
+	var type     = type.toLowerCase();
+	
+	var id = this.generateID(username, type)
 	
 	for (i=0; i<this._users.length; i++) {
 		
-		if (this._users[i].username.toLowerCase() === username) {
-			dump('Found matching user record to '+ username)
+		if (this._users[i].id.toLowerCase() === id) {
+			dump('Found matching user record to '+ id);
 			return this._users[i];
 		}
 		
@@ -78,3 +109,7 @@ Users.prototype.getUser		= function(username) {
 }
 
 
+Users.prototype.generateID = function(username, type) {
+	var id = username.toLowerCase()+"_"+type.toLowerCase();
+	return id;
+}

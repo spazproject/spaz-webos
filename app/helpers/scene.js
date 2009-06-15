@@ -281,7 +281,9 @@ scene_helpers.addCommonSceneMethods = function(assistant) {
 
 		if (sc.app.username && sc.app.password) {
 			// alert('seetting credentials for '+sc.app.username);
+			this.twit.setBaseURLByService(sc.app.type);
 			this.twit.setCredentials(sc.app.username, sc.app.password);
+			
 		} else {
 			// alert('NOT seetting credentials for!');
 		}
@@ -762,8 +764,13 @@ scene_helpers.addCommonSceneMethods = function(assistant) {
 				error_html += sc.app.tpl.parseTemplate(template, error_info);
 			}
 		}
-				
-		Mojo.Controller.errorDialog(msg+"<br>\n"+error_html);
+		
+		/*
+			We want to be able to pass html into the error dialogs, but escaping is on,
+			so we do a little dynamic workaround
+		*/
+		var dialog_widget = Mojo.Controller.errorDialog(msg+' {{error_html}}');
+		dialog_widget.innerHTML = dialog_widget.innerHTML.replace('{{error_html}}', error_html);
 		
 	}
 

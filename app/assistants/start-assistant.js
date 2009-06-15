@@ -21,10 +21,12 @@ function StartAssistant(argFromPusher) {
 				get last user
 			*/
 			var last_user = sc.app.prefs.get('last_username');
-			var last_user_obj = this.Users.getUser(last_user);
+			var last_type = sc.app.prefs.get('last_type');
+			var last_user_obj = this.Users.getUser(last_user, last_type);
 			if (last_user_obj !== false) {
 				sc.app.username = last_user_obj.username;
 				sc.app.password = last_user_obj.password;
+				sc.app.type     = last_user_obj.type;
 				Mojo.Controller.stageController.pushScene('my-timeline');
 			} else {
 				dump("Tried to load last_user_object, but failed.");

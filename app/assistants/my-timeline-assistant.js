@@ -285,7 +285,7 @@ MyTimelineAssistant.prototype.loadTimelineCache = function() {
 	
 	this.showInlineSpinner('activity-spinner-my-timeline', 'Loading cached tweets…', true);
 
-	this.cacheDepot.simpleGet(sc.app.username,
+	this.cacheDepot.simpleGet(sc.app.username+"_"+sc.app.type,
 		function(data) {
 			dump('loading cache');
 			
@@ -359,7 +359,7 @@ MyTimelineAssistant.prototype.saveTimelineCache = function() {
 	dump(twitdata);
 	dump('=================================================================================');
 	
-	this.cacheDepot.simpleAdd(sc.app.username, twitdata,
+	this.cacheDepot.simpleAdd(sc.app.username+"_"+sc.app.type, twitdata,
 		function() { dump('My Timeline Cache Saved') },
 		function(msg) { dump('My Timeline Cache save failed:'+msg) }
 	);

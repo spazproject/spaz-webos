@@ -14,21 +14,6 @@ StartloginAssistant.prototype.setup = function() {
 	
 	this.initAppMenu();
 
-	// this.setupCommonMenus({
-	// 	viewMenuItems: [
-	// 		{
-	// 			items: [
-	// 				// {label:$L('Back'),        icon:'back', command:'back'},
-	// 				{label:$L('Log-in'), command:'scroll-top'}
-	// 			]
-	// 		}
-	// 	],
-	// 	cmdMenuItems: [{ items:
-	// 		[]
-	// 	}]
-	// });
-	
-
 	/*
 		Initialize the model
 	*/
@@ -59,6 +44,8 @@ StartloginAssistant.prototype.setup = function() {
 	this.Users = new Users(sc.app.prefs);
 	this.Users.load();
 	
+	dump(this.Users);
+	
 	this.controller.setupWidget("accountList",
 		this.accountsAtts = {
 			itemTemplate: 'startlogin/user-list-entry',
@@ -75,16 +62,19 @@ StartloginAssistant.prototype.setup = function() {
 		}
 	);
 	
+	dump(this.accountsModel.items);
+	
 	
 	/*
 		Tap on list
 	*/
     Mojo.Event.listen($('accountList'), Mojo.Event.listTap, function(e) {
-		// sc.app.twit.setCredentials(e.item.username, e.item.password);
 		sc.app.username = e.item.username;
 		sc.app.password = e.item.password;
+		sc.app.type     = e.item.type;
 		
 		sc.app.prefs.set('last_username', e.item.username);
+		sc.app.prefs.set('last_type', e.item.type);
 				
 		Mojo.Controller.stageController.pushScene('my-timeline');
 	});
@@ -231,6 +221,7 @@ var NewAccountDialogAssistant = Class.create({
 		this.newAccountModel = {
 			'username':false,
 			'password':false,
+			'type':SPAZCORE_SERVICE_TWITTER
 		};
 
 
@@ -280,6 +271,21 @@ var NewAccountDialogAssistant = Class.create({
 		this.controller.setupWidget('saveAccountButton', this.verifyButtonAttributes, this.verifyButtonModel);
 		
 		
+		this.controller.setupWidget('type',
+			{
+				label: $L('Type'),
+				choices: [
+					{label:$L('Twitter'), value:SPAZCORE_SERVICE_TWITTER}, 
+					{label:$L('Identi.ca (experimental)'), value:SPAZCORE_SERVICE_IDENTICA}
+					// {label:$L('Custom'), value:SPAZCORE_SERVICE_CUSTOM} 
+				],
+				modelProperty:'type'
+			},
+			this.newAccountModel
+		);
+		
+		this.controller.setupWidget('saveAccountButton', this.verifyButtonAttributes, this.verifyButtonModel);
+		
 		
 	},
 	
@@ -295,11 +301,11 @@ var NewAccountDialogAssistant = Class.create({
 			thisA.deactivateSpinner();
 			
 			var newItem = {
-							id:thisA.newAccountModel.username.toLowerCase(),
-							username:thisA.newAccountModel.username.toLowerCase(),
-							password:thisA.newAccountModel.password,
-							type:'twitter'
-						};
+				id:thisA.sceneAssistant.Users.generateID(thisA.newAccountModel.username, thisA.newAccountModel.type),
+				username:thisA.newAccountModel.username.toLowerCase(),
+				password:thisA.newAccountModel.password,
+				type:thisA.newAccountModel.type.toLowerCase()
+			};
 			thisA.sceneAssistant.accountsModel.items.push(newItem);
 			thisA.sceneAssistant.Users.setAll(thisA.sceneAssistant.accountsModel.items);
 			$('accountList').mojo.noticeAddedItems(thisA.sceneAssistant.accountsModel.items.length, [newItem]);
@@ -310,8 +316,6 @@ var NewAccountDialogAssistant = Class.create({
 			What to do if we fail
 		*/
 		jQuery().bind('verify_credentials_failed', function(e) {
-
-
 			/*
 				If we return to this scene from another
 				and fail the login, e.data.thisAssistant will not have
@@ -329,6 +333,7 @@ var NewAccountDialogAssistant = Class.create({
 			this.passwordPropertyChangeListener.bindAsEventListener(this),
 			true
 		);
+		
 	},
 	
 	
@@ -336,6 +341,12 @@ var NewAccountDialogAssistant = Class.create({
 		jQuery().unbind('verify_credentials_succeeded');
 		jQuery().unbind('verify_credentials_failed');
 		jQuery('#new-account-errormsg').html('');
+		Mojo.Event.stopListening(this.controller.get('new-password'),
+			Mojo.Event.propertyChange,
+			this.passwordPropertyChangeListener
+		);
+		
+		
 	},
 	
 	
@@ -354,7 +365,7 @@ var NewAccountDialogAssistant = Class.create({
 	 */
 	passwordPropertyChangeListener : function(event) {
 		// If the password field has focus and Enter is pressed then simulate tapping on "Sign In"
-		if (event && Mojo.Char.isEnterKey(event.originalEvent.keyCode)) {
+		if (event && event.originalEvent && Mojo.Char.isEnterKey(event.originalEvent.keyCode)) {
 			this.controller.get('saveAccountButton').mojo.activate();
 			this.handleVerifyPassword.call(this);
 			return;
@@ -376,6 +387,7 @@ var NewAccountDialogAssistant = Class.create({
 			now verify credentials against the Twitter API
 		*/
 		if (this.newAccountModel.username && this.newAccountModel.password) {
+			sc.app.twit.setBaseURLByService(this.newAccountModel.type);
 			sc.app.twit.verifyCredentials(this.newAccountModel.username.toLowerCase(), this.newAccountModel.password);
 		} else {
 			this.deactivateSpinner();

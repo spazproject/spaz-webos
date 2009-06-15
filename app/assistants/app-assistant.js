@@ -53,7 +53,7 @@ function AppAssistant(appController) {
 	sc.app.username = null;
 	sc.app.password = null;
 	
-	sc.app.prefs = new scPrefs(default_preferences);
+	sc.app.prefs = null;
 	
 }
 
