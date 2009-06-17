@@ -511,7 +511,14 @@ MyTimelineAssistant.prototype.renderTweets = function(tweets, render_callback, f
 				speed increase when we prepend, but it does mean we 
 				can't assume #my-timeline>div.timeline-entry will work
 			*/
-			jQuery('#my-timeline').prepend('<div>'+timeline_html.join('')+'</div>');
+			var tlel         = document.getElementById('my-timeline');
+			var htmlel       = document.createElement('div');
+			htmlel.innerHTML = timeline_html.join('');
+			tlel.insertBefore( htmlel, tlel.firstChild );
+			// 
+			// 
+			// 
+			// jQuery('#my-timeline').prepend('<div>'+timeline_html.join('')+'</div>');
 		}
 		
 
