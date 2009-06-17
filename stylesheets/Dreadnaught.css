@@ -46,7 +46,7 @@ div.palm-page-header.spaz-page-header {
 	}
 
 a:link, a:visited, .clickable {
-	color:#9999FF;
+	color: #CCCCFF;
 	text-decoration:underline;
 }
 
@@ -96,10 +96,10 @@ div.timeline-entry {
 		they're usedful and probably could be reused elsewhere.
 	*/
 	div.timeline-entry:nth-of-type(odd), .odd {
-		background-color: #37494D;
+		background-color: #2b3a3c;
 	}
 	div.timeline-entry:nth-of-type(even), .even {
-		background-color: #263344;
+		background-color: #25303f;
 	}
 	
 	/*
@@ -127,10 +127,10 @@ div.timeline-entry {
 			border-bottom:1px solid #FFFFCC;
 		}
 		div.timeline-entry.new:nth-of-type(odd) {
-			background-color: #42585D;
+			background-color: #2b3a3c;
 		}
 		div.timeline-entry.new:nth-of-type(even) {
-			background-color: #324155;
+			background-color: #25303f;
 		}
 
 		/*

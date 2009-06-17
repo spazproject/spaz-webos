@@ -12,7 +12,6 @@ FavoritesAssistant.prototype.setup = function() {
 	this.initAppMenu({ 'items':loggedin_appmenu_items });
 	this.initTwit();
 
-
 	this.setupCommonMenus({
 		// viewMenuItems: [
 		// 	{label: "Favorites", command:'scroll-top', 'class':"palm-header left", width:320}
@@ -30,6 +29,8 @@ FavoritesAssistant.prototype.setup = function() {
 			{label:$L('Refresh'),   icon:'sync', command:'refresh', shortcut:'R'}					
 		]
 	});
+	
+	
 	
 	/* this function is for setup tasks that have to happen when the scene is first created */
 		
