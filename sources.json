@@ -45,5 +45,9 @@
     {
         "scenes": "startsearch",
         "source": "app\/assistants\/startsearch-assistant.js"
+    },
+    {
+        "scenes": "post",
+        "source": "app\/assistants\/post-assistant.js"
     }
 ]

@@ -151,7 +151,7 @@ MessageDetailAssistant.prototype.activate = function(event) {
 	jQuery('#message-detail-action-reply', this.scroller).live(Mojo.Event.tap, function(e) {
 		var screen_name = jQuery(this).attr('data-screen_name');
 		var in_reply_to = jQuery(this).attr('data-status-id');
-		thisA.prepReply(screen_name, in_reply_to);
+		thisA.prepReply(screen_name, in_reply_to, thisA.statusobj);
 	});
 	jQuery('#message-detail-action-retweet', this.scroller).live(Mojo.Event.tap, function(e) {
 		thisA.prepRetweet(thisA.statusobj);

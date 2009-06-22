@@ -133,7 +133,7 @@ scene_helpers.addCommonSceneMethods = function(assistant) {
 					Compose a new message
 				*/
 				case 'compose':
-					this.showPostPanel();
+					this.prepMessage();
 					break;
 
 				/*
@@ -276,7 +276,9 @@ scene_helpers.addCommonSceneMethods = function(assistant) {
 		// var username = sc.app.prefs.get('username');
 		// var password = sc.app.prefs.get('password');
 
-		this.twit = new scTwit();
+		this.twit = new scTwit(null, null, {
+			'event_mode':'jquery'
+		});
 		this.twit.setSource(sc.app.prefs.get('twitter-source'));
 
 		if (sc.app.username && sc.app.password) {
@@ -309,12 +311,17 @@ scene_helpers.addCommonSceneMethods = function(assistant) {
 	    });
 	};
 	
-	assistant.showPostPanel = function(event) {
-		this.controller.showDialog({
-	          template: 'shared/post-popup',
-	          assistant: new PostDialogAssistant(this),
-	          preventCancel:false
-	    });
+	assistant.showPostPanel = function(opts) {
+		
+		Mojo.Controller.stageController.pushScene("post", {
+			'text'         : opts.text         || '',
+			'type'         : opts.type         || null,
+			'select_start' : opts.select_start || 0,
+			'select_length': opts.select_length|| 0,
+			'irt_status'   : opts.irt_status   || null,
+			'irt_status_id': opts.irt_status_id|| 0
+		});
+		
 	};
 	
 	
@@ -322,10 +329,12 @@ scene_helpers.addCommonSceneMethods = function(assistant) {
 	 *  
 	 */
 	assistant.prepMessage = function() {
-		this.showPostPanel();
-		var eb = jQuery('#post-panel-textarea', this.controller.getSceneScroller());
-		eb.val('');
-		eb[0].setSelectionRange(0, 0);
+		this.showPostPanel({
+			'text'         : '',
+			'type'         : null,
+			'select_start' : 0,
+			'select_length': 0
+		});
 	};
 
 	
@@ -333,22 +342,22 @@ scene_helpers.addCommonSceneMethods = function(assistant) {
 	 *  
 	 */
 	assistant.prepRetweet = function(entryobj) {
-		this.showPostPanel();
 		var text = entryobj.SC_text_raw;
 		var screenname = entryobj.user.screen_name;
 
-		var rtstr = 'RT @' + screenname + ': '+text+'';
+		var text = 'RT @' + screenname + ': '+text+'';
 
-		if (rtstr.length > 140) {
-			rtstr = rtstr.substr(0,139)+'…';
-		}
-
-	    var eb = jQuery('#post-panel-textarea', this.controller.getSceneScroller());
-		eb.focus();
-		eb.val(rtstr);
-		eb[0].setSelectionRange(eb.val().length, eb.val().length);
+		// if (rtstr.length > 140) {
+		// 	rtstr = rtstr.substr(0,139)+'…';
+		// }
 		
-		// this._updateCharCount();
+		this.showPostPanel({
+			'text'         : text,
+			'type'         : null,
+			'select_start' : text.length,
+			'select_length': text.length
+		});
+
 
 	};
 
@@ -356,18 +365,19 @@ scene_helpers.addCommonSceneMethods = function(assistant) {
 	 *  
 	 */
 	assistant.prepDirectMessage = function(username) {
-		this.showPostPanel();
-	    var eb = jQuery('#post-panel-textarea', this.controller.getSceneScroller());
-	    eb.focus();
+		
+		var text = 'd ';
+		
 	    if (username) {
-	        eb.val('d ' + username + ' ...');
-	        eb[0].setSelectionRange(eb.val().length - 3, eb.val().length)
-	    } else {
-	        eb.val('d username');
-	        eb[0].setSelectionRange(2, eb.val().length);
+			text += username;
 	    }
 	
-		// this._updateCharCount();
+		this.showPostPanel({
+			'text'         : text,
+			'type'         : null,
+			'select_start' : 2,
+			'select_length': text.length
+		});
 
 	};
 
@@ -378,88 +388,41 @@ scene_helpers.addCommonSceneMethods = function(assistant) {
 	 */
 	assistant.prepPhotoPost = function(url) {
 	    
-		this.showPostPanel();
-		var eb = jQuery('#post-panel-textarea', this.controller.getSceneScroller());
-	    eb.focus();
-	    if (url) {
-	        eb.val(url + ' desc');
-	        eb[0].setSelectionRange(eb.val().length - 4, eb.val().length);
-	        return true;
-	    } else {
-	        return false;
-	    }
+		if (!url) {
+			return false;
+		}
 	
-		// this._updateCharCount();
-
-	}
+		var text = url + ' ';
+		
+		this.showPostPanel({
+			'text'         : text,
+			'type'         : null,
+			'select_start' : url.length+1,
+			'select_length': text.length
+		});		
+	};
 
 
 
 	/**
 	 *  
 	 */
-	assistant.prepReply = function(username, status_id) {
-		this.showPostPanel();
-	
-		var eb = jQuery('#post-panel-textarea', this.controller.getSceneScroller());
-	    eb.focus();
-
+	assistant.prepReply = function(username, status_id, statusobj) {
+		var text = '@';
+		
 	    if (username) {
-	        var newText = '@' + username + ' ';
-
-	        if (eb.val() != '') {
-	            eb.val(newText + eb.val());
-	            eb[0].setSelectionRange(eb.val().length, eb.val().length);
-	        } else {
-	            eb.val(newText);
-	            eb[0].setSelectionRange(eb.val().length, eb.val().length);
-	        }
-	    } else {
-	        var newText = '@';
-	        if (eb.val() != '') {
-	            eb.val(newText + ' ' + eb.val());
-	        } else {
-	            eb.val('@');
-	        }
-	        eb[0].setSelectionRange(newText.length, newText.length);
+			text += username;
 	    }
-		
-		if (status_id) {
-			// get the status text
-			this.setPostIRT(status_id, this.statusobj)
-		} else {
-			
-		}
-		
-		// this._updateCharCount();
-	};
-
-
-
-	/**
-	 *  
-	 */
-	assistant.setPostIRT = function(status_id, statusobj) {
-		if (statusobj && statusobj.SC_text_raw) {
-			var status_text = statusobj.SC_text_raw;
-		} else {
-			var status_text = 'status #'+status_id;
-		}
-		
-		// update the GUI stuff
-		jQuery('#post-panel-irt-message', this.controller.getSceneScroller())
-			.html(status_text)
-			.attr('data-status-id', status_id);
-		jQuery('#post-panel-irt', this.controller.getSceneScroller()).slideDown('fast');
-	};
 	
-
-	/**
-	 *  
-	 */
-	assistant.clearPostIRT = function() {
-		jQuery('#post-panel-irt', this.controller.getSceneScroller()).slideUp('fast');
-		jQuery('#post-panel-irt-message').html('').attr('data-status-id', '0');
+		this.showPostPanel({
+			'text'         : text,
+			'type'         : null,
+			'select_start' : text.length,
+			'select_length': text.length,
+			'irt_status'   : statusobj,
+			'irt_status_id': status_id
+		});
+	
 	};
 
 
@@ -779,26 +742,33 @@ scene_helpers.addCommonSceneMethods = function(assistant) {
 		var thisA = this;
 		
 		// Mojo.Log.info('Timeline Caching disabled for now');
-		var cacheDepot = new Mojo.Depot({
+		
+		/*
+			by setting "replace" to true, we wipe the cache depot completely
+		*/
+		
+		this.cacheDepot = new Mojo.Depot({
 			name:'SpazDepotTimelineCache',
-			replace:false
+			displayName:'SpazDepotTimelineCache',
+			replace:true,
+			version:1
 		});
 		
-		var users = sc.app.prefs.get('users');
-		
-		for (var i=0; i<users.length; i++) {
-			var username = users[i].username;
-			cacheDepot.simpleAdd(username, {},
-				function() { 
-					// thisA.showAlert('Cache cleared');
-					dump('Cache '+username+' cleared');
-				},
-				function() { 
-					// Mojo.Controller.errorDialog('Cache clearing FAILED');
-					dump('Cache '+username+' clear failed');
-				}
-			);
-		}
+		// var users = sc.app.prefs.get('users');
+		// 
+		// for (var i=0; i<users.length; i++) {
+		// 	var id = users[i].id;
+		// 	cacheDepot.simpleAdd(id, {},
+		// 		function() { 
+		// 			// thisA.showAlert('Cache cleared');
+		// 			dump('Cache '+username+' cleared');
+		// 		},
+		// 		function() { 
+		// 			// Mojo.Controller.errorDialog('Cache clearing FAILED');
+		// 			dump('Cache '+username+' clear failed');
+		// 		}
+		// 	);
+		// }
 		
 	}
 	

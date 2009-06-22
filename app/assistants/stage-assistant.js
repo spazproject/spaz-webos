@@ -21,7 +21,9 @@ StageAssistant.prototype.setup = function() {
 	jQuery().bind('spazprefs_loaded', function() {
 		Mojo.Log.info("Prefs loaded!");
 		
-		sc.app.twit = new scTwit();
+		sc.app.twit = new scTwit(null, null, {
+			'event_mode':'jquery'
+		});
 	
 		if (thisSA.firstload) {
 			dump('FIRSTLOAD ----------------------');

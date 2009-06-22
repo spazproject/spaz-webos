@@ -620,19 +620,10 @@ div.spaz-drawer {
 				background-color:#333;
 			}
 		
-	#post-panel-textarea {
-		width:97%;
-		height:7.3em;
-		margin-bottom:0px;
-		font-size:17px;
-		line-height:18px;
-		border-width:6px 4px 4px 2px;
-		padding:0px;
-	}
 	
 	#post-panel-counter {
 		font-family:"Coconut-CondensedMedium";
-		font-size:13px;
+		font-size:14pt;
 	}
 		#post-panel-counter.over-limit {
 			color:#990000;

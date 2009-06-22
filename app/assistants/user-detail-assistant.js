@@ -26,14 +26,6 @@ UserDetailAssistant.prototype.setup = function() {
 
 	if (sc.app.username && sc.app.password) {
 		this.setupCommonMenus({
-			// viewMenuItems: [
-			// 	{
-			// 		items: [
-			// 			// {label:$L('Back'),        icon:'back', command:'back'},
-			// 			{label:$L('User Detail'), command:'scroll-top'}
-			// 		]
-			// 	}
-			// ],
 			cmdMenuItems:[
 				{
 					items: [
@@ -42,21 +34,12 @@ UserDetailAssistant.prototype.setup = function() {
 					]
 				}
 
-			],
+			]
 		});
 		this.initAppMenu({ 'items':loggedin_appmenu_items });
 			
 	} else {
-		this.setupCommonMenus({
-			// viewMenuItems: [
-			// 	{
-			// 		items: [
-			// 			// {label:$L('Back'),        icon:'back', command:'back'},
-			// 			{label:$L('User Detail'), command:'scroll-top'}
-			// 		]
-			// 	}
-			// ]
-		});	
+		this.setupCommonMenus({});	
 		
 		this.initAppMenu();
 	};
@@ -70,8 +53,6 @@ UserDetailAssistant.prototype.setup = function() {
 	/* use Mojo.View.render to render view templates and add them to the scene, if needed. */
 	
 	/* setup widgets here */
-	
-	
 	
 	/* add event handlers to listen to events from widgets */
 	

@@ -1,0 +1,32 @@
+<div class="palm-dark"> 
+	<div class="palm-page-header spaz-page-header">
+		<div class="palm-page-header-wrapper">
+			<div id="appIcon" class="img_icon"></div>
+			<div class="title">
+				Post as <span id="post-panel-username"></span>
+			</div>
+		</div>		
+	</div>
+
+	<div id="post-panel-irt" style="display:none">
+		<span id="post-panel-irt-prefix">Re:</span>
+		<span id="post-panel-irt-message" data-status-id="">@funkatron hi there!</span>
+		<span id="post-panel-irt-dismiss">x</span>
+	</div>
+
+	<div class='palm-row single' id="post-row">
+		<div class="palm-row-wrapper">
+			<div class="textfield-group" x-mojo-focus-highlight="true">
+				<div class="title">
+					<div id="post-textfield" x-mojo-element="TextField"></div>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<div id="post-panel-counter"><span id="post-panel-counter-number">140</span> char left</div>
+		
+	<div x-mojo-element="Button" id='post-shorten-text-button' class="secondary"></div>
+	<div x-mojo-element="Button" id='post-shorten-urls-button' class="secondary"></div>
+	<div x-mojo-element="Button" id='post-send-button' class="primary"></div>
+</div>
