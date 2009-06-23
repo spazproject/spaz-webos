@@ -157,7 +157,7 @@ SearchTwitterAssistant.prototype.activate = function(event) {
 		e.data.thisAssistant.startRefresher();
 	});
 	
-	jQuery().bind('new_search_timeline_data', { thisAssistant:this }, function(e, tweets) {
+	jQuery().bind('new_search_timeline_data', { thisAssistant:this }, function(e, data) {
 		
 		/*
 			Check to see if the returned query matches what we are using. If not, ignore.
@@ -166,7 +166,8 @@ SearchTwitterAssistant.prototype.activate = function(event) {
 		/*
 			reverse the tweets for collection rendering (faster)
 		*/
-		var rendertweets = tweets;
+		var rendertweets = data[0];
+		var searchinfo   = data[1]
 		var new_count = 0;
 		jQuery.each( rendertweets, function() {
 			
