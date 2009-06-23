@@ -508,12 +508,12 @@ scene_helpers.addCommonSceneMethods = function(assistant) {
 	
 	
 	assistant.activateButtonSpinner = function(id) {
-		var buttonWidget = this.controller.get(button);
+		var buttonWidget = this.controller.get(id);
 		buttonWidget.mojo.activate();
 	}
 
 	assistant.deactivateButtonSpinner = function(id) {
-		var buttonWidget = this.controller.get(button);
+		var buttonWidget = this.controller.get(id);
 		buttonWidget.mojo.deactivate();
 	}
 	

@@ -596,14 +596,18 @@ div.spaz-drawer {
 }
 		
 	#post-panel-irt { /* "in-reply-to" */
-	
+		margin:0px 10px 4px;
+		line-height:13px;
 	}
 
-		#post-panel-irt-prefix {}
-		#post-panel-irt-message {
-			color:#666;
+		#post-panel-irt-prefix {
+			color:#999;
 			font-size:14px;
-			line-height:8px;
+			font-weight: bold;		
+		}
+		#post-panel-irt-message {
+			color:#999;
+			font-size:14px;
 		}
 		#post-panel-irt-dismiss {
 			color:white;
@@ -621,12 +625,19 @@ div.spaz-drawer {
 			}
 		
 	
+	#post-textfield, #post-textfield textarea {
+		color:#FFF;
+		font-size:18px;
+	}
+	
+	
 	#post-panel-counter {
 		font-family:"Coconut-CondensedMedium";
-		font-size:14pt;
+		font-size:14px;
+		margin:5px 10px;
 	}
 		#post-panel-counter.over-limit {
-			color:#990000;
+			color:#99CCCC;
 		}
 		
 		#post-panel-counter-number {

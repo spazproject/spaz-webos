@@ -6,9 +6,14 @@ function PostAssistant(args) {
 	if (args) {
 		this.args = args;
 	}
+	
+	scene_helpers.addCommonSceneMethods(this);
 }
 
-PostAssistant.prototype.setup = function() {	
+PostAssistant.prototype.setup = function() {
+	
+	this.initTwit();
+	
 	this.buttonAttributes = {
 		type: Mojo.Widget.activityButton
 	};
@@ -36,7 +41,8 @@ PostAssistant.prototype.setup = function() {
 			'multiline':true,
 			'enterSubmits':false,
 			'autoFocus':true,
-			'changeOnKeyPress':true
+			'changeOnKeyPress':true,
+			
 		},
 	this.postTextFieldModel);
 	
@@ -66,9 +72,9 @@ PostAssistant.prototype.activate = function(event) {
 	
 	
 	
-	Mojo.Event.listen($('post-send-button'), Mojo.Event.tap, this.sendPost.bind(this));
-	Mojo.Event.listen($('post-shorten-text-button'), Mojo.Event.tap, this.shortenText.bind(this));
-	Mojo.Event.listen($('post-shorten-urls-button'), Mojo.Event.tap, this.shortenURLs.bind(this));
+	Mojo.Event.listen($('post-send-button'), Mojo.Event.tap, this.sendPost.bindAsEventListener(this));
+	Mojo.Event.listen($('post-shorten-text-button'), Mojo.Event.tap, this.shortenText.bindAsEventListener(this));
+	Mojo.Event.listen($('post-shorten-urls-button'), Mojo.Event.tap, this.shortenURLs.bindAsEventListener(this));
 
 	jQuery('#post-panel-username').text(sc.app.username);
 
@@ -104,6 +110,8 @@ PostAssistant.prototype.activate = function(event) {
 	jQuery('#post-panel-irt-dismiss').bind(Mojo.Event.tap, function(e) {
 		thisA.clearPostIRT();
 	});
+	
+	thisA._updateCharCount();
 
 
 };
@@ -140,7 +148,7 @@ PostAssistant.prototype._updateCharCount = function() {
 	}
 
 	function _updateCharCountNow() {
-		var numchars  = document.getElementById('post-textfield').value.length;
+		var numchars  = thisA.postTextFieldModel.value.length;
 		var charcount = 140 - numchars;
 		document.getElementById('post-panel-counter-number').innerHTML = charcount.toString();
 		if (charcount < 0) {
@@ -158,7 +166,7 @@ PostAssistant.prototype._updateCharCount = function() {
 		}	
 	}
 	
-	this._updateCharCountTimeout = setTimeout(_updateCharCountNow, 500);
+	this._updateCharCountTimeout = setTimeout(_updateCharCountNow, 250);
 	
 	
 };
@@ -194,23 +202,83 @@ PostAssistant.prototype.clearPostIRT = function() {
 
 
 
-PostAssistant.prototype.shortenText = function(event) {};
-PostAssistant.prototype.shortenURLs = function(event) {};
+PostAssistant.prototype.shortenText = function(event) {
+	var stxt = new SpazShortText();
+	this.postTextFieldModel.value = stxt.shorten(this.postTextFieldModel.value);
+	this.controller.modelChanged(this.postTextFieldModel);
+	this._updateCharCount();
+	this.deactivateButtonSpinner('post-shorten-text-button');
+};
+
+PostAssistant.prototype.shortenURLs = function(event) {
+	var surl = new SpazShortURL(SPAZCORE_SHORTURL_SERVICE_BITLY);
+	var longurls = sc.helpers.extractURLs(this.postTextFieldModel.value);
+
+	/*
+		check URL lengths
+	*/
+	var reallylongurls = [];
+	for (var i=0; i<longurls.length; i++) {
+		if (longurls[i].length > 25) { // only shorten links longer than 25chars
+			reallylongurls.push(longurls[i]);
+		}
+	}
+	
+	/*
+		drop out if we don't have any URLs
+	*/
+	if (reallylongurls.length < 1) {
+		this.deactivateButtonSpinner('post-shorten-urls-button');
+		this._updateCharCount();
+		return;
+	}
+	
+	function onShortURLSuccess(e, data) {
+		this.postTextFieldModel.value = sc.helpers.replaceMultiple(this.postTextFieldModel.value, data);
+		this.controller.modelChanged(this.postTextFieldModel);
+		this.deactivateButtonSpinner('post-shorten-urls-button');
+		this._updateCharCount();
+		sch.unlisten($('post-shorten-urls-button'), sc.events.newShortURLSuccess, onShortURLSuccess, this);
+		sch.unlisten($('post-shorten-urls-button'), sc.events.newShortURLFailure, onShortURLSuccess, this);
+	}
+	function onShortURLSuccess(e, data) {
+		this.deactivateButtonSpinner('post-shorten-urls-button');
+		this._updateCharCount();
+		sch.unlisten($('post-shorten-urls-button'), sc.events.newShortURLSuccess, onShortURLSuccess, this);
+		sch.unlisten($('post-shorten-urls-button'), sc.events.newShortURLFailure, onShortURLSuccess, this);
+	}
+	
+	sch.listen($('post-shorten-urls-button'), sc.events.newShortURLSuccess, onShortURLSuccess, this);
+	sch.listen($('post-shorten-urls-button'), sc.events.newShortURLFailure, onShortURLSuccess, this);
+
+	surl.shorten(reallylongurls, {
+		'event_target':$('post-shorten-urls-button'),
+		'apiopts': {
+			'version':'2.0.1',
+			'format':'json',
+			'login':'spazcore',
+			'apiKey':'R_f3b86681a63a6bbefc7d8949fd915f1d'
+		}
+	});
+	
+	
+	
+};
 
 
 /**
  *  
  */
 PostAssistant.prototype.sendPost = function(event) {
-	var status = jQuery('#post-').val();
+	var status = this.postTextFieldModel.value;
 
 	if (status.length > 0) {
 		var in_reply_to = parseInt(jQuery('#post-panel-irt-message', this.controller.getSceneScroller()).attr('data-status-id'), 10);
 		
 		if (in_reply_to > 0) {
-			this.sceneAssistant.twit.update(status, null, in_reply_to);
+			this.twit.update(status, null, in_reply_to);
 		} else {
-			this.sceneAssistant.twit.update(status, null, null);
+			this.twit.update(status, null, null);
 		}
 		
 	}
@@ -267,14 +335,14 @@ PostAssistant.prototype.renderSuccessfulPost = function(event, data) {
 	/*
 		re-apply filtering
 	*/
-	this.sceneAssistant.filterTimeline();
+	this.filterTimeline();
 
-	this.sceneAssistant.playAudioCue('send');
+	this.playAudioCue('send');
 	
 	this.deactivateSpinner();
 	
 			
-	this.hidePostPanel(event);
+	this.controller.stageController.popScene();
 	// this.clearPostPanel(event);
 
 };
