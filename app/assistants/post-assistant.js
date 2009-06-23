@@ -211,6 +211,9 @@ PostAssistant.prototype.shortenText = function(event) {
 };
 
 PostAssistant.prototype.shortenURLs = function(event) {
+	
+	var event_target = $('post-shorten-urls-button');
+	
 	var surl = new SpazShortURL(SPAZCORE_SHORTURL_SERVICE_BITLY);
 	var longurls = sc.helpers.extractURLs(this.postTextFieldModel.value);
 
@@ -233,26 +236,28 @@ PostAssistant.prototype.shortenURLs = function(event) {
 		return;
 	}
 	
-	function onShortURLSuccess(e, data) {
+	function onShortURLSuccess(e) {
+		var data = sch.getEventData(e);
 		this.postTextFieldModel.value = sc.helpers.replaceMultiple(this.postTextFieldModel.value, data);
 		this.controller.modelChanged(this.postTextFieldModel);
 		this.deactivateButtonSpinner('post-shorten-urls-button');
 		this._updateCharCount();
-		sch.unlisten($('post-shorten-urls-button'), sc.events.newShortURLSuccess, onShortURLSuccess, this);
-		sch.unlisten($('post-shorten-urls-button'), sc.events.newShortURLFailure, onShortURLSuccess, this);
+		sch.unlisten(event_target, sc.events.newShortURLSuccess, onShortURLSuccess, this);
+		sch.unlisten(event_target, sc.events.newShortURLFailure, onShortURLFailure, this);
 	}
-	function onShortURLSuccess(e, data) {
+	function onShortURLFailure(e) {
+		var error_obj = sch.getEventData(e);
 		this.deactivateButtonSpinner('post-shorten-urls-button');
 		this._updateCharCount();
-		sch.unlisten($('post-shorten-urls-button'), sc.events.newShortURLSuccess, onShortURLSuccess, this);
-		sch.unlisten($('post-shorten-urls-button'), sc.events.newShortURLFailure, onShortURLSuccess, this);
+		sch.unlisten(event_target, sc.events.newShortURLSuccess, onShortURLSuccess, this);
+		sch.unlisten(event_target, sc.events.newShortURLFailure, onShortURLFailure, this);
 	}
 	
-	sch.listen($('post-shorten-urls-button'), sc.events.newShortURLSuccess, onShortURLSuccess, this);
-	sch.listen($('post-shorten-urls-button'), sc.events.newShortURLFailure, onShortURLSuccess, this);
+	sch.listen(event_target, sc.events.newShortURLSuccess, onShortURLSuccess, this);
+	sch.listen(event_target, sc.events.newShortURLFailure, onShortURLFailure, this);
 
 	surl.shorten(reallylongurls, {
-		'event_target':$('post-shorten-urls-button'),
+		'event_target':event_target,
 		'apiopts': {
 			'version':'2.0.1',
 			'format':'json',
