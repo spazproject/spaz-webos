@@ -369,7 +369,7 @@ scene_helpers.addCommonSceneMethods = function(assistant) {
 		var text = 'd ';
 		
 	    if (username) {
-			text += username;
+			text += (username + ' ');
 	    }
 	
 		this.showPostPanel({
@@ -411,7 +411,7 @@ scene_helpers.addCommonSceneMethods = function(assistant) {
 		var text = '@';
 		
 	    if (username) {
-			text += username;
+			text += username + ' ';
 	    }
 	
 		this.showPostPanel({
