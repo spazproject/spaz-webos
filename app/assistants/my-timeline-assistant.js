@@ -572,7 +572,8 @@ MyTimelineAssistant.prototype.renderTweets = function(tweets, render_callback, f
 	// alert("new_count:"+new_count);
 	// alert("fullscreen"+this.isFullScreen);
 	
-	if (!from_cache && new_count > 0 && !this.isFullScreen) {
+	// if (!from_cache && new_count > 0 && !this.isFullScreen) {
+	if (!from_cache && new_count > 0) {
 		this.newMsgBanner(new_count);
 		this.playAudioCue('newmsg');		
 	} else if (this.isFullScreen) {

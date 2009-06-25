@@ -970,3 +970,63 @@ div.error_info {
 	.filter-timeline-replies div.timeline-entry       { display:none; }
 	.filter-timeline-replies div.timeline-entry.reply { display:none; }
 	.filter-timeline-replies div.timeline-entry.dm    { display:block; }
+
+
+
+/* Popup notifications */ 
+.notification-panel    { 
+        background: #000; 
+        color: #fff; 
+        overflow: hidden; 
+        padding: 15px; 
+        top: 0; 
+        width: 320px; 
+} 
+.notification-container                { 
+        width: 290px; 
+        height: 48px; 
+        padding: 0; 
+        position: fixed; 
+        top: 10px; 
+        display: table-cell; 
+        vertical-align: middle; 
+} 
+.notification-container .notification-icon    { 
+        width: 48px; 
+        height: 48px; 
+        margin-right: 5px; 
+        float: left; 
+        background: url(../images/dashboard-icon-news.png) top left no-repeat; 
+} 
+.notification-container .notification-title    { 
+        width: 230px; 
+        height: 18px; 
+        margin-top: 5px; 
+        margin-bottom: 3px; 
+        padding-bottom:5px; 
+        overflow: hidden; 
+        text-overflow: ellipsis; 
+        white-space: nowrap; 
+        color: #fff; 
+        font-size: 16px; 
+        font-weight: bold; 
+} 
+.notification-container .notification-subtitle    { 
+        margin-top:-5px; 
+        width: 230px; 
+        height: 18px; 
+        overflow: hidden; 
+        text-overflow: ellipsis; 
+        color: #fff; 
+        font-size: 14px; 
+        white-space: nowrap; 
+} 
+.notification-container .notification-title span, 
+.notification-container .notification-subtitle span { 
+        font-weight: normal; 
+} 
+
+/* Dashboard notifications */
+.palm-dashboard-icon { 
+  background: url(../images/spaz-icon-alpha_48.png); 
+} 

@@ -524,10 +524,15 @@ scene_helpers.addCommonSceneMethods = function(assistant) {
 		var launchArgs = {
 			'fromstage':this.getStageName()
 		};
+		var bannerArgs = {
+			'messageText':"There are "+count+" new messages",
+			'soundClass':'alerts'
+		};
 		var category = 'newMessages';
 		var appController = Mojo.Controller.getAppController();
 
-		appController.showBanner("There are "+count+" new messages", launchArgs, category);
+		appController.showBanner(bannerArgs, launchArgs, category);
+		this.showDashboard($L('New Messages'), bannerArgs.messageText, count);
 	}
 
 
@@ -539,9 +544,44 @@ scene_helpers.addCommonSceneMethods = function(assistant) {
 		var launchArgs = {
 			'fromstage':this.getStageName()
 		};
-		appController.showBanner(count+" new results for '"+query+"'", launchArgs, category);
+		var bannerArgs = {
+			'messageText':count+" new results for '"+query+"'",
+			'soundClass':'alerts'
+		};
+
+		appController.showBanner(bannerArgs, launchArgs, category);
+		this.showDashboard($L('New Messages'), bannerArgs.messageText, count);
+		
 	}
 	
+	
+	
+	assistant.showDashboard   = function(title, message, count) {
+		
+		var DashboardStageName = 'dashboard';
+		
+		//  Post a banner notification and create or update Dashboard if there are new stories 
+		var appController = Mojo.Controller.getAppController(); 
+		var dashboardStageController = appController.getStageProxy(DashboardStageName); 
+		// if (!this.isFullScreen) { 
+		if (true) { 
+			if (dashboardStageController) { 
+				dashboardStageController.delegateToSceneAssistant("updateDashboard", title, message, count); 
+			} else {
+				var sceneArgs = {'title': title, 'message': message, 'count': count};
+				var pushDashboard = function(stageController){
+					stageController.pushScene('dashboard', sceneArgs); 
+				}; 
+				appController.createStageWithCallback({
+						'name':DashboardStageName,
+						'lightweight':false
+					},
+					pushDashboard,
+					'dashboard'
+				); 
+			} 
+		}
+	}
 	
 	
 	
