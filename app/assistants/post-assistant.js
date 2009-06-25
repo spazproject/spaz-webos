@@ -39,7 +39,7 @@ PostAssistant.prototype.setup = function() {
 	this.controller.setupWidget('post-shorten-urls-button', this.buttonAttributes, this.shortenURLsButtonModel);
 	this.controller.setupWidget('post-textfield', {
 			'multiline':true,
-			'enterSubmits':false,
+			'enterSubmits':true,
 			'autoFocus':true,
 			'changeOnKeyPress':true,
 			
@@ -75,6 +75,10 @@ PostAssistant.prototype.activate = function(event) {
 	Mojo.Event.listen($('post-send-button'), Mojo.Event.tap, this.sendPost.bindAsEventListener(this));
 	Mojo.Event.listen($('post-shorten-text-button'), Mojo.Event.tap, this.shortenText.bindAsEventListener(this));
 	Mojo.Event.listen($('post-shorten-urls-button'), Mojo.Event.tap, this.shortenURLs.bindAsEventListener(this));
+	this.listenForEnter('post-textfield', function() {
+		this.controller.get('post-send-button').mojo.activate();
+		this.sendPost();
+	});
 
 	jQuery('#post-panel-username').text(sc.app.username);
 
@@ -119,7 +123,14 @@ PostAssistant.prototype.activate = function(event) {
 
 PostAssistant.prototype.deactivate = function(event) {
 	Mojo.Event.stopListening($('post-send-button'), Mojo.Event.tap, this.sendPost); 
-			
+	Mojo.Event.stopListening($('post-shorten-text-button'), Mojo.Event.tap, this.shortenText);
+	Mojo.Event.stopListening($('post-shorten-urls-button'), Mojo.Event.tap, this.shortenURLs);
+	
+	this.stopListeningForEnter('post-textfield', function() {
+		this.controller.get('post-send-button').mojo.activate();
+		this.sendPost();
+	});
+	
 	jQuery('#post-textfield').unbind('keyup');
 	jQuery('#post-textfield').unbind('keydown');
 	jQuery('#post-textfield').unbind('blur');
@@ -276,7 +287,7 @@ PostAssistant.prototype.shortenURLs = function(event) {
  */
 PostAssistant.prototype.sendPost = function(event) {
 	var status = this.postTextFieldModel.value;
-
+	
 	if (status.length > 0) {
 		var in_reply_to = parseInt(jQuery('#post-panel-irt-message', this.controller.getSceneScroller()).attr('data-status-id'), 10);
 		
@@ -287,6 +298,9 @@ PostAssistant.prototype.sendPost = function(event) {
 		}
 		
 	}
+	this.postTextFieldModel.disabled = true;
+	this.controller.modelChanged(this.postTextFieldModel);
+	
 };
 
 
@@ -358,14 +372,11 @@ PostAssistant.prototype.renderSuccessfulPost = function(event, data) {
  */
 PostAssistant.prototype.reportFailedPost = function(error_obj) {
 	this.deactivateSpinner();
-
+	this.postTextFieldModel.disabled = false;
+	this.controller.modelChanged(this.postTextFieldModel);
+	
 	var err_msg = $L("There was a problem posting your status");
 	this.sceneAssistant.displayErrorInfo(err_msg, error_obj);
-	this.hidePostPanel(event);
-};
-
-PostAssistant.prototype.hidePostPanel = function() {
-	this.widget.mojo.close();
 };
 
 PostAssistant.prototype.deactivateSpinner = function() {
