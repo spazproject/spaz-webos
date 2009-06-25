@@ -126,10 +126,7 @@ PostAssistant.prototype.deactivate = function(event) {
 	Mojo.Event.stopListening($('post-shorten-text-button'), Mojo.Event.tap, this.shortenText);
 	Mojo.Event.stopListening($('post-shorten-urls-button'), Mojo.Event.tap, this.shortenURLs);
 	
-	this.stopListeningForEnter('post-textfield', function() {
-		this.controller.get('post-send-button').mojo.activate();
-		this.sendPost();
-	});
+	this.stopListeningForEnter('post-textfield');
 	
 	jQuery('#post-textfield').unbind('keyup');
 	jQuery('#post-textfield').unbind('keydown');
