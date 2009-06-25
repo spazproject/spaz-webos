@@ -76,6 +76,7 @@ PostAssistant.prototype.activate = function(event) {
 	Mojo.Event.listen($('post-shorten-text-button'), Mojo.Event.tap, this.shortenText.bindAsEventListener(this));
 	Mojo.Event.listen($('post-shorten-urls-button'), Mojo.Event.tap, this.shortenURLs.bindAsEventListener(this));
 
+
 	jQuery('#post-panel-username').text(sc.app.username);
 
 	
@@ -129,6 +130,8 @@ PostAssistant.prototype.deactivate = function(event) {
 	
 	jQuery().unbind('update_succeeded');
 	jQuery().unbind('update_failed');
+	
+
 };
 
 PostAssistant.prototype.cleanup = function(event) {

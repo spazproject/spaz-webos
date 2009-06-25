@@ -1030,3 +1030,8 @@ div.error_info {
 .palm-dashboard-icon { 
   background: url(../images/spaz-icon-alpha_48.png); 
 } 
+BODY.palm-dashboard-notification, BODY.palm-dashboard-notification>div[x-mojo-element=Scroller] {	
+	background-image: none;
+	background-color:#000000;
+	color:#FFFFFF;
+}
