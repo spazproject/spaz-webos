@@ -54,6 +54,10 @@ FavoritesAssistant.prototype.activate = function(event) {
 
 	var thisA = this; // for closures below
 	
+	var tts = sc.app.prefs.get('timeline-text-size');
+	this.setTimelineTextSize('#my-timeline', tts);
+	
+	
 	jQuery().bind('error_favorites_timeline_data', function(e, error_obj) {
 		// error_obj.url
 		// error_obj.xhr

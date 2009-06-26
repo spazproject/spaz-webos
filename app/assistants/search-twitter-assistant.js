@@ -144,6 +144,10 @@ SearchTwitterAssistant.prototype.activate = function(event) {
 	
 	var thisA = this; // for closures below
 	
+	var tts = sc.app.prefs.get('timeline-text-size');
+	this.setTimelineTextSize('#my-timeline', tts);
+	
+	
 	jQuery().bind('error_search_timeline_data', { thisAssistant:this }, function(e, error_obj) {
 		
 		var error_msg = $L("There was an error retrieving search results");

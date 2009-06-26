@@ -127,8 +127,8 @@ MyTimelineAssistant.prototype.activate = function(event) {
 
 	var thisA = this; // for closures
 
-	/* add event handlers to listen to events from widgets */
-
+	var tts = sc.app.prefs.get('timeline-text-size');
+	this.setTimelineTextSize('#my-timeline', tts);
 	
 	if (this.loadTimelineCacheOnActivate === true) {
 		dump('Loading Timeline Cache ###################################');

@@ -172,7 +172,7 @@ div.timeline-entry {
 	
 		div.timeline-entry .status .meta-wrapper {
 			overflow:hidden;
-			margin-top:5px;3
+			margin-top:5px;
 			height:15pt;
 		}
 		div.timeline-entry .status .screen-name {
@@ -228,6 +228,54 @@ div.timeline-entry {
 		background-image: url(../images/theme/tiny-lock-icon.png);
 		background-repeat: no-repeat;
 	}
+	
+/*
+	timeline entry font sizes
+*/	
+.timeline.tall div.timeline-entry .status .screen-name {
+	font-size:11pt;
+}
+.timeline.tall div.timeline-entry .status .meta-wrapper {
+	height:15pt;
+}
+.timeline.tall div.timeline-entry .status .text {
+	font-size:11pt;
+	line-height:15pt;
+}
+.timeline.tall div.timeline-entry .status .meta {
+	font-size:	10pt;
+}
+
+.timeline.grande div.timeline-entry .status .screen-name {
+	font-size:14pt;
+}
+.timeline.venti div.timeline-entry .status .meta-wrapper {
+	height:17pt;
+}
+.timeline.grande div.timeline-entry .status .text {
+	font-size:14pt;
+	line-height:19pt;
+}
+.timeline.grande div.timeline-entry .status .meta {
+	font-size:	12pt;
+}
+
+.timeline.venti div.timeline-entry .status .screen-name {
+	font-size:17pt;
+}
+.timeline.venti div.timeline-entry .status .meta-wrapper {
+	height:22pt;
+}
+.timeline.venti div.timeline-entry .status .text {
+	font-size:17pt;
+	line-height:22pt;
+}
+.timeline.venti div.timeline-entry .status .meta {
+	font-size:	14pt;
+}
+
+
+	
 	
 /*
 	login scene stuff

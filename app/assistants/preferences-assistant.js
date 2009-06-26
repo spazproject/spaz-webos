@@ -26,7 +26,8 @@ PreferencesAssistant.prototype.setup = function() {
 		'network-searchrefreshinterval': 	sc.app.prefs.get('network-searchrefreshinterval'),
 		'timeline-friends-getcount':sc.app.prefs.get('timeline-friends-getcount'),
 		'timeline-replies-getcount':sc.app.prefs.get('timeline-replies-getcount'),
-		'timeline-dm-getcount':     sc.app.prefs.get('timeline-dm-getcount')
+		'timeline-dm-getcount':     sc.app.prefs.get('timeline-dm-getcount'),
+		'timeline-text-size':     sc.app.prefs.get('timeline-text-size')
 	};
 	
 	
@@ -110,7 +111,17 @@ PreferencesAssistant.prototype.setup = function() {
 	this.controller.listen('timeline-replies-getcount', Mojo.Event.propertyChange, this.saveSettings.bindAsEventListener(this));
 	this.controller.listen('timeline-dm-getcount', Mojo.Event.propertyChange, this.saveSettings.bindAsEventListener(this));
 	
-		
+	
+	this.controller.setupWidget('timeline-text-size',
+		{
+			// label: $L('My Timeline'),
+			choices: this.validTimelineTextSizes,
+			modelProperty:'timeline-text-size'
+		},
+		this.model
+	);
+	this.controller.listen('timeline-text-size', Mojo.Event.propertyChange, this.saveSettings.bindAsEventListener(this));
+	
 	/*
 		clear cache button
 	*/
@@ -162,6 +173,12 @@ PreferencesAssistant.prototype.setupChoices = function(){
 		{label:$L('10'), value:10},
 		{label:$L('20'), value:20},
 	];
+	
+	this.validTimelineTextSizes = [
+		{label:$L('Tall'),  value:'tall'}, 
+		{label:$L('Grande'),value:'grande'}, 
+		{label:$L('Venti'), value:'venti'}		
+	]
 };
 
 
@@ -186,6 +203,7 @@ PreferencesAssistant.prototype.cleanup = function(event) {
 	this.controller.stopListening('timeline-friends-getcount', Mojo.Event.propertyChange, this.saveSettings);
 	this.controller.stopListening('timeline-replies-getcount', Mojo.Event.propertyChange, this.saveSettings);
 	this.controller.stopListening('timeline-dm-getcount', Mojo.Event.propertyChange, this.saveSettings);
+	this.controller.stopListening('timeline-text-size', Mojo.Event.propertyChange, this.saveSettings);
 
 
 	Mojo.Event.stopListening($('clear-cache-button'), Mojo.Event.tap, function(e) {

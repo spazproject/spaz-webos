@@ -251,6 +251,21 @@ scene_helpers.addCommonSceneMethods = function(assistant) {
 	
 	
 	
+	assistant.setTimelineTextSize = function(tl_id, size) {
+		size = size.toLowerCase();
+		
+		var sizes = ['tall', 'grande', 'venti'];
+		
+		var tl = jQuery(tl_id);
+		
+		for (var i=0; i < sizes.length; i++) {
+			tl.removeClass(sizes[i]);
+		};
+		tl.addClass(size);
+	};
+	
+	
+	
 	assistant.showLocationPanel = function(event) {
 		this.controller.showDialog({
 	          template: 'shared/location-popup',

@@ -39,4 +39,6 @@ var default_preferences = {
     'twitter-www-base-url': 'http://twitter.com/',
 
     'twitter-source': 'spaz',
+
+	'timeline-text-size': 'tall', // also grande, venti
 }
