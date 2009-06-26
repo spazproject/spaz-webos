@@ -49,5 +49,13 @@
     {
         "scenes": "post",
         "source": "app\/assistants\/post-assistant.js"
+    },
+    {
+        "scenes": "new-msg-popup",
+        "source": "app\/assistants\/new-msg-popup-assistant.js"
+    },
+    {
+        "scenes": "dashboard",
+        "source": "app\/assistants\/dashboard-assistant.js"
     }
 ]

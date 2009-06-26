@@ -80,6 +80,7 @@ PostAssistant.prototype.activate = function(event) {
 		this.sendPost();
 	});
 
+
 	jQuery('#post-panel-username').text(sc.app.username);
 
 	
@@ -137,6 +138,8 @@ PostAssistant.prototype.deactivate = function(event) {
 	
 	jQuery().unbind('update_succeeded');
 	jQuery().unbind('update_failed');
+	
+
 };
 
 PostAssistant.prototype.cleanup = function(event) {
