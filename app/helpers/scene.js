@@ -530,9 +530,9 @@ scene_helpers.addCommonSceneMethods = function(assistant) {
 		};
 		var category = 'newMessages';
 		var appController = Mojo.Controller.getAppController();
-
+		
 		appController.showBanner(bannerArgs, launchArgs, category);
-		this.showDashboard($L('New Messages'), bannerArgs.messageText, count);
+		this.showDashboard($L('New Messages'), bannerArgs.messageText, count, this.getStageName());
 	}
 
 
@@ -548,39 +548,37 @@ scene_helpers.addCommonSceneMethods = function(assistant) {
 			'messageText':count+" new results for '"+query+"'",
 			'soundClass':'alerts'
 		};
-
+		
 		appController.showBanner(bannerArgs, launchArgs, category);
-		this.showDashboard($L('New Messages'), bannerArgs.messageText, count);
+		this.showDashboard($L('New Messages'), bannerArgs.messageText, count, this.getStageName());
 		
 	}
 	
 	
 	
-	assistant.showDashboard   = function(title, message, count) {
+	assistant.showDashboard   = function(title, message, count, fromstage) {
 		
 		var DashboardStageName = 'dashboard';
 		
 		//  Post a banner notification and create or update Dashboard if there are new stories 
 		var appController = Mojo.Controller.getAppController(); 
 		var dashboardStageController = appController.getStageProxy(DashboardStageName); 
-		// if (!this.isFullScreen) { 
-		if (true) { 
-			if (dashboardStageController) { 
-				dashboardStageController.delegateToSceneAssistant("updateDashboard", title, message, count); 
-			} else {
-				var sceneArgs = {'title': title, 'message': message, 'count': count};
-				var pushDashboard = function(stageController){
-					stageController.pushScene('dashboard', sceneArgs); 
-				}; 
-				appController.createStageWithCallback({
-						'name':DashboardStageName,
-						'lightweight':false
-					},
-					pushDashboard,
-					'dashboard'
-				); 
-			} 
-		}
+
+		if (dashboardStageController) { 
+			dashboardStageController.delegateToSceneAssistant("updateDashboard", title, message, count, fromstage); 
+		} else {
+			var sceneArgs = {'title': title, 'message': message, 'count': count, 'fromstage':fromstage};
+			var pushDashboard = function(stageController){
+				stageController.pushScene('dashboard', sceneArgs); 
+			}; 
+			appController.createStageWithCallback({
+					'name':DashboardStageName,
+					'lightweight':false
+				},
+				pushDashboard,
+				'dashboard'
+			); 
+		} 
 	}
 	
 	
