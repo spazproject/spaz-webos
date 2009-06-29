@@ -109,19 +109,19 @@ var sendEmail = function(opts) {
 	
 	if (to_addresses) {
 		for (var i=0; i < to_addresses.length; i++) {
-			recipients.push( makeRecipientObj(to_addresses, 'to') );
+			recipients.push( makeRecipientObj(to_addresses[i], 'to') );
 		};                                                  
 	}                                                       
 	                                                        
 	if (cc_addresses) {                                     
 		for (var i=0; i < cc_addresses.length; i++) {       
-			recipients.push( makeRecipientObj(cc_addresses, 'cc') );
+			recipients.push( makeRecipientObj(cc_addresses[i], 'cc') );
 		};                                                  
 	}                                                       
 	                                                        
 	if (bcc_addresses) {                                    
 		for (var i=0; i < bcc_addresses.length; i++) {      
-			recipients.push( makeRecipientObj(bcc_addresses, 'bcc') );
+			recipients.push( makeRecipientObj(bcc_addresses[i], 'bcc') );
 		};
 	}
 	
@@ -140,7 +140,7 @@ var sendEmail = function(opts) {
 	};
 	
 	
-	var email_srvc = Mojo.serviceRequest(
+	var email_srvc = opts.controller.serviceRequest(
 		'palm://com.palm.applicationManager',
 		{
 			method: 'open',

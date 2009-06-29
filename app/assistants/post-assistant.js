@@ -46,7 +46,7 @@ PostAssistant.prototype.setup = function() {
 			'multiline':true,
 			'enterSubmits':true,
 			'autoFocus':true,
-			'changeOnKeyPress':true,
+			'changeOnKeyPress':true
 			
 		},
 	this.postTextFieldModel);
@@ -330,7 +330,21 @@ PostAssistant.prototype.sendPost = function(event) {
 
 
 
-PostAssistant.prototype.attachImage = function() {};
+PostAssistant.prototype.attachImage = function() {
+	var params = {
+    kinds: ['image'],
+    onSelect: function(file){
+      sendEmail({
+        to: ["thynctank@thynctank.com"],
+        msg: "Image upload trial",
+        subject: "Image upload trial",
+        attachments: [file],
+        controller: this.controller
+      });
+    }.bind(this)
+	};
+	Mojo.FilePicker.pickFile(params, this.controller.stageController);
+};
 
 
 /**
