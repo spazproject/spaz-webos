@@ -114,7 +114,7 @@ PreferencesAssistant.prototype.setup = function() {
 	
 	this.controller.setupWidget('timeline-text-size',
 		{
-			// label: $L('My Timeline'),
+			label: $L('Timeline Text Size'),
 			choices: this.validTimelineTextSizes,
 			modelProperty:'timeline-text-size'
 		},

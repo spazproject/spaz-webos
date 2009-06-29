@@ -10,7 +10,7 @@ var Users = function(prefsObj) {
 		this.prefs.load();
 	}
 	this._users = this.prefs.get('users');
-}
+};
 
 
 Users.prototype.load	= function() { 
@@ -30,7 +30,7 @@ Users.prototype.fixIDs  = function() {
 	}
 	dump('done fixing IDs in user hash');
 	
-}
+};
 
 
 Users.prototype.save	= function() {
@@ -70,7 +70,8 @@ Users.prototype.add			= function(username, password, type) {
 		'id':this.generateID(username, type),
 		'username':username,
 		'password':password,
-		'type':type
+		'type':type,
+		'meta':{}
 	};
 	this.save();
 	dump("Added new user:"+this.generateID(username, type));
@@ -90,6 +91,19 @@ Users.prototype.getByType	= function(type) {
  * @param {string} type 
  */
 Users.prototype.getUser		= function(username, type) {
+
+	var index = this._findUserIndex(username, type);
+
+	if (index !== false) {
+		return this._users[i];		
+	}
+	
+	return false;
+	
+};
+
+
+Users.prototype._findUserIndex = function(username, type) {
 	var username = username.toLowerCase();
 	var type     = type.toLowerCase();
 	
@@ -99,17 +113,48 @@ Users.prototype.getUser		= function(username, type) {
 		
 		if (this._users[i].id.toLowerCase() === id) {
 			dump('Found matching user record to '+ id);
-			return this._users[i];
+			return i;
 		}
 		
 	}
 	
 	return false;
-	
-}
+};
+
+
 
 
 Users.prototype.generateID = function(username, type) {
 	var id = username.toLowerCase()+"_"+type.toLowerCase();
 	return id;
-}
+};
+
+
+Users.prototype.getMeta = function(username, type, key) {
+	var user = null;
+	var id = this.generateID();
+	
+	if ( user = this.getUser(username, type) ) {
+		if (user.meta && user.meta[key] !== null) {
+			return user.meta[key];
+		}
+	}
+	
+	return null;
+	
+};
+
+Users.prototype.setMeta = function(username, type, key, value) {
+	
+	var index = this._findUserIndex(username, type);
+
+	if (index !== false) {		
+		if (!this._users[index].meta) {
+			this._users[index].meta = {};
+		}
+		this._users[index].meta[key] = value;
+		return this._users[index].meta[key];
+	}
+	return false;
+	
+};

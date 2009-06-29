@@ -65,19 +65,37 @@ AppAssistant.prototype.handleLaunch = function(launchParams) {
 	dump("Launch Parameters:");
 	dump(launchParams);
 	
-	if (launchParams && launchParams.fromstage) {
-		
-		if (launchParams.fromstage === 'main') {
-			PalmSystem.activate();
-		} else {
-			var stageController = this.controller.getStageController(launchParams.fromstage);
-			if (stageController) {
-				stageController.window.focus();
-			}			
-		}
-		
-	}
+	if (launchParams) {
+		if (launchParams.action) { // do an action
 
+			switch(launchParams.action) {
+				
+				case 'post':
+					if (launchParams.actionopts) {
+						var msg = launchParams.actionopts.msg || '';
+						var irt = launchParams.actionopts.irt || -1;
+					}
+					// make the user choose an account to post from, and then
+					// do something here to open a posting window with a prefilled form
+					
+					break;
+				default:
+					
+			}
+			
+		} else if (launchParams.fromstage) {
+
+			if (launchParams.fromstage === 'main') {
+				PalmSystem.activate();
+			} else {
+				var stageController = this.controller.getStageController(launchParams.fromstage);
+				if (stageController) {
+					stageController.window.focus();
+				}			
+			}
+			
+		}
+	}
 };
 
 

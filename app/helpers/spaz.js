@@ -51,6 +51,108 @@ var makeItemsClickable = function(str) {
 	return str;
 };
 
+/**
+ * preps an email and opens the compose email scene in the email app
+ * 
+ * the opts object passed should be of a format like:
+ * {
+ * 	account:{integer, optional},
+ * 	attachments:{array of file paths, optional},
+ * 	subject:{string, optional},
+ * 	msg:{string, optional},
+ * 	to:{array of email addresses},
+ * 	cc:{array of email addresses},
+ *  bcc:{array of email addresses}
+ * }
+ * 
+ * @param {object} opts
+ *  
+ */
+var sendEmail = function(opts) {
+	
+	
+	function makeRecipientObj(address, type) {
+		var to_role  = 1;
+		var cc_role  = 2;
+		var bcc_role = 3;
+		
+		var role = null;
+		
+		switch(type) {
+			case 'to':
+				role = to_role;
+				break;
+			case 'cc':
+				role = cc_role;
+				break;
+			case 'bcc':
+				role = bcc_role;
+				break;
+			default:
+				role = to_role;
+		}
+		
+		var re_obj = {
+			'role' :role,
+			'value':address,
+			'type' :'email'
+		};
+		
+		return re_obj;
+	};
+	
+	var to_addresses  = opts.to  || null;
+	var cc_addresses  = opts.cc  || null;
+	var bcc_addresses = opts.bcc || null;
+	
+	var recipients = [];
+	
+	if (to_addresses) {
+		for (var i=0; i < to_addresses.length; i++) {
+			recipients.push( makeRecipientObj(to_addresses, 'to') );
+		};                                                  
+	}                                                       
+	                                                        
+	if (cc_addresses) {                                     
+		for (var i=0; i < cc_addresses.length; i++) {       
+			recipients.push( makeRecipientObj(cc_addresses, 'cc') );
+		};                                                  
+	}                                                       
+	                                                        
+	if (bcc_addresses) {                                    
+		for (var i=0; i < bcc_addresses.length; i++) {      
+			recipients.push( makeRecipientObj(bcc_addresses, 'bcc') );
+		};
+	}
+	
+	var account     = opts.account     || null; // an integer or null
+	var attachments = opts.attachments || null; // an array or null
+	var summary     = opts.subject     || null; // a string or null
+	var text        = opts.msg         || null; // a string or null
+	
+	
+	var email_params = {
+		'account':account,
+		'attachments':attachments,
+		'recipients':recipients,
+		'summary':summary,
+		'text':text
+	};
+	
+	
+	var email_srvc = Mojo.serviceRequest(
+		'palm://com.palm.applicationManager',
+		{
+			method: 'open',
+			parameters: {
+				id: 'com.palm.app.email',
+				params: email_params
+			}
+		}
+	);
+};
+
+
 
 /*
 	map sc.helpers.dump() to dump() for extra succinctness

@@ -3,7 +3,7 @@ var default_preferences = {
 	'last_username':null,
 	'last_type':null,
 
-	'users':[], // an array of user objects with properties { 'id', 'username', 'password', 'type' }	
+	'users':[], // an array of user objects with properties { 'id', 'username', 'password', 'type', 'meta' }	
 	'always-go-to-my-timeline':false,
 
     'use-markdown': true,
@@ -24,9 +24,9 @@ var default_preferences = {
     'timeline-replies-getcount': 5,
     'timeline-dm-getcount': 5,
 
-    'url-shortener': 'isgd',
+    'url-shortener': 'bitly',
 
-    'image-uploader': 'twitpic',
+    'image-uploader': 'tweetphoto',
 
     'services-twitpic-sharepassword': false,
 
