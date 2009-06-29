@@ -18,8 +18,12 @@ PostAssistant.prototype.setup = function() {
 		type: Mojo.Widget.activityButton
 	};
 	this.postButtonModel = {
-		buttonLabel : "Post",
+		buttonLabel : "Send",
 		buttonClass: 'primary'
+	};
+	this.attachImageButtonModel = {
+		buttonLabel : "Attach Image",
+		buttonClass: 'secondary'
 	};
 	this.shortenTextButtonModel = {
 		buttonLabel : "Shorten text",
@@ -35,6 +39,7 @@ PostAssistant.prototype.setup = function() {
 	};
 	
 	this.controller.setupWidget('post-send-button',         this.buttonAttributes, this.postButtonModel);
+	this.controller.setupWidget('attach-image-button',        {}, this.attachImageButtonModel);
 	this.controller.setupWidget('post-shorten-text-button', this.buttonAttributes, this.shortenTextButtonModel);
 	this.controller.setupWidget('post-shorten-urls-button', this.buttonAttributes, this.shortenURLsButtonModel);
 	this.controller.setupWidget('post-textfield', {
@@ -73,6 +78,7 @@ PostAssistant.prototype.activate = function(event) {
 	
 	
 	Mojo.Event.listen($('post-send-button'), Mojo.Event.tap, this.sendPost.bindAsEventListener(this));
+	Mojo.Event.listen($('attach-image-button'), Mojo.Event.tap, this.attachImage.bindAsEventListener(this));
 	Mojo.Event.listen($('post-shorten-text-button'), Mojo.Event.tap, this.shortenText.bindAsEventListener(this));
 	Mojo.Event.listen($('post-shorten-urls-button'), Mojo.Event.tap, this.shortenURLs.bindAsEventListener(this));
 	this.listenForEnter('post-textfield', function() {
@@ -124,6 +130,7 @@ PostAssistant.prototype.activate = function(event) {
 
 PostAssistant.prototype.deactivate = function(event) {
 	Mojo.Event.stopListening($('post-send-button'), Mojo.Event.tap, this.sendPost); 
+	Mojo.Event.stopListening($('attach-image-button'), Mojo.Event.tap, this.attachImage);
 	Mojo.Event.stopListening($('post-shorten-text-button'), Mojo.Event.tap, this.shortenText);
 	Mojo.Event.stopListening($('post-shorten-urls-button'), Mojo.Event.tap, this.shortenURLs);
 	
@@ -303,6 +310,27 @@ PostAssistant.prototype.sendPost = function(event) {
 	
 };
 
+PostAssistant.prototype.sendPost = function(event) {
+	var status = this.postTextFieldModel.value;
+	
+	if (status.length > 0) {
+		var in_reply_to = parseInt(jQuery('#post-panel-irt-message', this.controller.getSceneScroller()).attr('data-status-id'), 10);
+		
+		if (in_reply_to > 0) {
+			this.twit.update(status, null, in_reply_to);
+		} else {
+			this.twit.update(status, null, null);
+		}
+		
+	}
+	this.postTextFieldModel.disabled = true;
+	this.controller.modelChanged(this.postTextFieldModel);
+	
+};
+
+
+
+PostAssistant.prototype.attachImage = function() {};
 
 
 /**

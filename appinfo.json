@@ -5,10 +5,8 @@
 	"main": "index.html",
 	"id": "com.funkatron.app.spaz",
 	"icon": "icon.png",
-	"miniicon": "miniicon.png",
+	"miniicon": "images/miniicon.png",
 	"vendor": "Funkatron Productions",
 	"vendorurl": "http://funkatron.com",
-	"theme":"dark"
-	
+	"theme":"dark"	
 }
-
