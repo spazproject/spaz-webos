@@ -122,6 +122,16 @@ PreferencesAssistant.prototype.setup = function() {
 	);
 	this.controller.listen('timeline-text-size', Mojo.Event.propertyChange, this.saveSettings.bindAsEventListener(this));
 	
+	this.controller.setupWidget('image-uploader',
+		{
+			label: $L('Image hosting service'),
+			choices: this.validImageUploaders,
+			modelProperty:'image-uploader'
+		},
+		this.model
+	);
+	this.controller.listen('image-uploader', Mojo.Event.propertyChange, this.saveSettings.bindAsEventListener(this));
+	
 	/*
 		clear cache button
 	*/
@@ -178,7 +188,14 @@ PreferencesAssistant.prototype.setupChoices = function(){
 		{label:$L('Tall'),  value:'tall'}, 
 		{label:$L('Grande'),value:'grande'}, 
 		{label:$L('Venti'), value:'venti'}		
-	]
+	];
+	
+	var spm = new SpazPhotoMailer();
+	var uploaders = spm.getAPILabels();
+	this.validImageUploaders = [];
+	for (var i=0; i < uploaders.length; i++) {
+		this.validImageUploaders.push({label:$L(uploaders[i]),  value:uploaders[i]});
+	};
 };
 
 

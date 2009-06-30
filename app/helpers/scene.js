@@ -882,16 +882,18 @@ scene_helpers.addCommonSceneMethods = function(assistant) {
 			{label:$L('Okay'), value:"okay", type:'dismiss'}
 		];
 		
-		opts.title    = title   || 'Alert';
-		opts.msg      = msg     || '';
-		opts.onChoose = ok_cb   || function() {};
-		opts.choices  = choices || default_choices;
+		var title    = title   || 'Alert';
+		var msg      = msg     || '';
+		var onChoose = ok_cb   || function(choice) {
+			return true;
+		};
+		var choices  = choices || default_choices;
 		
 		this.controller.showAlertDialog({
-			'onChoose':opts.onChoose,
-			'title':   $L(opts.title),
-			'message': $L(opts.msg),
-			'choices': opts.choices
+			'onChoose':onChoose,
+			'title':   $L(title),
+			'message': $L(msg),
+			'choices': choices
 		});
 	};
 	

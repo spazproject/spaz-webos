@@ -691,7 +691,12 @@ div.spaz-drawer {
 		#post-panel-counter-number {
 			font-weight:bold;
 		}
-		
+	
+	
+	#post-image-service-help {
+		font-size:.9em;
+	}
+	
 
 /*
 	misc

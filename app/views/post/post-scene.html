@@ -1,4 +1,4 @@
-<div class="palm-dark"> 
+<div class="palm-dark">
 	<div class="palm-page-header spaz-page-header">
 		<div class="palm-page-header-wrapper">
 			<div id="appIcon" class="img_icon"></div>
@@ -7,13 +7,15 @@
 			</div>
 		</div>		
 	</div>
-
+	
+	<div id="post-buttons-standard">
+		
 	<div id="post-panel-irt" style="display:none">
 		<span id="post-panel-irt-prefix">Re:</span>
 		<span id="post-panel-irt-message" data-status-id="">@funkatron hi there!</span>
 		<span id="post-panel-irt-dismiss">x</span>
 	</div>
-
+	
 	<div class='palm-row single' id="post-row">
 		<div class="palm-row-wrapper">
 			<div class="textfield-group" x-mojo-focus-highlight="true">
@@ -25,16 +27,51 @@
 	</div>
 
 	<div id="post-panel-counter"><span id="post-panel-counter-number">140</span> char left</div>
+	<div id="post-attachment"></div>
 	
-	<table width="100%">
-		<tbody>
-			<tr>
-				<td width="50%"><div x-mojo-element="Button" id='post-shorten-text-button' class="secondary buttonfloat"></div></td>
-				<td width="50%"><div x-mojo-element="Button" id='post-shorten-urls-button' class="secondary buttonfloat"></div></td>
-			</tr>
-		</tbody>		
-	</table>
+	
+		<table width="100%">
+			<tbody>
+				<tr>
+					<td width="50%"><div x-mojo-element="Button" id='post-shorten-text-button' class="secondary buttonfloat"></div></td>
+					<td width="50%"><div x-mojo-element="Button" id='post-shorten-urls-button' class="secondary buttonfloat"></div></td>
+				</tr>
+			</tbody>		
+		</table>
 		
-	<div x-mojo-element="Button" id='attach-image-button' class="secondary"></div>
-	<div x-mojo-element="Button" id='post-send-button' class="primary"></div>
+		<div x-mojo-element="Button" id='attach-image-button' class="secondary"></div>
+		<div x-mojo-element="Button" id='post-send-button' class="primary"></div>
+	</div>
+	<div id="post-buttons-image">
+		<div id="post-image-choose-service">
+			
+			<div class="palm-group palm-group-spaz">
+				<div class="palm-group-title" id="search-toggle" x-mojo-loc=''>Image hosting service</div>
+				<div class="palm-list">
+					<div class="palm-row first" x-mojo-tap-highlight="momentary">
+						<div class="palm-row-wrapper">
+							<div id="image-uploader" x-mojo-element="ListSelector"></div>
+						</div>
+					</div>
+					<div class="palm-row single">
+						<div class="palm-row-wrapper textfield-group" x-mojo-focus-highlight="true">
+							<div class="title">
+			      				<div id="image-uploader-email" name="image-uploader-email"  x-mojo-element="TextField"></div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+
+
+			
+			
+			
+			<button class="palm-button" id="post-image-lookup-email">Look-up posting email</button>
+			<button class="palm-button affirmative" id="post-image-choose">Choose image</button>
+			<button class="palm-button negative" id="post-image-cancel">Cancel</button>
+			
+			
+		</div>
+	</div>
 </div>

@@ -132,7 +132,7 @@ Users.prototype.generateID = function(username, type) {
 
 Users.prototype.getMeta = function(username, type, key) {
 	var user = null;
-	var id = this.generateID();
+	var id = this.generateID(username, type);
 	
 	if ( user = this.getUser(username, type) ) {
 		if (user.meta && user.meta[key] !== null) {

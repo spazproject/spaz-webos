@@ -14,6 +14,16 @@ PostAssistant.prototype.setup = function() {
 	
 	this.initTwit();
 	
+	this.postMode = 'normal'; // 'normal' or 'email'
+	
+	this.Users = new Users(sc.app.prefs);
+	
+	this.model = {
+		'attachment':null
+	}
+	
+	
+	
 	this.buttonAttributes = {
 		type: Mojo.Widget.activityButton
 	};
@@ -51,6 +61,52 @@ PostAssistant.prototype.setup = function() {
 		},
 	this.postTextFieldModel);
 	
+	
+
+	
+	
+	
+	this.imageUploaderEmailModel = {
+		'image-uploader-email':''
+	};
+	this.controller.setupWidget('image-uploader-email',
+	    {
+			// hintText: $L('posting email'),
+			enterSubmits: false,
+			requiresEnterKey: false,
+			modelProperty:		'image-uploader-email',
+			changeOnKeyPress: true, 
+			focusMode:		Mojo.Widget.focusSelectMode,
+			multiline:		false,
+		},
+		this.imageUploaderEmailModel
+    );
+	
+	
+	
+	this.spm = new SpazPhotoMailer();
+	var uploaders = this.spm.getAPILabels();
+	this.validImageUploaders = [];
+	for (var i=0; i < uploaders.length; i++) {
+		this.validImageUploaders.push({label:$L(uploaders[i]),  value:uploaders[i]});
+	};
+	
+	this.imageUploaderModel = {
+		'image-uploader':sc.app.prefs.get('image-uploader')
+	};
+	
+	this.controller.setupWidget('image-uploader',
+		{
+			label: $L('Image host'),
+			choices: this.validImageUploaders,
+			modelProperty:'image-uploader'
+		},
+		this.imageUploaderModel
+	);
+	
+	
+	jQuery('#post-buttons-image').hide();
+	
 
 };
 
@@ -85,6 +141,7 @@ PostAssistant.prototype.activate = function(event) {
 		this.controller.get('post-send-button').mojo.activate();
 		this.sendPost();
 	});
+	Mojo.Event.listen($('image-uploader'), Mojo.Event.propertyChange, this.setImageUploader.bindAsEventListener(this));	
 
 
 	jQuery('#post-panel-username').text(sc.app.username);
@@ -122,6 +179,28 @@ PostAssistant.prototype.activate = function(event) {
 		thisA.clearPostIRT();
 	});
 	
+	
+	jQuery('#post-image-lookup-email').bind(Mojo.Event.tap, function(e) {
+		var api_label = thisA.imageUploaderModel['image-uploader'];
+		var help_text = $L(thisA.spm.apis[api_label].help_text);
+		var email_info_url = $L(thisA.spm.apis[api_label].email_info_url);
+
+		thisA.showAlert(
+			$L(help_text),
+			$('Look-Up Posting Email Address'),
+			function(choice) {
+				if (choice === 'Open Browser') {
+					thisA.openInBrowser(email_info_url);
+				}
+			}, 
+			[{label:$L('Open')+' '+api_label, value:"Open Browser", type:'affirmative'}]
+		);
+	});
+	
+	jQuery('#post-image-choose').bind(Mojo.Event.tap, function(e) {
+		thisA.chooseImage();
+	});
+	
 	thisA._updateCharCount();
 
 
@@ -133,6 +212,8 @@ PostAssistant.prototype.deactivate = function(event) {
 	Mojo.Event.stopListening($('attach-image-button'), Mojo.Event.tap, this.attachImage);
 	Mojo.Event.stopListening($('post-shorten-text-button'), Mojo.Event.tap, this.shortenText);
 	Mojo.Event.stopListening($('post-shorten-urls-button'), Mojo.Event.tap, this.shortenURLs);
+	Mojo.Event.stopListening($('image-uploader'), Mojo.Event.propertyChange, this.setImageUploader);	
+	
 	
 	this.stopListeningForEnter('post-textfield');
 	
@@ -142,6 +223,8 @@ PostAssistant.prototype.deactivate = function(event) {
 	jQuery('#post-textfield').unbind('focus');
 	
 	jQuery('#post-panel-irt-dismiss').unbind(Mojo.Event.tap);
+	jQuery('#post-image-lookup-email').unbind(Mojo.Event.tap);
+	jQuery('#post-image-choose').unbind(Mojo.Event.tap);
 	
 	jQuery().unbind('update_succeeded');
 	jQuery().unbind('update_failed');
@@ -289,12 +372,61 @@ PostAssistant.prototype.shortenURLs = function(event) {
 };
 
 
+
+PostAssistant.prototype.setImageUploader = function(e) {
+	var api_label = this.imageUploaderModel['image-uploader'];
+	sc.app.prefs.set('image-uploader', api_label);
+	// this.setImageUploaderHelp(api_label);
+	this.setImageUploaderEmail(api_label);
+	
+};
+
+// PostAssistant.prototype.setImageUploaderHelp =function(api_label) {
+// 	jQuery('#post-image-service-help').html($L(this.spm.apis[api_label].help_text));
+// };
+
+PostAssistant.prototype.setImageUploaderEmail = function(api_label) {
+	if (!api_label) {
+		api_label = this.imageUploaderModel['image-uploader'];
+	}
+	
+	var email = null;
+	
+	email = this.loadImageUploaderEmail(api_label);
+	
+	if (!email) {
+		email = this.spm.apis[api_label].getToAddress({
+			'username':sc.app.username
+		});
+		this.saveImageUploaderEmail(api_label, email);
+	}
+	
+	this.imageUploaderEmailModel['image-uploader-email'] = email;
+	this.controller.modelChanged(this.imageUploaderEmailModel);
+};
+
+
+PostAssistant.prototype.loadImageUploaderEmail = function(api_label, email) {
+	this.Users.getMeta(sc.app.username, sc.app.type, api_label+'_posting_address');
+}
+
+PostAssistant.prototype.saveImageUploaderEmail = function(api_label, email) {
+	this.Users.setMeta(sc.app.username, sc.app.type, api_label+'_posting_address', email);
+}
+
+
 /**
  *  
  */
 PostAssistant.prototype.sendPost = function(event) {
 	var status = this.postTextFieldModel.value;
 	
+	if (this.postMode === 'email') {
+		var email = this.imageUploaderEmailModel['image-uploader-email'];
+		var file_path = this.model.attachment
+		this.postImageMessage(email, status, file_path);
+	}
+	
 	if (status.length > 0) {
 		var in_reply_to = parseInt(jQuery('#post-panel-irt-message', this.controller.getSceneScroller()).attr('data-status-id'), 10);
 		
@@ -303,48 +435,71 @@ PostAssistant.prototype.sendPost = function(event) {
 		} else {
 			this.twit.update(status, null, null);
 		}
+
+		this.postTextFieldModel.disabled = true;
+		this.controller.modelChanged(this.postTextFieldModel);
 		
+	} else { // don't post if length < 0
+		this.deactivateSpinner();
 	}
-	this.postTextFieldModel.disabled = true;
-	this.controller.modelChanged(this.postTextFieldModel);
 	
 };
 
-PostAssistant.prototype.sendPost = function(event) {
-	var status = this.postTextFieldModel.value;
-	
-	if (status.length > 0) {
-		var in_reply_to = parseInt(jQuery('#post-panel-irt-message', this.controller.getSceneScroller()).attr('data-status-id'), 10);
-		
-		if (in_reply_to > 0) {
-			this.twit.update(status, null, in_reply_to);
-		} else {
-			this.twit.update(status, null, null);
-		}
-		
-	}
-	this.postTextFieldModel.disabled = true;
-	this.controller.modelChanged(this.postTextFieldModel);
-	
-};
+
 
 
 
 PostAssistant.prototype.attachImage = function() {
+	
+	jQuery('#post-buttons-standard').slideUp('200', function() {
+		jQuery('#post-buttons-image').slideDown('200');
+	});
+	
+	
+	
+	// this.setImageUploaderHelp(sc.app.prefs.get('image-uploader'));
+	this.setImageUploaderEmail(sc.app.prefs.get('image-uploader'));
+	
+	jQuery('#post-image-cancel').one('click', this.cancelAttachImage);
+	
+	
+
+};
+
+PostAssistant.prototype.cancelAttachImage = function() {
+	jQuery('#post-buttons-image').slideUp('200', function() {
+		jQuery('#post-buttons-standard').slideDown('200');
+	});
+};
+
+
+PostAssistant.prototype.postImageMessage = function(posting_address, message, filepath) {
+    sendEmail({
+      to: [posting_address],
+      msg: msg,
+      subject: msg,
+      attachments: [filepath],
+      controller: this.controller
+    });
+}
+
+
+PostAssistant.prototype.chooseImage = function(posting_address, message, filepath) {
+	
+	var thisA = this
+	
 	var params = {
-    kinds: ['image'],
-    onSelect: function(file){
-      sendEmail({
-        to: ["thynctank@thynctank.com"],
-        msg: "Image upload trial",
-        subject: "Image upload trial",
-        attachments: [file],
-        controller: this.controller
-      });
-    }.bind(this)
+	    kinds: ['image'],
+	    onSelect: function(file) {
+			thisA.postButtonModel.buttonLabel = $('Send Image Post');
+			jQuery('#post-attachment').show().html(file);
+			thisA.model.attachment = file;
+			thisA.cancelAttachImage();
+	    }.bind(this)
 	};
 	Mojo.FilePicker.pickFile(params, this.controller.stageController);
 };
+
 
 
 /**
