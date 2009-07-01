@@ -20,9 +20,7 @@ PostAssistant.prototype.setup = function() {
 	
 	this.model = {
 		'attachment':null
-	}
-	
-	
+	};
 	
 	this.buttonAttributes = {
 		type: Mojo.Widget.activityButton
@@ -49,7 +47,7 @@ PostAssistant.prototype.setup = function() {
 	};
 	
 	this.controller.setupWidget('post-send-button',         this.buttonAttributes, this.postButtonModel);
-	this.controller.setupWidget('attach-image-button',        {}, this.attachImageButtonModel);
+	this.controller.setupWidget('attach-image-button',      {}, this.attachImageButtonModel);
 	this.controller.setupWidget('post-shorten-text-button', this.buttonAttributes, this.shortenTextButtonModel);
 	this.controller.setupWidget('post-shorten-urls-button', this.buttonAttributes, this.shortenURLsButtonModel);
 	this.controller.setupWidget('post-textfield', {
@@ -141,8 +139,9 @@ PostAssistant.prototype.activate = function(event) {
 		this.controller.get('post-send-button').mojo.activate();
 		this.sendPost();
 	});
-	Mojo.Event.listen($('image-uploader'), Mojo.Event.propertyChange, this.setImageUploader.bindAsEventListener(this));	
-
+	Mojo.Event.listen($('image-uploader'), Mojo.Event.propertyChange, this.changeImageUploader.bindAsEventListener(this));	
+	Mojo.Event.listen($('image-uploader-email'), Mojo.Event.propertyChange, this.setImageUploaderEmail.bindAsEventListener(this));	
+	
 
 	jQuery('#post-panel-username').text(sc.app.username);
 
@@ -212,7 +211,8 @@ PostAssistant.prototype.deactivate = function(event) {
 	Mojo.Event.stopListening($('attach-image-button'), Mojo.Event.tap, this.attachImage);
 	Mojo.Event.stopListening($('post-shorten-text-button'), Mojo.Event.tap, this.shortenText);
 	Mojo.Event.stopListening($('post-shorten-urls-button'), Mojo.Event.tap, this.shortenURLs);
-	Mojo.Event.stopListening($('image-uploader'), Mojo.Event.propertyChange, this.setImageUploader);	
+	Mojo.Event.stopListening($('image-uploader'), Mojo.Event.propertyChange, this.changeImageUploader);	
+	Mojo.Event.stopListening($('image-uploader-email'), Mojo.Event.propertyChange, this.setImageUploaderEmail);	
 	
 	
 	this.stopListeningForEnter('post-textfield');
@@ -372,51 +372,63 @@ PostAssistant.prototype.shortenURLs = function(event) {
 };
 
 
-
-PostAssistant.prototype.setImageUploader = function(e) {
+/**
+ * saves the new image uploader label and loads up the appropriate email address for that api
+ */
+PostAssistant.prototype.changeImageUploader = function(e) {
 	var api_label = this.imageUploaderModel['image-uploader'];
 	sc.app.prefs.set('image-uploader', api_label);
-	// this.setImageUploaderHelp(api_label);
-	this.setImageUploaderEmail(api_label);
+	this.loadImageUploaderEmail(api_label);
 	
 };
 
-// PostAssistant.prototype.setImageUploaderHelp =function(api_label) {
-// 	jQuery('#post-image-service-help').html($L(this.spm.apis[api_label].help_text));
-// };
-
-PostAssistant.prototype.setImageUploaderEmail = function(api_label) {
+/**
+ * Loads up the posting address for the given api label. If a user metakey is set for this, use that. otherwise retrieve from API 
+ */
+PostAssistant.prototype.loadImageUploaderEmail = function(api_label) {
 	if (!api_label) {
 		api_label = this.imageUploaderModel['image-uploader'];
 	}
 	
 	var email = null;
 	
-	email = this.loadImageUploaderEmail(api_label);
+	email = this.getImageUploaderEmail(api_label);
 	
 	if (!email) {
 		email = this.spm.apis[api_label].getToAddress({
 			'username':sc.app.username
 		});
-		this.saveImageUploaderEmail(api_label, email);
+		this.setImageUploaderEmail(api_label, email);
 	}
 	
 	this.imageUploaderEmailModel['image-uploader-email'] = email;
 	this.controller.modelChanged(this.imageUploaderEmailModel);
 };
 
-
-PostAssistant.prototype.loadImageUploaderEmail = function(api_label, email) {
-	this.Users.getMeta(sc.app.username, sc.app.type, api_label+'_posting_address');
+/**
+ * Gets the meta value for the current user & api's posting address
+ */
+PostAssistant.prototype.getImageUploaderEmail = function(api_label) {
+	return this.Users.getMeta(sc.app.username, sc.app.type, api_label+'_posting_address');
 }
 
-PostAssistant.prototype.saveImageUploaderEmail = function(api_label, email) {
+/**
+ * Sets the posting email for the given api and the current user 
+ */
+PostAssistant.prototype.setImageUploaderEmail = function(api_label, email) {
+	if (!api_label || !sch.isString(api_label)) {
+		api_label = this.imageUploaderModel['image-uploader'];
+	}
+	if (!email || !sch.isString(email)) {
+		email = this.imageUploaderEmailModel['image-uploader-email'];
+	}
+	
 	this.Users.setMeta(sc.app.username, sc.app.type, api_label+'_posting_address', email);
 }
 
 
 /**
- *  
+ * Sends a post, either by email or normal AJAX posting to Twitter, per this.postMode
  */
 PostAssistant.prototype.sendPost = function(event) {
 	var status = this.postTextFieldModel.value;
@@ -425,6 +437,7 @@ PostAssistant.prototype.sendPost = function(event) {
 		var email = this.imageUploaderEmailModel['image-uploader-email'];
 		var file_path = this.model.attachment
 		this.postImageMessage(email, status, file_path);
+		return;
 	}
 	
 	if (status.length > 0) {
@@ -448,24 +461,24 @@ PostAssistant.prototype.sendPost = function(event) {
 
 
 
-
+/**
+ * Change the "mode" of the posting scene so we see the controls for attaching an image 
+ */
 PostAssistant.prototype.attachImage = function() {
 	
 	jQuery('#post-buttons-standard').slideUp('200', function() {
 		jQuery('#post-buttons-image').slideDown('200');
 	});
 	
-	
-	
-	// this.setImageUploaderHelp(sc.app.prefs.get('image-uploader'));
-	this.setImageUploaderEmail(sc.app.prefs.get('image-uploader'));
+	this.loadImageUploaderEmail();
 	
 	jQuery('#post-image-cancel').one('click', this.cancelAttachImage);
 	
-	
-
 };
 
+/**
+ * Go back to the "normal" posting scene controls 
+ */
 PostAssistant.prototype.cancelAttachImage = function() {
 	jQuery('#post-buttons-image').slideUp('200', function() {
 		jQuery('#post-buttons-standard').slideDown('200');
@@ -483,7 +496,10 @@ PostAssistant.prototype.postImageMessage = function(posting_address, message, fi
     });
 }
 
-
+/**
+ * opens the file picker for images, and passes a callback to change the post scene state to reflect
+ * the new "email and image" mode 
+ */
 PostAssistant.prototype.chooseImage = function(posting_address, message, filepath) {
 	
 	var thisA = this
@@ -494,6 +510,7 @@ PostAssistant.prototype.chooseImage = function(posting_address, message, filepat
 			thisA.postButtonModel.buttonLabel = $('Send Image Post');
 			jQuery('#post-attachment').show().html(file);
 			thisA.model.attachment = file;
+			thisA.postMode = 'email';
 			thisA.cancelAttachImage();
 	    }.bind(this)
 	};
@@ -503,7 +520,7 @@ PostAssistant.prototype.chooseImage = function(posting_address, message, filepat
 
 
 /**
- *  
+ * 
  */
 PostAssistant.prototype.renderSuccessfulPost = function(event, data) {
 	if (sch.isArray(data)) {

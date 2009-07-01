@@ -153,7 +153,11 @@ Users.prototype.setMeta = function(username, type, key, value) {
 			this._users[index].meta = {};
 		}
 		this._users[index].meta[key] = value;
+		
+		this.save();
+		
 		return this._users[index].meta[key];
+		
 	}
 	return false;
 	
