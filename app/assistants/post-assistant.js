@@ -441,6 +441,8 @@ PostAssistant.prototype.sendPost = function(event) {
 		var emailobj = {'name':api_label, 'address':email};
 		var file = this.model.attachment;
 		this.postImageMessage(emailobj, status, file);
+		this.deactivateSpinner();
+		this.controller.stageController.popScene();
 		return;
 	}
 	
@@ -505,12 +507,15 @@ PostAssistant.prototype.setPostButtonLabel = function(label) {
 
 
 
-PostAssistant.prototype.postImageMessage = function(post_add_obj, message, file) {
+PostAssistant.prototype.postImageMessage = function(post_add_obj, message, file_path) {
+	
+	file_obj = {'fullPath':file_path};
+	
     sendEmail({
       to: [post_add_obj],
       msg: message,
       subject: message,
-      attachments: [file],
+      attachments: [file_obj],
       controller: this.controller
     });
     // next line should close new post "dialog"
