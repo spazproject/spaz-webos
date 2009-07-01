@@ -75,10 +75,10 @@ PostAssistant.prototype.setup = function() {
 			modelProperty:		'image-uploader-email',
 			changeOnKeyPress: true, 
 			focusMode:		Mojo.Widget.focusSelectMode,
-			multiline:		false,
+			multiline:		false
 		},
 		this.imageUploaderEmailModel
-    );
+  );
 	
 	
 	
@@ -410,7 +410,7 @@ PostAssistant.prototype.loadImageUploaderEmail = function(api_label) {
  */
 PostAssistant.prototype.getImageUploaderEmail = function(api_label) {
 	return this.Users.getMeta(sc.app.username, sc.app.type, api_label+'_posting_address');
-}
+};
 
 /**
  * Sets the posting email for the given api and the current user 
@@ -424,7 +424,7 @@ PostAssistant.prototype.setImageUploaderEmail = function(api_label, email) {
 	}
 	
 	this.Users.setMeta(sc.app.username, sc.app.type, api_label+'_posting_address', email);
-}
+};
 
 
 /**
@@ -435,8 +435,8 @@ PostAssistant.prototype.sendPost = function(event) {
 	
 	if (this.postMode === 'email') {
 		var email = this.imageUploaderEmailModel['image-uploader-email'];
-		var file_path = this.model.attachment
-		this.postImageMessage(email, status, file_path);
+		var file = this.model.attachment;
+		this.postImageMessage(email, status, file);
 		return;
 	}
 	
@@ -486,15 +486,17 @@ PostAssistant.prototype.cancelAttachImage = function() {
 };
 
 
-PostAssistant.prototype.postImageMessage = function(posting_address, message, filepath) {
+PostAssistant.prototype.postImageMessage = function(posting_address, message, file) {
     sendEmail({
       to: [posting_address],
-      msg: msg,
-      subject: msg,
-      attachments: [filepath],
+      msg: message,
+      subject: message,
+      attachments: [file],
       controller: this.controller
     });
-}
+    // next line should close new post "dialog"
+    //this.controller.stageController.popScene();
+};
 
 /**
  * opens the file picker for images, and passes a callback to change the post scene state to reflect
@@ -502,16 +504,16 @@ PostAssistant.prototype.postImageMessage = function(posting_address, message, fi
  */
 PostAssistant.prototype.chooseImage = function(posting_address, message, filepath) {
 	
-	var thisA = this
+	var thisA = this;
 	
 	var params = {
 	    kinds: ['image'],
 	    onSelect: function(file) {
-			thisA.postButtonModel.buttonLabel = $('Send Image Post');
-			jQuery('#post-attachment').show().html(file);
-			thisA.model.attachment = file;
-			thisA.postMode = 'email';
-			thisA.cancelAttachImage();
+  			thisA.postButtonModel.buttonLabel = $('Send Image Post');
+  			jQuery('#post-attachment').show().html(file);
+  			thisA.model.attachment = file;
+  			thisA.postMode = 'email';
+  			thisA.cancelAttachImage();
 	    }.bind(this)
 	};
 	Mojo.FilePicker.pickFile(params, this.controller.stageController);

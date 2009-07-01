@@ -93,6 +93,7 @@ var sendEmail = function(opts) {
 		}
 		
 		var re_obj = {
+		  'contactDisplay': "Photo Shared via Spaz",
 			'role' :role,
 			'value':address,
 			'type' :'email'
