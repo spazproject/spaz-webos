@@ -71,7 +71,7 @@ var makeItemsClickable = function(str) {
 var sendEmail = function(opts) {
 	
 	
-	function makeRecipientObj(address, type) {
+	function makeRecipientObj(address, type, contactDisplay) {
 		var to_role  = 1;
 		var cc_role  = 2;
 		var bcc_role = 3;
@@ -93,7 +93,7 @@ var sendEmail = function(opts) {
 		}
 		
 		var re_obj = {
-		  'contactDisplay': "Photo Shared via Spaz",
+			'contactDisplay': contactDisplay,
 			'role' :role,
 			'value':address,
 			'type' :'email'
@@ -110,19 +110,19 @@ var sendEmail = function(opts) {
 	
 	if (to_addresses) {
 		for (var i=0; i < to_addresses.length; i++) {
-			recipients.push( makeRecipientObj(to_addresses[i], 'to') );
+			recipients.push( makeRecipientObj(to_addresses[i].address, 'to', to_addresses[i].name) );
 		};                                                  
 	}                                                       
 	                                                        
 	if (cc_addresses) {                                     
 		for (var i=0; i < cc_addresses.length; i++) {       
-			recipients.push( makeRecipientObj(cc_addresses[i], 'cc') );
+			recipients.push( makeRecipientObj(cc_addresses[i].address, 'cc', cc_addresses[i].name) );
 		};                                                  
 	}                                                       
 	                                                        
 	if (bcc_addresses) {                                    
 		for (var i=0; i < bcc_addresses.length; i++) {      
-			recipients.push( makeRecipientObj(bcc_addresses[i], 'bcc') );
+			recipients.push( makeRecipientObj(bcc_addresses[i].address, 'bcc', bcc_addresses[i].name) );
 		};
 	}
 	

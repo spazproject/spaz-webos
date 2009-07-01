@@ -434,9 +434,12 @@ PostAssistant.prototype.sendPost = function(event) {
 	var status = this.postTextFieldModel.value;
 	
 	if (this.postMode === 'email') {
+		
+		var api_label = this.imageUploaderModel['image-uploader'];
 		var email = this.imageUploaderEmailModel['image-uploader-email'];
+		var emailobj = {'name':api_label, 'address':email};
 		var file = this.model.attachment;
-		this.postImageMessage(email, status, file);
+		this.postImageMessage(emailobj, status, file);
 		return;
 	}
 	
@@ -486,9 +489,9 @@ PostAssistant.prototype.cancelAttachImage = function() {
 };
 
 
-PostAssistant.prototype.postImageMessage = function(posting_address, message, file) {
+PostAssistant.prototype.postImageMessage = function(post_add_obj, message, file) {
     sendEmail({
-      to: [posting_address],
+      to: [post_add_obj],
       msg: message,
       subject: message,
       attachments: [file],
