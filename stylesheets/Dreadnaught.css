@@ -678,21 +678,42 @@ div.spaz-drawer {
 		font-size:18px;
 	}
 	
-	
-	#post-panel-counter {
-		font-family:"Coconut-CondensedMedium";
-		font-size:14px;
-		margin:5px 10px;
+	#post-panel-meta {
+		overflow:auto;
 	}
-		#post-panel-counter.over-limit {
-			color:#99CCCC;
+		#post-panel-counter {
+			font-family:"Coconut-CondensedMedium";
+			font-size:14px;
+			margin:5px 10px;
+			float:left;
 		}
+			#post-panel-counter.over-limit {
+				color:#99CCCC;
+			}
 		
-		#post-panel-counter-number {
-			font-weight:bold;
+			#post-panel-counter-number {
+				font-weight:bold;
+			}
+		#post-panel-attachment {
+			font-size:14px;
+			margin:2px 10px;
+			text-align:right;
 		}
-	
-	
+			#post-panel-attachment-dismiss {
+				color:white;
+				display:inline-block;
+				font-size:18px;
+				background-color:#666;
+				height:16px;
+				line-height:10px;
+				width: 18px;
+				margin-bottom:4px;
+				text-align:center;
+			} 
+				#post-panel-attachment-dismiss:active {
+					background-color:#333;
+				}
+			
 	#post-image-service-help {
 		font-size:.9em;
 	}

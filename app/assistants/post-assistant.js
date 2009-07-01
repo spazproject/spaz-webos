@@ -104,6 +104,7 @@ PostAssistant.prototype.setup = function() {
 	
 	
 	jQuery('#post-buttons-image').hide();
+	jQuery('#post-panel-attachment').hide();
 	
 
 };
@@ -483,10 +484,25 @@ PostAssistant.prototype.attachImage = function() {
  * Go back to the "normal" posting scene controls 
  */
 PostAssistant.prototype.cancelAttachImage = function() {
-	jQuery('#post-buttons-image').slideUp('200', function() {
-		jQuery('#post-buttons-standard').slideDown('200');
-	});
+	if ( jQuery('#post-buttons-image').is(':visible') ) {
+		jQuery('#post-buttons-image').slideUp('200', function() {
+			jQuery('#post-buttons-standard').slideDown('200');
+		});
+	}
+	if (this.postMode === 'email') {
+		this.setPostButtonLabel($L('Email Image Post'));
+	} else {
+		this.setPostButtonLabel($L('Post'));
+	}
+	
 };
+
+
+PostAssistant.prototype.setPostButtonLabel = function(label) {
+	this.postButtonModel.buttonLabel = label;
+	this.controller.modelChanged(this.postButtonModel);
+};
+
 
 
 PostAssistant.prototype.postImageMessage = function(post_add_obj, message, file) {
@@ -506,17 +522,41 @@ PostAssistant.prototype.postImageMessage = function(post_add_obj, message, file)
  * the new "email and image" mode 
  */
 PostAssistant.prototype.chooseImage = function(posting_address, message, filepath) {
-	
+
 	var thisA = this;
+	
+	// function fakeIt(file) {
+	// 	jQuery('#post-attachment').show().html(file);
+	// 	thisA.model.attachment = file;
+	// 	thisA.postMode = 'email';
+	// 	thisA.cancelAttachImage();
+	// 	jQuery('#post-panel-attachment').show();
+	// 	jQuery('#post-panel-attachment-dismiss').one('click', function() {
+	// 		thisA.postMode = 'normal';
+	// 		jQuery('#post-panel-attachment').hide();
+	// 		thisA.model.attachment = null;
+	// 		thisA.cancelAttachImage();
+	// 	});
+	//     }
+	// 
+	// fakeIt('file:///media/internal/wallpapers/01.jpg');
+	// return;
+	
 	
 	var params = {
 	    kinds: ['image'],
 	    onSelect: function(file) {
-  			thisA.postButtonModel.buttonLabel = $('Send Image Post');
-  			jQuery('#post-attachment').show().html(file);
-  			thisA.model.attachment = file;
-  			thisA.postMode = 'email';
-  			thisA.cancelAttachImage();
+			jQuery('#post-attachment').show().html(file);
+			thisA.model.attachment = file;
+			thisA.postMode = 'email';
+			thisA.cancelAttachImage();
+			jQuery('#post-panel-attachment').show();
+			jQuery('#post-panel-attachment-dismiss').one('click', function() {
+				thisA.postMode = 'normal';
+				jQuery('#post-panel-attachment').hide();
+				thisA.model.attachment = null;
+				thisA.cancelAttachImage();
+			});
 	    }.bind(this)
 	};
 	Mojo.FilePicker.pickFile(params, this.controller.stageController);
