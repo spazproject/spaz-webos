@@ -7,6 +7,8 @@ function PostAssistant(args) {
 		this.args = args;
 	}
 	
+	this.returningFromFilePicker = false;
+	
 	scene_helpers.addCommonSceneMethods(this);
 }
 
@@ -16,10 +18,13 @@ PostAssistant.prototype.setup = function() {
 	
 	this.postMode = 'normal'; // 'normal' or 'email'
 	
+
+	
 	this.Users = new Users(sc.app.prefs);
 	
 	this.model = {
-		'attachment':null
+		'attachment':null,
+		'attachment_icon':null
 	};
 	
 	this.buttonAttributes = {
@@ -109,9 +114,22 @@ PostAssistant.prototype.setup = function() {
 
 };
 
-PostAssistant.prototype.activate = function(event) {
+PostAssistant.prototype.activate = function(args) {
+	
+	dump('Activation args');
+	dump(args);
+	
+	dump('this.model');
+	dump(this.model);
+	
+	
 	var thisA = this;
 	
+	
+	if (this.returningFromFilePicker === true) {
+		this.onReturnFromFilePicker();
+		this.returningFromFilePicker = false;
+	}
 	
 	this.postTextField = $('post-textfield');
 	
@@ -551,21 +569,36 @@ PostAssistant.prototype.chooseImage = function(posting_address, message, filepat
 	var params = {
 	    kinds: ['image'],
 	    onSelect: function(file) {
-			jQuery('#post-attachment').show().html(file);
-			thisA.model.attachment = file;
+			dump(file);
+
+			thisA.model.attachment = file.fullPath;
+			thisA.model.attachment_icon = file.iconPath;
+			
+			dump(thisA.model);
+			
 			thisA.postMode = 'email';
-			thisA.cancelAttachImage();
-			jQuery('#post-panel-attachment').show();
-			jQuery('#post-panel-attachment-dismiss').one('click', function() {
-				thisA.postMode = 'normal';
-				jQuery('#post-panel-attachment').hide();
-				thisA.model.attachment = null;
-				thisA.cancelAttachImage();
-			});
-	    }.bind(this)
+			
+			thisA.returningFromFilePicker = true;
+			
+			dump(thisA.postMode);	
+	    }
 	};
 	Mojo.FilePicker.pickFile(params, this.controller.stageController);
 };
+
+
+PostAssistant.prototype.onReturnFromFilePicker = function() {
+	
+	this.cancelAttachImage();
+	jQuery('#post-panel-attachment').show();
+	jQuery('#post-panel-attachment-dismiss').one('click', function() {
+		this.postMode = 'normal';
+		jQuery('#post-panel-attachment').hide();
+		this.model.attachment = null;
+		this.cancelAttachImage();
+	});
+	
+}
 
 
 
