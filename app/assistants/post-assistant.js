@@ -484,7 +484,6 @@ PostAssistant.prototype.sendPost = function(event) {
 
 		this.postTextFieldModel.disabled = true;
 		this.controller.modelChanged(this.postTextFieldModel);
-		
 	} else { // don't post if length < 0
 		this.deactivateSpinner();
 	}
@@ -666,9 +665,7 @@ PostAssistant.prototype.renderSuccessfulPost = function(event, data) {
 	
 	this.deactivateSpinner();
 	
-			
-	// this.controller.stageController.popScene();
-	// this.clearPostPanel(event);
+	this.controller.stageController.popScene();
 
 };
 
