@@ -334,8 +334,12 @@ div.timeline-entry {
 	.checkbox-container {
 		margin:5px 10px;
 	}
+	.palm-row .checkbox-container {
+		margin:0px;
+	}
+
 		.checkbox-label {
-			margin:7px 0 0 0;
+			margin:13px 0 0 0;
 			font-size:12pt;
 			color:#FFF;
 		}

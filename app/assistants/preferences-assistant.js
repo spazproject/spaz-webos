@@ -27,7 +27,8 @@ PreferencesAssistant.prototype.setup = function() {
 		'timeline-friends-getcount':sc.app.prefs.get('timeline-friends-getcount'),
 		'timeline-replies-getcount':sc.app.prefs.get('timeline-replies-getcount'),
 		'timeline-dm-getcount':     sc.app.prefs.get('timeline-dm-getcount'),
-		'timeline-text-size':     sc.app.prefs.get('timeline-text-size')
+		'timeline-text-size':       sc.app.prefs.get('timeline-text-size'),
+		'image-uploader':           sc.app.prefs.get('image-uploader')
 	};
 	
 	
@@ -124,7 +125,7 @@ PreferencesAssistant.prototype.setup = function() {
 	
 	this.controller.setupWidget('image-uploader',
 		{
-			label: $L('Image hosting service'),
+			label: $L('service'),
 			choices: this.validImageUploaders,
 			modelProperty:'image-uploader'
 		},

@@ -10,26 +10,35 @@
 	
 	<div id="post-buttons-standard">
 		
-	<div id="post-panel-irt" style="display:none">
-		<span id="post-panel-irt-prefix">Re:</span>
-		<span id="post-panel-irt-message" data-status-id="">@funkatron hi there!</span>
-		<span id="post-panel-irt-dismiss">x</span>
-	</div>
-	
-	<div class='palm-row single' id="post-row">
-		<div class="palm-row-wrapper">
-			<div class="textfield-group" x-mojo-focus-highlight="true">
-				<div class="title">
-					<div id="post-textfield" x-mojo-element="TextField"></div>
+
+
+		<div class="palm-group palm-group-spaz unlabeled">
+			<div class="palm-list">
+
+				<div id="post-panel-irt" style="display:none">
+					<span id="post-panel-irt-prefix">Re:</span>
+					<span id="post-panel-irt-message" data-status-id="">@funkatron hi there!</span>
+					<span id="post-panel-irt-dismiss">x</span>
 				</div>
+
+				<div class='palm-row single' id="post-row">
+					<div class="palm-row-wrapper">
+						<div class="textfield-group" x-mojo-focus-highlight="true">
+							<div class="title">
+								<div id="post-textfield" x-mojo-element="TextField"></div>
+							</div>
+						</div>
+					</div>
+				</div>
+
+				<div id="post-panel-meta">
+					<div id="post-panel-counter"><span id="post-panel-counter-number">140</span> char left</div>
+					<div id="post-panel-attachment">Image Attachment <span id="post-panel-attachment-dismiss">x</span></div>
+				</div>
+				
 			</div>
 		</div>
-	</div>
-
-	<div id="post-panel-meta">
-		<div id="post-panel-counter"><span id="post-panel-counter-number">140</span> char left</div>
-		<div id="post-panel-attachment">Image Attachment <span id="post-panel-attachment-dismiss">x</span></div>
-	</div>
+	
 	
 		<table width="100%">
 			<tbody>
@@ -54,12 +63,15 @@
 							<div id="image-uploader" x-mojo-element="ListSelector"></div>
 						</div>
 					</div>
-					<div class="palm-row single">
+					<div class="palm-row">
 						<div class="palm-row-wrapper textfield-group" x-mojo-focus-highlight="true">
 							<div class="title">
 			      				<div id="image-uploader-email" name="image-uploader-email"  x-mojo-element="TextField"></div>
 							</div>
 						</div>
+					</div>
+					<div class="palm-row last">
+	      				<button class="palm-button" id="post-image-lookup-email">Look-up posting email</button>
 					</div>
 				</div>
 			</div>
@@ -68,7 +80,7 @@
 			
 			
 			
-			<button class="palm-button" id="post-image-lookup-email">Look-up posting email</button>
+			
 			<button class="palm-button affirmative" id="post-image-choose">Choose image</button>
 			<button class="palm-button negative" id="post-image-cancel">Cancel</button>
 			
