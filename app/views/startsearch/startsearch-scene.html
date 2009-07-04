@@ -9,36 +9,132 @@
 	</div>
 
 	<!-- <button class="palm-button dismiss" id="back-search-button">&laquo; Back</button> -->
+	
+	
+	<div id="search-accordion"> 
 
-	<div class="palm-group palm-group-spaz">
-		<div class="palm-group-title" id="search-toggle" x-mojo-loc=''>Search Twitter</div>
-		<div class="palm-list" id="search-panel">
-	   		<div class="palm-row single">
-				<div class="palm-row-wrapper textfield-group" x-mojo-focus-highlight="true">
-					<div class="title">
-							<!-- <div class="label">
-								search terms
-							</div> -->
-	      				<div id="search" name="search"  x-mojo-element="TextField"></div>
+	    <table class="palm-divider collapsible" x-mojo-tap-highlight="momentary">
+			<tbody>
+				<tr>
+					<td class="left"></td>
+					<td class="label"> Search </td>
+					<td class="line" width="100%"></td>
+					<td><div class="palm-arrow-closed arrow_button"></div></td>
+					<td class="right"></td>
+				</tr>
+			</tbody>
+		</table> 
+	    <div class="pane">
+			<div class="palm-group palm-group-spaz">
+				<div class="palm-group-title" id="search-toggle" x-mojo-loc=''>Search Twitter</div>
+				<div class="palm-list" id="search-panel">
+			   		<div class="palm-row single">
+						<div class="palm-row-wrapper textfield-group" x-mojo-focus-highlight="true">
+							<div class="title">
+									<!-- <div class="label">
+										search terms
+									</div> -->
+			      				<div id="search" name="search"  x-mojo-element="TextField"></div>
+							</div>
+						</div>
+					</div>
+
+			   		<div class="palm-row single">
+						<button class="palm-button" id="search-button">Search</button>
 					</div>
 				</div>
 			</div>
+		</div> 
 
-	   		<div class="palm-row single">
-				<button class="palm-button" id="search-button">Search</button>
+	    <table class="palm-divider collapsible" x-mojo-tap-highlight="momentary">
+			<tbody>
+				<tr>
+					<td class="left"></td>
+					<td class="label"> Trends </td>
+					<td class="line" width="100%"></td>
+					<td><div class="palm-arrow-closed arrow_button"></div></td>
+					<td class="right"></td>
+				</tr>
+			</tbody>
+		</table>
+	    <div class="pane">
+			<div class="palm-group palm-group-spaz">
+				<div class="palm-group-title" x-mojo-loc=''>Current Trends on Twitter</div>
+				<div class="palm-list">
+					<div id="trends-list"></div>
+					<div id="trends-spinner-container"></div>
+					<div class="palm-row single">
+						<div x-mojo-element="Button" id='reload-trends-button'></div>
+					</div>
+				</div>
 			</div>
-		</div>
-	</div>	
-	<div class="palm-group palm-group-spaz">
-		<div class="palm-group-title" x-mojo-loc=''>Current Trends on Twitter</div>
-		<div class="palm-list">
-			<div id="trends-list"></div>
-			<div id="trends-spinner-container"></div>
-			<div class="palm-row single">
-				<div x-mojo-element="Button" id='reload-trends-button'></div>
-			</div>
-		</div>
+		</div> 
+
+	    <table class="palm-divider collapsible" x-mojo-tap-highlight="momentary">
+			<tbody>
+				<tr>
+					<td class="left"></td>
+					<td class="label"> Public Timeline </td>
+					<td class="line" width="100%"></td>
+					<td><div class="palm-arrow-closed arrow_button"></div></td>
+					<td class="right"></td>
+				</tr>
+			</tbody>
+		</table>
+	    <div class="pane">
+			Nothing here yet
+		</div> 
+
 	</div>
+
+	
+	
+	
+	
+	<!-- <table class="palm-divider collapsible" data-triggers="panel-search-twitter" x-mojo-tap-highlight="momentary">
+		<tbody>
+			<tr>
+				<td class="left"></td>
+				<td class="label"> Label </td>
+				<td class="line" width="100%"></td>
+				<td><div class="palm-arrow-closed arrow_button"></div></td>
+				<td class="right"></td>
+			</tr>
+		</tbody>
+	</table>
+	<div class="content-panel" id="panel-search-twitter">
+
+	</div>	
+	
+	<table class="palm-divider collapsible" data-triggers="panel-trends" x-mojo-tap-highlight="momentary">
+		<tbody>
+			<tr>
+				<td class="left"></td>
+				<td class="label"> Label </td>
+				<td class="line" width="100%"></td>
+				<td><div class="palm-arrow-closed arrow_button"></div></td>
+				<td class="right"></td>
+			</tr>
+		</tbody>
+	</table>
+	<div class="content-panel" id="panel-trends">
+
+	</div>
+
+	<table class="palm-divider collapsible" data-triggers="panel-public-timeline" x-mojo-tap-highlight="momentary">
+		<tbody>
+			<tr>
+				<td class="left"></td>
+				<td class="label"> Label </td>
+				<td class="line" width="100%"></td>
+				<td><div class="palm-arrow-closed arrow_button"></div></td>
+				<td class="right"></td>
+			</tr>
+		</tbody>
+	</table>
+	<div class="content-panel" id="panel-public-timeline">
+		
+	</div> -->
 
 
 

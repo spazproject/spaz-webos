@@ -1113,3 +1113,40 @@ BODY.palm-dashboard-notification, BODY.palm-dashboard-notification>div[x-mojo-el
 	background-color:#000000;
 	color:#FFFFFF;
 }
+
+
+/*
+	Accordion 
+*/
+/* root element for accordion. decorated with rounded borders and gradient background image */
+#search-accordion {
+/*	background:#333 url(/img/global/gradient/h600.png) 0 0;*/
+/*	border:1px solid #333;*/
+}
+
+/* accordion header */
+#search-accordion table {
+}
+
+/* currently active header */
+#search-accordion table.current {
+}
+	/* we cheat a little to make .current closed be the same as .palm-arrow-expanded */
+	#search-accordion table.current .palm-arrow-closed { 
+		height: 32px;
+		width: 56px;
+		background: url(/usr/lib/mojo/framework/current/images/palm-divider-arrow.png) center -64px repeat-x;
+	}
+
+/* accordion pane */
+#search-accordion div.pane {
+	display:none;
+}
+
+/* a title inside pane */
+#search-accordion div.pane h3 {
+/*	font-weight:normal;
+	margin:0 0 -5px 0;
+	font-size:16px;
+	color:#999;
+*/}

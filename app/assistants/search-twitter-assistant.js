@@ -173,39 +173,42 @@ SearchTwitterAssistant.prototype.activate = function(event) {
 		var rendertweets = data[0];
 		var searchinfo   = data[1]
 		var new_count = 0;
-		jQuery.each( rendertweets, function() {
+		if (rendertweets && rendertweets.length > 0) {
+			jQuery.each( rendertweets, function() {
+
+				if (!thisA.getEntryElementByStatusId(this.id)) {
+					new_count++;
+					this.text = makeItemsClickable(this.text);
+
+					// var itemhtml = Mojo.View.render({object: this, template: 'search-twitter/search-item'});
+					var itemhtml = sc.app.tpl.parseTemplate('search-item', this);
+
+					/*
+						make jQuery obj
+					*/
+					var jqitem = jQuery(itemhtml);
+
+					/*
+						attach data object to item html
+					*/
+					jqitem.data('item', this);
+
+					/*
+						save this tweet to Depot
+					*/
+					sc.app.Tweets.save(this);
+
+
+					/*
+						put item on timeline
+					*/
+					jQuery('#search-timeline').prepend(jqitem);
+				}
+			});
+
+			sch.removeExtraElements('#search-timeline>div.timeline-entry', sc.app.prefs.get('timeline-maxentries'));
 			
-			if (!thisA.getEntryElementByStatusId(this.id)) {
-				new_count++;
-				this.text = makeItemsClickable(this.text);
-			
-				// var itemhtml = Mojo.View.render({object: this, template: 'search-twitter/search-item'});
-				var itemhtml = sc.app.tpl.parseTemplate('search-item', this);
-			
-				/*
-					make jQuery obj
-				*/
-				var jqitem = jQuery(itemhtml);
-			
-				/*
-					attach data object to item html
-				*/
-				jqitem.data('item', this);
-			
-				/*
-					save this tweet to Depot
-				*/
-				sc.app.Tweets.save(this);
-			
-			
-				/*
-					put item on timeline
-				*/
-				jQuery('#search-timeline').prepend(jqitem);
-			}
-		});
-		
-		sch.removeExtraElements('#search-timeline>div.timeline-entry', sc.app.prefs.get('timeline-maxentries'));
+		}
 
 		/*
 			Update relative dates
@@ -327,8 +330,8 @@ SearchTwitterAssistant.prototype.search = function(e, type) {
 		
 	if (sch.isString(e)) {
 		dump("Searching for:", e);
-		this.lastQuery = e;
-		this.twit.search(e);
+		this.lastQuery = sch.fromHTMLSpecialChars(e);
+		this.twit.search(this.lastQuery);
 		/*
 			clear any existing results
 		*/

@@ -98,6 +98,26 @@ StartsearchAssistant.prototype.activate = function(event) {
 		var term = jQuery(this).attr('data-searchterm');
 		thisA.searchFor(term, 'lightweight');
 	});
+	
+	
+	jQuery("#search-accordion").tabs("#search-accordion div.pane", { 
+	    tabs: 'table',  
+	    effect: 'slide',
+	    // here is a callback function that is called before the tab is clicked 
+	    onClick: function(tabIndex) {
+		
+			jQuery('#search-accordion .arrow_button')
+					.removeClass('palm-arrow-expanded')
+					.addClass('palm-arrow-closed');
+			var tabs = this.getTabs();
+			var newtab = tabs.eq(tabIndex);
+			newtab.find('.arrow_button')
+					.removeClass('palm-arrow-closed')
+					.addClass('palm-arrow-expanded');
+	    }
+	});
+
+	
 
 
 }
