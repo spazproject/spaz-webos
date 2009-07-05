@@ -100,6 +100,7 @@ StartsearchAssistant.prototype.activate = function(event) {
 	});
 	
 	
+	
 	jQuery("#search-accordion").tabs("#search-accordion div.pane", { 
 	    tabs: 'table',  
 	    effect: 'slide',
@@ -117,9 +118,52 @@ StartsearchAssistant.prototype.activate = function(event) {
 	    }
 	});
 
+	/*
+		Prepare for timeline entry taps
+	*/
+	this.bindTimelineEntryTaps('#public-timeline');
+
+	/*
+		set up the public timeline
+	*/
+	this.pubtl   = new SpazTimeline({
+		'timeline_container_selector' :'#public-timeline',
+		'entry_relative_time_selector':'span.date',
+		
+		'success_event':'new_public_timeline_data',
+		'failure_event':'error_public_timeline_data',
+		'event_target' :document,
+		
+		'refresh_time':sc.app.prefs.get('network-searchrefreshinterval'),
+		'max_items':50,
+
+		'request_data': function() {
+			var pubTwit = new SpazTwit();
+			pubTwit.getPublicTimeline();
+		},
+		'data_success': function(e, data) {
+			for (var i=0; i < data.length; i++) {
+				data[i].text = makeItemsClickable(data[i].text);
+			};
+			
+			thisA.pubtl.addItems(data);
+			sc.helpers.updateRelativeTimes('#public-timeline div.timeline-entry span.date', 'data-created_at');
+		},
+		'data_failure': function(e, data) {
+			
+		},
+		'renderer': function(obj) {
+			return sc.app.tpl.parseTemplate('tweet', obj);
+			
+		}
+	});
 	
+	/*
+		start the public timeline 
+	*/
+	this.pubtl.start();
 
-
+	
 }
 
 
@@ -127,9 +171,22 @@ StartsearchAssistant.prototype.deactivate = function(event) {
 	/* remove any event handlers you added in activate and do any other cleanup that should happen before
 	   this scene is popped or another scene is pushed on top */
 	
-	
+	/*
+		stop listening to trend-item taps
+	*/
 	jQuery('.trend-item').die(Mojo.Event.tap);
-}
+	
+	/*
+		stop listening for timeline entry taps
+	*/
+	this.unbindTimelineEntryTaps('#public-timeline');
+	
+	/*
+		unbind and stop refresher for public timeline
+	*/
+	this.pubtl.cleanup();
+};
+
 
 StartsearchAssistant.prototype.cleanup = function(event) {
 	/* this function should do any cleanup needed before the scene is destroyed as 
@@ -142,7 +199,7 @@ StartsearchAssistant.prototype.cleanup = function(event) {
 	});
 	Mojo.Event.stopListening($('search-button'), Mojo.Event.tap, this.handleSearch);
 	jQuery().unbind('new_trends_data');
-}
+};
 
 
 StartsearchAssistant.prototype.refreshTrends = function() {

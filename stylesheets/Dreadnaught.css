@@ -75,7 +75,7 @@ a:link, a:visited, .clickable {
 
 
 div.timeline-entry {
-	padding: 6px 6px;
+	padding: 12px 6px;
 /*	border-width: 1px 0 1px 0;*/
 /*	border-style: solid;*/
 /*	border-color: #333;*/
@@ -85,9 +85,9 @@ div.timeline-entry {
 	color:#FFF;
 	position:relative;
 	margin:0;
-	background-image: url('../images/theme/entry-gradient-bg.png');
+	background-image: url('../images/theme/entry-gradient-bg_short.png');
 	background-repeat: repeat-x;
-	background-color:#222211;
+	background-color:#141718;
 }
 	div.timeline-entry:active {	}
 
@@ -96,10 +96,10 @@ div.timeline-entry {
 		they're usedful and probably could be reused elsewhere.
 	*/
 	div.timeline-entry:nth-of-type(odd), .odd {
-		background-color: #2b3a3c;
+/*		background-color: #2b3a3c;*/
 	}
 	div.timeline-entry:nth-of-type(even), .even {
-		background-color: #25303f;
+/*		background-color: #25303f;*/
 	}
 	
 	/*
@@ -107,46 +107,32 @@ div.timeline-entry {
 	*/
 	div.timeline-entry.reply:nth-of-type(odd),
 	div.timeline-entry.reply:nth-of-type(even) {
-		background-color: #404030;
+		background-color: #22201C;
 	}
 	/*
 		Entries that are direct messages to the user
 	*/
 	div.timeline-entry.dm:nth-of-type(odd),
 	div.timeline-entry.dm:nth-of-type(even) {
-		background-color: #551818;
+		background-color: #301616;
 	}
 	
 	div.timeline-entry.new {
 		color:#FFFFCC;
-		border-bottom:1px solid #FFFFCC;
+/*		border-bottom:1px solid #FFFFCC;*/
 	}
 		div.timeline-entry.new:first-of-type {
 			color:#FFFFCC;
-			border-top:   1px solid #FFFFCC;
-			border-bottom:1px solid #FFFFCC;
+/*			border-top:   1px solid #FFFFCC;*/
+/*			border-bottom:1px solid #FFFFCC;*/
 		}
 		div.timeline-entry.new:nth-of-type(odd) {
-			background-color: #2b3a3c;
+/*			background-color: #2b3a3c;*/
 		}
 		div.timeline-entry.new:nth-of-type(even) {
-			background-color: #25303f;
+/*			background-color: #25303f;*/
 		}
 
-		/*
-			Entries that are replies directed at the user
-		*/
-		div.timeline-entry.reply.new:nth-of-type(odd),
-		div.timeline-entry.reply.new:nth-of-type(even) {
-			background-color: #404030;
-		}
-		/*
-			Entries that are direct messages to the user
-		*/
-		div.timeline-entry.dm.new:nth-of-type(odd),
-		div.timeline-entry.dm.new:nth-of-type(even) {
-			background-color: #551818;
-		}
 		
 
 	div.timeline-entry .user {
@@ -274,6 +260,20 @@ div.timeline-entry {
 	font-size:	14pt;
 }
 
+
+#public-timeline div.timeline-entry {
+	padding: 6px 6px;
+	border:none !important;
+	clear:both;
+	overflow:hidden;
+	min-height:64px;
+	color:#FFF;
+	position:relative;
+	margin:0;
+	background-image: none !important;
+	background-repeat: repeat-x;
+	background-color: transparent !important;
+}
 
 	
 	

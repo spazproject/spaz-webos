@@ -83,7 +83,7 @@ StageAssistant.prototype.handleCommand = function(event){
 				findAndSwapScene("favorites", active_scene);
 				break;
 			case 'search':
-				findAndSwapScene("search-twitter", active_scene);
+				findAndSwapScene("startsearch", active_scene);
 				break;
 			case 'followers':
 				findAndSwapScene("manage-followers", active_scene);

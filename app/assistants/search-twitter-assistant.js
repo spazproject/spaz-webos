@@ -332,6 +332,7 @@ SearchTwitterAssistant.prototype.search = function(e, type) {
 		dump("Searching for:", e);
 		this.lastQuery = sch.fromHTMLSpecialChars(e);
 		this.twit.search(this.lastQuery);
+
 		/*
 			clear any existing results
 		*/

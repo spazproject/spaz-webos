@@ -826,6 +826,67 @@ scene_helpers.addCommonSceneMethods = function(assistant) {
 	}
 	
 	
+	
+	
+	assistant.bindTimelineEntryTaps = function(tl_selector) {
+		jQuery(tl_selector+' div.timeline-entry', this.scroller).live(Mojo.Event.tap, function(e) {
+			var jqtarget = jQuery(e.target);
+
+			e.stopImmediatePropagation();
+
+			if (jqtarget.is('div.timeline-entry>.user') || jqtarget.is('div.timeline-entry>.user img')) {
+				var userid = jQuery(this).attr('data-user-screen_name');
+				Mojo.Controller.stageController.pushScene('user-detail', userid);
+				return;
+
+			} else if (jqtarget.is('.username.clickable')) {
+				var userid = jqtarget.attr('data-user-screen_name');
+				Mojo.Controller.stageController.pushScene('user-detail', userid);
+				return;
+
+			} else if (jqtarget.is('.hashtag.clickable')) {
+				var hashtag = jqtarget.attr('data-hashtag');
+				thisA.searchFor('#'+hashtag);
+				return;
+
+			} else if (jqtarget.is('div.timeline-entry .meta')) {
+				var status_id = jqtarget.attr('data-status-id');
+				var isdm = false;
+				var status_obj = null;
+
+				status_obj = thisA.getTweetFromModel(parseInt(status_id));
+
+				if (jqtarget.parent().parent().hasClass('dm')) {
+					isdm = true;
+				}
+
+				Mojo.Controller.stageController.pushScene('message-detail', {'status_id':status_id, 'isdm':isdm, 'status_obj':status_obj});
+				return;
+
+			} else if (jqtarget.is('div.timeline-entry a[href]')) {
+				return;
+
+			} else {
+				var status_id = jQuery(this).attr('data-status-id');
+				var isdm = false;
+				var status_obj = null;
+
+				if (jQuery(this).hasClass('dm')) {
+					isdm = true;
+				}
+
+				Mojo.Controller.stageController.pushScene('message-detail', {'status_id':status_id, 'isdm':isdm, 'status_obj':status_obj});
+				return;
+			}
+		});
+	};
+	
+	assistant.unbindTimelineEntryTaps = function(tl_selector) {
+		jQuery(tl_selector+' div.timeline-entry', this.scroller).die(Mojo.Event.tap);
+	};
+	
+	
+	
 	/**
 	 * This helps us set up listening for the Enter key in a textbox
 	 * 
