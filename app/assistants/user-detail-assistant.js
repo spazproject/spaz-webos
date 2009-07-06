@@ -148,8 +148,9 @@ UserDetailAssistant.prototype.activate = function(event) {
 	
 	var thisA = this; // for closures
 
-	jQuery('#user-detail-actions #view-user-posts', this.scroller).live(Mojo.Event.tap, function(e) {
+	jQuery('#user-timeline-trigger', this.scroller).live(Mojo.Event.tap, function(e) {
 		dump(jQuery(this).attr('id'));
+		jQuery(this).find('.arrow_button').toggleClass('palm-arrow-closed').toggleClass('palm-arrow-expanded')
 		jQuery('#user-timeline').slideToggle('500');
 	});
 	jQuery('#user-detail-actions #search-user', this.scroller).live(Mojo.Event.tap, function(e) {

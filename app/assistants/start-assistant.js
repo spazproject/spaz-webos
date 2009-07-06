@@ -60,6 +60,7 @@ StartAssistant.prototype.setup = function() {
 	
 	this.initAppMenu();
 	
+	
 	Mojo.Event.listen($('start-login-button'), Mojo.Event.tap, this.showLogin.bind(this));
 	Mojo.Event.listen($('start-search-button'), Mojo.Event.tap, this.showSearch.bind(this));
 }

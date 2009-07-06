@@ -375,9 +375,36 @@ MyTimelineAssistant.prototype.getEntryElementByStatusId = function(id) {
 
 
 MyTimelineAssistant.prototype.getData = function() {
-	sch.markAllAsRead('#my-timeline div.timeline-entry');
-	this.showInlineSpinner('activity-spinner-my-timeline', 'Looking for new tweets…');
 	
+	var thisA = this;
+	
+	sch.markAllAsRead('#my-timeline div.timeline-entry');
+	
+	function getCombinedTimeline(statusobj) {
+		
+		dump(statusobj);
+		
+		if ( statusobj.isInternetConnectionAvailable === true) {
+			thisA._getData.call(thisA);
+		} else {
+			thisA.showBanner('Not connected to Internet');
+		}
+		
+	}
+	
+	if ( Mojo.Host.current === Mojo.Host.browser ) {
+		this._getData();
+	}	
+	/*
+		only get data if we're connected
+	*/
+	this.checkInternetStatus( getCombinedTimeline );
+};
+
+MyTimelineAssistant.prototype._getData = function() {
+	
+	this.showInlineSpinner('activity-spinner-my-timeline', 'Looking for new tweets…');
+
 	/*
 		friends_count is the only one that gets used currently
 	*/
@@ -564,13 +591,12 @@ MyTimelineAssistant.prototype.renderTweets = function(tweets, render_callback, f
 	
 	var new_count = jQuery('#my-timeline div.timeline-entry.new:visible').length;
 	
-	// alert("new_count:"+new_count);
-	// alert("fullscreen"+this.isFullScreen);
-	
+	if (!from_cache && new_count > 0) {
+		this.playAudioCue('newmsg');
+	}
+
 	if (!from_cache && new_count > 0 && !this.isFullScreen) {
-	// if (!from_cache && new_count > 0) {
 		this.newMsgBanner(new_count);
-		this.playAudioCue('newmsg');		
 	} else if (this.isFullScreen) {
 		dump("I am not showing a banner! in "+this.controller.sceneElement.id);
 	}
@@ -586,7 +612,7 @@ MyTimelineAssistant.prototype.renderTweets = function(tweets, render_callback, f
 		this.hideInlineSpinner('activity-spinner-my-timeline');
 		this.saveTimelineCache();
 	} else {
-		// this.clearInlineSpinner('activity-spinner-my-timeline');
+		this.hideInlineSpinner('activity-spinner-my-timeline');
 		jQuery().trigger('load_from_mytimeline_cache_done');
 	}
 	

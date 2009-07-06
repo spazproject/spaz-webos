@@ -533,6 +533,23 @@ scene_helpers.addCommonSceneMethods = function(assistant) {
 	}
 	
 	
+
+	assistant.showBanner = function(text, category) {
+		
+		var category = category || 'misc';
+		
+		var launchArgs = {
+			'fromstage':this.getStageName()
+		};
+		var bannerArgs = {
+			'messageText':text,
+			'soundClass':'alerts'
+		};
+
+		var appController = Mojo.Controller.getAppController();
+		appController.showBanner(bannerArgs, launchArgs, category);
+	}
+
 	
 	
 	assistant.newMsgBanner = function(count) {
@@ -608,19 +625,21 @@ scene_helpers.addCommonSceneMethods = function(assistant) {
 
 		var makeCue = function(clip) {
 			var cue = new Audio();
+			if (cue.palm) {
+				cue.mojo.audioClass = "media";
+			}
 			cue.src = clip;
 			cue.autoplay = false;
-			
 			return cue;
 		};
 		
 		this.audioCues = {
-			'newmsg':  makeCue('sounds/New.mp3'),
-			'send':    makeCue('sounds/CSnd.mp3'),
-			'receive': makeCue('sounds/CRcv.mp3'),
-			'startup': makeCue('sounds/On.mp3'),
-			'shutdown':makeCue('sounds/Off.mp3'),
-			'wilhelm': makeCue('sounds/wilhelm.mp3')
+			'newmsg':  makeCue(Mojo.appPath + 'sounds/New.mp3'),
+			'send':    makeCue(Mojo.appPath + 'sounds/CSnd.mp3'),
+			'receive': makeCue(Mojo.appPath + 'sounds/CRcv.mp3'),
+			'startup': makeCue(Mojo.appPath + 'sounds/On.mp3'),
+			'shutdown':makeCue(Mojo.appPath + 'sounds/Off.mp3'),
+			'wilhelm': makeCue(Mojo.appPath + 'sounds/wilhelm.mp3')
 		};
 
 
@@ -629,36 +648,44 @@ scene_helpers.addCommonSceneMethods = function(assistant) {
 	
 	
 	assistant.playAudioCue = function(clip) {
-
+		
+		dump('trying to play '+clip);
+		
 		if (!this.audioCues) {
 			this._initSound();
 		};
 
-		switch(clip) {
-			case 'newmsg':
-				this.audioCues.newmsg.play();
-				break;
+		try {
+			this.audioCues[clip].play();
+		} catch (err) {
+			this.showDialogBox('error', err);
+		}
 
-			case 'send':
-				this.audioCues.send.play();
-				break;
-
-			case 'receive':
-				this.audioCues.receive.play();
-				break;
-
-			case 'startup':
-				this.audioCues.startup.play();
-				break;
-
-			case 'shutdown':
-				this.audioCues.shutdown.play();
-				break;
-
-			case 'wilhelm':
-				this.audioCues.wilhelm.play();
-				break;
-		};
+		// switch(clip) {
+		// 	case 'newmsg':
+		// 		this.audioCues.newmsg.play();
+		// 		break;
+		// 
+		// 	case 'send':
+		// 		this.audioCues.send.play();
+		// 		break;
+		// 
+		// 	case 'receive':
+		// 		this.audioCues.receive.play();
+		// 		break;
+		// 
+		// 	case 'startup':
+		// 		this.audioCues.startup.play();
+		// 		break;
+		// 
+		// 	case 'shutdown':
+		// 		this.audioCues.shutdown.play();
+		// 		break;
+		// 
+		// 	case 'wilhelm':
+		// 		this.audioCues.wilhelm.play();
+		// 		break;
+		// };
 	};
 
 
@@ -752,6 +779,20 @@ scene_helpers.addCommonSceneMethods = function(assistant) {
 	};
 	
 	
+	
+	assistant.checkInternetStatus = function(on_success, on_failure) {
+		this.controller.serviceRequest('palm://com.palm.connectionmanager', {
+		    method: 'getstatus',
+			parameters: {},
+		    onSuccess: on_success,
+		    onFailure: on_failure
+		});
+	};
+
+	
+	
+	
+	
 	assistant.displayErrorInfo = function(msg, errors, template) {
 		
 		var error_info;
@@ -767,7 +808,7 @@ scene_helpers.addCommonSceneMethods = function(assistant) {
 		dump(errors);
 		
 		if (!template) {
-			template = 'error_info';
+			template = 'error_info_text';
 		} 
 
 		
@@ -781,43 +822,18 @@ scene_helpers.addCommonSceneMethods = function(assistant) {
 			}
 		}
 		
-		/*
-			We want to be able to pass html into the error dialogs, but escaping is on,
-			so we do a little dynamic workaround
-		*/
-		var dialog_widget = Mojo.Controller.errorDialog(msg+' {{error_html}}');
-		dialog_widget.innerHTML = dialog_widget.innerHTML.replace('{{error_html}}', error_html);
+		// /*
+		// 	We want to be able to pass html into the error dialogs, but escaping is on,
+		// 	so we do a little dynamic workaround
+		// */
+		// var dialog_widget = Mojo.Controller.errorDialog(msg+' {{error_html}}');
+		// dialog_widget.innerHTML = dialog_widget.innerHTML.replace('{{error_html}}', error_html);
 		
 	}
 
 
 	assistant.clearTimelineCache = function(callback) {
-		var thisA = this;
-		
-		// Mojo.Log.info('Timeline Caching disabled for now');
-		
-		/*
-			by setting "replace" to true, we wipe the cache depot completely
-		*/
-		
 		this.cacheDepot = makeCacheDepot(true);
-		
-		// var users = sc.app.prefs.get('users');
-		// 
-		// for (var i=0; i<users.length; i++) {
-		// 	var id = users[i].id;
-		// 	cacheDepot.simpleAdd(id, {},
-		// 		function() { 
-		// 			// thisA.showAlert('Cache cleared');
-		// 			dump('Cache '+username+' cleared');
-		// 		},
-		// 		function() { 
-		// 			// Mojo.Controller.errorDialog('Cache clearing FAILED');
-		// 			dump('Cache '+username+' clear failed');
-		// 		}
-		// 	);
-		// }
-		
 	}
 	
 	

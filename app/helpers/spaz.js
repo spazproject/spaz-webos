@@ -36,6 +36,7 @@ var findAndSwapScene = function(targetScene, returnValue) {
 };
 
 
+
 /**
  * converts various items in a timeline entry's text into clickables
  * @param {string} str

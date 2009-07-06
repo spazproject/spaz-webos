@@ -173,7 +173,7 @@ div.timeline-entry {
 			text-transform: uppercase;
 			font-family:"Coconut-CondensedMedium";
 			position:relative;
-			text-shadow: 0px 2px 4px #FFF;
+			text-shadow: 0px 1px 4px #000;
 		}
 		div.timeline-entry .status .text {
 			font-size:11pt;
@@ -197,7 +197,7 @@ div.timeline-entry {
 		height:20px;
 		padding:1px 0px;
 		font-size:	10pt;
-		font-weight:bold;
+/*		font-weight:bold;*/
 		text-transform:uppercase;
 		font-family:"Coconut-CondensedMedium";
 		text-align:	right;
@@ -478,7 +478,7 @@ div.spaz-drawer {
 
 
 	#message-detail-actions {
-		clear:both;
+/*		clear:both;
 		margin:8px 0px;
 		left:0px;
 		right:0px;
@@ -486,7 +486,7 @@ div.spaz-drawer {
 		border-top: 3px solid #333333;
 		border-bottom: 3px solid #333333;
 		padding:0 0 5px 0;
-	}
+*/	}
 		
 
 
@@ -581,7 +581,7 @@ div.spaz-drawer {
 		}
 
 	#user-detail-actions {
-		clear:both;
+/*		clear:both;
 		margin:8px 0px;
 		left:0px;
 		right:0px;
@@ -589,7 +589,7 @@ div.spaz-drawer {
 		border-top: 3px solid #333333;
 		border-bottom: 3px solid #333333;
 		padding:0 0 5px 0;
-	}
+*/	}
 
 	#user-timeline {
 		text-align: left;

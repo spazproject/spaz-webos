@@ -23,17 +23,32 @@ sc.app.tpl.addTemplateMethod('message-detail', function(d) {
 	html += '		</div>';
 	html += '	</div>';
 	if (sc.app.username && sc.app.password) {
+		
 		html += '	<div id="message-detail-actions">';
-		html += '		<div class="spaz-button-group">';
-		html += '			<button class="palm-button" id="message-detail-action-reply" data-status-id="'+d.id+'" data-screen_name="'+d.user.screen_name+'">@Reply to this message</button>';
-		html += '			<button class="palm-button" id="message-detail-action-retweet" data-status-id="'+d.id+'">ReTweet this message</button>';
-		html += '			<button class="palm-button" id="message-detail-action-dm" data-screen_name="'+d.user.screen_name+'">Direct message this user</button>';
+		html += '		<div class="palm-group palm-group-spaz">';
+		html += '			<div class="palm-group-title" id="search-toggle" x-mojo-loc="">Actions</div>';
+		html += '			<div class="palm-list">';
+		html += '				<div class="palm-row single">';
+		html += '					<button class="palm-button" id="message-detail-action-reply" data-status-id="'+d.id+'" data-screen_name="'+d.user.screen_name+'">@Reply to this message</button>';
+		html += '				</div>';
+		html += '				<div class="palm-row single">';
+		html += '					<button class="palm-button" id="message-detail-action-retweet" data-status-id="'+d.id+'">ReTweet this message</button>';
+		html += '				</div>';
+		html += '   			<div class="palm-row single">';
+		html += '					<button class="palm-button" id="message-detail-action-dm" data-screen_name="'+d.user.screen_name+'">Direct message this user</button>';
+		html += '				</div>';
 		if (d.favorited) {
-			html += '			<button class="palm-button" id="message-detail-action-favorite" data-status-id="'+d.id+'" data-screen_name="'+d.user.screen_name+'" data-favorited="true">Remove as favorite</button>';
+			html += '   			<div class="palm-row single">';
+			html += '					<button class="palm-button" id="message-detail-action-favorite" data-status-id="'+d.id+'" data-screen_name="'+d.user.screen_name+'" data-favorited="true">Remove as favorite</button>';
+			html += '				</div>';
 		} else {
-			html += '			<button class="palm-button" id="message-detail-action-favorite" data-status-id="'+d.id+'" data-screen_name="'+d.user.screen_name+'" data-favorited="false">Add as favorite</button>';
+			html += '   			<div class="palm-row single">';
+			html += '					<button class="palm-button" id="message-detail-action-favorite" data-status-id="'+d.id+'" data-screen_name="'+d.user.screen_name+'" data-favorited="false">Add as favorite</button>';
+			html += '				</div>';
 		}
+		html += '			</div>';
 		html += '		</div>';
+
 		html += '	</div>';
 	}
 	html += '</div>';
@@ -56,7 +71,14 @@ sc.app.tpl.addTemplateMethod('message-detail-dm', function(d) {
 	if (sc.app.username && sc.app.password) {
 		html += '	<div id="message-detail-actions">';
 		html += '		<div class="spaz-button-group">';
-		html += '			<button class="palm-button" id="message-detail-action-dm" data-screen_name="'+d.sender.screen_name+'">Direct message this user</button>';
+		html += '			<div class="palm-group palm-group-spaz">';
+		html += '				<div class="palm-group-title" id="search-toggle" x-mojo-loc="">Actions</div>';
+		html += '				<div class="palm-list">';
+		html += '					<div class="palm-row single">';
+		html += '						<button class="palm-button" id="message-detail-action-dm" data-screen_name="'+d.sender.screen_name+'">Direct message this user</button>';
+		html += '					</div>';
+		html += '				</div>';
+		html += '			</div>';
 		html += '		</div>';
 		html += '	</div>';
 	};
@@ -104,26 +126,64 @@ sc.app.tpl.addTemplateMethod('user-detail', function(d) {
 		html += '			<div class="protected-icon">Protected user</div>';
 	}
 	html += '		</div>';
+	
+	html += '<div>';
+	html += '	<table class="palm-divider collapsible" id="user-timeline-trigger" x-mojo-tap-highlight="momentary">';
+	html += '		<tbody>';
+	html += '			<tr>';
+	html += '				<td class="left"></td>';
+	html += '				<td class="label">'+$L('View User\'s Posts')+'</td>';
+	html += '				<td class="line" width="100%"></td>';
+	html += '				<td><div class="palm-arrow-closed arrow_button"></div></td>';
+	html += '				<td class="right"></td>';
+	html += '			</tr>';
+	html += '		</tbody>';
+	html += '	</table> ';
+    html += '	<div class="pane">';
+	html += '		<div id="user-timeline" data-screen_name="'+d.screen_name+'" style="display:none"></div>';
+	html += '	</div>';
+	html += '</div>';
+	
+	
+	
+	
 	html += '		<div id="user-detail-actions">';
-	// html += '			<div class="spaz-button-group">';
-	html += '				<button id="view-user-posts" class="palm-button" data-screen_name="'+d.screen_name+'">View user\'s recent posts</button>';
-	html += '				<div id="user-timeline" data-screen_name="'+d.screen_name+'" style="display:none"></div>';
-	html += '				<button id="search-user"class="palm-button" data-screen_name="'+d.screen_name+'">Search for user</button>';
-	// html += '			</div>';
+	
+
+	html += '			<div class="spaz-button-group">';
+	html += '				<div class="palm-group palm-group-spaz">';
+	html += '					<div class="palm-group-title" id="search-toggle" x-mojo-loc="">Actions</div>';
+	html += '					<div class="palm-list">';
+	html += '						<div class="palm-row single">';
+	html += '							<button id="search-user"class="palm-button" data-screen_name="'+d.screen_name+'">Search for user</button>';
+	html += '						</div>';
 	if (sc.app.username && sc.app.password) {
-		// html += '			<div class="spaz-button-group">';
-		html += '				<button id="reply-to-user" class="palm-button" data-screen_name="'+d.screen_name+'">@reply to user</button>';
-		html += '				<button id="dm-user" class="palm-button" data-screen_name="'+d.screen_name+'">Send direct message to user</button>';
-		// html += '			</div>';
-		// html += '			<div class="spaz-button-group">';
+		html += '						<div class="palm-row single">';
+		html += '							<button id="reply-to-user" class="palm-button" data-screen_name="'+d.screen_name+'">@reply to user</button>';
+		html += '						</div>';
+		html += '						<div class="palm-row single">';
+		html += '							<button id="dm-user" class="palm-button" data-screen_name="'+d.screen_name+'">Send direct message to user</button>';
+		html += '						</div>';
 		if (d.following) {
-			html += '				<button id="follow-user" class="palm-button" data-screen_name="'+d.screen_name+'" data-following="true">Stop following user</button>';
+			html += '						<div class="palm-row single">';
+			html += '							<button id="follow-user" class="palm-button" data-screen_name="'+d.screen_name+'" data-following="true">Stop following user</button>';
+			html += '						</div>';
+
 		} else {
-			html += '				<button id="follow-user" class="palm-button" data-screen_name="'+d.screen_name+'" data-following="false">Follow user</button>';
+			html += '						<div class="palm-row single">';
+			html += '							<button id="follow-user" class="palm-button" data-screen_name="'+d.screen_name+'" data-following="false">Follow user</button>';
+			html += '						</div>';
+
 		}
-		html += '				<button id="block-user" class="palm-button" data-screen_name="'+d.screen_name+'" data-blocked="false">Block user</button>';
-		// html += '			</div>';
+		html += '						<div class="palm-row single">';
+		html += '							<button id="block-user" class="palm-button" data-screen_name="'+d.screen_name+'" data-blocked="false">Block user</button>';
+		html += '						</div>';
 	};
+	html += '					</div>';
+	html += '				</div>';
+	html += '			</div>';
+	
+	
 	html += '		</div>';
 	html += '	</div>';
 
@@ -241,6 +301,35 @@ sc.app.tpl.addTemplateMethod('error_info', function(d) {
 	
 	
 	html += '</div>';
+	
+	return html;
+	
+});
+
+sc.app.tpl.addTemplateMethod('error_info_text', function(d) {
+	/*
+	* status':		
+	* statusText':	
+	* responseText':	
+	* url':			
+	* msg':			
+	* human_msg':	
+	* twitter_request
+	* twitter_msg':	    		
+	*/
+	
+	dump(d);
+	
+	var html = '';
+	
+	html += d.human_msg+"\n";
+	if (d.twitter_msg) {
+		html += $L('Twitter error')+  ':'+d.twitter_msg+"\n";
+		html += $L('Twitter request')+':'+d.twitter_request+"\n";
+	}
+	html += $L('Status code')+':'+d.status+"\n";
+	html += $L('Status text')+':'+d.statusText+"\n";
+	html += $L('URL')        +':'+d.url+"\n";
 	
 	return html;
 	
