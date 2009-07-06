@@ -26,12 +26,7 @@ function MyTimelineAssistant(argFromPusher) {
 	this.cacheVersion = 3;  // we increment this when we change how the cache works
 	
 	
-	this.cacheDepot = new Mojo.Depot({
-		name:'SpazDepotTimelineCache',
-		displayName:'SpazDepotTimelineCache',
-		replace:false,
-		version:1
-	});
+	this.cacheDepot = makeCacheDepot(false);
 
 }
 

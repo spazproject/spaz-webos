@@ -170,3 +170,4 @@ var profileEnd = function() {
 	if (console && console.profileEnd)
 		console.profileEnd();
 };
+

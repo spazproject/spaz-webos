@@ -50,7 +50,17 @@ SearchTwitterAssistant.prototype.setup = function() {
 	/*
 		view and command menus
 	*/
-	if (this.lightweight) {
+	if (sc.app.username && sc.app.password) {
+		this.setupCommonMenus({
+			cmdMenuItems: [
+				{label:$L('Compose'),  icon:'compose', command:'compose', shortcut:'N'},
+				{},
+				{label:$L('Refresh'),   icon:'sync', command:'refresh', shortcut:'R'}					
+			]
+		});
+		
+		this.initAppMenu({ 'items':loggedin_appmenu_items });	
+	} else {
 		this.setupCommonMenus({
 			cmdMenuItems: [
 				{},
@@ -59,25 +69,7 @@ SearchTwitterAssistant.prototype.setup = function() {
 			
 		});
 		
-		this.initAppMenu();
-		
-	} else {
-		this.setupCommonMenus({
-			cmdMenuItems: [
-				{label:$L('Compose'),  icon:'compose', command:'compose', shortcut:'N'},
-				{
-					toggleCmd:'IGNORE',
-					items: [
-						{label:$L('My Timeline'), icon:'conversation', command:'my-timeline', shortcut:'T'},
-						{label:$L('Favorites'), iconPath:'images/theme/menu-icon-favorite.png', command:'favorites', shortcut:'F'},
-						{label:$L('Search'),      icon:'search', command:'IGNORE', shortcut:'S', 'class':"palm-depressed selected"},
-					]
-				},
-				{label:$L('Refresh'),   icon:'sync', command:'refresh', shortcut:'R'}					
-			]
-		});
-		
-		this.initAppMenu({ 'items':loggedin_appmenu_items });
+		this.initAppMenu();		
 	}
 
 

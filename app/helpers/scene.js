@@ -800,12 +800,7 @@ scene_helpers.addCommonSceneMethods = function(assistant) {
 			by setting "replace" to true, we wipe the cache depot completely
 		*/
 		
-		this.cacheDepot = new Mojo.Depot({
-			name:'SpazDepotTimelineCache',
-			displayName:'SpazDepotTimelineCache',
-			replace:true,
-			version:1
-		});
+		this.cacheDepot = makeCacheDepot(true);
 		
 		// var users = sc.app.prefs.get('users');
 		// 

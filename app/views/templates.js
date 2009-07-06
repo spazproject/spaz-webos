@@ -143,7 +143,7 @@ sc.app.tpl.addTemplateMethod('tweet', function(d) {
 	}
 	html += '" data-status-id="'+d.id+'" data-user-id="'+d.user.id+'" data-user-screen_name="'+d.user.screen_name+'" data-timestamp="'+d.created_at_unixtime+'">';
 	html += '	<div class="user" data-user-id="'+d.user.id+'" data-user-screen_name="'+d.user.screen_name+'">';
-	html += '		<img src="'+d.user.profile_image_url+'" title="'+d.user.screen_name+'" />';
+	html += '		<img src="'+d.user.profile_image_url+'" />';
 	html += '	</div>';
 	html += '	<div class="status">';
 	html += '		<div class="meta-wrapper">';

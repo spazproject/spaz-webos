@@ -12,7 +12,7 @@ var Tweets = function(replace) {
 
 Tweets.prototype._init  = function(replace) {
 	var opts = {
-		'name'    : 'SpazDepotTweets',
+		'name'    : 'ext:SpazDepotTweets',
 		'replace' : false
 	};
 	
@@ -75,4 +75,7 @@ Tweets.prototype.onSaveFailure = function(msg, obj) {
 	dump('TweetModel Save Failed On : '+obj+' '+msg);
 };
 
+Tweets.prototype.reset = function() {
+	this._init(true);
+}
 
