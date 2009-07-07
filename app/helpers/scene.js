@@ -287,18 +287,27 @@ scene_helpers.addCommonSceneMethods = function(assistant) {
 	}
 	
 	
-	assistant.initTwit = function() {
+	assistant.initTwit = function(event_mode) {
 		// var username = sc.app.prefs.get('username');
 		// var password = sc.app.prefs.get('password');
-
+		
+		var event_mode = event_mode || 'jquery'; // default this to jquery because we have so much using it
+		
+		var users = new Users(sc.app.prefs);
+		
 		this.twit = new scTwit(null, null, {
-			'event_mode':'jquery'
+			'event_mode':event_mode
 		});
 		this.twit.setSource(sc.app.prefs.get('twitter-source'));
 
 		if (sc.app.username && sc.app.password) {
 			// alert('seetting credentials for '+sc.app.username);
-			this.twit.setBaseURLByService(sc.app.type);
+			if (sc.app.type === SPAZCORE_SERVICE_CUSTOM) {
+				var api_url = users.getMeta(sc.app.username, sc.app.type, 'api-url');
+				this.twit.setBaseURL(api_url);
+			} else {
+				this.twit.setBaseURLByService(sc.app.type);				
+			}
 			this.twit.setCredentials(sc.app.username, sc.app.password);
 			
 		} else {

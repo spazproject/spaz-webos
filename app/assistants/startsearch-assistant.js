@@ -133,11 +133,20 @@ StartsearchAssistant.prototype.activate = function(event) {
 	    tabs: 'table',  
 	    effect: 'slide',
 	    // here is a callback function that is called before the tab is clicked 
+		onBeforeClick: function(tabIndex) {
+			var tabs = this.getTabs();
+			var activeTab = this.getCurrentTab();
+			if (tabs.eq(tabIndex) == activeTab) {
+				this.current = null;
+				this.getCurrentPane().removeClass(opts.current).slideUp("fast");
+			}
+		},
+
 	    onClick: function(tabIndex) {
-		
 			jQuery('#search-accordion .arrow_button')
 					.removeClass('palm-arrow-expanded')
 					.addClass('palm-arrow-closed');
+
 			var tabs = this.getTabs();
 			var newtab = tabs.eq(tabIndex);
 			newtab.find('.arrow_button')

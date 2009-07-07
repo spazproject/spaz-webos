@@ -221,7 +221,8 @@ var NewAccountDialogAssistant = Class.create({
 		this.newAccountModel = {
 			'username':false,
 			'password':false,
-			'type':SPAZCORE_SERVICE_TWITTER
+			'type':SPAZCORE_SERVICE_TWITTER,
+			'api-url':'http://'
 		};
 
 
@@ -276,13 +277,32 @@ var NewAccountDialogAssistant = Class.create({
 				label: $L('Type'),
 				choices: [
 					{label:$L('Twitter'), value:SPAZCORE_SERVICE_TWITTER}, 
-					{label:$L('Identi.ca'), value:SPAZCORE_SERVICE_IDENTICA}
-					// {label:$L('Laconi.ca/Custom'), value:SPAZCORE_SERVICE_CUSTOM}
+					{label:$L('Identi.ca'), value:SPAZCORE_SERVICE_IDENTICA},
+					{label:$L('Laconi.ca/Custom'), value:SPAZCORE_SERVICE_CUSTOM}
 				],
 				modelProperty:'type'
 			},
 			this.newAccountModel
 		);
+
+
+		/*
+			API URL
+		*/
+		this.controller.setupWidget('api-url',
+			this.atts = {
+				// hintText: 'enter username',
+				enterSubmits: true,
+				modelProperty:'api-url', 
+				changeOnKeyPress: true,
+				focusMode:	Mojo.Widget.focusSelectMode,
+				multiline:		false,
+				textReplacement: false,
+				autoCapitalization: false
+			},
+			this.newAccountModel
+		);
+
 		
 		this.controller.setupWidget('saveAccountButton', this.verifyButtonAttributes, this.verifyButtonModel);
 		
@@ -292,10 +312,14 @@ var NewAccountDialogAssistant = Class.create({
 	
 	activate: function() {
 		var thisA = this;
+
+
+		jQuery('#api-url-row').hide();
+
 		/*
 			What to do if we succeed
 			Note that we pass the assistant object as data into the closure
-		*/				
+		*/
 		jQuery().bind('verify_credentials_succeeded', function(e) {
 			jQuery('#new-account-errormsg').html('');
 			thisA.deactivateSpinner();
@@ -308,6 +332,9 @@ var NewAccountDialogAssistant = Class.create({
 			};
 			thisA.sceneAssistant.accountsModel.items.push(newItem);
 			thisA.sceneAssistant.Users.setAll(thisA.sceneAssistant.accountsModel.items);
+			
+			thisA.sceneAssistant.Users.setMeta(newItem.username, newItem.type, 'api-url', thisA.newAccountModel['api-url']);
+			
 			$('accountList').mojo.noticeAddedItems(thisA.sceneAssistant.accountsModel.items.length, [newItem]);
 			thisA.widget.mojo.close();
 		});
@@ -334,6 +361,12 @@ var NewAccountDialogAssistant = Class.create({
 			true
 		);
 		
+		Mojo.Event.listen(this.controller.get('type'),
+			Mojo.Event.propertyChange,
+			this.typePropertyChangeListener.bindAsEventListener(this),
+			true
+		);
+		
 	},
 	
 	
@@ -344,6 +377,11 @@ var NewAccountDialogAssistant = Class.create({
 		Mojo.Event.stopListening(this.controller.get('new-password'),
 			Mojo.Event.propertyChange,
 			this.passwordPropertyChangeListener
+		);
+		Mojo.Event.stopListening(this.controller.get('type'),
+			Mojo.Event.propertyChange,
+			this.typePropertyChangeListener,
+			true
 		);
 		
 		
@@ -372,6 +410,18 @@ var NewAccountDialogAssistant = Class.create({
 		}
 	},
 	
+	
+	typePropertyChangeListener : function(event) {
+		if (this.newAccountModel.type === SPAZCORE_SERVICE_CUSTOM) {
+			jQuery('#api-url-row').show();
+			jQuery('#type-row').removeClass('last');
+		} else {
+			jQuery('#api-url-row').hide();
+			jQuery('#type-row').addClass('last');
+		}
+	},
+	
+	
 	handleCancel: function() {
 		this.widget.mojo.close();
 	},
@@ -387,7 +437,12 @@ var NewAccountDialogAssistant = Class.create({
 			now verify credentials against the Twitter API
 		*/
 		if (this.newAccountModel.username && this.newAccountModel.password) {
-			sc.app.twit.setBaseURLByService(this.newAccountModel.type);
+			if (this.newAccountModel.type !== SPAZCORE_SERVICE_CUSTOM) {
+				sc.app.twit.setBaseURLByService(this.newAccountModel.type);
+			} else {
+				sc.app.twit.setBaseURL(this.newAccountModel['api-url']);
+			}
+			
 			sc.app.twit.verifyCredentials(this.newAccountModel.username.toLowerCase(), this.newAccountModel.password);
 		} else {
 			this.deactivateSpinner();

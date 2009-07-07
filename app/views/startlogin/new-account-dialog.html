@@ -9,7 +9,7 @@
 	
 	<div class="palm-group palm-group-spaz unlabeled">
 		<div class="palm-list">
-			<div class="palm-row single">
+			<div class="palm-row first">
 				<div class="palm-row-wrapper">
 					<div class="textfield-group" x-mojo-focus-highlight="true">
 						<div class="title">
@@ -21,7 +21,7 @@
 					</div>
 				</div>
 			</div>
-			<div class="palm-row single">
+			<div class="palm-row">
 				<div class="palm-row-wrapper">
 					<div class="textfield-group" x-mojo-focus-highlight="true">
 						<div class="title">
@@ -33,15 +33,28 @@
 					</div>
 				</div>
 			</div>
-			<div class="palm-row single">
+			<div class="palm-row last" id="type-row">
 				<div class="palm-row-wrapper">
 					<div class="textfield-group" x-mojo-focus-highlight="true">
 						<div class="title">
-							<div id="account-type" name="type" x-mojo-element="ListSelector"></div>
+							<div id="type" name="type" x-mojo-element="ListSelector"></div>
 						</div>
 					</div>
 				</div>
 			</div>
+			<div class="palm-row last" id="api-url-row">
+				<div class="palm-row-wrapper">
+					<div class="textfield-group" x-mojo-focus-highlight="true">
+						<div class="title">
+							<div class="label">
+								API URL
+							</div>
+							<div id="api-url" name="api-url" x-mojo-element="TextField"></div>
+						</div>
+					</div>
+				</div>
+			</div>
+
 		</div>
 	</div>
 

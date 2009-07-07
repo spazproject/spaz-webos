@@ -10,7 +10,7 @@ FavoritesAssistant.prototype.setup = function() {
 
 	this.scroller = this.controller.getSceneScroller();
 	this.initAppMenu({ 'items':loggedin_appmenu_items });
-	this.initTwit();
+	this.initTwit('DOM');
 
 	this.setupCommonMenus({
 		// viewMenuItems: [
@@ -58,138 +58,80 @@ FavoritesAssistant.prototype.activate = function(event) {
 	this.setTimelineTextSize('#favorites-timeline', tts);
 	
 	
-	jQuery().bind('error_favorites_timeline_data', function(e, error_obj) {
-		// error_obj.url
-		// error_obj.xhr
-		// error_obj.msg
-		
-		var err_msg = $L("There was an error retrieving your favorites");
-		thisA.displayErrorInfo(err_msg, error_obj);
-		
-		
-		/*
-			Update relative dates
-		*/
-		sch.updateRelativeTimes('#favorites-timeline>div.timeline-entry .meta>.date', 'data-created_at');
-		thisA.hideInlineSpinner('activity-spinner-favorites');
-	});
-	
-	
-	
-	jQuery().bind('new_favorites_timeline_data', function(e, tweets) {
-		
-		/*
-			Check to see if the returned query matches what we are using. If not, ignore.
-		*/
 
-		/*
-			reverse the tweets for collection rendering (faster)
-		*/
-		var rendertweets = tweets;
+	
+	/*
+		Prepare for timeline entry taps
+	*/
+	this.bindTimelineEntryTaps('#favorites-timeline');
+
+	/*
+		set up the public timeline
+	*/
+	this.favtl   = new SpazTimeline({
+		'timeline_container_selector' :'#favorites-timeline',
+		'entry_relative_time_selector':'span.date',
 		
-		if (rendertweets && rendertweets.length > 0) {
+		'success_event':'new_favorites_timeline_data',
+		'failure_event':'error_favorites_timeline_data',
+		'event_target' :document,
 		
-			jQuery.each( rendertweets, function() {
+		'refresh_time':1000*3600,
+		'max_items':50,
+
+		'request_data': function() {
+			sc.helpers.markAllAsRead('#favorites-timeline div.timeline-entry');
+			thisA.showInlineSpinner('activity-spinner-favorites', 'Loading favorite tweets…');
+			thisA.twit.getFavorites();
+		},
+		'data_success': function(e, data) {
+			var data = data.reverse();
+			var no_dupes = [];
 			
-				if (!thisA.getEntryElementByStatusId(this.id)) {
-			
-					this.text = makeItemsClickable(this.text);
+			for (var i=0; i < data.length; i++) {
 				
-					// we set this so the tweets come out as not marked new
-					this.not_new = true;
-				
-					var itemhtml = sc.app.tpl.parseTemplate('tweet', this);
-			
-					/*
-						make jQuery obj
-					*/
-					var jqitem = jQuery(itemhtml);
-			
-					/*
-						attach data object to item html
-					*/
-					jqitem.data('item', this);
-			
-					/*
-						save this tweet to Depot
-					*/
-					sc.app.Tweets.save(this);
-			
-			
-					/*
-						put item on timeline
-					*/
-					jQuery('#favorites-timeline').prepend(jqitem);
-				} else {
-					dump('Tweet ('+this.id+') already is in favorites timeline');
+				/*
+					only add if it doesn't already exist
+				*/
+				if (jQuery('#favorites-timeline div.timeline-entry[data-status-id='+data[i].id+']').length<1) {
+					
+					sc.app.Tweets.save(data[i]);
+					data[i].text = makeItemsClickable(data[i].text);
+					no_dupes.push(data[i]);
 				}
-			});
+				
+			};
+			
+			thisA.favtl.addItems(no_dupes);
+			sc.helpers.markAllAsRead('#favorites-timeline div.timeline-entry'); // favs are never "new"
+			sc.helpers.updateRelativeTimes('#favorites-timeline div.timeline-entry span.date', 'data-created_at');
+			thisA.hideInlineSpinner('activity-spinner-favorites');
+		},
+		'data_failure': function(e, error_obj) {
+			// error_obj.url
+			// error_obj.xhr
+			// error_obj.msg
+
+			var err_msg = $L("There was an error retrieving your favorites");
+			thisA.displayErrorInfo(err_msg, error_obj);
+
+			/*
+				Update relative dates
+			*/
+			sch.updateRelativeTimes('#favorites-timeline>div.timeline-entry .meta>.date', 'data-created_at');
+			thisA.hideInlineSpinner('activity-spinner-favorites');
+		},
+		'renderer': function(obj) {
+			return sc.app.tpl.parseTemplate('tweet', obj);
 			
 		}
-		
-		/*
-			Update relative dates
-		*/
-		sch.updateRelativeTimes('#favorites-timeline>div.timeline-entry .meta>.date', 'data-created_at');
-		thisA.hideInlineSpinner('activity-spinner-favorites');
-		
 	});
 	
-	jQuery('#favorites-timeline div.timeline-entry', this.scroller).live(Mojo.Event.tap, function(e) {
-		var jqtarget = jQuery(e.target);
-
-		e.stopImmediatePropagation();
-		
-		if (jqtarget.is('div.timeline-entry>.user') || jqtarget.is('div.timeline-entry>.user img')) {
-			var userid = jQuery(this).attr('data-user-screen_name');
-			Mojo.Controller.stageController.pushScene('user-detail', userid);
-			return;
-			
-		} else if (jqtarget.is('.username.clickable')) {
-			var userid = jqtarget.attr('data-user-screen_name');
-			Mojo.Controller.stageController.pushScene('user-detail', userid);
-			return;
-			
-		} else if (jqtarget.is('.hashtag.clickable')) {
-			var hashtag = jqtarget.attr('data-hashtag');
-			thisA.searchFor('#'+hashtag);
-			return;
-			
-		} else if (jqtarget.is('div.timeline-entry .meta')) {
-			var status_id = jqtarget.attr('data-status-id');
-			var isdm = false;
-			var status_obj = null;
-
-			status_obj = thisA.getTweetFromModel(parseInt(status_id));
-
-			if (jqtarget.parent().parent().hasClass('dm')) {
-				isdm = true;
-			}
-
-			Mojo.Controller.stageController.pushScene('message-detail', {'status_id':status_id, 'isdm':isdm, 'status_obj':status_obj});
-			return;
-			
-		} else if (jqtarget.is('div.timeline-entry a[href]')) {
-			return;
-
-		} else {
-			var status_id = jQuery(this).attr('data-status-id');
-			var isdm = false;
-			var status_obj = null;
-
-			if (jQuery(this).hasClass('dm')) {
-				isdm = true;
-			}
-			
-			Mojo.Controller.stageController.pushScene('message-detail', {'status_id':status_id, 'isdm':isdm, 'status_obj':status_obj});
-			return;
-		}
-	});	
-	
-	
-	
+	/*
+		start the favs timeline 
+	*/
 	if (this.refreshOnActivate) {
-		this.refresh();
+		this.favtl.start();
 		this.refreshOnActivate = false;
 	}
 	
@@ -200,14 +142,15 @@ FavoritesAssistant.prototype.activate = function(event) {
 
 FavoritesAssistant.prototype.deactivate = function(event) {
 	
-
-	/* remove any event handlers you added in activate and do any other cleanup that should happen before
-	   this scene is popped or another scene is pushed on top */
+	/*
+		stop listening for timeline entry taps
+	*/
+	this.unbindTimelineEntryTaps('#public-timeline');
 	
-	jQuery().unbind('new_favorites_timeline_data');
-	jQuery().unbind('error_favorites_timeline_data');
-
-	jQuery('#favorites-timeline div.timeline-entry', this.scroller).die(Mojo.Event.tap);
+	/*
+		unbind and stop refresher for public timeline
+	*/
+	this.favtl.cleanup();
 	
 	
 }
@@ -224,12 +167,12 @@ FavoritesAssistant.prototype.getEntryElementByStatusId = function(id) {
 
 
 FavoritesAssistant.prototype.refresh = function(event) {
-	this.getData();
+	this.favtl.refresh();
 }
 
-FavoritesAssistant.prototype.getData = function() {
-	sc.helpers.markAllAsRead('#favorites-timeline>div.timeline-entry');
-	this.showInlineSpinner('activity-spinner-favorites', 'Loading favorite tweets…');
-	
-	this.twit.getFavorites();
-};
+// FavoritesAssistant.prototype.getData = function() {
+// 	sc.helpers.markAllAsRead('#favorites-timeline>div.timeline-entry');
+// 	this.showInlineSpinner('activity-spinner-favorites', 'Loading favorite tweets…');
+// 	
+// 	this.twit.getFavorites();
+// };
