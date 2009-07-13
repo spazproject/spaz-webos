@@ -150,8 +150,16 @@ UserDetailAssistant.prototype.activate = function(event) {
 
 	jQuery('#user-timeline-trigger', this.scroller).live(Mojo.Event.tap, function(e) {
 		dump(jQuery(this).attr('id'));
-		jQuery(this).find('.arrow_button').toggleClass('palm-arrow-closed').toggleClass('palm-arrow-expanded')
-		jQuery('#user-timeline').slideToggle('500');
+		var jq_usertl = jQuery('#user-timeline');
+		if (jq_usertl.is(':visible')) {
+			jq_usertl.slideUp('500');
+			jQuery(this).find('.arrow_button').addClass('palm-arrow-closed').removeClass('palm-arrow-expanded');
+		} else {
+			jq_usertl.slideDown('500');
+			jQuery(this).find('.arrow_button').removeClass('palm-arrow-closed').addClass('palm-arrow-expanded');
+		}
+		
+		
 	});
 	jQuery('#user-detail-actions #search-user', this.scroller).live(Mojo.Event.tap, function(e) {
 		var screen_name = jQuery(this).attr('data-screen_name');

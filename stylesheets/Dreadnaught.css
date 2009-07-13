@@ -396,13 +396,16 @@ div.spaz-drawer {
 	Message detail styles
 */
 .message-detail-scene {
-	background-image: url(../images/theme/bg-message-detail.png);
+/*	background-image: url(../images/theme/bg-message-detail.png);
 	background-attachment: fixed;
 	min-height:480px;
-}
+*/}
 
 #message-detail-container {
-	background-attachment: fixed;
+	background-image: url('../images/theme/entry-gradient-bg_short.png');
+	background-repeat: repeat-x;
+	background-color:#2B3235;
+	min-height:480px;
 	padding:8px 0px;
 }
 
@@ -497,15 +500,19 @@ div.spaz-drawer {
 */
 
 .user-detail-scene {
-	background-image: url(../images/theme/bg-user-detail.png);
+/*	background-image: url(../images/theme/bg-user-detail.png);
 	background-attachment: fixed;
-	min-height:480px;
+*/	min-height:480px;
 
 }
 
 
 #user-detail-container {
 	padding:8px 0px;
+	background-image: url('../images/theme/entry-gradient-bg_short.png');
+	background-repeat: repeat-x;
+	background-color:#301616;
+	min-height:480px;
 }
 
 
