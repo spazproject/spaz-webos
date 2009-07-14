@@ -9,6 +9,7 @@ var default_preferences = {
     'use-markdown': true,
 
     'sound-enabled': true,
+    'vibration-enabled': true,
     'wilhelm-enabled': true,
 
     'network-refreshinterval': 900000,

@@ -20,6 +20,7 @@ PreferencesAssistant.prototype.setup = function() {
 	*/
 	this.model = {
 		'sound-enabled': 			sc.app.prefs.get('sound-enabled'),
+		'vibration-enabled': 			sc.app.prefs.get('vibration-enabled'),
 		'timeline-scrollonupdate': 	sc.app.prefs.get('timeline-scrollonupdate'),
 		'twitter-api-base-url': 	sc.app.prefs.get('twitter-api-base-url'),
 		'network-refreshinterval': 	sc.app.prefs.get('network-refreshinterval'),
@@ -43,6 +44,14 @@ PreferencesAssistant.prototype.setup = function() {
 		},
 		this.model
 	);
+	this.controller.setupWidget("checkbox-vibration-enabled",
+		this.soundEnabledAtts = {
+			fieldName: 'vibration-enabled',
+			modelProperty: 'vibration-enabled',
+			disabledProperty: 'vibration-enabled_disabled'
+		},
+		this.model
+	);
 	this.controller.setupWidget("checkbox-timeline-scrollonupdate",
 		this.soundEnabledAtts = {
 			fieldName: 'timeline-scrollonupdate',
@@ -53,6 +62,7 @@ PreferencesAssistant.prototype.setup = function() {
 	);
 	
 	this.controller.listen('checkbox-sound-enabled', Mojo.Event.propertyChange, this.saveSettings.bindAsEventListener(this));
+	this.controller.listen('checkbox-vibration-enabled', Mojo.Event.propertyChange, this.saveSettings.bindAsEventListener(this));
 	this.controller.listen('checkbox-timeline-scrollonupdate', Mojo.Event.propertyChange, this.saveSettings.bindAsEventListener(this));
 
 
@@ -229,6 +239,7 @@ PreferencesAssistant.prototype.cleanup = function(event) {
 	});
 
 	this.controller.stopListening('checkbox-sound-enabled', Mojo.Event.propertyChange, this.saveSettings);
+	this.controller.stopListening('checkbox-vibration-enabled', Mojo.Event.propertyChange, this.saveSettings);
 	this.controller.stopListening('checkbox-timeline-scrollonupdate', Mojo.Event.propertyChange, this.saveSettings);
 	
 };

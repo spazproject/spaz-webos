@@ -551,9 +551,11 @@ scene_helpers.addCommonSceneMethods = function(assistant) {
 			'fromstage':this.getStageName()
 		};
 		var bannerArgs = {
-			'messageText':text,
-			'soundClass':'alerts'
+			'messageText':text
 		};
+		if (sc.app.prefs.get('sound-enabled')) {
+			bannerArgs.soundClass = 'alerts';
+		}
 
 		var appController = Mojo.Controller.getAppController();
 		appController.showBanner(bannerArgs, launchArgs, category);
@@ -566,9 +568,11 @@ scene_helpers.addCommonSceneMethods = function(assistant) {
 			'fromstage':this.getStageName()
 		};
 		var bannerArgs = {
-			'messageText':"There are "+count+" new messages",
-			'soundClass':'alerts'
+			'messageText':"There are "+count+" new messages"
 		};
+		if (sc.app.prefs.get('sound-enabled')) {
+			bannerArgs.soundClass = 'alerts';
+		}
 		var category = 'newMessages';
 		var appController = Mojo.Controller.getAppController();
 		
@@ -586,9 +590,12 @@ scene_helpers.addCommonSceneMethods = function(assistant) {
 			'fromstage':this.getStageName()
 		};
 		var bannerArgs = {
-			'messageText':count+" new results for '"+query+"'",
-			'soundClass':'alerts'
+			'messageText':count+" new results for '"+query+"'"
 		};
+		if (sc.app.prefs.get('sound-enabled')) {
+			bannerArgs.soundClass = 'alerts';
+		}
+		
 		
 		appController.showBanner(bannerArgs, launchArgs, category);
 		this.showDashboard($L('New Messages'), bannerArgs.messageText, count, this.getStageName());
