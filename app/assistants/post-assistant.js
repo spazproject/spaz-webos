@@ -537,7 +537,7 @@ PostAssistant.prototype.postImageMessage = function(post_add_obj, message, file_
 	
 	file_obj = {'fullPath':file_path};
 	
-    sendEmail({
+    Spaz.sendEmail({
       to: [post_add_obj],
       msg: message,
       subject: message,
@@ -618,7 +618,7 @@ PostAssistant.prototype.renderSuccessfulPost = function(event, data) {
 		data = data[0];
 	}
 
-	data.text = makeItemsClickable(data.text);
+	data.text = Spaz.makeItemsClickable(data.text);
 	
 	/*
 		save this tweet to Depot

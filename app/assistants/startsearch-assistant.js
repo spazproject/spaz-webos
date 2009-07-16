@@ -180,7 +180,7 @@ StartsearchAssistant.prototype.activate = function(event) {
 		},
 		'data_success': function(e, data) {
 			for (var i=0; i < data.length; i++) {
-				data[i].text = makeItemsClickable(data[i].text);
+				data[i].text = Spaz.makeItemsClickable(data[i].text);
 			};
 			
 			thisA.pubtl.addItems(data);

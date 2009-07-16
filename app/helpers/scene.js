@@ -606,11 +606,9 @@ scene_helpers.addCommonSceneMethods = function(assistant) {
 	
 	assistant.showDashboard   = function(title, message, count, fromstage) {
 		
-		var DashboardStageName = 'dashboard';
-		
 		//  Post a banner notification and create or update Dashboard if there are new stories 
 		var appController = Mojo.Controller.getAppController(); 
-		var dashboardStageController = appController.getStageProxy(DashboardStageName); 
+		var dashboardStageController = appController.getStageProxy(SPAZ_DASHBOARD_STAGENAME); 
 
 		if (dashboardStageController) { 
 			dashboardStageController.delegateToSceneAssistant("updateDashboard", title, message, count, fromstage); 
@@ -620,7 +618,7 @@ scene_helpers.addCommonSceneMethods = function(assistant) {
 				stageController.pushScene('dashboard', sceneArgs); 
 			}; 
 			appController.createStageWithCallback({
-					'name':DashboardStageName,
+					'name':SPAZ_DASHBOARD_STAGENAME,
 					'lightweight':false
 				},
 				pushDashboard,
@@ -1027,6 +1025,7 @@ scene_helpers.addCommonSceneMethods = function(assistant) {
 	};
 	assistant._setFullScreen = function(event) {
 		this.isFullScreen = true; //dont send notifications
+		Spaz.closeDashboard();
 	};
 	
 	
@@ -1213,7 +1212,7 @@ var PostDialogAssistant = Class.create({
 			data = data[0];
 		}
 
-		data.text = makeItemsClickable(data.text);
+		data.text = Spaz.makeItemsClickable(data.text);
 		
 		/*
 			save this tweet to Depot

@@ -96,7 +96,7 @@ FavoritesAssistant.prototype.activate = function(event) {
 				if (jQuery('#favorites-timeline div.timeline-entry[data-status-id='+data[i].id+']').length<1) {
 					
 					sc.app.Tweets.save(data[i]);
-					data[i].text = makeItemsClickable(data[i].text);
+					data[i].text = Spaz.makeItemsClickable(data[i].text);
 					no_dupes.push(data[i]);
 				}
 				

@@ -74,19 +74,19 @@ StageAssistant.prototype.handleCommand = function(event){
 				Navigation
 			*/
 			case 'home':
-				findAndSwapScene("startlogin", active_scene);
+				Spaz.findAndSwapScene("startlogin", active_scene);
 				break;
 			case 'my-timeline':
-				findAndSwapScene("my-timeline", active_scene);
+				Spaz.findAndSwapScene("my-timeline", active_scene);
 				break;
 			case 'favorites':
-				findAndSwapScene("favorites", active_scene);
+				Spaz.findAndSwapScene("favorites", active_scene);
 				break;
 			case 'search':
-				findAndSwapScene("startsearch", active_scene);
+				Spaz.findAndSwapScene("startsearch", active_scene);
 				break;
 			case 'followers':
-				findAndSwapScene("manage-followers", active_scene);
+				Spaz.findAndSwapScene("manage-followers", active_scene);
 				break;
 			case 'appmenu-about':
 				Mojo.Controller.stageController.pushScene("about", active_scene);

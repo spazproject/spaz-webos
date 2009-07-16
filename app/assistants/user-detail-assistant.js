@@ -63,7 +63,7 @@ UserDetailAssistant.prototype.setup = function() {
 		rendertweets = rendertweets.reverse();
 
 		jQuery.each( rendertweets, function() {
-			this.text = makeItemsClickable(this.text);
+			this.text = Spaz.makeItemsClickable(this.text);
 			
 			/*
 				save this tweet to Depot
@@ -95,7 +95,7 @@ UserDetailAssistant.prototype.setup = function() {
 		dump(thisA.userobj);
 		
 		// var itemhtml = Mojo.View.render({object:this.userobj, template: 'user-detail/user-detail'});
-		thisA.userobj.description = makeItemsClickable(thisA.userobj.description);
+		thisA.userobj.description = Spaz.makeItemsClickable(thisA.userobj.description);
 		
 		var itemhtml = sc.app.tpl.parseTemplate('user-detail', thisA.userobj);
 		jQuery('#user-detail').html(itemhtml);

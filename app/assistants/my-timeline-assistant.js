@@ -491,7 +491,7 @@ MyTimelineAssistant.prototype.renderTweets = function(tweets, render_callback, f
 				*/
 				
 				if (!from_cache) {
-					rendertweets[i].text = makeItemsClickable(rendertweets[i].text);
+					rendertweets[i].text = Spaz.makeItemsClickable(rendertweets[i].text);
 
 					if (from_cache) {
 						rendertweets[i].not_new = true;
@@ -696,7 +696,7 @@ MyTimelineAssistant.prototype.removeExtraItems = function() {
 		if (this_obj != false) {
 			new_model.push(this_obj);
 		} else {
-			console.error('False was returned by thisA.getTweetFromModel(id). id='+id);
+			dump('False was returned by thisA.getTweetFromModel(id). id='+id);
 		}
 	} );
 	this.tweetsModel = new_model.reverse();

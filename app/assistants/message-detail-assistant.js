@@ -221,7 +221,7 @@ MessageDetailAssistant.prototype.processStatusReturn = function(e, statusobj) {
 	dump('message data:');
 	dump(e.data.thisAssistant.statusobj);
 	
-	e.data.thisAssistant.statusobj.text = makeItemsClickable(e.data.thisAssistant.statusobj.text);
+	e.data.thisAssistant.statusobj.text = Spaz.makeItemsClickable(e.data.thisAssistant.statusobj.text);
 	
 	/*
 		save this tweet to Depot

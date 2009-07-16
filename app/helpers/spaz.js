@@ -3,6 +3,13 @@
  ************************************/
 
 /**
+ * use the Spaz. namespace just to keep from cluttering too much 
+ */
+if (!Spaz) {
+	Spaz = {};
+}
+
+/**
  * This helper looks through the array of scenes and looks for an existing instance of 
  * the given targetScene. If one exists, we pop all scenes before it to return to it. Otherwise
  * we swap to a new instance of the scene
@@ -10,7 +17,7 @@
  * @param {string} targetScene the scene name
  * @param {many} returnValue a return value passed to the pop or swap call
  */
-var findAndSwapScene = function(targetScene, returnValue) {
+Spaz.findAndSwapScene = function(targetScene, returnValue) {
 	/*
 		initialize
 	*/
@@ -42,7 +49,7 @@ var findAndSwapScene = function(targetScene, returnValue) {
  * @param {string} str
  * @return {string}
  */
-var makeItemsClickable = function(str) {
+Spaz.makeItemsClickable = function(str) {
 	
 	str = sch.autolink(str, null, null, 20);
 	str = sch.autolinkTwitterScreenname(str, '<span class="username clickable" data-user-screen_name="#username#">@#username#</span>');
@@ -69,7 +76,7 @@ var makeItemsClickable = function(str) {
  * @param {object} opts
  *  
  */
-var sendEmail = function(opts) {
+Spaz.sendEmail = function(opts) {
 	
 	
 	function makeRecipientObj(address, type, contactDisplay) {
@@ -155,6 +162,20 @@ var sendEmail = function(opts) {
 };
 
 
+
+Spaz.closeDashboard = function(name) {
+	var name = name || SPAZ_DASHBOARD_STAGENAME;
+	
+	Mojo.Controller.getAppController().closeStage(name);
+}
+
+
+
+
+
+/*
+	We don't namespace these because they're just so darn simple
+*/
 
 /*
 	map sc.helpers.dump() to dump() for extra succinctness

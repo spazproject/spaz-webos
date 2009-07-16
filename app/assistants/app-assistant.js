@@ -1,4 +1,6 @@
 
+const SPAZ_DASHBOARD_STAGENAME = 'dashboard';
+
 var loggedin_appmenu_items = [
 	Mojo.Menu.editItem,
 	{ label: $L('Update Location...'),	command: 'update-location' },
@@ -64,7 +66,9 @@ AppAssistant.prototype.handleLaunch = function(launchParams) {
 
 	dump("Launch Parameters:");
 	dump(launchParams);
-	
+
+	Spaz.closeDashboard();
+
 	if (launchParams) {
 		if (launchParams.action) { // do an action
 
@@ -84,7 +88,7 @@ AppAssistant.prototype.handleLaunch = function(launchParams) {
 			}
 			
 		} else if (launchParams.fromstage) {
-
+			
 			if (launchParams.fromstage === 'main') {
 				PalmSystem.activate();
 			} else {

@@ -170,7 +170,7 @@ SearchTwitterAssistant.prototype.activate = function(event) {
 
 				if (!thisA.getEntryElementByStatusId(this.id)) {
 					new_count++;
-					this.text = makeItemsClickable(this.text);
+					this.text = Spaz.makeItemsClickable(this.text);
 
 					// var itemhtml = Mojo.View.render({object: this, template: 'search-twitter/search-item'});
 					var itemhtml = sc.app.tpl.parseTemplate('search-item', this);
