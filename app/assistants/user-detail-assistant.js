@@ -316,6 +316,7 @@ UserDetailAssistant.prototype.deactivate = function(event) {
 	// jQuery('#user-detail-container .username.clickable', this.scroller).die(Mojo.Event.tap);
 	// jQuery('#user-detail-container .hashtag.clickable', this.scroller).die(Mojo.Event.tap);
 	// jQuery('#user-detail-container div.timeline-entry>.status>.meta', this.scroller).die(Mojo.Event.tap);
+	jQuery('#user-timeline-trigger', this.scroller).die(Mojo.Event.tap);
 	jQuery('#user-detail-container div.timeline-entry', this.scroller).die(Mojo.Event.tap);
 }
 
