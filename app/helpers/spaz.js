@@ -5,7 +5,7 @@
 /**
  * use the Spaz. namespace just to keep from cluttering too much 
  */
-if (!Spaz) {
+if(typeof Spaz === "undefined") {
 	Spaz = {};
 }
 
@@ -167,7 +167,7 @@ Spaz.closeDashboard = function(name) {
 	var name = name || SPAZ_DASHBOARD_STAGENAME;
 	
 	Mojo.Controller.getAppController().closeStage(name);
-}
+};
 
 
 
