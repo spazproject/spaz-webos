@@ -57,9 +57,14 @@ MyTimelineAssistant.prototype.setup = function() {
 
 	this.setupCommonMenus({
 		viewMenuItems: [
-			{},
-			// {label: $L('Location'), command:'update-location' },
-			{label: $L('Filter timeline'), iconPath:'images/theme/menu-icon-triangle-down.png', submenu:'filter-menu'}
+			{
+				items: [
+					{label: sc.app.username, command:'scroll-top', width:260},
+					{label: $L('Filter timeline'), iconPath:'images/theme/menu-icon-triangle-down.png', submenu:'filter-menu'}
+				
+				]
+			}
+			
 		],
 		cmdMenuItems: [
 			{label:$L('Compose'),  icon:'compose', command:'compose', shortcut:'N'},

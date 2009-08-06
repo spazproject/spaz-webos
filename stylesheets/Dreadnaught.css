@@ -12,22 +12,31 @@ BODY {
 /*
 	This is so we can have the view menu floating over the palm-page-header
 */
-.palm-hasheader>.palm-menu-spacer {
+/*.palm-hasheader>.palm-menu-spacer {
 	height:0px !important;
 }
-	/*
+*/	/*
 		view menu button needs to be smaller
 	*/
-	.view-menu .palm-menu-button {
+/*	.view-menu .palm-menu-button {
 		-webkit-border-image: url(../images/dreadnaught/spaz-view-menu-button.png) 0 25 200 25 repeat repeat;
 	}
 		.view-menu .palm-menu-button.selected {
 			-webkit-border-image: url(../images/dreadnaught/spaz-view-menu-button.png) 50 25 150 25 repeat repeat;
 		}
-	
+*/	
 .view-menu .palm-menu-fade {
 	background: transparent!important;
 }
+.view-menu .palm-menu-text {
+	text-align:left;
+	background: url(../images/spaz-icon-alpha_32.png) no-repeat left;
+}
+	.view-menu .palm-menu-text .truncating-text {
+		margin-left:38px;
+		font-size:13pt;
+		font-weight:normal;
+	}
 
 .command-menu .palm-menu-fade {
 	background-image: url('../images/dreadnaught/command-menu-gradient.png') !important;

@@ -15,6 +15,14 @@ StartsearchAssistant.prototype.setup = function() {
 
 	if (sc.app.username && sc.app.password) {
 		this.setupCommonMenus({
+			viewMenuItems: [
+				{
+					items: [
+						{label: $L('Search & Explore'), command:'scroll-top', width:320}
+					]
+				}
+
+			],
 			cmdMenuItems: [
 				{label:$L('Compose'),  icon:'compose', command:'compose', shortcut:'N'},
 				{
@@ -33,6 +41,15 @@ StartsearchAssistant.prototype.setup = function() {
 		
 	} else {
 		this.setupCommonMenus({
+			viewMenuItems: [
+				{
+					items: [
+						{label: $L('Search & Explore'), command:'scroll-top', width:320}
+					]
+				}
+
+			]
+			
 		});	
 		
 		this.initAppMenu();

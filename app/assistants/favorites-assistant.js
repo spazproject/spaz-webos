@@ -13,9 +13,14 @@ FavoritesAssistant.prototype.setup = function() {
 	this.initTwit('DOM');
 
 	this.setupCommonMenus({
-		// viewMenuItems: [
-		// 	{label: "Favorites", command:'scroll-top', 'class':"palm-header left", width:320}
-		// ],
+		viewMenuItems: [
+			{
+				items:[
+					{label: $L("Favorites"), command:'scroll-top', 'class':"palm-header left", width:320}				
+				]
+			}
+
+		],
 		cmdMenuItems: [
 			{label:$L('Compose'),  icon:'compose', command:'compose', shortcut:'N'},
 			{
