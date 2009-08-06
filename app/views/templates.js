@@ -7,13 +7,13 @@ sc.app.tpl = new SpazTemplate();
 sc.app.tpl.addTemplateMethod('message-detail', function(d) {
 	var html = '';
 	
-	html += '<div data-user-screen_name="'+d.user.screen_name+'" data-user-id="'+d.user.id+'" data-status-id="'+d.id+'">';
-	html += '	<img src="'+d.user.profile_image_url+'" id="message-detail-image" data-screen_name="'+d.user.screen_name+'" title="View user\'s profile" />';
-	html += '	<div class="status">';
-	html += '		<div class="screen_name" data-screen_name="'+d.user.screen_name+'">'+d.user.screen_name+'</div>';
-	html += '		<div class="text">'+d.text+'</div>';
-	html += '		<div class="meta" data-status-id="'+d.id+'">';
-	html += '			<div class="date"><strong>Posted</strong> <span class="date-relative" data-created_at="'+d.created_at+'">'+d.relative_time+'</span> <strong>from</strong> <span class="source-link">'+d.source+'</span></div>';
+	html += '<div data-user-screen_name="'+d.user.screen_name+'" data-user-id="'+d.user.id+'" data-status-id="'+d.id+'">'
+	+ '	<img src="'+d.user.profile_image_url+'" id="message-detail-image" data-screen_name="'+d.user.screen_name+'" title="View user\'s profile" />'
+	+ '	<div class="status">'
+	+ '		<div class="screen_name" data-screen_name="'+d.user.screen_name+'">'+d.user.screen_name+'</div>'
+	+ '		<div class="text">'+d.text+'</div>'
+	+ '		<div class="meta" data-status-id="'+d.id+'">'
+	+ '			<div class="date"><strong>Posted</strong> <span class="date-relative" data-created_at="'+d.created_at+'">'+d.relative_time+'</span> <strong>from</strong> <span class="source-link">'+d.source+'</span></div>';
 	if (d.in_reply_to_status_id) {
 		html += '			<div class="in-reply-to"><strong>In-reply-to</strong>: <span class="in-reply-to-link clickable" data-irt-status-id="'+d.in_reply_to_status_id+'">@'+d.in_reply_to_screen_name+'</span></div>';
 	}
@@ -24,32 +24,31 @@ sc.app.tpl.addTemplateMethod('message-detail', function(d) {
 	html += '	</div>';
 	if (sc.app.username && sc.app.password) {
 		
-		html += '	<div id="message-detail-actions">';
-		html += '		<div class="palm-group palm-group-spaz">';
-		html += '			<div class="palm-group-title" id="search-toggle" x-mojo-loc="">Actions</div>';
-		html += '			<div class="palm-list">';
-		html += '				<div class="palm-row single">';
-		html += '					<button class="palm-button" id="message-detail-action-reply" data-status-id="'+d.id+'" data-screen_name="'+d.user.screen_name+'">@Reply to this message</button>';
-		html += '				</div>';
-		html += '				<div class="palm-row single">';
-		html += '					<button class="palm-button" id="message-detail-action-retweet" data-status-id="'+d.id+'">ReTweet this message</button>';
-		html += '				</div>';
-		html += '   			<div class="palm-row single">';
-		html += '					<button class="palm-button" id="message-detail-action-dm" data-screen_name="'+d.user.screen_name+'">Direct message this user</button>';
-		html += '				</div>';
+		html += '	<div id="message-detail-actions">'
+		+ '		<div class="palm-group palm-group-spaz">'
+		+ '			<div class="palm-group-title" id="search-toggle" x-mojo-loc="">Actions</div>'
+		+ '			<div class="palm-list">'
+		+ '				<div class="palm-row single">'
+		+ '					<button class="palm-button" id="message-detail-action-reply" data-status-id="'+d.id+'" data-screen_name="'+d.user.screen_name+'">@Reply to this message</button>'
+		+ '				</div>'
+		+ '				<div class="palm-row single">'
+		+ '					<button class="palm-button" id="message-detail-action-retweet" data-status-id="'+d.id+'">ReTweet this message</button>'
+		+ '				</div>'
+		+ '   			<div class="palm-row single">'
+		+ '					<button class="palm-button" id="message-detail-action-dm" data-screen_name="'+d.user.screen_name+'">Direct message this user</button>'
+		+ '				</div>';
 		if (d.favorited) {
-			html += '   			<div class="palm-row single">';
-			html += '					<button class="palm-button" id="message-detail-action-favorite" data-status-id="'+d.id+'" data-screen_name="'+d.user.screen_name+'" data-favorited="true">Remove as favorite</button>';
-			html += '				</div>';
+			html += '   			<div class="palm-row single">'
+			 + '					<button class="palm-button" id="message-detail-action-favorite" data-status-id="'+d.id+'" data-screen_name="'+d.user.screen_name+'" data-favorited="true">Remove as favorite</button>'
+			 + '				</div>';
 		} else {
-			html += '   			<div class="palm-row single">';
-			html += '					<button class="palm-button" id="message-detail-action-favorite" data-status-id="'+d.id+'" data-screen_name="'+d.user.screen_name+'" data-favorited="false">Add as favorite</button>';
-			html += '				</div>';
+			html += '   			<div class="palm-row single">'
+			+ '					<button class="palm-button" id="message-detail-action-favorite" data-status-id="'+d.id+'" data-screen_name="'+d.user.screen_name+'" data-favorited="false">Add as favorite</button>'
+			+ '				</div>';
 		}
-		html += '			</div>';
-		html += '		</div>';
-
-		html += '	</div>';
+		html += '			</div>'
+		+ '		</div>'
+    + '	</div>';
 	}
 	html += '</div>';
 
@@ -59,28 +58,28 @@ sc.app.tpl.addTemplateMethod('message-detail', function(d) {
 sc.app.tpl.addTemplateMethod('message-detail-dm', function(d) {
 	var html = '';
 	
-	html += '<div data-user-screen_name="'+d.sender.screen_name+'" data-user-id="'+d.sender.id+'" data-status-id="'+d.id+'" data-isdm="true">';
-	html += '	<img src="'+d.sender.profile_image_url+'" id="message-detail-image" data-screen_name="'+d.sender.screen_name+'" title="View user\'s profile" />';
-	html += '	<div class="status">';
-	html += '		<div class="screen_name" data-screen_name="'+d.sender.screen_name+'">'+d.sender.screen_name+'</div>';
-	html += '		<div class="text">'+d.text+'</div>';
-	html += '		<div class="meta" data-status-id="'+d.id+'">';
-	html += '			<div class="date"><strong>Direct message sent</strong> <span class="date-relative" data-created_at="'+d.created_at+'">'+d.relative_time+'</span></div>';
-	html += '		</div>';
-	html += '	</div>';
+	html += '<div data-user-screen_name="'+d.sender.screen_name+'" data-user-id="'+d.sender.id+'" data-status-id="'+d.id+'" data-isdm="true">'
+	+ '	<img src="'+d.sender.profile_image_url+'" id="message-detail-image" data-screen_name="'+d.sender.screen_name+'" title="View user\'s profile" />'
+	+ '	<div class="status">'
+	+ '		<div class="screen_name" data-screen_name="'+d.sender.screen_name+'">'+d.sender.screen_name+'</div>'
+	+ '		<div class="text">'+d.text+'</div>'
+	+ '		<div class="meta" data-status-id="'+d.id+'">'
+	+ '			<div class="date"><strong>Direct message sent</strong> <span class="date-relative" data-created_at="'+d.created_at+'">'+d.relative_time+'</span></div>'
+	+ '		</div>'
+	+ '	</div>';
 	if (sc.app.username && sc.app.password) {
-		html += '	<div id="message-detail-actions">';
-		html += '		<div class="spaz-button-group">';
-		html += '			<div class="palm-group palm-group-spaz">';
-		html += '				<div class="palm-group-title" id="search-toggle" x-mojo-loc="">Actions</div>';
-		html += '				<div class="palm-list">';
-		html += '					<div class="palm-row single">';
-		html += '						<button class="palm-button" id="message-detail-action-dm" data-screen_name="'+d.sender.screen_name+'">Direct message this user</button>';
-		html += '					</div>';
-		html += '				</div>';
-		html += '			</div>';
-		html += '		</div>';
-		html += '	</div>';
+		html += '	<div id="message-detail-actions">'
+		+ '		<div class="spaz-button-group">'
+		+ '			<div class="palm-group palm-group-spaz">'
+		+ '				<div class="palm-group-title" id="search-toggle" x-mojo-loc="">Actions</div>'
+		+ '				<div class="palm-list">'
+		+ '					<div class="palm-row single">'
+		+ '						<button class="palm-button" id="message-detail-action-dm" data-screen_name="'+d.sender.screen_name+'">Direct message this user</button>'
+		+ '					</div>'
+		+ '				</div>'
+		+ '			</div>'
+		+ '		</div>'
+		+ '	</div>';
 	};
 	html += '</div>';
 
@@ -104,11 +103,11 @@ sc.app.tpl.addTemplateMethod('message-detail-searchresult', function(d) {
 sc.app.tpl.addTemplateMethod('user-detail', function(d) {
 	var html = '';
 	
-	html += '	<div data-screen_name="'+d.screen_name+'" data-id="'+d.id+'">';
-	html += '		<img src="'+d.profile_image_url+'" id="user-detail-image" data-screen_name="'+d.screen_name+'" title="View user\'s profile" />';
-	html += '		<div id="user-detail-info">';
-	html += '			<div id="user-detail-name" data-screen_name="'+d.screen_name+'">';
-	html += '			'+d.name;
+	html += '	<div data-screen_name="'+d.screen_name+'" data-id="'+d.id+'">'
+	+ '		<img src="'+d.profile_image_url+'" id="user-detail-image" data-screen_name="'+d.screen_name+'" title="View user\'s profile" />'
+	+ '		<div id="user-detail-info">'
+	+ '			<div id="user-detail-name" data-screen_name="'+d.screen_name+'">'
+	+ '			'+d.name;
 	if (d.name !== d.screen_name) {
 		html += '			('+d.screen_name+')';
 	}
@@ -127,22 +126,22 @@ sc.app.tpl.addTemplateMethod('user-detail', function(d) {
 	}
 	html += '		</div>';
 	
-	html += '<div>';
-	html += '	<table class="palm-divider collapsible" id="user-timeline-trigger" x-mojo-tap-highlight="momentary">';
-	html += '		<tbody>';
-	html += '			<tr>';
-	html += '				<td class="left"></td>';
-	html += '				<td class="label">'+$L('View User\'s Posts')+'</td>';
-	html += '				<td class="line" width="100%"></td>';
-	html += '				<td><div class="palm-arrow-closed arrow_button"></div></td>';
-	html += '				<td class="right"></td>';
-	html += '			</tr>';
-	html += '		</tbody>';
-	html += '	</table> ';
-    html += '	<div class="pane">';
-	html += '		<div id="user-timeline" data-screen_name="'+d.screen_name+'" style="display:none"></div>';
-	html += '	</div>';
-	html += '</div>';
+	html += '<div>'
+	+ '	<table class="palm-divider collapsible" id="user-timeline-trigger" x-mojo-tap-highlight="momentary">'
+	+ '		<tbody>'
+	+ '			<tr>'
+	+ '				<td class="left"></td>'
+	+ '				<td class="label">'+$L('View User\'s Posts')+'</td>'
+	+ '				<td class="line" width="100%"></td>'
+	+ '				<td><div class="palm-arrow-closed arrow_button"></div></td>'
+	+ '				<td class="right"></td>'
+	+ '			</tr>'
+	+ '		</tbody>'
+	+ '	</table> '
+  + '	<div class="pane">'
+	+ '		<div id="user-timeline" data-screen_name="'+d.screen_name+'" style="display:none"></div>'
+	+ '	</div>'
+	+ '</div>';
 	
 	
 	
@@ -150,42 +149,40 @@ sc.app.tpl.addTemplateMethod('user-detail', function(d) {
 	html += '		<div id="user-detail-actions">';
 	
 
-	html += '			<div class="spaz-button-group">';
-	html += '				<div class="palm-group palm-group-spaz">';
-	html += '					<div class="palm-group-title" id="search-toggle" x-mojo-loc="">Actions</div>';
-	html += '					<div class="palm-list">';
-	html += '						<div class="palm-row single">';
-	html += '							<button id="search-user"class="palm-button" data-screen_name="'+d.screen_name+'">Search for user</button>';
-	html += '						</div>';
+	html += '			<div class="spaz-button-group">'
+	+ '				<div class="palm-group palm-group-spaz">'
+	+ '					<div class="palm-group-title" id="search-toggle" x-mojo-loc="">Actions</div>'
+	+ '					<div class="palm-list">'
+	+ '						<div class="palm-row single">'
+	+ '							<button id="search-user"class="palm-button" data-screen_name="'+d.screen_name+'">Search for user</button>'
+	+ '						</div>';
 	if (sc.app.username && sc.app.password) {
-		html += '						<div class="palm-row single">';
-		html += '							<button id="reply-to-user" class="palm-button" data-screen_name="'+d.screen_name+'">@reply to user</button>';
-		html += '						</div>';
-		html += '						<div class="palm-row single">';
-		html += '							<button id="dm-user" class="palm-button" data-screen_name="'+d.screen_name+'">Send direct message to user</button>';
-		html += '						</div>';
+		html += '						<div class="palm-row single">'
+		+ '							<button id="reply-to-user" class="palm-button" data-screen_name="'+d.screen_name+'">@reply to user</button>'
+		+ '						</div>'
+		+ '						<div class="palm-row single">'
+		+ '							<button id="dm-user" class="palm-button" data-screen_name="'+d.screen_name+'">Send direct message to user</button>'
+		+ '						</div>';
 		if (d.following) {
-			html += '						<div class="palm-row single">';
-			html += '							<button id="follow-user" class="palm-button" data-screen_name="'+d.screen_name+'" data-following="true">Stop following user</button>';
-			html += '						</div>';
+			html += '						<div class="palm-row single">'
+			+ '							<button id="follow-user" class="palm-button" data-screen_name="'+d.screen_name+'" data-following="true">Stop following user</button>'
+			+ '						</div>';
 
 		} else {
-			html += '						<div class="palm-row single">';
-			html += '							<button id="follow-user" class="palm-button" data-screen_name="'+d.screen_name+'" data-following="false">Follow user</button>';
-			html += '						</div>';
+			html += '						<div class="palm-row single">'
+			+ '							<button id="follow-user" class="palm-button" data-screen_name="'+d.screen_name+'" data-following="false">Follow user</button>'
+			+ '						</div>';
 
 		}
-		html += '						<div class="palm-row single">';
-		html += '							<button id="block-user" class="palm-button" data-screen_name="'+d.screen_name+'" data-blocked="false">Block user</button>';
-		html += '						</div>';
+		html += '						<div class="palm-row single">'
+		+ '							<button id="block-user" class="palm-button" data-screen_name="'+d.screen_name+'" data-blocked="false">Block user</button>'
+		+ '						</div>';
 	};
-	html += '					</div>';
-	html += '				</div>';
-	html += '			</div>';
-	
-	
-	html += '		</div>';
-	html += '	</div>';
+	html += '					</div>'
+	+ '				</div>'
+	+ '			</div>'
+	+ '		</div>'
+	+ '	</div>';
 
 	return html;
 });
@@ -201,24 +198,24 @@ sc.app.tpl.addTemplateMethod('tweet', function(d) {
 	if (d.SC_is_reply) {
 		html += ' reply'
 	}
-	html += '" data-status-id="'+d.id+'" data-user-id="'+d.user.id+'" data-user-screen_name="'+d.user.screen_name+'" data-timestamp="'+d.created_at_unixtime+'">';
-	html += '	<div class="user" data-user-id="'+d.user.id+'" data-user-screen_name="'+d.user.screen_name+'">';
-	html += '		<img src="'+d.user.profile_image_url+'" />';
-	html += '	</div>';
-	html += '	<div class="status">';
-	html += '		<div class="meta-wrapper">';
-	html += '			<div class="screen-name">'+d.user.screen_name;
+	html += '" data-status-id="'+d.id+'" data-user-id="'+d.user.id+'" data-user-screen_name="'+d.user.screen_name+'" data-timestamp="'+d.created_at_unixtime+'">'
+	+ '	<div class="user" data-user-id="'+d.user.id+'" data-user-screen_name="'+d.user.screen_name+'">'
+	+ '		<img src="'+d.user.profile_image_url+'" />'
+	+ '	</div>'
+	+ '	<div class="status">'
+	+ '		<div class="meta-wrapper">'
+	+ '			<div class="screen-name">'+d.user.screen_name;
 	if (d.user.protected) {
 		html += '			<div class="protected-icon"></div>';
 	}
-	html += '			</div>';
-	html += '			<div class="meta" data-status-id="'+d.id+'"><span class="date" data-created_at="'+d.created_at+'">'+d.relative_time+'</span></div>';
-	html += '		</div>';
-	html += '	 	<div class="text">';
-	html += '			'+d.text+'';
-	html += '		</div>';
-	html += '	</div>';
-	html += '</div>';
+	html += '			</div>'
+	+ '			<div class="meta" data-status-id="'+d.id+'"><span class="date" data-created_at="'+d.created_at+'">'+d.relative_time+'</span></div>'
+	+ '		</div>'
+	+ '	 	<div class="text">'
+	+ '			'+d.text+''
+	+ '		</div>'
+	+ '	</div>'
+	+ '</div>';
 
 	return html;
 });
@@ -228,24 +225,24 @@ sc.app.tpl.addTemplateMethod('dm', function(d) {
 
 	html += '<div class="timeline-entry dm';
 	if (!d.from_cache) {
-		html + ' new';
+		html += ' new';
 	}
-	html += '" data-isdm="true" data-status-id="'+d.id+'" data-user-id="'+d.sender.id+'" data-user-screen_name="'+d.sender.screen_name+'" data-timestamp="'+d.created_at_unixtime+'">';
-	html += '	<div class="user" data-user-id="'+d.sender.id+'" data-user-screen_name="'+d.sender.screen_name+'">';
-	html += '		<img src="'+d.sender.profile_image_url+'" title="'+d.sender.screen_name+'" />';
-	html += '	</div>';
-	html += '	<div class="status">';
-	html += '		<div class="meta-wrapper">';
-	html += '			<div class="screen-name">'+d.sender.screen_name+'</div>';
-	html += '			<div class="meta" data-status-id="'+d.id+'"><span class="date" data-created_at="'+d.created_at+'">'+d.relative_time+'</span></div>';
-	html += '		</div>';
-	html += '	 	<div class="text">';
-	html += '			'+d.text+'';
-	html += '		</div>';
-	html += '	</div>';
+	html += '" data-isdm="true" data-status-id="'+d.id+'" data-user-id="'+d.sender.id+'" data-user-screen_name="'+d.sender.screen_name+'" data-timestamp="'+d.created_at_unixtime+'">'
+	+ '	<div class="user" data-user-id="'+d.sender.id+'" data-user-screen_name="'+d.sender.screen_name+'">'
+	+ '		<img src="'+d.sender.profile_image_url+'" title="'+d.sender.screen_name+'" />'
+	+ '	</div>'
+	+ '	<div class="status">'
+	+ '		<div class="meta-wrapper">'
+	+ '			<div class="screen-name">'+d.sender.screen_name+'</div>'
+	+ '			<div class="meta" data-status-id="'+d.id+'"><span class="date" data-created_at="'+d.created_at+'">'+d.relative_time+'</span></div>'
+	+ '		</div>'
+	+ '	 	<div class="text">'
+	+ '			'+d.text+''
+	+ '		</div>'
+	+ '	</div>';
 	// html += '  <div class="entry-json" style="display:none">'+sch.enJSON(d)+'</div>';
-	html += '  <div class="entry-json" style="display:none"></div>';
-	html += '</div>';
+	html += '  <div class="entry-json" style="display:none"></div>'
+	+ '</div>';
 	
 	return html;
 });
@@ -253,20 +250,20 @@ sc.app.tpl.addTemplateMethod('dm', function(d) {
 sc.app.tpl.addTemplateMethod('search-item', function(d) {
 	var html = '';
 
-	html += '<div class="timeline-entry" data-issearch="true" data-status-id="'+d.id+'" data-user-id="'+d.from_user_id+'" data-user-screen_name="'+d.from_user+'" data-timestamp="'+d.created_at_unixtime+'">';
-	html += '	<div class="user" data-user-id="'+d.from_user_id+'" data-user-screen_name="'+d.from_user+'">';
-	html += '		<img src="'+d.profile_image_url+'" title="'+d.from_user+'" />';
-	html += '	</div>';
-	html += '	<div class="status">';
-	html += '		<div class="meta-wrapper">';
-	html += '			<div class="screen-name">'+d.from_user+'</div>';
-	html += '			<div class="meta" data-status-id="'+d.id+'"><span class="date" data-created_at="'+d.created_at+'">'+d.relative_time+'</span></div>';
-	html += '		</div>';
-	html += '	 	<div class="text">';
-	html += '			'+d.text+'';
-	html += '		</div>';
-	html += '	</div>';
-	html += '</div>';
+	html += '<div class="timeline-entry" data-issearch="true" data-status-id="'+d.id+'" data-user-id="'+d.from_user_id+'" data-user-screen_name="'+d.from_user+'" data-timestamp="'+d.created_at_unixtime+'">'
+	+ '	<div class="user" data-user-id="'+d.from_user_id+'" data-user-screen_name="'+d.from_user+'">'
+	+ '		<img src="'+d.profile_image_url+'" title="'+d.from_user+'" />'
+	+ '	</div>'
+	+ '	<div class="status">'
+	+ '		<div class="meta-wrapper">'
+	+ '			<div class="screen-name">'+d.from_user+'</div>'
+	+ '			<div class="meta" data-status-id="'+d.id+'"><span class="date" data-created_at="'+d.created_at+'">'+d.relative_time+'</span></div>'
+	+ '		</div>'
+	+ '	 	<div class="text">'
+	+ '			'+d.text+''
+	+ '		</div>'
+	+ '	</div>'
+	+ '</div>';
 
 	return html;
 });
@@ -293,14 +290,12 @@ sc.app.tpl.addTemplateMethod('error_info', function(d) {
 	html += ' <div class="human_msg">'+d.human_msg+'</div>'
 	if (d.twitter_msg) {
 		html += ' <div class="row"><div class="label">'+$L('Twitter error')+'</div> <div class="value twitter_msg">'+d.twitter_msg+'</div></div>'
-		html += ' <div class="row"><div class="label">'+$L('Twitter request')+'</div> <div class="value twitter_request">'+d.twitter_request+'</div></div>'
+		+ ' <div class="row"><div class="label">'+$L('Twitter request')+'</div> <div class="value twitter_request">'+d.twitter_request+'</div></div>';
 	}
 	html += ' <div class="row"><div class="label">'+$L('Status code')+'</div> <div class="value status">'+d.status+'</div></div>'
-	html += ' <div class="row"><div class="label">'+$L('Status text')+'</div> <div class="value statusText">'+d.statusText+'</div></div>'	
-	html += ' <div class="row"><div class="label">'+$L('URL')+'</div> <div class="value url">'+d.url+'</div></div>'	
-	
-	
-	html += '</div>';
+	+ ' <div class="row"><div class="label">'+$L('Status text')+'</div> <div class="value statusText">'+d.statusText+'</div></div>'	
+	+ ' <div class="row"><div class="label">'+$L('URL')+'</div> <div class="value url">'+d.url+'</div></div>'
+  + '</div>';
 	
 	return html;
 	
@@ -324,12 +319,12 @@ sc.app.tpl.addTemplateMethod('error_info_text', function(d) {
 	
 	html += d.human_msg+"\n";
 	if (d.twitter_msg) {
-		html += $L('Twitter error')+  ':'+d.twitter_msg+"\n";
-		html += $L('Twitter request')+':'+d.twitter_request+"\n";
+		html += $L('Twitter error')+  ':'+d.twitter_msg+"\n"
+		+ $L('Twitter request')+':'+d.twitter_request+"\n";
 	}
-	html += $L('Status code')+':'+d.status+"\n";
-	html += $L('Status text')+':'+d.statusText+"\n";
-	html += $L('URL')        +':'+d.url+"\n";
+	html += $L('Status code')+':'+d.status+"\n"
+	+ $L('Status text')+':'+d.statusText+"\n"
+	+ $L('URL')        +':'+d.url+"\n";
 	
 	return html;
 	
