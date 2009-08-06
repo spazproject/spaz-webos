@@ -21,41 +21,12 @@
 		jQuery.noConflict();
 	</script>
 	
-	
-	<!--
-		We don't use the usual JSON2.js parser here because
-		of problems with non-ascii characters on webOS
-	-->
-	<script src="spazcore/vendors/webtoolkit.base64.js" type="text/javascript" charset="utf-8"></script>
-
-		
-	<!-- Load SC first  -->
-	<script src="spazcore/libs/spazcore.js" type="text/javascript" charset="utf-8"></script>
-
-	<!-- Load SC helpers -->
-	<script src="spazcore/helpers/datetime.js" type="text/javascript" charset="utf-8"></script>
-	<script src="spazcore/helpers/event.js" type="text/javascript" charset="utf-8"></script>
-	<script src="spazcore/helpers/javascript.js" type="text/javascript" charset="utf-8"></script>
-	<script src="spazcore/helpers/json.js" type="text/javascript" charset="utf-8"></script>
-	<!-- // <script src="spazcore/helpers/location.js" type="text/javascript" charset="utf-8"></script> -->
-	<script src="spazcore/helpers/string.js" type="text/javascript" charset="utf-8"></script>
-	<script src="spazcore/helpers/sys.js" type="text/javascript" charset="utf-8"></script>
-	<script src="spazcore/helpers/view.js" type="text/javascript" charset="utf-8"></script>
-	<script src="spazcore/helpers/xml.js" type="text/javascript" charset="utf-8"></script>
-
+	<!-- SpazCore -->
+	<script src="spazcore/spazcore-full.js" type="text/javascript" charset="utf-8"></script>
 	<!-- SC Platform files -->
 	<script src="spazcore/platforms/webOS/helpers/location.js" type="text/javascript" charset="utf-8"></script>
 	<script src="spazcore/platforms/webOS/helpers/sys.js" type="text/javascript" charset="utf-8"></script>
 
-	<!-- Load SC Twitter library -->
-	<script src="spazcore/libs/spaztwit.js" type="text/javascript" charset="utf-8"></script>
-	<script src="spazcore/libs/spazprefs.js" type="text/javascript" charset="utf-8"></script>
-	<script src="spazcore/libs/spaztemplate.js" type="text/javascript" charset="utf-8"></script>
-	<script src="spazcore/libs/spazshorttext.js" type="text/javascript" charset="utf-8"></script>
-	<script src="spazcore/libs/spazshorturl.js" type="text/javascript" charset="utf-8"></script>
-	<script src="spazcore/libs/spazphotomailer.js" type="text/javascript" charset="utf-8"></script>
-	<script src="spazcore/libs/spaztimeline.js" type="text/javascript" charset="utf-8"></script>
-	
 	
 	<!-- Template methods for SpazTemplates -->
 	<script src="app/views/templates.js" type="text/javascript" charset="utf-8"></script>
@@ -93,7 +64,7 @@
 
 
 	<!-- application stylesheet should come in after the one loaded by the framework -->
-	<link href="stylesheets/Dreadnaught.css" media="screen" rel="stylesheet" type="text/css" />
+	<link href="stylesheets/Dreadnaught.css" media="screen" title="apptheme" rel="stylesheet" type="text/css" />
 
 	<script type="text/javascript" charset="utf-8">
 		/*

@@ -14,11 +14,13 @@ function PostAssistant(args) {
 
 PostAssistant.prototype.setup = function() {
 	
+	var thisA = this;
+	
 	this.initTwit();
 	
 	this.postMode = 'normal'; // 'normal' or 'email'
 	
-
+	this.postTextField = $('post-textfield');
 	
 	this.Users = new Users(sc.app.prefs);
 	
@@ -111,24 +113,67 @@ PostAssistant.prototype.setup = function() {
 	jQuery('#post-buttons-image').hide();
 	jQuery('#post-panel-attachment').hide();
 	
+	
+	
+	
+	
+	
+	/*
+		Bind listeners for UI stuff 
+	*/
+	Mojo.Event.listen($('post-send-button'), Mojo.Event.tap, this.sendPost.bindAsEventListener(this));
+	Mojo.Event.listen($('attach-image-button'), Mojo.Event.tap, this.attachImage.bindAsEventListener(this));
+	Mojo.Event.listen($('post-shorten-text-button'), Mojo.Event.tap, this.shortenText.bindAsEventListener(this));
+	Mojo.Event.listen($('post-shorten-urls-button'), Mojo.Event.tap, this.shortenURLs.bindAsEventListener(this));
+	this.listenForEnter('post-textfield', function() {
+		this.controller.get('post-send-button').mojo.activate();
+		this.sendPost();
+	});
+	Mojo.Event.listen($('image-uploader'), Mojo.Event.propertyChange, this.changeImageUploader.bindAsEventListener(this));	
+	Mojo.Event.listen($('image-uploader-email'), Mojo.Event.propertyChange, this.setImageUploaderEmail.bindAsEventListener(this));	
+
+
+
+	/*
+		if update succeeds
+	*/
+	jQuery().bind('update_succeeded', { thisAssistant:this }, function(e, data) {
+		e.data.thisAssistant.renderSuccessfulPost(e, data);
+	});
+
+	/*
+		if update fails
+	*/
+	jQuery().bind('update_failed', { thisAssistant:this }, function(e, error_obj) {
+		e.data.thisAssistant.reportFailedPost(error_obj);
+	});
+
+
+	// jQuery('#post-textfield').bind('keyup',   function(e) {
+	// 	thisA._updateCharCount();
+	// });
+	// jQuery('#post-textfield').bind('blur',    function(e) {
+	// 	thisA._updateCharCount();
+	// });
+	// jQuery('#post-textfield').bind('focus',   function(e) {
+	// 	thisA._updateCharCount();
+	// });
+	
+	Mojo.Event.listen($('post-textfield'), Mojo.Event.propertyChange, this._updateCharCount.bindAsEventListener(this));	
+	
+
+	jQuery('#post-panel-irt-dismiss').bind(Mojo.Event.tap, function(e) {
+		thisA.clearPostIRT();
+	});
+	
+	
 
 };
 
 PostAssistant.prototype.activate = function(args) {
 	
-	dump('Activation args');
-	dump(args);
-	
-	dump('this.model');
-	dump(this.model);
-	
-	
 	var thisA = this;
-	
-	
-	this.postTextField = $('post-textfield');
-	
-	
+
 	if (this.args) {
 		
 		if (this.args.text) { this.postTextField.mojo.setText(this.args.text); }
@@ -143,85 +188,10 @@ PostAssistant.prototype.activate = function(args) {
 
 	}
 	
-	
-	
-	function activateBind() {
-		Mojo.Event.listen($('post-send-button'), Mojo.Event.tap, this.sendPost.bindAsEventListener(this));
-		Mojo.Event.listen($('attach-image-button'), Mojo.Event.tap, this.attachImage.bindAsEventListener(this));
-		Mojo.Event.listen($('post-shorten-text-button'), Mojo.Event.tap, this.shortenText.bindAsEventListener(this));
-		Mojo.Event.listen($('post-shorten-urls-button'), Mojo.Event.tap, this.shortenURLs.bindAsEventListener(this));
-		this.listenForEnter('post-textfield', function() {
-			this.controller.get('post-send-button').mojo.activate();
-			this.sendPost();
-		});
-		Mojo.Event.listen($('image-uploader'), Mojo.Event.propertyChange, this.changeImageUploader.bindAsEventListener(this));	
-		Mojo.Event.listen($('image-uploader-email'), Mojo.Event.propertyChange, this.setImageUploaderEmail.bindAsEventListener(this));	
 
-
-
-		/*
-			if update succeeds
-		*/
-		jQuery().bind('update_succeeded', { thisAssistant:this }, function(e, data) {
-			e.data.thisAssistant.renderSuccessfulPost(e, data);
-		});
-
-		/*
-			if update fails
-		*/
-		jQuery().bind('update_failed', { thisAssistant:this }, function(e, error_obj) {
-			e.data.thisAssistant.reportFailedPost(error_obj);
-		});
-
-
-		jQuery('#post-textfield').bind('keyup',   function(e) {
-			thisA._updateCharCount();
-		});
-		jQuery('#post-textfield').bind('keydown', function(e) {
-			thisA._updateCharCount();
-		});
-		jQuery('#post-textfield').bind('blur',    function(e) {
-			thisA._updateCharCount();
-		});
-		jQuery('#post-textfield').bind('focus',   function(e) {
-			thisA._updateCharCount();
-		});
-
-		jQuery('#post-panel-irt-dismiss').bind(Mojo.Event.tap, function(e) {
-			thisA.clearPostIRT();
-		});
-
-
-		jQuery('#post-image-lookup-email').bind(Mojo.Event.tap, function(e) {
-			var api_label = thisA.imageUploaderModel['image-uploader'];
-			var help_text = $L(thisA.spm.apis[api_label].help_text);
-			var email_info_url = $L(thisA.spm.apis[api_label].email_info_url);
-
-			thisA.showAlert(
-				$L(help_text),
-				$('Look-Up Posting Email Address'),
-				function(choice) {
-					if (choice === 'Open Browser') {
-						thisA.openInBrowser(email_info_url);
-					}
-				}, 
-				[{label:$L('Open')+' '+api_label, value:"Open Browser", type:'affirmative'}]
-			);
-		});
-
-		jQuery('#post-image-choose').bind(Mojo.Event.tap, function(e) {
-			thisA.chooseImage();
-		});
-	}
-
-	
-	
-	
 	if (this.returningFromFilePicker === true) {
 		this.onReturnFromFilePicker();
 		this.returningFromFilePicker = false;
-	} else {
-		activateBind.call(this);
 	}
 	
 	
@@ -235,6 +205,12 @@ PostAssistant.prototype.activate = function(args) {
 
 
 PostAssistant.prototype.deactivate = function(event) {
+
+	
+
+};
+
+PostAssistant.prototype.cleanup = function(event) {
 	Mojo.Event.stopListening($('post-send-button'), Mojo.Event.tap, this.sendPost); 
 	Mojo.Event.stopListening($('attach-image-button'), Mojo.Event.tap, this.attachImage);
 	Mojo.Event.stopListening($('post-shorten-text-button'), Mojo.Event.tap, this.shortenText);
@@ -245,10 +221,7 @@ PostAssistant.prototype.deactivate = function(event) {
 	
 	this.stopListeningForEnter('post-textfield');
 	
-	jQuery('#post-textfield').unbind('keyup');
-	jQuery('#post-textfield').unbind('keydown');
-	jQuery('#post-textfield').unbind('blur');
-	jQuery('#post-textfield').unbind('focus');
+	Mojo.Event.stopListening($('post-textfield'), Mojo.Event.propertyChange, this._updateCharCount.bindAsEventListener(this));	
 	
 	jQuery('#post-panel-irt-dismiss').unbind(Mojo.Event.tap);
 	jQuery('#post-image-lookup-email').unbind(Mojo.Event.tap);
@@ -256,13 +229,6 @@ PostAssistant.prototype.deactivate = function(event) {
 	
 	jQuery().unbind('update_succeeded');
 	jQuery().unbind('update_failed');
-	
-
-};
-
-PostAssistant.prototype.cleanup = function(event) {
-	/* this function should do any cleanup needed before the scene is destroyed as 
-	   a result of being popped off the scene stack */
 };
 
 
@@ -272,9 +238,10 @@ PostAssistant.prototype.cleanup = function(event) {
 PostAssistant.prototype._updateCharCount = function() {
 	var thisA = this;
 	
-	if (thisA._updateCharCountTimeout) {
-		clearTimeout(thisA._updateCharCountTimeout);
-	}
+	_updateCharCountNow();
+	// if (thisA._updateCharCountTimeout) {
+	// 	clearTimeout(thisA._updateCharCountTimeout);
+	// }
 
 	function _updateCharCountNow() {
 		var numchars  = thisA.postTextFieldModel.value.length;
@@ -295,7 +262,7 @@ PostAssistant.prototype._updateCharCount = function() {
 		}	
 	}
 	
-	this._updateCharCountTimeout = setTimeout(_updateCharCountNow, 250);
+	// this._updateCharCountTimeout = setTimeout(_updateCharCountNow, 250);
 	
 	
 };
@@ -498,13 +465,36 @@ PostAssistant.prototype.sendPost = function(event) {
  */
 PostAssistant.prototype.attachImage = function() {
 	
+	var thisA = this;
+	
 	jQuery('#post-buttons-standard').slideUp('200', function() {
 		jQuery('#post-buttons-image').slideDown('200');
 	});
-	
+
 	this.loadImageUploaderEmail();
 	
+	jQuery('#post-image-lookup-email').bind(Mojo.Event.tap, function(e) {
+		var api_label = thisA.imageUploaderModel['image-uploader'];
+		var help_text = $L(thisA.spm.apis[api_label].help_text);
+		var email_info_url = $L(thisA.spm.apis[api_label].email_info_url);
+
+		thisA.showAlert(
+			$L(help_text),
+			$('Look-Up Posting Email Address'),
+			function(choice) {
+				if (choice === 'Open Browser') {
+					thisA.openInBrowser(email_info_url);
+				}
+			}, 
+			[{label:$L('Open')+' '+api_label, value:"Open Browser", type:'affirmative'}]
+		);
+	});
+
+	jQuery('#post-image-choose').bind(Mojo.Event.tap, function(e) {
+		thisA.chooseImage();
+	});
 	jQuery('#post-image-cancel').one('click', this.cancelAttachImage);
+
 	
 };
 
@@ -512,6 +502,12 @@ PostAssistant.prototype.attachImage = function() {
  * Go back to the "normal" posting scene controls 
  */
 PostAssistant.prototype.cancelAttachImage = function() {
+	
+	jQuery('#post-image-lookup-email').unbind(Mojo.Event.tap);
+
+	jQuery('#post-image-choose').unbind(Mojo.Event.tap);
+	
+	
 	if ( jQuery('#post-buttons-image').is(':visible') ) {
 		jQuery('#post-buttons-image').slideUp('200', function() {
 			jQuery('#post-buttons-standard').slideDown('200');
