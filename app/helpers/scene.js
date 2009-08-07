@@ -179,8 +179,9 @@ scene_helpers.addCommonSceneMethods = function(assistant) {
 		if (!this.scroller) {
 			this.scroller = this.controller.getSceneScroller();
 		}
+		this.topContainer = this.scroller.down();
 		dump('Scrolling to top');
-		jQuery(this.scroller).scrollTo( {'top':0,'left':0}, { axis:'y', duration:0 } );
+		this.scroller.mojo.revealTop(this.topContainer);
 	};
 	
 	/**
