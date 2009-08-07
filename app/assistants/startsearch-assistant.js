@@ -30,7 +30,7 @@ StartsearchAssistant.prototype.setup = function() {
 					items: [
 						{label:$L('My Timeline'), icon:'conversation', command:'my-timeline', shortcut:'T'},
 						{label:$L('Favorites'), iconPath:'images/theme/menu-icon-favorite.png', command:'favorites', shortcut:'F'},
-						{label:$L('Search'),      icon:'search', command:'IGNORE', shortcut:'S', 'class':"palm-depressed selected"},
+						{label:$L('Search'),      icon:'search', command:'IGNORE', shortcut:'S', 'class':"palm-depressed selected"}
 					]
 				},
 				{label:$L('Refresh'),   icon:'sync', command:'refresh', shortcut:'R'}					
@@ -63,7 +63,7 @@ StartsearchAssistant.prototype.setup = function() {
 	*/
 	// alert(username+":"+password)
 	this.model = {
-		'search':'',
+		'search':''
 	};
 	
 	
@@ -80,7 +80,7 @@ StartsearchAssistant.prototype.setup = function() {
 			modelProperty:		'search',
 			changeOnKeyPress: true, 
 			focusMode:		Mojo.Widget.focusSelectMode,
-			multiline:		false,
+			multiline:		false
 		},
 		this.model
     );
@@ -131,7 +131,7 @@ StartsearchAssistant.prototype.setup = function() {
 
 	
 	
-}
+};
 
 StartsearchAssistant.prototype.activate = function(event) {
 	
@@ -218,7 +218,7 @@ StartsearchAssistant.prototype.activate = function(event) {
 	this.pubtl.start();
 
 	
-}
+};
 
 
 StartsearchAssistant.prototype.deactivate = function(event) {
@@ -266,17 +266,17 @@ StartsearchAssistant.prototype.handleSearch = function(event) {
 	if (this.model && this.model.search) {
 		this.searchFor(this.model.search, 'lightweight');
 	}
-}
+};
 
 
 StartsearchAssistant.prototype.propertyChanged = function(event) {
 	dump("********* property Change *************");
-}
+};
 
 StartsearchAssistant.prototype.activateSpinner = function() {
 	this.buttonWidget = this.controller.get('reload-trends-button');
 	this.buttonWidget.mojo.activate();
-}
+};
 
 StartsearchAssistant.prototype.deactivateSpinner = function() {
 	dump("Deactivating spinner reload-trends-button");
@@ -284,7 +284,7 @@ StartsearchAssistant.prototype.deactivateSpinner = function() {
 	this.buttonWidget.mojo.deactivate();
 	dump("Deactivated spinner reload-trends-button");
 	
-}
+};
 
 
 

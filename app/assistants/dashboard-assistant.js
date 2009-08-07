@@ -6,7 +6,7 @@ function DashboardAssistant(launchArgs) {
 };
 
 DashboardAssistant.prototype.setup = function() {
-	this.updateDashboard(this.title, this.message, this.count)
+	this.updateDashboard(this.title, this.message, this.count);
 
 	var switchButton = this.controller.get("dashboardinfo"); 
 	Mojo.Event.listen(switchButton, Mojo.Event.tap, this.launchMain.bindAsEventListener(this));

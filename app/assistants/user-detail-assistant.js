@@ -139,7 +139,7 @@ UserDetailAssistant.prototype.setup = function() {
 	});
 	
 
-}
+};
 
 
 UserDetailAssistant.prototype.activate = function(event) {
@@ -288,7 +288,7 @@ UserDetailAssistant.prototype.activate = function(event) {
 	
 	// this.addPostPopup();
 
-}
+};
 
 
 
@@ -318,7 +318,7 @@ UserDetailAssistant.prototype.deactivate = function(event) {
 	// jQuery('#user-detail-container div.timeline-entry>.status>.meta', this.scroller).die(Mojo.Event.tap);
 	jQuery('#user-timeline-trigger', this.scroller).die(Mojo.Event.tap);
 	jQuery('#user-detail-container div.timeline-entry', this.scroller).die(Mojo.Event.tap);
-}
+};
 
 UserDetailAssistant.prototype.cleanup = function(event) {
 	/* this function should do any cleanup needed before the scene is destroyed as 
@@ -332,4 +332,4 @@ UserDetailAssistant.prototype.cleanup = function(event) {
 	jQuery().unbind('create_block_succeeded');
 	jQuery().unbind('destroy_block_succeeded');
 	
-}
+};

@@ -63,7 +63,7 @@ StartAssistant.prototype.setup = function() {
 	
 	Mojo.Event.listen($('start-login-button'), Mojo.Event.tap, this.showLogin.bind(this));
 	Mojo.Event.listen($('start-search-button'), Mojo.Event.tap, this.showSearch.bind(this));
-}
+};
 
 
 
@@ -88,10 +88,10 @@ StartAssistant.prototype.activate = function(argFromPusher) {
 	*/
 	jQuery.get('http://funkatron.com/spaz-webos/appnews', function() {
 		// don't actually do anything with this yet
-	})
+	});
 
 	
-}
+};
 
 
 StartAssistant.prototype.deactivate = function(event) {
@@ -99,7 +99,7 @@ StartAssistant.prototype.deactivate = function(event) {
 	   this scene is popped or another scene is pushed on top */
 	
 	
-}
+};
 
 StartAssistant.prototype.cleanup = function(event) {
 	/* this function should do any cleanup needed before the scene is destroyed as 
@@ -107,7 +107,7 @@ StartAssistant.prototype.cleanup = function(event) {
 	Mojo.Event.stopListening($('start-login-button'), Mojo.Event.tap, this.showLogin);
 	Mojo.Event.stopListening($('start-search-button'), Mojo.Event.tap, this.showSearch);
 	
-}
+};
 
 
 StartAssistant.prototype.refreshTrends = function() {
@@ -123,7 +123,7 @@ StartAssistant.prototype.showLogin = function() {
 StartAssistant.prototype.showSection = function(from, to) { 
 	$(from).hide();
 	$(to).show(); 
-}
+};
 
 StartAssistant.prototype.showSearch = function() {
 	Mojo.Controller.stageController.pushScene('startsearch');

@@ -602,7 +602,7 @@ PostAssistant.prototype.onReturnFromFilePicker = function() {
 		this.cancelAttachImage();
 	});
 	
-}
+};
 
 
 

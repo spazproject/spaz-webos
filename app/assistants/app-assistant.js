@@ -126,4 +126,4 @@ AppAssistant.prototype.handleCommand = function(event){
 
 		}
 	}
-}
+};

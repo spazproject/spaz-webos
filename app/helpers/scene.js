@@ -1,7 +1,7 @@
 /**
  * helpers for scene assistants in Spaz on Mojo 
  */
-var scene_helpers = {}
+var scene_helpers = {};
 
 
 /**
@@ -64,7 +64,7 @@ scene_helpers.addCommonSceneMethods = function(assistant) {
 			var viewMenuItems = opts.viewMenuItems;
 			this.viewMenuModel = {
 				label: $L('viewmenu'), 
-				items: viewMenuItems,
+				items: viewMenuItems
 			};
 			this.controller.setupWidget(Mojo.Menu.viewMenu, undefined, this.viewMenuModel);
 		}
@@ -99,7 +99,7 @@ scene_helpers.addCommonSceneMethods = function(assistant) {
 	 */
 	assistant.handleCommand = function(event){
 		
-		dump(event)
+		dump(event);
 		dump(event.command);
 		
 		if (event.type == Mojo.Event.command) {
@@ -169,7 +169,7 @@ scene_helpers.addCommonSceneMethods = function(assistant) {
 
 			}
 		}
-	}
+	};
 	
 	
 	/**
@@ -284,7 +284,7 @@ scene_helpers.addCommonSceneMethods = function(assistant) {
 		alert('DEPRECATED');
 
 		
-	}
+	};
 	
 	
 	assistant.initTwit = function(event_mode) {
@@ -324,7 +324,7 @@ scene_helpers.addCommonSceneMethods = function(assistant) {
 		
 		alert('DEPRECATED');
 		
-	}
+	};
 
 
 	assistant.showLocationPanel = function(event) {
@@ -472,7 +472,7 @@ scene_helpers.addCommonSceneMethods = function(assistant) {
 			'searchterm': terms,
 			'lightweight': lightweight
 		});
-	}
+	};
 
 
 
@@ -517,7 +517,7 @@ scene_helpers.addCommonSceneMethods = function(assistant) {
 	assistant.hideInlineSpinner = function(id) {
 		jQuery('#'+id).get(0).mojo.stop();
 		jQuery('#'+id+'-container').hide();
-	}
+	};
 	
 
 	/**
@@ -534,12 +534,12 @@ scene_helpers.addCommonSceneMethods = function(assistant) {
 	assistant.activateButtonSpinner = function(id) {
 		var buttonWidget = this.controller.get(id);
 		buttonWidget.mojo.activate();
-	}
+	};
 
 	assistant.deactivateButtonSpinner = function(id) {
 		var buttonWidget = this.controller.get(id);
 		buttonWidget.mojo.deactivate();
-	}
+	};
 	
 	
 
@@ -559,7 +559,7 @@ scene_helpers.addCommonSceneMethods = function(assistant) {
 
 		var appController = Mojo.Controller.getAppController();
 		appController.showBanner(bannerArgs, launchArgs, category);
-	}
+	};
 
 	
 	
@@ -578,7 +578,7 @@ scene_helpers.addCommonSceneMethods = function(assistant) {
 		
 		appController.showBanner(bannerArgs, launchArgs, category);
 		this.showDashboard($L('New Messages'), bannerArgs.messageText, count, this.getStageName());
-	}
+	};
 
 
 
@@ -600,7 +600,7 @@ scene_helpers.addCommonSceneMethods = function(assistant) {
 		appController.showBanner(bannerArgs, launchArgs, category);
 		this.showDashboard($L('New Messages'), bannerArgs.messageText, count, this.getStageName());
 		
-	}
+	};
 	
 	
 	
@@ -625,7 +625,7 @@ scene_helpers.addCommonSceneMethods = function(assistant) {
 				'dashboard'
 			); 
 		} 
-	}
+	};
 	
 	
 	
@@ -657,7 +657,7 @@ scene_helpers.addCommonSceneMethods = function(assistant) {
 		};
 
 
-	}
+	};
 	
 	
 	
@@ -773,7 +773,7 @@ scene_helpers.addCommonSceneMethods = function(assistant) {
 				'human_msg':	human_msg,
 				'twitter_request':	twiterr_req,
 				'twitter_msg':	twiterr_msg
-			}
+			};
 		} else {
 			var error_processed = {
 				'status':		errobj.xhr.status,
@@ -784,7 +784,7 @@ scene_helpers.addCommonSceneMethods = function(assistant) {
 				'human_msg':	human_msg,
 				'twitter_request':	twiterr_req,
 				'twitter_msg':	twiterr_msg
-			}
+			};
 			
 		}
 
@@ -843,12 +843,12 @@ scene_helpers.addCommonSceneMethods = function(assistant) {
 		// var dialog_widget = Mojo.Controller.errorDialog(msg+' {{error_html}}');
 		// dialog_widget.innerHTML = dialog_widget.innerHTML.replace('{{error_html}}', error_html);
 		
-	}
+	};
 
 
 	assistant.clearTimelineCache = function(callback) {
 		this.cacheDepot = makeCacheDepot(true);
-	}
+	};
 	
 	
 	
@@ -879,7 +879,7 @@ scene_helpers.addCommonSceneMethods = function(assistant) {
 				var isdm = false;
 				var status_obj = null;
 
-				status_obj = thisA.getTweetFromModel(parseInt(status_id));
+				status_obj = thisA.getTweetFromModel(parseInt(status_id, 10));
 
 				if (jqtarget.parent().parent().hasClass('dm')) {
 					isdm = true;
@@ -929,7 +929,7 @@ scene_helpers.addCommonSceneMethods = function(assistant) {
 			this._listenerForEnter.bind(this, callback),
 			true
 		);
-	}
+	};
 	assistant._listenerForEnter = function(callback, event) {
 		dump("DUMPING EVENT");
 		dump(event);
@@ -953,7 +953,7 @@ scene_helpers.addCommonSceneMethods = function(assistant) {
 			Mojo.Event.propertyChange,
 			this._listenerForEnter
 		);
-	}
+	};
 	
 	
 	/**
@@ -1029,7 +1029,7 @@ scene_helpers.addCommonSceneMethods = function(assistant) {
 	};
 	
 	
-}
+};
 
 
 
@@ -1191,7 +1191,7 @@ var PostDialogAssistant = Class.create({
 
 		if (status.length > 0) {
 			
-			var in_reply_to = parseInt(jQuery('#post-panel-irt-message', this.controller.getSceneScroller()).attr('data-status-id'));
+			var in_reply_to = parseInt(jQuery('#post-panel-irt-message', this.controller.getSceneScroller()).attr('data-status-id'), 10);
 			
 			if (in_reply_to > 0) {
 				this.sceneAssistant.twit.update(status, null, in_reply_to);
@@ -1351,7 +1351,7 @@ var LocationDialogAssistant = Class.create({
 		this.locationBoxModel = {
 			'value':     '',
 			'disabled':  false
-		}
+		};
 		this.controller.setupWidget('update-location-textfield', this.locationBoxAttr, this.locationBoxModel);
 		
 		

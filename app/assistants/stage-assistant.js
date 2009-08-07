@@ -57,7 +57,7 @@ StageAssistant.prototype.cleanup = function() {
 	*/
 	jQuery().unbind();
 	jQuery().die();
-}
+};
 
 
 StageAssistant.prototype.handleCommand = function(event){
@@ -104,5 +104,5 @@ StageAssistant.prototype.handleCommand = function(event){
 		}
 		
 	}
-}
+};
 

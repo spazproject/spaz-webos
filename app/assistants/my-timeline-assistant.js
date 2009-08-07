@@ -77,7 +77,7 @@ MyTimelineAssistant.prototype.setup = function() {
 				items: [
 					{label:$L('My Timeline'), icon:'conversation', command:'IGNORE', shortcut:'T', 'class':"palm-header left"},
 					{label:$L('Favorites'), iconPath:'images/theme/menu-icon-favorite.png', command:'favorites', shortcut:'F'},
-					{label:$L('Search'),      icon:'search', command:'search', shortcut:'S'},
+					{label:$L('Search'),      icon:'search', command:'search', shortcut:'S'}
 				]
 			},
 			{label: $L('Refresh'),   icon:'sync', command:'refresh', shortcut:'R'}
@@ -91,7 +91,7 @@ MyTimelineAssistant.prototype.setup = function() {
 				{label:$L('Show All Messages'),				secondaryIconPath:'', command:'filter-timeline-all'}, 
 				{label:$L('Replies and Direct Messages'),	secondaryIconPath:'', command:'filter-timeline-replies-dm'}, 
 				{label:$L('Just Replies'),					secondaryIconPath:'', command:'filter-timeline-replies'}, 
-				{label:$L('Just Direct Messages'),			secondaryIconPath:'', command:'filter-timeline-dms'}, 
+				{label:$L('Just Direct Messages'),			secondaryIconPath:'', command:'filter-timeline-dms'}
 		]
 	};
 
@@ -119,7 +119,7 @@ MyTimelineAssistant.prototype.setup = function() {
 
 	this.loadTimelineCacheOnActivate = true;
 	
-}
+};
 
 
 
@@ -205,7 +205,7 @@ MyTimelineAssistant.prototype.activate = function(event) {
 			var isdm = false;
 			var status_obj = null;
 
-			status_obj = thisA.getTweetFromModel(parseInt(status_id));
+			status_obj = thisA.getTweetFromModel(parseInt(status_id, 10));
 
 			if (jqtarget.parent().parent().hasClass('dm')) {
 				isdm = true;
@@ -247,7 +247,7 @@ MyTimelineAssistant.prototype.activate = function(event) {
 		this.loadOnActivate = false;
 	}
 	
-}
+};
 
 
 MyTimelineAssistant.prototype.deactivate = function(event) {
@@ -265,7 +265,7 @@ MyTimelineAssistant.prototype.deactivate = function(event) {
 	
 	
 	
-}
+};
 
 MyTimelineAssistant.prototype.cleanup = function(event) {
 	/* this function should do any cleanup needed before the scene is destroyed as 
@@ -276,7 +276,7 @@ MyTimelineAssistant.prototype.cleanup = function(event) {
 	this.stopTrackingStageActiveState();
 	
 	this.stopRefresher();
-}
+};
 
 
 MyTimelineAssistant.prototype.loadTimelineCache = function() {
@@ -360,8 +360,8 @@ MyTimelineAssistant.prototype.saveTimelineCache = function() {
 	dump('=================================================================================');
 	
 	this.cacheDepot.simpleAdd(sc.app.username+"_"+sc.app.type, twitdata,
-		function() { dump('My Timeline Cache Saved') },
-		function(msg) { dump('My Timeline Cache save failed:'+msg) }
+		function() { dump('My Timeline Cache Saved'); },
+		function(msg) { dump('My Timeline Cache save failed:'+msg); }
 	);
 	
 };
@@ -488,7 +488,7 @@ MyTimelineAssistant.prototype.renderTweets = function(tweets, render_callback, f
 				
 				dump('adding '+rendertweets[i].id);
 				
-;
+
 				
 				/*
 					skip rendering if we are loading from cache, as per new
@@ -560,7 +560,7 @@ MyTimelineAssistant.prototype.renderTweets = function(tweets, render_callback, f
 			dump("old_entries:"+old_entries);
 			if ( tweets_added > 0 && old_entries > 0 && !from_cache && sc.app.prefs.get('timeline-scrollonupdate') ) {
 				dump("I'm going to scroll to new in 500ms!");
-				setTimeout(function() { thisA.scrollToNew() }, 500);
+				setTimeout(function() { thisA.scrollToNew(); }, 500);
 			} else {
 				dump("Not scrolling to new!");
 			}
@@ -640,7 +640,7 @@ MyTimelineAssistant.prototype.startRefresher = function() {
 		this.refresher = setInterval(function() {
 				jQuery().trigger('my_timeline_refresh');
 			}, time
-		)
+		);
 	} else {
 		this.refresher = null;
 	}

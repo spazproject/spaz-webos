@@ -15,4 +15,4 @@ var makeCacheDepot = function(replace) {
 	
 	return depot;
 	
-}
+};

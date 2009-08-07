@@ -192,7 +192,7 @@ PreferencesAssistant.prototype.setupChoices = function(){
 		{label:$L('2'), value:2},
 		{label:$L('5'), value:5},
 		{label:$L('10'), value:10},
-		{label:$L('20'), value:20},
+		{label:$L('20'), value:20}
 	];
 	
 	this.validTimelineTextSizes = [

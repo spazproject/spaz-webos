@@ -28,7 +28,7 @@ FavoritesAssistant.prototype.setup = function() {
 				items: [
 					{label:$L('My Timeline'), icon:'conversation', command:'my-timeline', shortcut:'T'},
 					{label:$L('Favorites'), iconPath:'images/theme/menu-icon-favorite.png', command:'IGNORE', shortcut:'F', 'class':"palm-header left"},
-					{label:$L('Search'),      icon:'search', command:'search', shortcut:'S'},
+					{label:$L('Search'),      icon:'search', command:'search', shortcut:'S'}
 				]
 			},
 			{label:$L('Refresh'),   icon:'sync', command:'refresh', shortcut:'R'}					
@@ -48,7 +48,7 @@ FavoritesAssistant.prototype.setup = function() {
 	this.setupInlineSpinner('activity-spinner-favorites');
 	
 	this.refreshOnActivate = true;
-}
+};
 
 FavoritesAssistant.prototype.activate = function(event) {
 	/* put in event handlers here that should only be in effect when this scene is active. For
@@ -142,7 +142,7 @@ FavoritesAssistant.prototype.activate = function(event) {
 	
 
 	
-}
+};
 
 
 FavoritesAssistant.prototype.deactivate = function(event) {
@@ -158,12 +158,12 @@ FavoritesAssistant.prototype.deactivate = function(event) {
 	this.favtl.cleanup();
 	
 	
-}
+};
 
 FavoritesAssistant.prototype.cleanup = function(event) {
 	/* this function should do any cleanup needed before the scene is destroyed as 
 	   a result of being popped off the scene stack */
-}
+};
 
 FavoritesAssistant.prototype.getEntryElementByStatusId = function(id) {
 	var el = jQuery('#favorites-timeline div.timeline-entry[data-status-id='+id+']', this.scroller).get(0);
@@ -173,7 +173,7 @@ FavoritesAssistant.prototype.getEntryElementByStatusId = function(id) {
 
 FavoritesAssistant.prototype.refresh = function(event) {
 	this.favtl.refresh();
-}
+};
 
 // FavoritesAssistant.prototype.getData = function() {
 // 	sc.helpers.markAllAsRead('#favorites-timeline>div.timeline-entry');

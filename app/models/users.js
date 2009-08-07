@@ -37,7 +37,7 @@ Users.prototype.save	= function() {
 	this.prefs.set('users', this._users);
 	dump('saved users to users pref');
 	for (var x in this._users) {
-		dump(this._users[x].id)
+		dump(this._users[x].id);
 	};
 };
 
@@ -54,12 +54,12 @@ Users.prototype.setAll	= function(userhash) {
 	this.save();
 	dump("Saved these users:");
 	for (var x in this._users) {
-		dump(this._users[x].id)
+		dump(this._users[x].id);
 	};
 };
 
 Users.prototype.initUsers	= function(onSuccess, onFailure) {
-	this._users = []
+	this._users = [];
 	this.save();
 };
 
@@ -107,7 +107,7 @@ Users.prototype._findUserIndex = function(username, type) {
 	var username = username.toLowerCase();
 	var type     = type.toLowerCase();
 	
-	var id = this.generateID(username, type)
+	var id = this.generateID(username, type);
 	
 	for (i=0; i<this._users.length; i++) {
 		

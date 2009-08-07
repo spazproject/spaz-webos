@@ -37,7 +37,7 @@ MessageDetailAssistant.prototype.setup = function() {
 					]
 				}
 
-			],
+			]
 		});
 		
 		this.initAppMenu({ 'items':loggedin_appmenu_items });
@@ -80,7 +80,7 @@ MessageDetailAssistant.prototype.setup = function() {
 	/* setup widgets here */
 	
 	/* add event handlers to listen to events from widgets */
-}
+};
 
 MessageDetailAssistant.prototype.activate = function(event) {
 	
@@ -126,7 +126,7 @@ MessageDetailAssistant.prototype.activate = function(event) {
 					
 				},
 				function(message) {
-					dump('Couldn\'t retrieve message from Depot:'+message)
+					dump('Couldn\'t retrieve message from Depot:'+message);
 					thisA.twit.getOne(thisA.status_id);
 				}
 			);
@@ -160,7 +160,7 @@ MessageDetailAssistant.prototype.activate = function(event) {
 		thisA.prepDirectMessage(jQuery(this).attr('data-screen_name'));
 	});
 	jQuery('#message-detail-action-favorite', this.scroller).live(Mojo.Event.tap, function(e) {
-		var status_id = parseInt(jQuery(this).attr('data-status-id'));		
+		var status_id = parseInt(jQuery(this).attr('data-status-id'), 10);		
 		if (jQuery(this).attr('data-favorited') === 'true') {
 			dump('UNFAVORITING');
 			thisA.twit.unfavorite(status_id);
@@ -187,7 +187,7 @@ MessageDetailAssistant.prototype.activate = function(event) {
 	});
 	
 	// this.addPostPopup();
-}
+};
 
 
 MessageDetailAssistant.prototype.deactivate = function(event) {
@@ -201,14 +201,14 @@ MessageDetailAssistant.prototype.deactivate = function(event) {
 	jQuery('#message-detail-container .username.clickable', this.scroller).die(Mojo.Event.tap);
 	jQuery('#message-detail-container .hashtag.clickable', this.scroller).die(Mojo.Event.tap);
 	jQuery('#message-detail-container div.timeline-entry>.status>.meta', this.scroller).die(Mojo.Event.tap);
-}
+};
 
 MessageDetailAssistant.prototype.cleanup = function(event) {
 	jQuery().unbind('get_one_status_succeeded');
 	jQuery().unbind('get_one_status_failed');
 	jQuery().unbind('uncreate_favorite_succeeded');
 	jQuery().unbind('destroy_favorite_succeeded');
-}
+};
 
 
 MessageDetailAssistant.prototype.processStatusReturn = function(e, statusobj) {

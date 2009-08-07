@@ -127,7 +127,7 @@ StartloginAssistant.prototype.setup = function() {
 	});
 	
 	
-}
+};
 
 StartloginAssistant.prototype.activate = function(event) {
 	
@@ -144,7 +144,7 @@ StartloginAssistant.prototype.activate = function(event) {
 	this.model['always-go-to-my-timeline'] = sc.app.prefs.get('always-go-to-my-timeline');
 	this.controller.modelChanged( this.model );
 
-}
+};
 
 
 StartloginAssistant.prototype.deactivate = function(event) {
@@ -155,12 +155,12 @@ StartloginAssistant.prototype.deactivate = function(event) {
 	this.model.password = '';
 	this.controller.modelChanged( this.model );
 
-}
+};
 
 StartloginAssistant.prototype.cleanup = function(event) {
 	/* this function should do any cleanup needed before the scene is destroyed as 
 	   a result of being popped off the scene stack */
-}
+};
 
 
 /**
@@ -191,12 +191,12 @@ StartloginAssistant.prototype.handleLogin = function(event) {
 	}
 	
 	
-}
+};
 
 
 StartloginAssistant.prototype.propertyChanged = function(event) {
 	dump("********* property Change *************");
-}
+};
 
 
 
