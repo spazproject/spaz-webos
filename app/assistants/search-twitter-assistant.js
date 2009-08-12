@@ -52,6 +52,14 @@ SearchTwitterAssistant.prototype.setup = function() {
 	*/
 	if (sc.app.username && sc.app.password) {
 		this.setupCommonMenus({
+			viewMenuItems: [
+				{
+					items:[
+						{label: $L("Search & Explore"), command:'scroll-top', 'class':"palm-header left", width:320}				
+					]
+				}
+
+			],
 			cmdMenuItems: [
 				{label:$L('Compose'),  icon:'compose', command:'compose', shortcut:'N'},
 				{},
@@ -62,6 +70,14 @@ SearchTwitterAssistant.prototype.setup = function() {
 		this.initAppMenu({ 'items':loggedin_appmenu_items });	
 	} else {
 		this.setupCommonMenus({
+			viewMenuItems: [
+				{
+					items:[
+						{label: $L("Search & Explore"), command:'scroll-top', 'class':"palm-header left", width:320}				
+					]
+				}
+
+			],
 			cmdMenuItems: [
 				{},
 				{label:$L('Refresh'),   icon:'sync', command:'refresh', shortcut:'R'}					

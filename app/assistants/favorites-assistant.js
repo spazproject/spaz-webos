@@ -150,7 +150,7 @@ FavoritesAssistant.prototype.deactivate = function(event) {
 	/*
 		stop listening for timeline entry taps
 	*/
-	this.unbindTimelineEntryTaps('#public-timeline');
+	this.unbindTimelineEntryTaps('#favorites-timeline');
 	
 	/*
 		unbind and stop refresher for public timeline

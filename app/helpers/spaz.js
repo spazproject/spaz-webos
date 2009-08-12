@@ -169,6 +169,61 @@ Spaz.closeDashboard = function(name) {
 	Mojo.Controller.getAppController().closeStage(name);
 };
 
+/**
+ * Initialize a temporary property we use to store 
+ * cache data that only lives for the duration of the
+ * application run
+ */
+Spaz.initTempCache = function() {
+	window.spaztmpcache = {};
+};
+
+
+Spaz.initTempCacheUser = function(user) {
+	if (!window.spaztmpcache) {
+		Spaz.initTempCache();
+	}
+	if (!window.spaztmpcache[user]) {
+		window.spaztmpcache[user] = {};
+	}
+
+};
+
+
+/**
+ * save a key:val pair to temp cache
+ */
+Spaz.saveTempCache = function(key, val, user) {
+	if (!window.spaztmpcache) {
+		Spaz.initTempCache();
+	}
+	if (!window.spaztmpcache[sc.app.username]) {
+		Spaz.initTempCacheUser(sc.app.username);
+	}
+	
+	window.spaztmpcache[sc.app.username][key] = val;
+};
+
+/**
+ * save a key:val pair to temp cache
+ */
+Spaz.loadTempCache = function(key, user) {
+	if (!window.spaztmpcache) {
+		Spaz.initTempCache();
+		return null;
+	}
+	if (!window.spaztmpcache[sc.app.username]) {
+		Spaz.initTempCacheUser(sc.app.username);
+		return null;
+	}
+
+	
+	if (window.spaztmpcache[sc.app.username][key]) {
+		return window.spaztmpcache[key];
+	}
+	
+	return null;
+};
 
 
 

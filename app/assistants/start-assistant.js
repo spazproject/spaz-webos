@@ -48,6 +48,8 @@ function StartAssistant(argFromPusher) {
 	
 	
 	scene_helpers.addCommonSceneMethods(this);
+	
+
 }
 
 StartAssistant.prototype.setup = function() {
@@ -60,7 +62,6 @@ StartAssistant.prototype.setup = function() {
 	
 	this.initAppMenu();
 	
-	
 	Mojo.Event.listen($('start-login-button'), Mojo.Event.tap, this.showLogin.bind(this));
 	Mojo.Event.listen($('start-search-button'), Mojo.Event.tap, this.showSearch.bind(this));
 };
@@ -69,7 +70,7 @@ StartAssistant.prototype.setup = function() {
 
 StartAssistant.prototype.activate = function(argFromPusher) {
 	var thisA = this;
-		
+
 	/*
 		We may still be hidden if we went directly to an account's timeline, so 
 		make sure to .show() just in case

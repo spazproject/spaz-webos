@@ -88,6 +88,7 @@ div.timeline-entry {
 /*	border-width: 1px 0 1px 0;*/
 /*	border-style: solid;*/
 /*	border-color: #333;*/
+	border-bottom: 1px solid #222;
 	clear:both;
 	overflow:hidden;
 	min-height:64px;
@@ -96,7 +97,7 @@ div.timeline-entry {
 	margin:0;
 	background-image: url('../images/dreadnaught/entry-gradient-bg_short.png');
 	background-repeat: repeat-x;
-	background-color:#141718;
+/*	background-color:#141718;*/
 }
 	div.timeline-entry:active {	}
 

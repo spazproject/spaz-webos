@@ -656,7 +656,7 @@ PostAssistant.prototype.renderSuccessfulPost = function(event, data) {
 		re-apply filtering
 	*/
 	this.filterTimeline();
-
+	
 	this.playAudioCue('send');
 	
 	this.deactivateSpinner();
