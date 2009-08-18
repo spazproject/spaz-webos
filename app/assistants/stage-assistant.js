@@ -40,7 +40,7 @@ StageAssistant.prototype.setup = function() {
 		load our prefs
 		default_preferences is from default_preferences.js, loaded in index.html
 	*/
-	sc.app.prefs = new scPrefs(default_preferences);
+	sc.app.prefs = new SpazPrefs(default_preferences);
 	sc.app.prefs.load();
 	Mojo.Log.info("loading prefs…");
 };

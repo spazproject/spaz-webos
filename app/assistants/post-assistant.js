@@ -404,7 +404,7 @@ PostAssistant.prototype.loadImageUploaderEmail = function(api_label) {
  * Gets the meta value for the current user & api's posting address
  */
 PostAssistant.prototype.getImageUploaderEmail = function(api_label) {
-	return this.Users.getMeta(sc.app.username, sc.app.type, api_label+'_posting_address');
+	return this.Users.getMeta(sc.app.userid, api_label+'_posting_address');
 };
 
 /**
@@ -418,7 +418,7 @@ PostAssistant.prototype.setImageUploaderEmail = function(api_label, email) {
 		email = this.imageUploaderEmailModel['image-uploader-email'];
 	}
 	
-	this.Users.setMeta(sc.app.username, sc.app.type, api_label+'_posting_address', email);
+	this.Users.setMeta(sc.app.userid, api_label+'_posting_address', email);
 };
 
 

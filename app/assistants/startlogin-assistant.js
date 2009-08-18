@@ -72,9 +72,9 @@ StartloginAssistant.prototype.setup = function() {
 		sc.app.username = e.item.username;
 		sc.app.password = e.item.password;
 		sc.app.type     = e.item.type;
+		sc.app.userid	= e.item.id;
 		
-		sc.app.prefs.set('last_username', e.item.username);
-		sc.app.prefs.set('last_type', e.item.type);
+		sc.app.prefs.set('last_userid', sc.app.userid);
 				
 		Mojo.Controller.stageController.pushScene('my-timeline');
 	});

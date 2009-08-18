@@ -6,7 +6,7 @@ var Users = function(prefsObj) {
 	if (prefsObj) {
 		this.prefs = prefsObj;
 	} else {
-		this.prefs = new scPrefs(default_preferences);
+		this.prefs = new SpazPrefs(default_preferences);
 		this.prefs.load();
 	}
 	this._users = this.prefs.get('users');
@@ -22,9 +22,9 @@ Users.prototype.load	= function() {
 Users.prototype.fixIDs  = function() {
 	
 	for (i=0; i<this._users.length; i++) {
-		if (this._users[i].id.toLowerCase() === this._users[i].username.toLowerCase()) {
-			dump('user '+this._users[i].username + ' has an old, identical id');
-			this._users[i].id = this.generateID(this._users[i].username, this._users[i].type);
+		if (! sc.helpers.isUUID(this._users[i].id)) {
+			dump('user '+this._users[i].username + ' has an old style id');
+			this._users[i].id = this.generateID();
 			this.save();
 		}
 	}
@@ -66,15 +66,16 @@ Users.prototype.initUsers	= function(onSuccess, onFailure) {
 
 Users.prototype.add			= function(username, password, type) {
 	var username = username.toLowerCase();
+	var id = this.generateID();
 	this._users.push = {
-		'id':this.generateID(username, type),
+		'id':id,
 		'username':username,
 		'password':password,
 		'type':type,
 		'meta':{}
 	};
 	this.save();
-	dump("Added new user:"+this.generateID(username, type));
+	dump("Added new user:"+id);
 };
 
 
@@ -87,12 +88,12 @@ Users.prototype.getByType	= function(type) {
 
 /**
  * retrives the user object by user and type
- * @param {string} username
+ * @param {string} id  the user id UUID
  * @param {string} type 
  */
-Users.prototype.getUser		= function(username, type) {
+Users.prototype.getUser		= function(id) {
 
-	var index = this._findUserIndex(username, type);
+	var index = this._findUserIndex(id);
 
 	if (index !== false) {
 		return this._users[i];		
@@ -103,15 +104,11 @@ Users.prototype.getUser		= function(username, type) {
 };
 
 
-Users.prototype._findUserIndex = function(username, type) {
-	var username = username.toLowerCase();
-	var type     = type.toLowerCase();
-	
-	var id = this.generateID(username, type);
+Users.prototype._findUserIndex = function(id) {
 	
 	for (i=0; i<this._users.length; i++) {
 		
-		if (this._users[i].id.toLowerCase() === id) {
+		if (this._users[i].id === id) {
 			dump('Found matching user record to '+ id);
 			return i;
 		}
@@ -124,17 +121,21 @@ Users.prototype._findUserIndex = function(username, type) {
 
 
 
-Users.prototype.generateID = function(username, type) {
-	var id = username.toLowerCase()+"_"+type.toLowerCase();
+// Users.prototype.generateID = function(username, type) {
+// 	var id = username.toLowerCase()+"_"+type.toLowerCase();
+// 	return id;
+// };
+Users.prototype.generateID = function() {
+	var id = sc.helpers.UUID();
 	return id;
 };
 
 
-Users.prototype.getMeta = function(username, type, key) {
-	var user = null;
-	var id = this.generateID(username, type);
+
+
+Users.prototype.getMeta = function(id, key) {
 	
-	if ( user = this.getUser(username, type) ) {
+	if ( user = this.getUser(id) ) {
 		if (user.meta && user.meta[key] !== null) {
 			return user.meta[key];
 		}
@@ -144,9 +145,9 @@ Users.prototype.getMeta = function(username, type, key) {
 	
 };
 
-Users.prototype.setMeta = function(username, type, key, value) {
+Users.prototype.setMeta = function(id, key, value) {
 	
-	var index = this._findUserIndex(username, type);
+	var index = this._findUserIndex(id);
 
 	if (index !== false) {		
 		if (!this._users[index].meta) {

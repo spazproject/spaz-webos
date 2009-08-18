@@ -301,15 +301,18 @@ scene_helpers.addCommonSceneMethods = function(assistant) {
 		});
 		this.twit.setSource(sc.app.prefs.get('twitter-source'));
 
-		if (sc.app.username && sc.app.password) {
-			// alert('seetting credentials for '+sc.app.username);
-			if (sc.app.type === SPAZCORE_SERVICE_CUSTOM) {
-				var api_url = users.getMeta(sc.app.username, sc.app.type, 'api-url');
+		if (sc.app.userid) {
+			// alert('setting credentials for '+sc.app.username);
+			
+			var userobj = users.getUser(sc.app.userid);
+			
+			if (userobj.type === SPAZCORE_SERVICE_CUSTOM) {
+				var api_url = users.getMeta(sc.app.userid, 'api-url');
 				this.twit.setBaseURL(api_url);
 			} else {
-				this.twit.setBaseURLByService(sc.app.type);				
+				this.twit.setBaseURLByService(userobj.type);				
 			}
-			this.twit.setCredentials(sc.app.username, sc.app.password);
+			this.twit.setCredentials(userobj.username, userobj.password);
 			
 		} else {
 			// alert('NOT seetting credentials for!');
@@ -831,11 +834,14 @@ scene_helpers.addCommonSceneMethods = function(assistant) {
 			for (var i = 0; i < errors.length; i++) {
 				error_info  = this.processAjaxError(errors[i]);
 				if (error_html.length>0) {
-					error_html += '<hr>';
+					error_html += "-------------------\n";
 				}
 				error_html += sc.app.tpl.parseTemplate(template, error_info);
 			}
 		}
+
+		var dialog_widget = Mojo.Controller.errorDialog(error_html);
+
 		
 		// /*
 		// 	We want to be able to pass html into the error dialogs, but escaping is on,

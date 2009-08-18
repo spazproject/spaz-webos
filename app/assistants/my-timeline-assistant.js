@@ -180,12 +180,10 @@ MyTimelineAssistant.prototype.activate = function(event) {
 			}
 			thisA.hideInlineSpinner('activity-spinner-my-timeline');
 		},
-		'data_failure': function(e, error_obj) {
+		'data_failure': function(e, error_array) {
 			dump('error_combined_timeline_data - response:');
-			dump(error_array);
 			thisA.hideInlineSpinner('activity-spinner-my-timeline');
-			// thisA.startRefresher();
-
+			
 			var err_msg = $L("There were errors retrieving your combined timeline");
 			thisA.displayErrorInfo(err_msg, error_array);
 		},

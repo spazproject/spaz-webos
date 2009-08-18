@@ -169,6 +169,8 @@ Spaz.closeDashboard = function(name) {
 	Mojo.Controller.getAppController().closeStage(name);
 };
 
+
+
 /**
  * Initialize a temporary property we use to store 
  * cache data that only lives for the duration of the
@@ -179,47 +181,66 @@ Spaz.initTempCache = function() {
 };
 
 
-Spaz.initTempCacheUser = function(user) {
+/**
+ * Init the temp cache for a particular user 
+ */
+Spaz.initTempCacheUser = function(idkey) {
+	
+	if (!idkey) {
+		idkey = sc.app.userid;
+	}
+	
 	if (!window.spaztmpcache) {
 		Spaz.initTempCache();
 	}
-	if (!window.spaztmpcache[user]) {
-		window.spaztmpcache[user] = {};
+	if (!window.spaztmpcache[idkey]) {
+		window.spaztmpcache[idkey] = {};
 	}
 
 };
 
 
 /**
- * save a key:val pair to temp cache
+ * save a key:val pair to a idkey's temp cache
  */
-Spaz.saveTempCache = function(key, val, user) {
+Spaz.saveTempCache = function(key, val, idkey) {
+	
+	if (!idkey) {
+		idkey = sc.app.userid;
+	}
+	
+	
 	if (!window.spaztmpcache) {
 		Spaz.initTempCache();
 	}
-	if (!window.spaztmpcache[sc.app.username]) {
-		Spaz.initTempCacheUser(sc.app.username);
+	if (!window.spaztmpcache[idkey]) {
+		Spaz.initTempCacheUser(idkey);
 	}
 	
-	window.spaztmpcache[sc.app.username][key] = val;
+	window.spaztmpcache[idkey][key] = val;
 };
 
 /**
- * save a key:val pair to temp cache
+ * save a key:val pair to a idkey's temp cache
  */
-Spaz.loadTempCache = function(key, user) {
+Spaz.loadTempCache = function(key, idkey) {
+	
+	if (!idkey) {
+		idkey = sc.app.userid;
+	}
+	
 	if (!window.spaztmpcache) {
 		Spaz.initTempCache();
 		return null;
 	}
-	if (!window.spaztmpcache[sc.app.username]) {
-		Spaz.initTempCacheUser(sc.app.username);
+	if (!window.spaztmpcache[idkey]) {
+		Spaz.initTempCacheUser(idkey);
 		return null;
 	}
 
 	
-	if (window.spaztmpcache[sc.app.username][key]) {
-		return window.spaztmpcache[key];
+	if (window.spaztmpcache[idkey][key]) {
+		return window.spaztmpcache[idkey][key];
 	}
 	
 	return null;
