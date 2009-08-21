@@ -13,6 +13,19 @@ StartloginAssistant.prototype.setup = function() {
 	this.scroller = this.controller.getSceneScroller();
 	
 	this.initAppMenu();
+	
+	this.setupCommonMenus({
+		viewMenuItems: [
+			{
+				items:[
+					{label: $L("Log-in"), command:'scroll-top', 'class':"palm-header left", width:320}				
+				]
+			}
+
+		],
+		cmdMenuItems: []
+		
+	});
 
 	/*
 		Initialize the model

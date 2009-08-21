@@ -15,6 +15,19 @@ PreferencesAssistant.prototype.setup = function() {
 	
 	this.initAppMenu();
 	
+	this.setupCommonMenus({
+		viewMenuItems: [
+			{
+				items:[
+					{label: $L("Preferences"), command:'scroll-top', 'class':"palm-header left", width:320}				
+				]
+			}
+
+		],
+		cmdMenuItems: []
+	});
+	
+	
 	/*
 		note that these property keys MUST match a preference key
 	*/

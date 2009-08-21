@@ -374,10 +374,6 @@ scene_helpers.addCommonSceneMethods = function(assistant) {
 		var screenname = entryobj.user.screen_name;
 
 		var text = 'RT @' + screenname + ': '+text+'';
-
-		// if (rtstr.length > 140) {
-		// 	rtstr = rtstr.substr(0,139)+'…';
-		// }
 		
 		this.showPostPanel({
 			'text'         : text,

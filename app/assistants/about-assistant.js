@@ -9,6 +9,19 @@ function AboutAssistant() {
 AboutAssistant.prototype.setup = function() {
 	this.scroller = this.controller.getSceneScroller();
 	this.initAppMenu();
+	this.setupCommonMenus({
+		viewMenuItems: [
+			{
+				items:[
+					{label: $L("About Spaz"), command:'scroll-top', 'class':"palm-header left", width:320}				
+				]
+			}
+
+		],
+		cmdMenuItems: []
+		
+	});
+	jQuery('#about-version').text("v"+Mojo.appInfo.version);
 };
 
 AboutAssistant.prototype.activate = function(event) {

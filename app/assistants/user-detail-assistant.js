@@ -26,6 +26,14 @@ UserDetailAssistant.prototype.setup = function() {
 
 	if (sc.app.username && sc.app.password) {
 		this.setupCommonMenus({
+			viewMenuItems: [
+				{
+					items:[
+						{label: $L("User Details"), command:'scroll-top', 'class':"palm-header left", width:320}				
+					]
+				}
+
+			],
 			cmdMenuItems:[
 				{
 					items: [

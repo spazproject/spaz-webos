@@ -26,7 +26,8 @@ BODY {
 		}
 */	
 .view-menu .palm-menu-fade {
-	background: transparent!important;
+/*	background: transparent!important;*/
+	background-image: url('../images/dreadnaught/view-menu-gradient.png') !important;
 }
 .view-menu .palm-menu-text {
 	text-align:left;
@@ -84,7 +85,7 @@ a:link, a:visited, .clickable {
 
 
 div.timeline-entry {
-	padding: 12px 6px;
+	padding: 2px 6px 12px;
 /*	border-width: 1px 0 1px 0;*/
 /*	border-style: solid;*/
 /*	border-color: #333;*/
@@ -97,7 +98,7 @@ div.timeline-entry {
 	margin:0;
 	background-image: url('../images/dreadnaught/entry-gradient-bg_short.png');
 	background-repeat: repeat-x;
-/*	background-color:#141718;*/
+	background-color:#101010;
 }
 	div.timeline-entry:active {	}
 
