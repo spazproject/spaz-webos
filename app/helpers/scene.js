@@ -15,7 +15,7 @@ scene_helpers.addCommonSceneMethods = function(assistant) {
 
 		var default_items = [
 			Mojo.Menu.editItem,
-			// { label: $L('New Search Card'),	command: 'new-search-card' },
+			{ label: $L('New Search Card'),	command: 'new-search-card' },
 			{ label: $L('Preferences...'),	command:Mojo.Menu.prefsCmd },
 			{ label: $L('About Spaz'),		command: 'appmenu-about' },
 			{ label: $L('Help...'),			command:Mojo.Menu.helpCmd }
