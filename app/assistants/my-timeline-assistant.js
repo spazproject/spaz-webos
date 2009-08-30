@@ -136,7 +136,7 @@ MyTimelineAssistant.prototype.activate = function(event) {
 		'event_target' :document,
 		
 		'refresh_time':sc.app.prefs.get('network-refreshinterval'),
-		'max_items':50,
+		'max_items':100,
 
 		'request_data': function() {
 			sc.helpers.markAllAsRead('#my-timeline div.timeline-entry');
@@ -241,19 +241,35 @@ MyTimelineAssistant.prototype.cleanup = function(event) {
 
 
 MyTimelineAssistant.prototype.loadTimelineCache = function() {
-
+	
 	var thisA = this;
-	
-	var data = Spaz.loadTempCache('mytimelinecache');
-	
-	if (data !== null) {
-		this.twit.setLastId(SPAZCORE_SECTION_FRIENDS, data[SPAZCORE_SECTION_FRIENDS + '_lastid']);
-		this.twit.setLastId(SPAZCORE_SECTION_REPLIES, data[SPAZCORE_SECTION_REPLIES + '_lastid']);
-		this.twit.setLastId(SPAZCORE_SECTION_DMS,     data[SPAZCORE_SECTION_DMS     + '_lastid']);
 
-		document.getElementById('my-timeline').innerHTML = data.tweets_html;
-		sch.markAllAsRead('#my-timeline div.timeline-entry');		
+	this._loadTimelineCache = function() {
+		var data = TempCache.load('mytimelinecache');
+
+		if (data !== null) {
+			thisA.twit.setLastId(SPAZCORE_SECTION_FRIENDS, data[SPAZCORE_SECTION_FRIENDS + '_lastid']);
+			thisA.twit.setLastId(SPAZCORE_SECTION_REPLIES, data[SPAZCORE_SECTION_REPLIES + '_lastid']);
+			thisA.twit.setLastId(SPAZCORE_SECTION_DMS,     data[SPAZCORE_SECTION_DMS     + '_lastid']);
+
+			document.getElementById('my-timeline').innerHTML = data.tweets_html;
+			sch.markAllAsRead('#my-timeline div.timeline-entry');		
+		}
+		sch.unlisten(document, 'temp_cache_load_db_success', this._loadTimelineCache);
+	};
+
+	
+	
+	
+	
+	if (!TempCache.exists()) {
+		sch.dump('CACHE DOES NOT EXIST');
+		sch.listen(document, 'temp_cache_load_db_success', this._loadTimelineCache);
+		TempCache.loadFromDB();
+	} else {
+		this._loadTimelineCache();
 	}
+	
 	
 };
 
@@ -269,7 +285,9 @@ MyTimelineAssistant.prototype.saveTimelineCache = function() {
 	twitdata[SPAZCORE_SECTION_DMS     + '_lastid'] = this.twit.getLastId(SPAZCORE_SECTION_DMS);
 	
 	
-	Spaz.saveTempCache('mytimelinecache', twitdata);
+	TempCache.save('mytimelinecache', twitdata);
+	
+	TempCache.saveToDB();
 	
 	
 };

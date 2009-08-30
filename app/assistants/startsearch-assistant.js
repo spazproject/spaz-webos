@@ -286,5 +286,9 @@ StartsearchAssistant.prototype.deactivateSpinner = function() {
 	
 };
 
+StartsearchAssistant.prototype.refresh = function(e) {
+	this.pubtl.start();
+};
+
 
 

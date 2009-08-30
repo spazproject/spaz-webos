@@ -297,7 +297,8 @@ scene_helpers.addCommonSceneMethods = function(assistant) {
 		var users = new Users(sc.app.prefs);
 		
 		this.twit = new scTwit(null, null, {
-			'event_mode':event_mode
+			'event_mode':event_mode,
+			'timeout':1000*60
 		});
 		this.twit.setSource(sc.app.prefs.get('twitter-source'));
 
@@ -763,7 +764,7 @@ scene_helpers.addCommonSceneMethods = function(assistant) {
 				break;
 		}
 		
-		if (errobj.xhr) {
+		if (errobj.xhr && errobj.xhr.readyState > 3) {
 			var error_processed = {
 				'status':		errobj.xhr.status,
 				'statusText':	errobj.xhr.statusText,
@@ -776,9 +777,9 @@ scene_helpers.addCommonSceneMethods = function(assistant) {
 			};
 		} else {
 			var error_processed = {
-				'status':		errobj.xhr.status,
-				'statusText':	errobj.xhr.statusText,
-				'responseText':	errobj.xhr.responseText,
+				'status':		'n/a',
+				'statusText':	'n/a',
+				'responseText':	'n/a',
 				'url':			errobj.url,
 				'msg':			errobj.msg,
 				'human_msg':	human_msg,

@@ -46,6 +46,11 @@ StageAssistant.prototype.setup = function() {
 };
 
 
+StageAssistant.prototype.loadPrefsFromDepot = function() {
+
+}
+
+
 StageAssistant.prototype.cleanup = function() {
 	
 	jQuery().unbind('spazprefs_loaded');

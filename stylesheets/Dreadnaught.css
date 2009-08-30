@@ -1069,9 +1069,9 @@ div.error_info {
 	.filter-timeline-replies div.timeline-entry.dm    { display:none; }
 	
 .filter-timeline-dms {}
-	.filter-timeline-replies div.timeline-entry       { display:none; }
-	.filter-timeline-replies div.timeline-entry.reply { display:none; }
-	.filter-timeline-replies div.timeline-entry.dm    { display:block; }
+	.filter-timeline-dms div.timeline-entry       { display:none; }
+	.filter-timeline-dms div.timeline-entry.reply { display:none; }
+	.filter-timeline-dms div.timeline-entry.dm    { display:block; }
 
 
 
