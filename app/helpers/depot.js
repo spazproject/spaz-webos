@@ -1,4 +1,7 @@
-
+/**
+ * we now favor the use of the tempcache.js model
+ * @deprecated 
+ */
 var makeCacheDepot = function(replace) {
 	if (replace) {
 		replace = true;

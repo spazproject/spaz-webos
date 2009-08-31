@@ -25,7 +25,7 @@ TempCache.initUser = function(idkey) {
 	}
 	
 	if (!window.spaztmpcache) {
-		Spaz.init();
+		TempCache.init();
 	}
 	if (!window.spaztmpcache[idkey]) {
 		window.spaztmpcache[idkey] = {};
@@ -43,12 +43,15 @@ TempCache.save = function(key, val, idkey) {
 		idkey = sc.app.userid;
 	}
 	
+	sch.dump(idkey);
+	
 	
 	if (!window.spaztmpcache) {
-		Spaz.init();
+		TempCache.init();
+		
 	}
 	if (!window.spaztmpcache[idkey]) {
-		Spaz.initUser(idkey);
+		TempCache.initUser(idkey);
 	}
 	
 	window.spaztmpcache[idkey][key] = val;
@@ -64,11 +67,11 @@ TempCache.load = function(key, idkey) {
 	}
 	
 	if (!window.spaztmpcache) {
-		Spaz.init();
+		TempCache.init();
 		return null;
 	}
 	if (!window.spaztmpcache[idkey]) {
-		Spaz.initUser(idkey);
+		TempCache.initUser(idkey);
 		return null;
 	}
 
@@ -130,4 +133,10 @@ TempCache.loadFromDB = function() {
 	   tx.executeSql(sql_select, ['json_cache'], success, failure);
 	}));
 	
+};
+
+
+TempCache.clear = function() {
+	TempCache.init();
+	TempCache.saveToDB();
 };

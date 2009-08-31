@@ -199,6 +199,11 @@ MyTimelineAssistant.prototype.activate = function(event) {
 	});
 	
 	/*
+		override the standard removeExtraItems
+	*/
+	this.mytl.removeExtraItems = this.removeExtraItems;
+	
+	/*
 		start the mytimeline 
 	*/
 	if (this.refreshOnActivate) {
@@ -210,6 +215,8 @@ MyTimelineAssistant.prototype.activate = function(event) {
 
 
 MyTimelineAssistant.prototype.deactivate = function(event) {
+	
+	sch.dump('DEACTIVATE');
 	
 	/* remove any event handlers you added in activate and do any other cleanup that should happen before
 	   this scene is popped or another scene is pushed on top */
@@ -227,6 +234,9 @@ MyTimelineAssistant.prototype.deactivate = function(event) {
 };
 
 MyTimelineAssistant.prototype.cleanup = function(event) {
+	
+	sch.dump('CLEANUP');
+	
 	/* this function should do any cleanup needed before the scene is destroyed as 
 	   a result of being popped off the scene stack */
 	
@@ -235,6 +245,8 @@ MyTimelineAssistant.prototype.cleanup = function(event) {
 	this.stopTrackingStageActiveState();
 	
 	this.saveTimelineCache();
+	
+	sch.dump('SAVED CACHE?');
 	
 	// this.stopRefresher();
 };
@@ -277,6 +289,8 @@ MyTimelineAssistant.prototype.saveTimelineCache = function() {
 	
 	var tweetsModel_html = document.getElementById('my-timeline').innerHTML;
 	
+	sch.dump(tweetsModel_html);
+	
 	var twitdata = {};
 	twitdata['version']                            = this.cacheVersion || -1;
 	twitdata['tweets_html']                        = tweetsModel_html;
@@ -284,7 +298,8 @@ MyTimelineAssistant.prototype.saveTimelineCache = function() {
 	twitdata[SPAZCORE_SECTION_REPLIES + '_lastid'] = this.twit.getLastId(SPAZCORE_SECTION_REPLIES);
 	twitdata[SPAZCORE_SECTION_DMS     + '_lastid'] = this.twit.getLastId(SPAZCORE_SECTION_DMS);
 	
-	
+	sch.dump(twitdata);
+		
 	TempCache.save('mytimelinecache', twitdata);
 	
 	TempCache.saveToDB();
@@ -345,197 +360,6 @@ MyTimelineAssistant.prototype.refresh = function(e) {
 MyTimelineAssistant.prototype.renderTweets = function(tweets, render_callback, from_cache) {
 	
 	
-	// dump('Rendering these tweets ==========================================================');
-	// dump(tweets);
-	// dump('=================================================================================');
-	// 
-	// 
-	// if (from_cache !== true) {
-	// 	from_cache = false;
-	// }
-	// 
-	// 	
-	// var thisA = this;
-	// 
-	// /*
-	// 	If there are new tweets, process them
-	// */
-	// // if (tweets && tweets.length>0) {
-	// if (tweets && tweets.length>0) {
-	// 	
-	// 	profile();
-	// 	
-	// 	var rendertweets = tweets;
-	// 	
-	// 	var tweets_added = 0;
-	// 	
-	// 	var timeline_html = [];
-	// 	
-	// 	var added_ids = [];
-	// 	
-	// 	
-	// 	function already_exists(id) {
-	// 		
-	// 		if (thisA.getEntryElementByStatusId(rendertweets[i].id)) {
-	// 			return true;
-	// 		}
-	// 		if ( added_ids.indexOf(id) > -1 ) {
-	// 			return true;
-	// 		}
-	// 		return false;
-	// 		
-	// 	}
-	// 	
-	// 	
-	// 	for (var i=0; i < rendertweets.length; i++) {
-	// 					
-	// 		/*
-	// 			check to see if this tweet exists
-	// 		*/
-	// 		if (rendertweets[i] == false) {
-	// 
-	// 			dump("Tweet object was FALSE; skipping");
-	// 
-	// 		} else if (!already_exists(rendertweets[i].id)) {
-	// 			
-	// 			added_ids.push(rendertweets[i].id);
-	// 			
-	// 			dump('adding '+rendertweets[i].id);
-	// 			
-	// 
-	// 			
-	// 			/*
-	// 				skip rendering if we are loading from cache, as per new
-	// 				approach of storing HTML timeline as well.
-	// 			*/
-	// 			
-	// 			if (!from_cache) {
-	// 				rendertweets[i].text = Spaz.makeItemsClickable(rendertweets[i].text);
-	// 
-	// 				if (from_cache) {
-	// 					rendertweets[i].not_new = true;
-	// 				}
-	// 
-	// 				/*
-	// 					Render the tweet
-	// 				*/
-	// 				if (rendertweets[i].SC_is_dm) {
-	// 					var itemhtml = sc.app.tpl.parseTemplate('dm', rendertweets[i]);
-	// 				} else {
-	// 					var itemhtml = sc.app.tpl.parseTemplate('tweet', rendertweets[i]);
-	// 				}
-	// 
-	// 				/*
-	// 					put item on timeline_html glob
-	// 				*/
-	// 				timeline_html[i] = itemhtml;
-	// 			}
-	// 			
-	// 			// /*
-	// 			// 	add to tweetsModel
-	// 			// */
-	// 			// this.addTweetToModel(rendertweets[i]);
-	// 			// tweets_added++;
-	// 			// 
-	// 			// sc.app.Tweets.save(rendertweets[i]);
-	// 			
-	// 		} else {
-	// 			dump('Tweet ('+rendertweets[i].id+') already is in timeline');
-	// 		}
-	// 
-	// 	};
-	// 	
-	// 	if (timeline_html.length > 0) {
-	// 		timeline_html.reverse();
-	// 		/*
-	// 			we wrap this in a simple <div> in order to get a big
-	// 			speed increase when we prepend, but it does mean we 
-	// 			can't assume #my-timeline>div.timeline-entry will work
-	// 		*/
-	// 		var tlel         = document.getElementById('my-timeline');
-	// 		var htmlel       = document.createElement('div');
-	// 		htmlel.innerHTML = timeline_html.join('');
-	// 		tlel.insertBefore( htmlel, tlel.firstChild );
-	// 		// 
-	// 		// 
-	// 		// 
-	// 		// jQuery('#my-timeline').prepend('<div>'+timeline_html.join('')+'</div>');
-	// 	}
-	// 	
-	// 
-	// 	dump("tweets_added:"+tweets_added);
-	// 	dump("from_cache:"+from_cache);
-	// 	dump("sc.app.prefs.get('timeline-scrollonupdate'):"+sc.app.prefs.get('timeline-scrollonupdate'));
-	// 	
-	// 	if (!from_cache) {
-	// 		var num_entries = jQuery('#my-timeline div.timeline-entry').length;
-	// 		dump("num_entries:"+num_entries);
-	// 		var old_entries = num_entries - tweets_added;
-	// 		dump("old_entries:"+old_entries);
-	// 		if ( tweets_added > 0 && old_entries > 0 && !from_cache && sc.app.prefs.get('timeline-scrollonupdate') ) {
-	// 			dump("I'm going to scroll to new in 500ms!");
-	// 			setTimeout(function() { thisA.scrollToNew(); }, 500);
-	// 		} else {
-	// 			dump("Not scrolling to new!");
-	// 		}
-	// 	}
-	// 	
-	// } else {
-	// 	dump("no new tweets");
-	// }
-	// 
-	// 
-	// /*
-	// 	we are done rendering, so call the optional callback
-	// */
-	// if (render_callback) {
-	// 	dump('Calling render_callback #################################');
-	// 	render_callback();
-	// }
-	// 
-	// /*
-	// 	remove extra items
-	// */
-	// this.removeExtraItems();
-	// 
-	// /*
-	// 	Update relative dates
-	// */
-	// sch.updateRelativeTimes('div.timeline-entry .meta>.date', 'data-created_at');
-	// 
-	// /*
-	// 	re-apply filtering
-	// */
-	// this.filterTimeline();
-	// 
-	// var new_count = jQuery('#my-timeline div.timeline-entry.new:visible').length;
-	// 
-	// if (!from_cache && new_count > 0) {
-	// 	this.playAudioCue('newmsg');
-	// }
-	// 
-	// if (!from_cache && new_count > 0 && !this.isFullScreen) {
-	// 	this.newMsgBanner(new_count);
-	// } else if (this.isFullScreen) {
-	// 	dump("I am not showing a banner! in "+this.controller.sceneElement.id);
-	// }
-	// 
-	// 
-	// // this.hideInlineSpinner('#my-timeline-spinner-container');
-	// this.startRefresher();
-	// 
-	// /*
-	// 	Save this in case we need to load from cache
-	// */
-	// if (!from_cache) {		
-	// 	this.hideInlineSpinner('activity-spinner-my-timeline');
-	// 	this.saveTimelineCache();
-	// } else {
-	// 	this.hideInlineSpinner('activity-spinner-my-timeline');
-	// 	jQuery().trigger('load_from_mytimeline_cache_done');
-	// }
-	// 
-	// profileEnd();
 
 };
 
@@ -601,39 +425,6 @@ MyTimelineAssistant.prototype.removeExtraItems = function() {
 	sch.removeExtraElements('#my-timeline div.timeline-entry:not(.reply):not(.dm)', sc.app.prefs.get('timeline-maxentries'));
 	sch.removeExtraElements('#my-timeline div.timeline-entry.reply', sc.app.prefs.get('timeline-maxentries-reply'));
 	sch.removeExtraElements('#my-timeline div.timeline-entry.dm', sc.app.prefs.get('timeline-maxentries-dm'));
-	
-	// /*
-	// 	now sync the local model to the html
-	// 	We go backwards because we're splicing
-	// */
-	// var thisA = this;
-	// var new_model = [];
-	// 
-	// jQuery('#my-timeline div.timeline-entry').each( function() {
-	// 	var id = jQuery(this).attr('data-status-id');
-	// 	var this_obj = thisA.getTweetFromModel(id);
-	// 	if (this_obj != false) {
-	// 		new_model.push(this_obj);
-	// 	} else {
-	// 		dump('False was returned by thisA.getTweetFromModel(id). id='+id);
-	// 	}
-	// } );
-	// this.tweetsModel = new_model.reverse();
-	// 
-	// 
-	// var html_count  = jQuery('#my-timeline div.timeline-entry').length;
-	// var norm_count  = jQuery('#my-timeline div.timeline-entry:not(.reply):not(.dm)').length;
-	// var reply_count = jQuery('#my-timeline div.timeline-entry.reply').length;
-	// var dm_count    = jQuery('#my-timeline div.timeline-entry.dm').length;
-	// 
-	// 
-	// var model_count = this.tweetsModel.length;
-	// 
-	// dump('HTML COUNT:'+html_count);
-	// dump('NORM COUNT:'+norm_count);
-	// dump('REPLY COUNT:'+reply_count);
-	// dump('DM COUNT:'+dm_count);
-	// dump('MODEL COUNT:'+model_count);
 };
 
 

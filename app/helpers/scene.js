@@ -676,31 +676,6 @@ scene_helpers.addCommonSceneMethods = function(assistant) {
 			this.showDialogBox('error', err);
 		}
 
-		// switch(clip) {
-		// 	case 'newmsg':
-		// 		this.audioCues.newmsg.play();
-		// 		break;
-		// 
-		// 	case 'send':
-		// 		this.audioCues.send.play();
-		// 		break;
-		// 
-		// 	case 'receive':
-		// 		this.audioCues.receive.play();
-		// 		break;
-		// 
-		// 	case 'startup':
-		// 		this.audioCues.startup.play();
-		// 		break;
-		// 
-		// 	case 'shutdown':
-		// 		this.audioCues.shutdown.play();
-		// 		break;
-		// 
-		// 	case 'wilhelm':
-		// 		this.audioCues.wilhelm.play();
-		// 		break;
-		// };
 	};
 
 
@@ -851,7 +826,7 @@ scene_helpers.addCommonSceneMethods = function(assistant) {
 
 
 	assistant.clearTimelineCache = function(callback) {
-		this.cacheDepot = makeCacheDepot(true);
+		this.cacheDepot = TempCache.clear();
 	};
 	
 	
