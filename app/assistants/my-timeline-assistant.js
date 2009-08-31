@@ -11,6 +11,9 @@ function MyTimelineAssistant(argFromPusher) {
 	   that needs the scene controller should be done in the setup function below. */
 	scene_helpers.addCommonSceneMethods(this);
 	
+	var thisA = this;
+	
+	
 	if (argFromPusher && argFromPusher.firstload === true) {
 		// console.debug();
 		// this.clearTimelineCache();
@@ -23,6 +26,24 @@ function MyTimelineAssistant(argFromPusher) {
 	
 	
 	this.cacheDepot = makeCacheDepot(false);
+	
+	
+	/**
+	 * empties the timeline and resets the lastids in the twit object
+	 * 
+	 * bound to temp_cache_cleared 
+	 * 
+	 * we define this here to get the closure thisA; haven't sorted out how to
+	 * bind an event using SpazCore to a scope without making it un-removable
+	 */
+	this.resetTwitState = function() {
+		jQuery('.timeline').empty();
+		thisA.twit.setLastId(SPAZCORE_SECTION_FRIENDS, 0);
+		thisA.twit.setLastId(SPAZCORE_SECTION_REPLIES, 0);
+		thisA.twit.setLastId(SPAZCORE_SECTION_DMS,     0);
+
+	};
+	
 
 }
 
@@ -102,6 +123,9 @@ MyTimelineAssistant.prototype.setup = function() {
 	
 	
 	this.refreshOnActivate = true;
+	
+	
+	sch.listen(document, 'temp_cache_cleared', this.resetTwitState);
 	
 	this.loadTimelineCache();
 };
@@ -243,6 +267,8 @@ MyTimelineAssistant.prototype.cleanup = function(event) {
 	// jQuery().unbind('load_from_mytimeline_cache_done');
 
 	this.stopTrackingStageActiveState();
+	
+	sch.unlisten(document, 'temp_cache_cleared', this.resetTwitState);
 	
 	this.saveTimelineCache();
 	
@@ -457,3 +483,5 @@ MyTimelineAssistant.prototype.filterTimeline = function(command) {
 	
 	this._filterState = command;	
 };
+
+

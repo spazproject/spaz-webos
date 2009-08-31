@@ -139,4 +139,5 @@ TempCache.loadFromDB = function() {
 TempCache.clear = function() {
 	TempCache.init();
 	TempCache.saveToDB();
+	sch.trigger('temp_cache_cleared', document);
 };
