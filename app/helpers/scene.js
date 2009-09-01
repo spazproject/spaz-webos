@@ -204,7 +204,6 @@ scene_helpers.addCommonSceneMethods = function(assistant) {
 		}
 		var num_new   = jQuery('.timeline div.timeline-entry.new:visible', this.scroller).length;
 		var first_new = jQuery('.timeline div.timeline-entry.new:visible:last', this.scroller).get(0);
-		
 		if (first_new) {
 			dump('Scrolling to first new item');
 			if (num_new == 1) { // if only one new, just scroll to the top

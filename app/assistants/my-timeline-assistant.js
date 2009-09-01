@@ -170,6 +170,8 @@ MyTimelineAssistant.prototype.activate = function(event) {
 			var data = data.reverse();
 			var no_dupes = [];
 			
+			var previous_count = jQuery('#my-timeline div.timeline-entry').length;
+			
 			for (var i=0; i < data.length; i++) {
 				
 				/*
@@ -185,6 +187,7 @@ MyTimelineAssistant.prototype.activate = function(event) {
 			};
 			
 			thisA.mytl.addItems(no_dupes);
+			
 			sc.helpers.updateRelativeTimes('#my-timeline div.timeline-entry span.date', 'data-created_at');
 			/*
 				re-apply filtering
@@ -195,6 +198,13 @@ MyTimelineAssistant.prototype.activate = function(event) {
 			
 			if (new_count > 0) {
 				thisA.playAudioCue('newmsg');
+				
+				if (previous_count > 0) {
+					if (sc.prefs.get('timeline-scrollonupdate')) {
+						sch.dump("Scrolling to New because previous_count > 0 (it wasn't empty before we added new stuff)");
+						thisA.scrollToNew();
+					}
+				}
 			}
 			
 			if (new_count > 0 && !thisA.isFullScreen) {
@@ -255,6 +265,8 @@ MyTimelineAssistant.prototype.deactivate = function(event) {
 	*/
 	this.mytl.cleanup();
 	
+	this.saveTimelineCache();
+	
 };
 
 MyTimelineAssistant.prototype.cleanup = function(event) {
@@ -270,9 +282,6 @@ MyTimelineAssistant.prototype.cleanup = function(event) {
 	
 	sch.unlisten(document, 'temp_cache_cleared', this.resetTwitState);
 	
-	this.saveTimelineCache();
-	
-	sch.dump('SAVED CACHE?');
 	
 	// this.stopRefresher();
 };
@@ -480,6 +489,9 @@ MyTimelineAssistant.prototype.filterTimeline = function(command) {
 			jQuery('#my-timeline').removeClass(states[i]);
 		}
 	};
+	
+	sch.dump("Scrolling to top after applying filter");
+	this.scrollToTop();
 	
 	this._filterState = command;	
 };
