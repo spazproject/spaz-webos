@@ -200,7 +200,7 @@ MyTimelineAssistant.prototype.activate = function(event) {
 				thisA.playAudioCue('newmsg');
 				
 				if (previous_count > 0) {
-					if (sc.prefs.get('timeline-scrollonupdate')) {
+					if (sc.app.prefs.get('timeline-scrollonupdate')) {
 						sch.dump("Scrolling to New because previous_count > 0 (it wasn't empty before we added new stuff)");
 						thisA.scrollToNew();
 					}
