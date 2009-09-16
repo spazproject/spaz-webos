@@ -5,7 +5,7 @@ function MessageDetailAssistant(argFromPusher) {
 	   that needs the scene controller should be done in the setup function below. */
 	scene_helpers.addCommonSceneMethods(this);
 	
-	dump(argFromPusher);
+	sch.dump(argFromPusher);
 	
 	if (sc.helpers.isString(argFromPusher) || sc.helpers.isNumber(argFromPusher)) {
 		/*
@@ -104,7 +104,7 @@ MessageDetailAssistant.prototype.activate = function(event) {
 			sc.app.Tweets.get(this.status_id, this.isdm,
 				function(data) {
 					if (data !== null) {
-						dump('Message '+data.status_id+' pulled from DB');
+						sch.dump('Message '+data.status_id+' pulled from DB');
 						jQuery().trigger('get_one_status_succeeded', [data]);
 					} else { // if nothing is returned, get it from Twitter
 						// thisA.twit.getOne(thisA.status_id);
@@ -113,7 +113,7 @@ MessageDetailAssistant.prototype.activate = function(event) {
 					
 				},
 				function(message) {
-					dump('Couldn\'t retrieve message from Depot:'+message);
+					sch.dump('Couldn\'t retrieve message from Depot:'+message);
 					thisA.showAlert($L('There was an error retrieving the message data'));
 				}
 			);
@@ -125,16 +125,16 @@ MessageDetailAssistant.prototype.activate = function(event) {
 			sc.app.Tweets.get(this.status_id, this.isdm,
 				function(data) {
 					if (data !== null) {
-						dump('Message '+data.status_id+' pulled from DB');
+						sch.dump('Message '+data.status_id+' pulled from DB');
 						jQuery().trigger('get_one_status_succeeded', [data]);
 					} else { // if nothing is returned, get it from Twitter
-						dump('Message '+this.status_id+' missing from DB; retrieving from Twitter');
+						sch.dump('Message '+this.status_id+' missing from DB; retrieving from Twitter');
 						thisA.twit.getOne(thisA.status_id);
 					}
 					
 				},
 				function(message) {
-					dump('Couldn\'t retrieve message from Depot:'+message);
+					sch.dump('Couldn\'t retrieve message from Depot:'+message);
 					thisA.twit.getOne(thisA.status_id);
 				}
 			);
@@ -170,10 +170,10 @@ MessageDetailAssistant.prototype.activate = function(event) {
 	jQuery('#message-detail-action-favorite', this.scroller).live(Mojo.Event.tap, function(e) {
 		var status_id = parseInt(jQuery(this).attr('data-status-id'), 10);		
 		if (jQuery(this).attr('data-favorited') === 'true') {
-			dump('UNFAVORITING');
+			sch.dump('UNFAVORITING');
 			thisA.twit.unfavorite(status_id);
 		} else {
-			dump('FAVORITING');
+			sch.dump('FAVORITING');
 			thisA.twit.favorite(status_id);
 		}
 	});
@@ -220,22 +220,29 @@ MessageDetailAssistant.prototype.cleanup = function(event) {
 
 
 MessageDetailAssistant.prototype.processStatusReturn = function(e, statusobj) {
-
-	dump(e.data.thisAssistant);
+	
+	
+	var sui = new SpazImageURL();
+	
+	sch.dump(e.data.thisAssistant);
 
 	e.data.thisAssistant.statusobj = statusobj;
 	e.data.thisAssistant.statusRetrieved = false;
 
-	dump('message data:');
-	dump(e.data.thisAssistant.statusobj);
+	sch.dump('message data:');
+	sch.dump(e.data.thisAssistant.statusobj);
 	
+	e.data.thisAssistant.statusobj.SC_thumbnail_urls = sui.getThumbsForUrls(e.data.thisAssistant.statusobj.text);
 	e.data.thisAssistant.statusobj.text = Spaz.makeItemsClickable(e.data.thisAssistant.statusobj.text);
 	
 	/*
 		save this tweet to Depot
 	*/
 	sc.app.Tweets.save(statusobj);
-		
+	
+	/*
+		render tweet
+	*/
 	if (e.data.thisAssistant.isdm) {
 		var itemhtml = sc.app.tpl.parseTemplate('message-detail-dm', e.data.thisAssistant.statusobj);
 	} else {

@@ -78,11 +78,17 @@ a:link, a:visited, .clickable {
 }
 
 
+div.rounded-user-image {
+	-khtml-border-radius: 6px;
+}
+
 /*************************************************
 	Timeline entries are... entries in the timelines
 */
 
-
+div.timeline {
+	-khtml-border-radius:10px;
+}
 
 div.timeline-entry {
 	padding: 2px 6px 12px;
@@ -95,11 +101,11 @@ div.timeline-entry {
 	min-height:64px;
 	color:#FFF;
 	position:relative;
-	margin:0;
 	background-image: url('../images/dreadnaught/entry-gradient-bg_short.png');
 	background-repeat: repeat-x;
 	background-color:#101010;
 }
+
 	div.timeline-entry:active {	}
 
 	/*
@@ -151,19 +157,18 @@ div.timeline-entry {
 		text-align:center;
 		width:48px;
 		height:48px;
-		border:1px solid #333;
+/*		border:1px solid #333;*/
 		margin-top:10px;
 		margin-left:3px;
 
 	}
-		div.timeline-entry .user img {
+		div.timeline-entry .user .user-img, div.timeline-entry .user img {
 			width:48px;
 			height:48px;
-/*			border:1px single #333;*/
+/*			border:0px single #333;*/
 /*			-webkit-box-shadow:0px 1px 5px #333;*/
 /*			background-image:url('../images/dreadnaught/details-image-generic.png');*/
 /*			opacity:.9;*/
-/*			-webkit-border-radius: 15px;*/
 		}
 	
 	div.timeline-entry .status {
@@ -418,6 +423,7 @@ div.spaz-drawer {
 	background-color:#2B3235;
 	min-height:480px;
 	padding:8px 0px;
+	-khtml-border-radius:10px;
 }
 
 
@@ -434,7 +440,7 @@ div.spaz-drawer {
 		margin-left:8px;
 		width:48px;
 		height:48px;
-		border:1px solid #333;
+/*		border:1px solid #333;*/
 /*		-webkit-box-shadow:0px 1px 5px #000;*/
 /*		background-image:url('../images/dreadnaught/details-image-generic.png');*/
 		opacity:.9;
@@ -449,6 +455,18 @@ div.spaz-drawer {
 			font-size:14pt;
 			font-weight:bold;
 		}
+		#message-detail .status .thumbnails {
+			margin:5px 0 0;
+/*			padding:7px;*/
+/*			background-color:#222;*/
+/*			-khtml-border-radius:10px;*/
+/*			text-align:center;*/
+		}
+			#message-detail .status .thumbnail {
+				border:1px solid #999999;
+				position:relative;
+				max-width:98%;
+			}
 		#message-detail .status .text {
 			margin-top:.3em;
 			line-height:140%;
@@ -524,6 +542,7 @@ div.spaz-drawer {
 	background-repeat: repeat-x;
 	background-color:#301616;
 	min-height:480px;
+	-khtml-border-radius:10px;
 }
 
 
@@ -541,7 +560,7 @@ div.spaz-drawer {
 		margin-left:8px;
 		width:48px;
 		height:48px;
-		border:1px single #333;
+/*		border:1px single #333;*/
 /*		-webkit-box-shadow:0px 1px 5px #000;*/
 /*		background-image:url('../images/dreadnaught/details-image-generic.png');*/
 		opacity:.9;

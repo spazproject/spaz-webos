@@ -5,12 +5,21 @@
 sc.app.tpl = new SpazTemplate();
 
 sc.app.tpl.addTemplateMethod('message-detail', function(d) {
-	var html = '';
+	var html = '', thumbHTML = '';
+
+	if (d.SC_thumbnail_urls) {
+		thumbHTML += '<div class="thumbnails">';
+		for (var key in d.SC_thumbnail_urls) {
+			thumbHTML += '<a href="'+key+'"><img class="thumbnail" src="'+d.SC_thumbnail_urls[key]+'"></a>';
+		}
+		thumbHTML += '</div>';
+	}
 	
 	html += '<div data-user-screen_name="'+d.user.screen_name+'" data-user-id="'+d.user.id+'" data-status-id="'+d.id+'">'
-	+ '	<img src="'+d.user.profile_image_url+'" id="message-detail-image" data-screen_name="'+d.user.screen_name+'" title="View user\'s profile" />'
+	+ ' <div class="rounded-user-image" style="background-image:url('+d.user.profile_image_url+')" id="message-detail-image" data-screen_name="'+d.user.screen_name+'" title="View user\'s profile"></div>'
 	+ '	<div class="status">'
 	+ '		<div class="screen_name" data-screen_name="'+d.user.screen_name+'">'+d.user.screen_name+'</div>'
+	+ '		'+thumbHTML
 	+ '		<div class="text">'+d.text+'</div>'
 	+ '		<div class="meta" data-status-id="'+d.id+'">'
 	+ '			<div class="date"><strong>Posted</strong> <span class="date-relative" data-created_at="'+d.created_at+'">'+d.relative_time+'</span> <strong>from</strong> <span class="source-link">'+d.source+'</span></div>';
@@ -59,7 +68,7 @@ sc.app.tpl.addTemplateMethod('message-detail-dm', function(d) {
 	var html = '';
 	
 	html += '<div data-user-screen_name="'+d.sender.screen_name+'" data-user-id="'+d.sender.id+'" data-status-id="'+d.id+'" data-isdm="true">'
-	+ '	<img src="'+d.sender.profile_image_url+'" id="message-detail-image" data-screen_name="'+d.sender.screen_name+'" title="View user\'s profile" />'
+	+ ' <div class="rounded-user-image" style="background-image:url('+d.user.sender+')" id="message-detail-image" data-screen_name="'+d.sender.screen_name+'" title="View user\'s profile"></div>'
 	+ '	<div class="status">'
 	+ '		<div class="screen_name" data-screen_name="'+d.sender.screen_name+'">'+d.sender.screen_name+'</div>'
 	+ '		<div class="text">'+d.text+'</div>'
@@ -104,7 +113,7 @@ sc.app.tpl.addTemplateMethod('user-detail', function(d) {
 	var html = '';
 	
 	html += '	<div data-screen_name="'+d.screen_name+'" data-id="'+d.id+'">'
-	+ '		<img src="'+d.profile_image_url+'" id="user-detail-image" data-screen_name="'+d.screen_name+'" title="View user\'s profile" />'
+	+ ' 	<div class="rounded-user-image" style="background-image:url('+d.profile_image_url+')" id="user-detail-image" data-screen_name="'+d.screen_name+'" title="View user\'s profile"></div>'
 	+ '		<div id="user-detail-info">'
 	+ '			<div id="user-detail-name" data-screen_name="'+d.screen_name+'">'
 	+ '			'+d.name;
@@ -200,7 +209,7 @@ sc.app.tpl.addTemplateMethod('tweet', function(d) {
 	}
 	html += '" data-status-id="'+d.id+'" data-user-id="'+d.user.id+'" data-user-screen_name="'+d.user.screen_name+'" data-timestamp="'+d.created_at_unixtime+'">'
 	+ '	<div class="user" data-user-id="'+d.user.id+'" data-user-screen_name="'+d.user.screen_name+'">'
-	+ '		<img src="'+d.user.profile_image_url+'" />'
+	+ '		<div class="user-img rounded-user-image" style="background-image:url('+d.user.profile_image_url+')"></div>'
 	+ '	</div>'
 	+ '	<div class="status">'
 	+ '		<div class="meta-wrapper">'
@@ -229,7 +238,7 @@ sc.app.tpl.addTemplateMethod('dm', function(d) {
 	}
 	html += '" data-isdm="true" data-status-id="'+d.id+'" data-user-id="'+d.sender.id+'" data-user-screen_name="'+d.sender.screen_name+'" data-timestamp="'+d.created_at_unixtime+'">'
 	+ '	<div class="user" data-user-id="'+d.sender.id+'" data-user-screen_name="'+d.sender.screen_name+'">'
-	+ '		<img src="'+d.sender.profile_image_url+'" title="'+d.sender.screen_name+'" />'
+	+ '		<div class="user-img rounded-user-image" style="background-image:url('+d.sender.profile_image_url+')"></div>'
 	+ '	</div>'
 	+ '	<div class="status">'
 	+ '		<div class="meta-wrapper">'
