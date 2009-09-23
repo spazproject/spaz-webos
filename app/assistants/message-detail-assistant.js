@@ -52,7 +52,16 @@ MessageDetailAssistant.prototype.setup = function() {
 		
 	} else {
 		this.setupCommonMenus({
-		});	
+			viewMenuItems: [
+				{
+					items:[
+						{label: $L("Message Details"), command:'scroll-top', 'class':"palm-header left", width:320}				
+					]
+				}
+
+			],
+			cmdMenuItems:[]
+		});
 		
 		this.initAppMenu();
 		
@@ -194,6 +203,15 @@ MessageDetailAssistant.prototype.activate = function(event) {
 		Mojo.Controller.stageController.pushScene('message-detail', statusid);
 	});
 	
+	jQuery('#message-detail-container img.thumbnail', this.scroller).live(Mojo.Event.tap, function(e) {
+		var siu = new SpazImageURL();
+		var img_url = jQuery(this).attr('data-img-url');
+		sch.dump('MAIN URL:'+img_url);
+		img_url = siu.getImageForUrl(img_url);
+		sch.dump('IMAGE URL:'+img_url);
+		Mojo.Controller.stageController.pushScene('view-image', {'imageURLs':[img_url]});
+	});
+	
 	// this.addPostPopup();
 };
 
@@ -209,6 +227,8 @@ MessageDetailAssistant.prototype.deactivate = function(event) {
 	jQuery('#message-detail-container .username.clickable', this.scroller).die(Mojo.Event.tap);
 	jQuery('#message-detail-container .hashtag.clickable', this.scroller).die(Mojo.Event.tap);
 	jQuery('#message-detail-container div.timeline-entry>.status>.meta', this.scroller).die(Mojo.Event.tap);
+	jQuery('#message-detail-container img.thumbnail', this.scroller).die(Mojo.Event.tap);
+	
 };
 
 MessageDetailAssistant.prototype.cleanup = function(event) {

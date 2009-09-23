@@ -10,7 +10,8 @@ sc.app.tpl.addTemplateMethod('message-detail', function(d) {
 	if (d.SC_thumbnail_urls) {
 		thumbHTML += '<div class="thumbnails">';
 		for (var key in d.SC_thumbnail_urls) {
-			thumbHTML += '<a href="'+key+'"><img class="thumbnail" src="'+d.SC_thumbnail_urls[key]+'"></a>';
+			// thumbHTML += '<a href="'+key+'"><img class="thumbnail" data-img-url="'+key+'" src="'+d.SC_thumbnail_urls[key]+'"></a>';
+			thumbHTML += '<img class="thumbnail" data-img-url="'+key+'" src="'+d.SC_thumbnail_urls[key]+'">';
 		}
 		thumbHTML += '</div>';
 	}

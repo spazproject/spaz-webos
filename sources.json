@@ -1,61 +1,65 @@
 [
-    {"source": "app\/assistants\/app-assistant.js"},
-    {"source": "app\/assistants\/stage-assistant.js"},
+    {"source": "app/assistants/app-assistant.js"},
+    {"source": "app/assistants/stage-assistant.js"},
     {
         "scene": "favorites",
-        "source": "app\/assistants\/favorites-assistant.js"
+        "source": "app/assistants/favorites-assistant.js"
     },
     {"source": "support_info.js"},
     {
         "scene": "help",
-        "source": "app\/assistants\/help-assistant.js"
+        "source": "app/assistants/help-assistant.js"
     },
     {
         "scene": "message-detail",
-        "source": "app\/assistants\/message-detail-assistant.js"
+        "source": "app/assistants/message-detail-assistant.js"
     },
     {
         "scene": "my-timeline",
-        "source": "app\/assistants\/my-timeline-assistant.js"
+        "source": "app/assistants/my-timeline-assistant.js"
     },
     {
         "scene": "preferences",
-        "source": "app\/assistants\/preferences-assistant.js"
+        "source": "app/assistants/preferences-assistant.js"
     },
     {
         "scene": "search-twitter",
-        "source": "app\/assistants\/search-twitter-assistant.js"
+        "source": "app/assistants/search-twitter-assistant.js"
     },
     {
         "scene": "start",
-        "source": "app\/assistants\/start-assistant.js"
+        "source": "app/assistants/start-assistant.js"
     },
     {
         "scene": "user-detail",
-        "source": "app\/assistants\/user-detail-assistant.js"
+        "source": "app/assistants/user-detail-assistant.js"
     },
     {
         "scenes": "about",
-        "source": "app\/assistants\/about-assistant.js"
+        "source": "app/assistants/about-assistant.js"
     },
     {
         "scenes": "startlogin",
-        "source": "app\/assistants\/startlogin-assistant.js"
+        "source": "app/assistants/startlogin-assistant.js"
     },
     {
         "scenes": "startsearch",
-        "source": "app\/assistants\/startsearch-assistant.js"
+        "source": "app/assistants/startsearch-assistant.js"
     },
     {
         "scenes": "post",
-        "source": "app\/assistants\/post-assistant.js"
+        "source": "app/assistants/post-assistant.js"
     },
     {
         "scenes": "new-msg-popup",
-        "source": "app\/assistants\/new-msg-popup-assistant.js"
+        "source": "app/assistants/new-msg-popup-assistant.js"
     },
     {
         "scenes": "dashboard",
-        "source": "app\/assistants\/dashboard-assistant.js"
+        "source": "app/assistants/dashboard-assistant.js"
+    },
+    {
+        "scenes": "view-image",
+        "source": "app/assistants/view-image-assistant.js"
     }
 ]

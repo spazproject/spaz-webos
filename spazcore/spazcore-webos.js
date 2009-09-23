@@ -1,4 +1,4 @@
-/*********** Built 2009-09-16 17:08:56 EDT ***********/
+/*********** Built 2009-09-23 17:25:43 EDT ***********/
 /*jslint 
 browser: true,
 nomen: false,
@@ -5153,7 +5153,8 @@ SpazImageURL.prototype.initAPIs = function() {
 			return url;
 		},
 		'getImageUrl'     : function(id) {
-			return null;
+			var url = 'http://twitpic.com/show/large/'+id;
+			return url;
 		}
 	});
 
@@ -5165,7 +5166,8 @@ SpazImageURL.prototype.initAPIs = function() {
 			return url;
 		},
 		'getImageUrl'     : function(id) {
-			return null;
+			var url = 'http://yfrog.com/'+id+':iphone';
+			return url;
 		}
 	});
 	
@@ -5277,13 +5279,16 @@ SpazImageURL.prototype.findServiceUrlsInString = function(str) {
 	for (key in this.apis) {
 		
 		thisapi = this.getAPI(key);
-		
+		sch.dump(key);
+		sch.dump(thisapi.url_regex);
 		while( (re_matches = thisapi.url_regex.exec(sch.trim(str))) != null) {
+			sch.dump(re_matches);
 			matches[key] = re_matches;
 			num_matches++;
 		}
 	}
-	
+	sch.dump('num_matches:'+num_matches);
+	sch.dump(matches);	
 	if (num_matches > 0) {
 		return matches;
 	} else {
@@ -5301,12 +5306,16 @@ SpazImageURL.prototype.getThumbsForMatches = function(matches) {
 	var x, service, api, thumburl, thumburls = {}, num_urls = 0;
 	
 	for (service in matches) {
+		sch.dump('SERVICE:'+service);
 		api = this.getAPI(service);
 		urls = matches[service]; // an array
-		
+		sch.dump("URLS:"+urls);
 		thumburls[urls[0]] = api.getThumbnailUrl(urls[1]);
 		num_urls++;
 	}
+
+	sch.dump('num_urls:'+num_urls);
+	sch.dump(thumburls);	
 	
 	if (num_urls > 0) {
 		return thumburls;
@@ -5330,7 +5339,68 @@ SpazImageURL.prototype.getThumbsForUrls = function(str) {
 		return null;
 	}
 	
-};/*jslint 
+};
+
+
+
+/**
+ * find the image service URLs that work with our defined APIs in a given string
+ * @param {object} matches
+ * @return {object|null} fullurl:thumburl key:val pairs
+ */
+SpazImageURL.prototype.getImagesForMatches = function(matches) {
+	var x, service, api, imageurl, imageurls = {}, num_urls = 0;
+	
+	for (service in matches) {
+		sch.dump('SERVICE:'+service);
+		api = this.getAPI(service);
+		urls = matches[service]; // an array
+		sch.dump("URLS:"+urls);
+		imageurls[urls[0]] = api.getImageUrl(urls[1]);
+		num_urls++;
+	}
+
+	sch.dump('num_urls:'+num_urls);
+	sch.dump(imageurls);	
+	
+	if (num_urls > 0) {
+		return imageurls;
+	} else {
+		return null;
+	}
+};
+
+
+/**
+ * given a string, this returns a set of key:val pairs of main url:image url
+ * for image hosting services for urls within the string
+ * @param {string} str
+ * @return {object|null} fullurl:imageurl key:val pairs
+ */
+SpazImageURL.prototype.getImagesForUrls = function(str) {
+	var matches = this.findServiceUrlsInString(str);
+	if (matches) {
+		return this.getImagesForMatches(matches);
+	} else {
+		return null;
+	}
+};
+
+
+/**
+ * given a single image hosting service URL, this returns a URL to the image itself
+ * @param {string} url
+ * @return {string|null}
+ */
+SpazImageURL.prototype.getImageForUrl = function(url) {
+	var urls = this.getImagesForUrls(url);
+	if (urls) {
+		return urls[url];
+	} else {
+		return null;
+	}
+};
+/*jslint 
 browser: true,
 nomen: false,
 debug: true,

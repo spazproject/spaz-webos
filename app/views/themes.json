@@ -1,0 +1,12 @@
+[
+	{
+		"name":"Dreadnaught",
+		"stylesheet":"Dreadnaught.css",
+		"img_folder":"dreadnaught"
+	},
+	{
+		"name":"Whiteknight",
+		"stylesheet":"Whiteknight.css",
+		"img_folder":"whiteknight"
+	}
+];
