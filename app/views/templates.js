@@ -23,7 +23,7 @@ sc.app.tpl.addTemplateMethod('message-detail', function(d) {
 	+ '		'+thumbHTML
 	+ '		<div class="text">'+d.text+'</div>'
 	+ '		<div class="meta" data-status-id="'+d.id+'">'
-	+ '			<div class="date"><strong>Posted</strong> <span class="date-relative" data-created_at="'+d.created_at+'">'+d.relative_time+'</span> <strong>from</strong> <span class="source-link">'+d.source+'</span></div>';
+	+ '			<div class="date"><strong>Posted</strong> <span class="date-relative" data-created_at="'+d.created_at+'">'+sch.getRelativeTime(d.created_at)+'</span> <strong>from</strong> <span class="source-link">'+d.source+'</span></div>';
 	if (d.in_reply_to_status_id) {
 		html += '			<div class="in-reply-to"><strong>In-reply-to</strong>: <span class="in-reply-to-link clickable" data-irt-status-id="'+d.in_reply_to_status_id+'">@'+d.in_reply_to_screen_name+'</span></div>';
 	}
@@ -69,12 +69,12 @@ sc.app.tpl.addTemplateMethod('message-detail-dm', function(d) {
 	var html = '';
 	
 	html += '<div data-user-screen_name="'+d.sender.screen_name+'" data-user-id="'+d.sender.id+'" data-status-id="'+d.id+'" data-isdm="true">'
-	+ ' <div class="rounded-user-image" style="background-image:url('+d.user.sender+')" id="message-detail-image" data-screen_name="'+d.sender.screen_name+'" title="View user\'s profile"></div>'
+	+ ' <div class="rounded-user-image" style="background-image:url('+d.sender.profile_image_url+')" id="message-detail-image" data-screen_name="'+d.sender.screen_name+'" title="View user\'s profile"></div>'
 	+ '	<div class="status">'
 	+ '		<div class="screen_name" data-screen_name="'+d.sender.screen_name+'">'+d.sender.screen_name+'</div>'
 	+ '		<div class="text">'+d.text+'</div>'
 	+ '		<div class="meta" data-status-id="'+d.id+'">'
-	+ '			<div class="date"><strong>Direct message sent</strong> <span class="date-relative" data-created_at="'+d.created_at+'">'+d.relative_time+'</span></div>'
+	+ '			<div class="date"><strong>Direct message sent</strong> <span class="date-relative" data-created_at="'+d.created_at+'">'+sch.getRelativeTime(d.created_at)+'</span></div>'
 	+ '		</div>'
 	+ '	</div>';
 	if (sc.app.username && sc.app.password) {
@@ -219,7 +219,7 @@ sc.app.tpl.addTemplateMethod('tweet', function(d) {
 		html += '			<div class="protected-icon"></div>';
 	}
 	html += '			</div>'
-	+ '			<div class="meta" data-status-id="'+d.id+'"><span class="date" data-created_at="'+d.created_at+'">'+d.relative_time+'</span></div>'
+	+ '			<div class="meta" data-status-id="'+d.id+'"><span class="date" data-created_at="'+d.created_at+'">'+sch.getRelativeTime(d.created_at)+'</span></div>'
 	+ '		</div>'
 	+ '	 	<div class="text">'
 	+ '			'+d.text+''
@@ -244,7 +244,7 @@ sc.app.tpl.addTemplateMethod('dm', function(d) {
 	+ '	<div class="status">'
 	+ '		<div class="meta-wrapper">'
 	+ '			<div class="screen-name">'+d.sender.screen_name+'</div>'
-	+ '			<div class="meta" data-status-id="'+d.id+'"><span class="date" data-created_at="'+d.created_at+'">'+d.relative_time+'</span></div>'
+	+ '			<div class="meta" data-status-id="'+d.id+'"><span class="date" data-created_at="'+d.created_at+'">'+sch.getRelativeTime(d.created_at)+'</span></div>'
 	+ '		</div>'
 	+ '	 	<div class="text">'
 	+ '			'+d.text+''
@@ -267,7 +267,7 @@ sc.app.tpl.addTemplateMethod('search-item', function(d) {
 	+ '	<div class="status">'
 	+ '		<div class="meta-wrapper">'
 	+ '			<div class="screen-name">'+d.from_user+'</div>'
-	+ '			<div class="meta" data-status-id="'+d.id+'"><span class="date" data-created_at="'+d.created_at+'">'+d.relative_time+'</span></div>'
+	+ '			<div class="meta" data-status-id="'+d.id+'"><span class="date" data-created_at="'+d.created_at+'">'+sch.getRelativeTime(d.created_at)+'</span></div>'
 	+ '		</div>'
 	+ '	 	<div class="text">'
 	+ '			'+d.text+''

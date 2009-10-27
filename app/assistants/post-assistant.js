@@ -148,16 +148,6 @@ PostAssistant.prototype.setup = function() {
 		e.data.thisAssistant.reportFailedPost(error_obj);
 	});
 
-
-	// jQuery('#post-textfield').bind('keyup',   function(e) {
-	// 	thisA._updateCharCount();
-	// });
-	// jQuery('#post-textfield').bind('blur',    function(e) {
-	// 	thisA._updateCharCount();
-	// });
-	// jQuery('#post-textfield').bind('focus',   function(e) {
-	// 	thisA._updateCharCount();
-	// });
 	
 	Mojo.Event.listen($('post-textfield'), Mojo.Event.propertyChange, this._updateCharCount.bindAsEventListener(this));	
 	
@@ -239,9 +229,6 @@ PostAssistant.prototype._updateCharCount = function() {
 	var thisA = this;
 	
 	_updateCharCountNow();
-	// if (thisA._updateCharCountTimeout) {
-	// 	clearTimeout(thisA._updateCharCountTimeout);
-	// }
 
 	function _updateCharCountNow() {
 		var numchars  = thisA.postTextFieldModel.value.length;
@@ -261,8 +248,6 @@ PostAssistant.prototype._updateCharCount = function() {
 			jQuery('#post-send-button', thisA.controller.getSceneScroller()).attr('disabled', '');
 		}	
 	}
-	
-	// this._updateCharCountTimeout = setTimeout(_updateCharCountNow, 250);
 	
 	
 };
@@ -429,7 +414,6 @@ PostAssistant.prototype.sendPost = function(event) {
 	var status = this.postTextFieldModel.value;
 	
 	if (this.postMode === 'email') {
-		
 		var api_label = this.imageUploaderModel['image-uploader'];
 		var email = this.imageUploaderEmailModel['image-uploader-email'];
 		var emailobj = {'name':api_label, 'address':email};
@@ -657,7 +641,7 @@ PostAssistant.prototype.renderSuccessfulPost = function(event, data) {
 	*/
 	this.filterTimeline();
 	
-	this.playAudioCue('send');
+	// this.playAudioCue('send');
 	
 	this.deactivateSpinner();
 	

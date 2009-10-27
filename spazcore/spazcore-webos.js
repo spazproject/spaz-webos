@@ -8968,8 +8968,12 @@ SpazTwit.prototype._processUpdateReturn = function(data, finished_event) {
 		this item needs to be added to the friends + home timeline
 		so we can avoid dupes
 	*/
+	/*
+		not processing home timeline yet; we need to pick one or the other
+		to avoid duplicate events firing for updates
+	*/
 	this._processTimeline(SPAZCORE_SECTION_HOME, [data], finished_event);
-	this._processTimeline(SPAZCORE_SECTION_FRIENDS, [data], finished_event);
+	// this._processTimeline(SPAZCORE_SECTION_FRIENDS, [data], finished_event);
 };
 
 SpazTwit.prototype.destroy = function(id) {};

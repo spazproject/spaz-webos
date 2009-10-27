@@ -116,8 +116,8 @@ MessageDetailAssistant.prototype.activate = function(event) {
 						sch.dump('Message '+data.status_id+' pulled from DB');
 						jQuery().trigger('get_one_status_succeeded', [data]);
 					} else { // if nothing is returned, get it from Twitter
-						// thisA.twit.getOne(thisA.status_id);
-						thisA.showAlert($L('There was an error retrieving this direct message'));
+						sch.error('DM was not in sc.app.Tweets cache');
+						thisA.showAlert($L('There was an error retrieving this direct message from cache'));
 					}
 					
 				},

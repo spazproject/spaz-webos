@@ -49,22 +49,26 @@ PreferencesAssistant.prototype.setup = function() {
 	/*
 		Setup checkboxes
 	*/
-	this.controller.setupWidget("checkbox-sound-enabled",
-		this.soundEnabledAtts = {
-			fieldName: 'sound-enabled',
-			modelProperty: 'sound-enabled',
-			disabledProperty: 'sound-enabled_disabled'
-		},
-		this.model
-	);
-	this.controller.setupWidget("checkbox-vibration-enabled",
-		this.soundEnabledAtts = {
-			fieldName: 'vibration-enabled',
-			modelProperty: 'vibration-enabled',
-			disabledProperty: 'vibration-enabled_disabled'
-		},
-		this.model
-	);
+	
+	/*
+		temporarily disabling sound and vibration prefs until we can sort out how to tell if sound is off
+	*/
+	// this.controller.setupWidget("checkbox-sound-enabled",
+	// 	this.soundEnabledAtts = {
+	// 		fieldName: 'sound-enabled',
+	// 		modelProperty: 'sound-enabled',
+	// 		disabledProperty: 'sound-enabled_disabled'
+	// 	},
+	// 	this.model
+	// );
+	// this.controller.setupWidget("checkbox-vibration-enabled",
+	// 	this.soundEnabledAtts = {
+	// 		fieldName: 'vibration-enabled',
+	// 		modelProperty: 'vibration-enabled',
+	// 		disabledProperty: 'vibration-enabled_disabled'
+	// 	},
+	// 	this.model
+	// );
 	this.controller.setupWidget("checkbox-timeline-scrollonupdate",
 		this.soundEnabledAtts = {
 			fieldName: 'timeline-scrollonupdate',
@@ -74,8 +78,11 @@ PreferencesAssistant.prototype.setup = function() {
 		this.model
 	);
 	
-	this.controller.listen('checkbox-sound-enabled', Mojo.Event.propertyChange, this.saveSettings.bindAsEventListener(this));
-	this.controller.listen('checkbox-vibration-enabled', Mojo.Event.propertyChange, this.saveSettings.bindAsEventListener(this));
+	/*
+		temporarily disabling sound and vibration prefs until we can sort out how to tell if sound is off
+	*/
+	// this.controller.listen('checkbox-sound-enabled', Mojo.Event.propertyChange, this.saveSettings.bindAsEventListener(this));
+	// this.controller.listen('checkbox-vibration-enabled', Mojo.Event.propertyChange, this.saveSettings.bindAsEventListener(this));
 	this.controller.listen('checkbox-timeline-scrollonupdate', Mojo.Event.propertyChange, this.saveSettings.bindAsEventListener(this));
 
 
@@ -250,9 +257,12 @@ PreferencesAssistant.prototype.cleanup = function(event) {
 	Mojo.Event.stopListening($('clear-cache-button'), Mojo.Event.tap, function(e) {
 		thisA.clearTimelineCache();
 	});
-
-	this.controller.stopListening('checkbox-sound-enabled', Mojo.Event.propertyChange, this.saveSettings);
-	this.controller.stopListening('checkbox-vibration-enabled', Mojo.Event.propertyChange, this.saveSettings);
+	
+	/*
+		temporarily disabling sound and vibration prefs until we can sort out how to tell if sound is off
+	*/
+	// this.controller.stopListening('checkbox-sound-enabled', Mojo.Event.propertyChange, this.saveSettings);
+	// this.controller.stopListening('checkbox-vibration-enabled', Mojo.Event.propertyChange, this.saveSettings);
 	this.controller.stopListening('checkbox-timeline-scrollonupdate', Mojo.Event.propertyChange, this.saveSettings);
 	
 };

@@ -228,7 +228,7 @@ SearchTwitterAssistant.prototype.activate = function(event) {
 		
 		if (new_count > 0 && !thisA.isFullScreen) {
 			thisA.newSearchResultsBanner(new_count, e.data.thisAssistant.lastQuery);
-			thisA.playAudioCue('newmsg');
+			// thisA.playAudioCue('newmsg');
 		} else if (thisA.isFullScreen) {
 			dump("I am not showing a banner! in "+thisA.controller.sceneElement.id);
 		}
@@ -329,8 +329,7 @@ SearchTwitterAssistant.prototype.search = function(e, type) {
 	dump("search called");
 	
 	if (type && type.toLowerCase() !== 'refresh') { // empty unless this is a refresh
-		jQuery('#search-timeline').empty();
-		dump('Emptied #search-timeline');
+		this.clear();
 	} else {
 		sch.markAllAsRead('#search-timeline>div.timeline-entry');
 		dump('Marked all as read in #search-timeline>div.timeline-entry');
@@ -338,21 +337,32 @@ SearchTwitterAssistant.prototype.search = function(e, type) {
 		
 	if (sch.isString(e)) {
 		dump("Searching for:", e);
-		this.lastQuery = sch.fromHTMLSpecialChars(e);
-		this.twit.search(this.lastQuery);
-
+		
 		/*
 			clear any existing results
 		*/
+		if (e !== this.lastQuery) {
+			this.clear()
+		}
+		
+		this.lastQuery = sch.fromHTMLSpecialChars(e);
+		this.twit.search(this.lastQuery);
+
+
 		
 		this.activateSpinner();
 		
 	} else if (e.value) {
 		this.lastQuery = e.value;
 		this.twit.search(e.value);		
+
 		/*
 			clear any existing results
 		*/
+		if (e.value !== this.lastQuery) {
+			this.clear()
+		}
+
 
 		this.activateSpinner();
 		
@@ -367,7 +377,10 @@ SearchTwitterAssistant.prototype.refresh = function() {
 	this.search(this.searchBoxModel.value, 'refresh');
 };
 
-
+SearchTwitterAssistant.prototype.clear = function() {
+	jQuery('#search-timeline').empty();
+	dump('Emptied #search-timeline');
+}
 
 
 SearchTwitterAssistant.prototype.startRefresher = function() {

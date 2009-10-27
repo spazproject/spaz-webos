@@ -197,7 +197,7 @@ MyTimelineAssistant.prototype.activate = function(event) {
 			var new_count = jQuery('#my-timeline div.timeline-entry.new:visible').length;
 			
 			if (new_count > 0) {
-				thisA.playAudioCue('newmsg');
+				// thisA.playAudioCue('newmsg');
 				
 				if (previous_count > 0) {
 					if (sc.app.prefs.get('timeline-scrollonupdate')) {
@@ -213,6 +213,8 @@ MyTimelineAssistant.prototype.activate = function(event) {
 				dump("I am not showing a banner! in "+thisA.controller.sceneElement.id);
 			}
 			thisA.hideInlineSpinner('activity-spinner-my-timeline');
+			
+			thisA.saveTimelineCache();
 		},
 		'data_failure': function(e, error_array) {
 			dump('error_combined_timeline_data - response:');
