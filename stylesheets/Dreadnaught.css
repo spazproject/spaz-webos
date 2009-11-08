@@ -73,6 +73,11 @@ a:link, a:visited, .clickable {
 	-webkit-border-image: url(../images/dreadnaught/palm-group.png) 40 18 14 18;	
 }
 
+.palm-dark .palm-group-spaz .palm-group-title{
+	color:#CCC;
+}
+
+
 .palm-popup-container {
 	color:#111111;
 }
@@ -91,11 +96,10 @@ div.timeline {
 }
 
 div.timeline-entry {
-	padding: 2px 6px 12px;
-/*	border-width: 1px 0 1px 0;*/
-/*	border-style: solid;*/
-/*	border-color: #333;*/
-	border-bottom: 1px solid #222;
+	padding: 2px 6px 6px;
+	margin-bottom:5px;
+	-khtml-border-radius: 10px;
+/*	border-bottom: 1px solid #222;*/
 	clear:both;
 	overflow:hidden;
 	min-height:64px;
@@ -104,51 +108,37 @@ div.timeline-entry {
 	background-image: url('../images/dreadnaught/entry-gradient-bg_short.png');
 	background-repeat: repeat-x;
 	background-color:#101010;
+	background-position: 0px -3px;
 }
 
-	div.timeline-entry:active {	}
+	div.timeline-entry.new {
+		color:#FFFF88;
+	}
 
-	/*
-		the .even and .odd classes are really only used in the timelines, but 
-		they're usedful and probably could be reused elsewhere.
-	*/
-	div.timeline-entry:nth-of-type(odd), .odd {
-/*		background-color: #2b3a3c;*/
-	}
-	div.timeline-entry:nth-of-type(even), .even {
-/*		background-color: #25303f;*/
-	}
-	
+
 	/*
 		Entries that are replies directed at the user
 	*/
-	div.timeline-entry.reply:nth-of-type(odd),
-	div.timeline-entry.reply:nth-of-type(even) {
+	div.timeline-entry.reply {
 		background-color: #2B3235;
 	}
 	/*
 		Entries that are direct messages to the user
 	*/
-	div.timeline-entry.dm:nth-of-type(odd),
-	div.timeline-entry.dm:nth-of-type(even) {
+	div.timeline-entry.dm {
 		background-color: #301616;
 	}
-	
-	div.timeline-entry.new {
+
+	div.timeline-entry.reply:active,
+	div.timeline-entry.dm:active,
+	div.timeline-entry:active {	
+		background-color:#222222;
 		color:#FFFFCC;
-/*		border-bottom:1px solid #FFFFCC;*/
 	}
-		div.timeline-entry.new:first-of-type {
-			color:#FFFFCC;
-/*			border-top:   1px solid #FFFFCC;*/
-/*			border-bottom:1px solid #FFFFCC;*/
-		}
-		div.timeline-entry.new:nth-of-type(odd) {
-/*			background-color: #2b3a3c;*/
-		}
-		div.timeline-entry.new:nth-of-type(even) {
-/*			background-color: #25303f;*/
-		}
+	
+
+	
+
 
 		
 
@@ -157,7 +147,6 @@ div.timeline-entry {
 		text-align:center;
 		width:48px;
 		height:48px;
-/*		border:1px solid #333;*/
 		margin-top:10px;
 		margin-left:3px;
 
@@ -165,10 +154,6 @@ div.timeline-entry {
 		div.timeline-entry .user .user-img, div.timeline-entry .user img {
 			width:48px;
 			height:48px;
-/*			border:0px single #333;*/
-/*			-webkit-box-shadow:0px 1px 5px #333;*/
-/*			background-image:url('../images/dreadnaught/details-image-generic.png');*/
-/*			opacity:.9;*/
 		}
 	
 	div.timeline-entry .status {
@@ -302,8 +287,24 @@ div.timeline-entry {
 /*
 	login scene stuff
 */
+#mojo-scene-start-scene-scroller {
+/*	border:1px solid green;*/
+	background-image: url('../images/dreadnaught/page-bg-darkgreen-start.png');
+}
+
+#mojo-scene-start {
+	position:absolute !important;
+	bottom:10px;
+}
+
 #start-scene {
-	color:#CCC;
+	color:#EEEEEE;
+/*	position:relative !important;*/
+/*	top:0px;*/
+	bottom:0px;
+	vertical-align: bottom;
+/*	border:1px solid yellow;*/
+	height:175px;
 }
 
 #splash-logo {
@@ -913,7 +914,6 @@ div.spaz-row {
 div.inline-spinner {
 	height: 24px;
 	margin:5px 8px;
-
 	padding: 6px 16px 10px;
 	border-width: 0 18px 0 18px;
 	-webkit-border-image: url(../images/dreadnaught/spaz-roundeditem-darker-bg.png) 0 18 0 18;
@@ -934,6 +934,13 @@ div.inline-spinner {
 
 	}
 	
+
+/*
+	Remove row separator background
+*/	
+.palm-dark  .spaz-activity-spinner-container .palm-row {
+	background:none;
+}
 	
 
 div.error_info {

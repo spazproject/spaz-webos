@@ -51,6 +51,8 @@ function MyTimelineAssistant(argFromPusher) {
 
 MyTimelineAssistant.prototype.setup = function() {
 	
+	sch.debug('SETUP');
+	
 	var thisA = this;
 	
 	// this.tweetsModel = [];
@@ -128,25 +130,98 @@ MyTimelineAssistant.prototype.setup = function() {
 	sch.listen(document, 'temp_cache_cleared', this.resetTwitState);
 	
 	this.loadTimelineCache();
+	
+	
+	this.initTimeline();
+	
 };
 
 
 
 MyTimelineAssistant.prototype.activate = function(event) {
-
+	
+	sch.debug('ACTIVATE');
+	
 	var thisA = this; // for closures
 
 	var tts = sc.app.prefs.get('timeline-text-size');
 	this.setTimelineTextSize('#my-timeline', tts);
 	
-	/* put in event handlers here that should only be in effect when this scene is active. For
-	   example, key handlers that are observing the document */
 	this.activateStarted = true;
 	
+
 	/*
 		Prepare for timeline entry taps
 	*/
 	this.bindTimelineEntryTaps('#my-timeline');
+
+	/*
+		start the mytimeline 
+	*/
+	if (this.refreshOnActivate) {
+		this.mytl.start();
+		this.refreshOnActivate = false;
+	}
+
+};
+
+
+MyTimelineAssistant.prototype.deactivate = function(event) {
+	
+	sch.debug('DEACTIVATE');
+	
+	/* remove any event handlers you added in activate and do any other cleanup that should happen before
+	   this scene is popped or another scene is pushed on top */
+	
+	/*
+		stop listening for timeline entry taps
+	*/
+	this.unbindTimelineEntryTaps('#my-timeline');
+	
+	
+
+	
+	
+	/*
+		save timeline cache
+	*/
+	this.saveTimelineCache();
+	
+};
+
+
+
+MyTimelineAssistant.prototype.cleanup = function(event) {
+	
+	sch.dump('CLEANUP');
+	
+	/* this function should do any cleanup needed before the scene is destroyed as 
+	   a result of being popped off the scene stack */
+	
+	// jQuery().unbind('load_from_mytimeline_cache_done');
+
+	this.cleanupTimeline();
+
+	this.stopTrackingStageActiveState();
+	
+	sch.unlisten(document, 'temp_cache_cleared', this.resetTwitState);
+	
+	
+	// this.stopRefresher();
+};
+
+
+/**
+ * initializes the timeline 
+ */
+MyTimelineAssistant.prototype.initTimeline = function() {
+	
+	sch.debug('initializing Timeline in assistant');
+	
+	
+	var thisA = this;
+	
+
 
 	/*
 		set up the public timeline
@@ -238,55 +313,25 @@ MyTimelineAssistant.prototype.activate = function(event) {
 		override the standard removeExtraItems
 	*/
 	this.mytl.removeExtraItems = this.removeExtraItems;
+};
+
+
+
+MyTimelineAssistant.prototype.cleanupTimeline = function() {
 	
-	/*
-		start the mytimeline 
-	*/
-	if (this.refreshOnActivate) {
-		this.mytl.start();
-		this.refreshOnActivate = false;
+	sch.debug('cleaning up Timeline in assistant');
+	
+	var thisA = this;
+	
+	if (this.mytl && this.mytl.cleanup) {
+		/*
+			unbind and stop refresher for public timeline
+		*/
+		this.mytl.cleanup();		
 	}
-
-};
-
-
-MyTimelineAssistant.prototype.deactivate = function(event) {
-	
-	sch.dump('DEACTIVATE');
-	
-	/* remove any event handlers you added in activate and do any other cleanup that should happen before
-	   this scene is popped or another scene is pushed on top */
-	
-	/*
-		stop listening for timeline entry taps
-	*/
-	this.unbindTimelineEntryTaps('#my-timeline');
-
-	/*
-		unbind and stop refresher for public timeline
-	*/
-	this.mytl.cleanup();
-	
-	this.saveTimelineCache();
 	
 };
 
-MyTimelineAssistant.prototype.cleanup = function(event) {
-	
-	sch.dump('CLEANUP');
-	
-	/* this function should do any cleanup needed before the scene is destroyed as 
-	   a result of being popped off the scene stack */
-	
-	// jQuery().unbind('load_from_mytimeline_cache_done');
-
-	this.stopTrackingStageActiveState();
-	
-	sch.unlisten(document, 'temp_cache_cleared', this.resetTwitState);
-	
-	
-	// this.stopRefresher();
-};
 
 
 MyTimelineAssistant.prototype.loadTimelineCache = function() {

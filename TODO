@@ -1,55 +1,7 @@
-## APRIL 15 TASKS
-* Login/splash
-	* Need to listen for Ajax errors on trends (just leave msg in inline spinner)
-	* insert way to pull news to send out updates
-* My Timeline
-* Message Detail
-* User Detail
-	* Need to listen for Ajax errors on user timeline
-* Search
-* Preferences
-
-
-
-* Notifications
-* Posting
-	* Need to listen for Ajax errors in posting
-SpazTwit
-	* Need to be able to lookup and return object for spcific tweet
-* Login/splash
-	* How to map *back* gesture to arbitrary action?
-* My Timeline
-	* Weirdness with spacing in timeline sometimes
-	* items sometimes load out of order (New data will load before cached)
-* Message Detail
-	* reveal IRT instead of just linking to it
-	* add star to favorite button (that reflects status)
-* User Detail
-	* Data timeline should only load on request
-	* add ability to view user's favorites
-* Search
-	* Trends button needs to actually do something
-* Preferences
-	* Twitter API Base URL
-* Notifications
-* Posting
-	* posting a dm returns the last "regular" message and prepends it to the timeline (even if dupe)
-
-SpazTwit
-	* Add generic event raised on Ajax errors
-	* Make sure all methods raise specific error events
-	* add event for "no new messages" so view can do any necessary updates
-	* complete min_age limits on refresh, and "force refresh" functionality
-	* Need to be able to lookup and return object for specific tweet
-
-
 ## UPCOMING FEATURES
 	* Support stocktwits links ($JAVA, $PALM)
 	* User lookup shortcut (from App menu)
-	* Photo posting
-	* Photo taking and posting
 	* Search history and saved searches (use API)
-	* Updating location with GPS services
 	* View User's favs
 	* Ping.fm posting
 	* People Picker widget to integrate with contacts for posting(?)

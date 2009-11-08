@@ -1,4 +1,4 @@
-/*********** Built 2009-09-23 17:25:43 EDT ***********/
+/*********** Built 2009-11-04 17:06:27 EST ***********/
 /*jslint 
 browser: true,
 nomen: false,
@@ -6934,6 +6934,7 @@ var SpazTimeline = function(opts) {
 	 * @function
 	 */
 	this.refresh = function() {
+		sch.debug('Refreshing timeline');
 		thisTL.requestData.call(thisTL);
 	};
 	
@@ -6942,6 +6943,7 @@ var SpazTimeline = function(opts) {
 	 * Again, due to scope issues, we define this here to take advantage of the closure 
 	 */
 	this.onSuccess = function(e) {
+		sch.debug('onSuccess timeline');
 		var data = sc.helpers.getEventData(e);
 		thisTL.data_success.call(thisTL, e, data);
 		thisTL.startRefresher();	
@@ -6951,6 +6953,7 @@ var SpazTimeline = function(opts) {
 	 * Again, due to scope issues, we define this here to take advantage of the closure 
 	 */
 	this.onFailure = function(e) {
+		sch.debug('onFailure timeline');
 		var data = sc.helpers.getEventData(e);
 		thisTL.data_failure.call(thisTL, e, data);
 		thisTL.startRefresher();	
@@ -7007,6 +7010,7 @@ SpazTimeline.prototype._init = function(opts) {
  * call this after initialization 
  */
 SpazTimeline.prototype.start = function() {
+	sch.debug('Starting timeline');
 	this.requestData();
 };
 
@@ -7014,6 +7018,7 @@ SpazTimeline.prototype.start = function() {
  * right now this does the same as start(), but could change in the future 
  */
 SpazTimeline.prototype.refresh = function() {
+	sch.debug('Refreshing timeline (prototype)');
 	this.requestData();
 };
 
@@ -7024,6 +7029,7 @@ SpazTimeline.prototype.refresh = function() {
  * @todo needs to be written to handle async call
  */
 SpazTimeline.prototype.requestData = function() {
+	sch.debug('Requesting data timeline');
 	this.stopRefresher();
 	
 	this.stopListening();
@@ -7037,7 +7043,7 @@ SpazTimeline.prototype.requestData = function() {
 
 SpazTimeline.prototype.startListening = function() {
 	var thisTL = this;
-	sch.dump("Listening for "+thisTL.success_event);
+	sc.helpers.debug("Listening for "+thisTL.success_event);
 	sc.helpers.listen(thisTL.event_target, thisTL.success_event, thisTL.onSuccess);
 	sc.helpers.listen(thisTL.event_target, thisTL.failure_event, thisTL.onFailure);
 };
@@ -7045,19 +7051,26 @@ SpazTimeline.prototype.startListening = function() {
 
 SpazTimeline.prototype.stopListening = function() {
 	var thisTL = this;
+	sc.helpers.debug("Stopping listening for "+thisTL.success_event);
 	sc.helpers.unlisten(thisTL.event_target, thisTL.success_event, thisTL.onSuccess);
 	sc.helpers.unlisten(thisTL.event_target, thisTL.failure_event, thisTL.onFailure);
 };
 
 SpazTimeline.prototype.startRefresher = function() {
 	this.stopRefresher();
+	
+	sc.helpers.debug('Starting refresher');
 	if (this.refresh_time > 1000) { // the minimum refresh is 1000ms. Otherwise we don't auto-refresh
+		sc.helpers.debug('Refresh time is '+this.refresh_time+'ms');
 		this.refresher = setInterval(this.refresh, this.refresh_time);
+	} else {
+		sc.helpers.debug('Not starting refresher; refresh time is '+this.refresh_time+'ms');
 	}
 };
 
 
 SpazTimeline.prototype.stopRefresher = function() {
+	sc.helpers.debug('Stopping refresher');
 	clearInterval(this.refresher);
 };
 
@@ -7071,6 +7084,7 @@ SpazTimeline.prototype.stopRefresher = function() {
  * removing event listeners an stopping the refresher 
  */
 SpazTimeline.prototype.cleanup = function() {
+	sch.debug('Cleaning up timeline');
 	this.stopListening();
 	this.stopRefresher();
 };
@@ -7080,6 +7094,8 @@ SpazTimeline.prototype.cleanup = function() {
  * @param {array} items
  */
 SpazTimeline.prototype.addItems = function(items) {
+	sch.debug('Adding items to timeline');
+	
 	var items_html    = [];
 	var timeline_html = '';
 	
@@ -7102,6 +7118,7 @@ SpazTimeline.prototype.addItems = function(items) {
 
 
 SpazTimeline.prototype.renderItem = function(item, templatefunc) {
+	sch.debug('Rendering item in timeline');
 	
 	var html = templatefunc(item);
 	
@@ -7111,6 +7128,8 @@ SpazTimeline.prototype.renderItem = function(item, templatefunc) {
 
 
 SpazTimeline.prototype.removeExtraItems = function() {
+	
+	sch.debug('Removing extra items in timeline');
 	
 	if (this.add_method === 'append') {
 		var remove_from_top = true;
@@ -7132,6 +7151,9 @@ SpazTimeline.prototype.removeItem = function(selector) {};
  * @return {boolean} 
  */
 SpazTimeline.prototype.itemExists = function(selector) {
+	
+	sch.debug('Checking it item ('+selector+') exists in timeline');
+	
 	var items = this.select(selector);
 	if (items.length>0) {
 		return true;
@@ -7143,11 +7165,15 @@ SpazTimeline.prototype.itemExists = function(selector) {
 
 
 SpazTimeline.prototype.hideItems = function(selector) {
+	sch.debug('Hiding items in timeline');
+	
 	this.filterItems(selector, 'blacklist');
 };
 
 
 SpazTimeline.prototype.showItems = function(selector) {
+	sch.debug('Showing items in timeline');
+	
 	this.filterItems(selector, 'whitelist');
 };
 
@@ -7163,6 +7189,9 @@ SpazTimeline.prototype.filterItems = function(selector, type) {};
  * sorts the elements in the timeline according to the sorting function 
  */
 SpazTimeline.prototype.sortItems = function(selector, sortfunc) {
+	
+	sch.debug('Sorting items in timeline');
+	
 	var items = this.select(selector);
 	items.sort(sortfunc);
 };
@@ -7236,7 +7265,7 @@ var SPAZCORE_SECTION_FOLLOWERSLIST = 'followerslist';
 var SPAZCORE_SERVICE_TWITTER = 'twitter';
 var SPAZCORE_SERVICE_IDENTICA = 'identi.ca';
 var SPAZCORE_SERVICE_CUSTOM = 'custom';
-var SPAZCORE_SERVICEURL_TWITTER = 'https://twitter.com/';
+var SPAZCORE_SERVICEURL_TWITTER = 'https://api.twitter.com/1/';
 var SPAZCORE_SERVICEURL_IDENTICA = 'https://identi.ca/api/';
 
 /**
@@ -8204,7 +8233,8 @@ SpazTwit.prototype._processSearchItem = function(item, section_name) {
 	*/
 	item.user = {
 		'profile_image_url':item.profile_image_url,
-		'screen_name':item.from_user
+		'screen_name':item.from_user,
+		'id':item.from_user_id
 	};
 	
 	/*
@@ -8968,12 +8998,8 @@ SpazTwit.prototype._processUpdateReturn = function(data, finished_event) {
 		this item needs to be added to the friends + home timeline
 		so we can avoid dupes
 	*/
-	/*
-		not processing home timeline yet; we need to pick one or the other
-		to avoid duplicate events firing for updates
-	*/
 	this._processTimeline(SPAZCORE_SECTION_HOME, [data], finished_event);
-	// this._processTimeline(SPAZCORE_SECTION_FRIENDS, [data], finished_event);
+	this._processTimeline(SPAZCORE_SECTION_FRIENDS, [data], finished_event);
 };
 
 SpazTwit.prototype.destroy = function(id) {};
@@ -9314,6 +9340,53 @@ SpazTwit.prototype.removeSavedSearch = function(search_id) {
 
 
 
+
+/**
+ * retrieves the list of lists 
+ */
+SpazTwit.prototype.getLists = function() {};
+
+/**
+ * retrieves a given list timeline
+ * @param {string} list 
+ */
+SpazTwit.prototype.getList = function(list) {};
+
+/**
+ * retrieves a given list's members
+ * @param {string} list 
+ */
+SpazTwit.prototype.getListMembers = function(list) {};
+
+/**
+ * create a new list
+ * @param {string} list  The list name
+ * @param {string} visibility   "public" or "private"
+ */
+SpazTwit.prototype.addList = function(list, visibility) {};
+
+/**
+ * delete a list
+ * @param {string} list  The list name 
+ */
+SpazTwit.prototype.removeList = function(list) {};
+
+/**
+ * add a user to a list
+ */
+SpazTwit.prototype.addUserToList = function(user, list) {};
+
+/**
+ * delete a user from a list 
+ */
+SpazTwit.prototype.removeUserFromList = function(user, list) {};
+
+
+
+
+/**
+ *  
+ */
 SpazTwit.prototype.triggerEvent = function(type, data) {
 	var target = this.opts.event_target || document;
 	data   = data || null;

@@ -24,8 +24,8 @@ function AppAssistant(appController) {
 			var obj = Mojo.parseJSON(str);
 			return obj;
 		} catch(e) {
-			dump('There was a problem decoding the JSON string');
-			dump('Here is the JSON string: '+str);
+			sch.warn('There was a problem decoding the JSON string');
+			sch.warn('Here is the JSON string: '+str);
 			return null;
 		}
 		
@@ -64,8 +64,8 @@ AppAssistant.prototype.handleLaunch = function(launchParams) {
 	Mojo.Log.info("Logging from AppAssistant handleLaunch");
 	var thisA = this;
 
-	dump("Launch Parameters:");
-	dump(launchParams);
+	Mojo.Log.info("Launch Parameters:");
+	Mojo.Log.info(launchParams);
 
 	Spaz.closeDashboard();
 
@@ -108,7 +108,7 @@ AppAssistant.prototype.handleLaunch = function(launchParams) {
  */
 AppAssistant.prototype.handleCommand = function(event){
 	
-	dump(event.command);
+	sch.debug(event.command);
 	
 	if (event.type == Mojo.Event.command) {
 		switch (event.command) {
