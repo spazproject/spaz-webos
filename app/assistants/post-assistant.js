@@ -659,11 +659,11 @@ PostAssistant.prototype.reportFailedPost = function(error_obj) {
 	this.controller.modelChanged(this.postTextFieldModel);
 	
 	var err_msg = $L("There was a problem posting your status");
-	this.sceneAssistant.displayErrorInfo(err_msg, error_obj);
+	this.displayErrorInfo(err_msg, error_obj);
 };
 
 PostAssistant.prototype.deactivateSpinner = function() {
-	this.buttonWidget = this.controller.get('post-send-button');
+	this.buttonWidget = jQuery('#post-send-button').get(0);
 	this.buttonWidget.mojo.deactivate();
 };
 
