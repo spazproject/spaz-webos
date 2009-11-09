@@ -973,6 +973,24 @@ scene_helpers.addCommonSceneMethods = function(assistant) {
 	};
 
 
+	/**
+	 *  
+	 */
+	assistant.isTopmostScene = function() {
+		// console.log(this.controller);
+		
+		
+		var topmost  = this.controller.stageController.topScene();
+
+		// console.log(topmost);
+		
+		var is_topmost = (topmost === this.controller);
+		
+		sch.debug('is_topmost:'+is_topmost);
+		
+		return is_topmost;
+	};
+
 
 	assistant.openInBrowser = function(url) {
 		this.controller.serviceRequest("palm://com.palm.applicationManager", {

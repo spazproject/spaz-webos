@@ -224,7 +224,7 @@ MyTimelineAssistant.prototype.initTimeline = function() {
 
 
 	/*
-		set up the public timeline
+		set up the combined "my" timeline
 	*/
 	this.mytl   = new SpazTimeline({
 		'timeline_container_selector' :'#my-timeline',
@@ -238,7 +238,9 @@ MyTimelineAssistant.prototype.initTimeline = function() {
 		'max_items':100,
 
 		'request_data': function() {
-			sc.helpers.markAllAsRead('#my-timeline div.timeline-entry');
+			if (thisA.isTopmostScene()) {
+				sc.helpers.markAllAsRead('#my-timeline div.timeline-entry');
+			}
 			thisA.getData();
 		},
 		'data_success': function(e, data) {
@@ -276,8 +278,10 @@ MyTimelineAssistant.prototype.initTimeline = function() {
 				
 				if (previous_count > 0) {
 					if (sc.app.prefs.get('timeline-scrollonupdate')) {
-						sch.dump("Scrolling to New because previous_count > 0 (it wasn't empty before we added new stuff)");
-						thisA.scrollToNew();
+						if (thisA.isTopmostScene()) {
+							sch.dump("Scrolling to New because previous_count > 0 (it wasn't empty before we added new stuff)");
+							thisA.scrollToNew();
+						}
 					}
 				}
 			}
@@ -395,7 +399,9 @@ MyTimelineAssistant.prototype.getData = function() {
 	
 	var thisA = this;
 	
-	sch.markAllAsRead('#my-timeline div.timeline-entry');
+	if (thisA.isTopmostScene()) {
+		sc.helpers.markAllAsRead('#my-timeline div.timeline-entry');
+	}
 	
 	function getCombinedTimeline(statusobj) {
 		

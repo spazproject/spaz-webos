@@ -232,9 +232,9 @@ PostAssistant.prototype._updateCharCount = function() {
 
 	function _updateCharCountNow() {
 		var numchars  = thisA.postTextFieldModel.value.length;
-		var charcount = 140 - numchars;
-		document.getElementById('post-panel-counter-number').innerHTML = charcount.toString();
-		if (charcount < 0) {
+		var charleft = 140 - numchars;
+		document.getElementById('post-panel-counter-number').innerHTML = charleft.toString();
+		if (charleft < 0) {
 			jQuery('#post-panel-counter', thisA.controller.getSceneScroller()).addClass('over-limit');
 			/*
 				disable post send button
@@ -424,7 +424,7 @@ PostAssistant.prototype.sendPost = function(event) {
 		return;
 	}
 	
-	if (status.length > 0) {
+	if (status.length > 0 && status.length <= 140) {
 		var in_reply_to = parseInt(jQuery('#post-panel-irt-message', this.controller.getSceneScroller()).attr('data-status-id'), 10);
 		
 		if (in_reply_to > 0) {
@@ -435,7 +435,7 @@ PostAssistant.prototype.sendPost = function(event) {
 
 		this.postTextFieldModel.disabled = true;
 		this.controller.modelChanged(this.postTextFieldModel);
-	} else { // don't post if length < 0
+	} else { // don't post if length < 0 or > 140
 		this.deactivateSpinner();
 	}
 	

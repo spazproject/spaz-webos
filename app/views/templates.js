@@ -4,8 +4,6 @@
 
 sc.app.tpl = new SpazTemplate();
 
-console.log(sc.app.tpl);
-
 sc.app.tpl.addTemplateMethod('message-detail', function(d) {
 	var html = '', thumbHTML = '';
 
