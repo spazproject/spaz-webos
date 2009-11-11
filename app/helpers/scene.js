@@ -166,6 +166,17 @@ scene_helpers.addCommonSceneMethods = function(assistant) {
 				case 'refresh':
 					this.refresh(); // need to have a "refresh" method defined for each scene asst
 					break;
+					
+				/*
+					This is only in the search-twitter-assistant scene
+				*/
+				case 'save-search':
+					if (this.isSavedSearch === false) {
+						this.saveSearch(this.searchBoxModel.value);
+					} else {
+						this.removeSearch(this.searchBoxModel.value);
+					}
+					break;
 
 			}
 		}
@@ -454,8 +465,14 @@ scene_helpers.addCommonSceneMethods = function(assistant) {
 	/**
 	 * 
 	 */
-	assistant.searchFor = function(terms, scenetype) {
-
+	assistant.searchFor = function(terms, scenetype, saved_id) {
+		
+		if (!saved_id) {
+			saved_id = null;
+		} else {
+			saved_id = parseInt(saved_id);
+		}
+		
 		var lightweight = false;
 		if (scenetype === 'lightweight') {
 			lightweight = true;
@@ -470,7 +487,8 @@ scene_helpers.addCommonSceneMethods = function(assistant) {
 			
 		Mojo.Controller.stageController.pushScene("search-twitter", {
 			'searchterm': terms,
-			'lightweight': lightweight
+			'lightweight': lightweight,
+			'saved_id': saved_id
 		});
 	};
 

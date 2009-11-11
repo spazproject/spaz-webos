@@ -24,6 +24,14 @@ function SearchTwitterAssistant(args) {
 		this.lightweight = true;
 	}
 	
+	if (args && args.saved_id > 0) {
+		this.isSavedSearch = true;
+		this.saved_id = args.saved_id;
+	} else {
+		this.isSavedSearch = false;
+		this.saved_id = null;
+	}
+	
 	/*
 		this property will hold the setInterval return
 	*/
@@ -47,6 +55,8 @@ SearchTwitterAssistant.prototype.setup = function() {
 	
 	this.trackStageActiveState();
 	
+
+	
 	/*
 		view and command menus
 	*/
@@ -60,9 +70,13 @@ SearchTwitterAssistant.prototype.setup = function() {
 				}
 
 			],
-			cmdMenuItems: [
+			/*
+				we're assigning this to a value here so we can update it later
+			*/
+			cmdMenuItems: this.cmdMenuItems = [
 				{label:$L('Compose'),  icon:'compose', command:'compose', shortcut:'N'},
 				{},
+				{label:$L('Save search'), iconPath:'images/theme/menu-icon-favorite-outline.png', command:'save-search', shortcut:'S'},
 				{label:$L('Refresh'),   icon:'sync', command:'refresh', shortcut:'R'}					
 			]
 		});
@@ -127,6 +141,12 @@ SearchTwitterAssistant.prototype.setup = function() {
 	this.controller.setupWidget('submit-search-button', this.searchButtonAttributes, this.searchButtonModel);
 
 	// this.refresh();
+	
+	if (this.isSavedSearch) {
+		this.fillStar(true);
+	} else {
+		this.fillStar(false);
+	}
 
 };
 
@@ -427,6 +447,48 @@ SearchTwitterAssistant.prototype.deactivateSpinner = function() {
 	this.buttonWidget.mojo.deactivate();
 };
 
+SearchTwitterAssistant.prototype.saveSearch = function(searchstr) {
+	
+	var thisA = this;
+
+	jQuery().bind('create_saved_search_succeeded', {thisAssistant:this}, function(e, resp) {
+		thisA.isSavedSearch = true;
+		thisA.saved_id = resp.id;
+		thisA.showBanner('Saved search '+searchstr, 'saved_search');
+		thisA.fillStar(true);
+		thisA.twit.getSavedSearches(); // this will force a refresh on any listeners
+		jQuery().unbind('create_saved_search_succeeded');
+	});
+	
+	this.twit.addSavedSearch(searchstr);
+	
+};
 
 
+SearchTwitterAssistant.prototype.removeSearch = function(searchstr) {
+	
+	var thisA = this;
+
+	jQuery().bind('destroy_saved_search_succeeded', {thisAssistant:this}, function(e, resp) {
+		thisA.isSavedSearch = false;
+		thisA.saved_id = null;
+		thisA.showBanner('Removed saved search '+searchstr, 'saved_search');
+		thisA.fillStar(false);
+		thisA.twit.getSavedSearches(); // this will force a refresh on any listeners
+		jQuery().unbind('destroy_saved_search_succeeded');
+	});
+
+	alert(thisA.saved_id);
+	this.twit.removeSavedSearch(thisA.saved_id);
+	
+};
+
+SearchTwitterAssistant.prototype.fillStar = function(fill) {
+	if (fill) {
+		this.cmdMenuModel.items[2].iconPath = 'images/theme/menu-icon-favorite.png';
+	} else {
+		this.cmdMenuModel.items[2].iconPath = 'images/theme/menu-icon-favorite-outline.png';
+	}
+	this.controller.modelChanged(this.cmdMenuModel);
+};
 

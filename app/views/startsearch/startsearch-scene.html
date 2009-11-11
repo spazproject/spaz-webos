@@ -13,6 +13,9 @@
 	
 	<div id="search-accordion"> 
 
+		<!--
+			Search panel
+		-->
 	    <table class="palm-divider collapsible" x-mojo-tap-highlight="momentary">
 			<tbody>
 				<tr>
@@ -26,7 +29,7 @@
 		</table> 
 	    <div class="pane">
 			<div class="palm-group palm-group-spaz">
-				<div class="palm-group-title" id="search-toggle" x-mojo-loc=''>Search Twitter</div>
+				<div class="palm-group-title" id="search-toggle" x-mojo-loc=''>Search</div>
 				<div class="palm-list" id="search-panel">
 			   		<div class="palm-row single">
 						<div class="palm-row-wrapper textfield-group" x-mojo-focus-highlight="true">
@@ -38,7 +41,7 @@
 							</div>
 						</div>
 					</div>
-
+					
 			   		<div class="palm-row single">
 						<button class="palm-button" id="search-button">Search</button>
 					</div>
@@ -46,6 +49,39 @@
 			</div>
 		</div> 
 
+		<!--
+			Saved searches
+			* this is hidden initially because we only show it if logged-in
+		-->
+		<div id="saved-searches-container" style="display:none">
+		    <table class="palm-divider collapsible" x-mojo-tap-highlight="momentary">
+				<tbody>
+					<tr>
+						<td class="left"></td>
+						<td class="label"> Saved Searches </td>
+						<td class="line" width="100%"></td>
+						<td><div class="palm-arrow-closed arrow_button"></div></td>
+						<td class="right"></td>
+					</tr>
+				</tbody>
+			</table> 
+		    <div class="pane">
+				<div class="palm-group palm-group-spaz">
+					<div class="palm-group-title" id="search-toggle" x-mojo-loc=''>Your Saved Searches</div>
+					<div class="palm-list">
+						<div id="searches-list"></div>
+						<div id="searches-spinner-container"></div>
+						<div class="palm-row single">
+							<div x-mojo-element="Button" id='reload-searches-button'></div>
+						</div>
+					</div>
+				</div>
+			</div> 
+		</div>
+
+		<!--
+			Trends panel
+		-->
 	    <table class="palm-divider collapsible" x-mojo-tap-highlight="momentary">
 			<tbody>
 				<tr>
@@ -70,6 +106,10 @@
 			</div>
 		</div> 
 
+
+		<!--
+			Public timeline
+		-->
 	    <table class="palm-divider collapsible" x-mojo-tap-highlight="momentary">
 			<tbody>
 				<tr>

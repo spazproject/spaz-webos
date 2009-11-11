@@ -1,4 +1,4 @@
-/*********** Built 2009-11-07 23:06:06 EST ***********/
+/*********** Built 2009-11-10 15:55:35 EST ***********/
 /*jslint 
 browser: true,
 nomen: false,
@@ -4880,7 +4880,7 @@ sc.helpers.note = function(obj) {
  * helper to send a warn dump 
  */
 sc.helpers.warn = function(obj) {
-	sc.helpers.dump(obj, SPAZCORE_DUMPLEVEL_WARN);
+	sc.helpers.dump(obj, SPAZCORE_DUMPLEVEL_WARNING);
 };
 
 /**
@@ -7606,15 +7606,15 @@ SpazTwit.prototype.getAPIURL = function(key, urldata) {
     urls.ratelimit_status   = "account/rate_limit_status.json";
 	urls.update_profile		= "account/update_profile.json";
 
+	urls.saved_searches		= "saved_searches.json";
+	
 	// search
 	if (this.baseurl === SPAZCORE_SERVICEURL_TWITTER) {
 		urls.search				= "http://search.twitter.com/search.json";
 		urls.trends				= "http://search.twitter.com/trends.json";
-		urls.saved_searches		= "http://search.twitter.com/saved_searches.json";
 	} else {
 		urls.search				= "search.json";
 		urls.trends				= "trends.json";
-		urls.saved_searches		= "saved_searches.json";
 	}
 
     // misc
@@ -8691,9 +8691,11 @@ SpazTwit.prototype._callMethod = function(opts) {
 	    },
 	    'error':function(xhr, msg, exc) {
 			sc.helpers.dump(opts.url + ' error:'+msg);
+			sc.helpers.debug("response: "+data);
 	        if (xhr) {
 				if (!xhr.readyState < 4) {
 					sc.helpers.dump("Error:"+xhr.status+" from "+opts['url']);
+					sc.helpers.dump("Response: "+xhr.responseText);
 					if (xhr.responseText) {
 						try {
 							var data = sc.helpers.deJSON(xhr.responseText);
@@ -8721,6 +8723,7 @@ SpazTwit.prototype._callMethod = function(opts) {
 	    },
 	    'success':function(data) {
 			sc.helpers.dump(opts.url + ' success');
+			sc.helpers.debug("response: "+data);
 			data = sc.helpers.deJSON(data);
 			if (opts.process_callback) {
 				/*
@@ -9326,8 +9329,12 @@ SpazTwit.prototype.removeSavedSearch = function(search_id) {
 		'password':this.password,
 		'success_event_type':'destroy_saved_search_succeeded',
 		'failure_event_type':'destroy_saved_search_failed',
+		'data':{'id':search_id},
 		'method':'POST'
 	};
+	
+	sch.debug('opts for removeSavedSearch');
+	sch.debug(opts);
 
 	/*
 		Perform a request and get true or false back
