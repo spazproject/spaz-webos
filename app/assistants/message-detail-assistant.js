@@ -41,6 +41,9 @@ MessageDetailAssistant.prototype.setup = function() {
 				{
 					items: [
 						{label:$L('Compose'),  icon:'compose', command:'compose', shortcut:'N'},
+						{label:$L('Reply'),  icon:'compose', command:'reply', shortcut:'R'},
+						{label:$L('Forward'),  icon:'compose', command:'compose', shortcut:'N'},
+						{label:$L('Favorite'),  icon:'compose', command:'compose', shortcut:'N'},
 						{}
 					]
 				}

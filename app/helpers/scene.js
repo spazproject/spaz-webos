@@ -850,7 +850,25 @@ scene_helpers.addCommonSceneMethods = function(assistant) {
 	
 	
 	assistant.bindTimelineEntryTaps = function(tl_selector) {
+		var thisA = this;
+		
+		jQuery(tl_selector+' div.timeline-entry', this.scroller).live(Mojo.Event.hold, function(e) {
+			/*
+				Set this so we don't fire a tap after firing the hold
+			*/
+			e.target.holdFired = true;
+		});
+		
 		jQuery(tl_selector+' div.timeline-entry', this.scroller).live(Mojo.Event.tap, function(e) {
+			
+			/*
+				Check to see if a hold already fired. If so, don't do *anything*
+			*/
+			if (e.target.holdFired) {
+				e.target.holdFired = false;
+				return;
+			}
+			
 			var jqtarget = jQuery(e.target);
 
 			e.stopImmediatePropagation();
@@ -903,6 +921,7 @@ scene_helpers.addCommonSceneMethods = function(assistant) {
 	};
 	
 	assistant.unbindTimelineEntryTaps = function(tl_selector) {
+		jQuery(tl_selector+' div.timeline-entry', this.scroller).die(Mojo.Event.hold);
 		jQuery(tl_selector+' div.timeline-entry', this.scroller).die(Mojo.Event.tap);
 	};
 	

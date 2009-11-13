@@ -291,7 +291,7 @@ var NewAccountDialogAssistant = Class.create({
 				choices: [
 					{label:$L('Twitter'), value:SPAZCORE_SERVICE_TWITTER}, 
 					{label:$L('Identi.ca'), value:SPAZCORE_SERVICE_IDENTICA},
-					{label:$L('Laconi.ca/Custom'), value:SPAZCORE_SERVICE_CUSTOM}
+					{label:$L('StatusNet/Custom'), value:SPAZCORE_SERVICE_CUSTOM}
 				],
 				modelProperty:'type'
 			},
