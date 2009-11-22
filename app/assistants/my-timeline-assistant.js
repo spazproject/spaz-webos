@@ -266,14 +266,25 @@ MyTimelineAssistant.prototype.initTimeline = function() {
 			thisA.mytl.addItems(no_dupes);
 			
 			sc.helpers.updateRelativeTimes('#my-timeline div.timeline-entry span.date', 'data-created_at');
+			
 			/*
 				re-apply filtering
 			*/
 			thisA.filterTimeline();
 			
-			var new_count = jQuery('#my-timeline div.timeline-entry.new:visible').length;
+			/*
+				Get new counts
+			*/
+			var new_count         = jQuery('#my-timeline div.timeline-entry.new:visible').length;
+			var new_mention_count = jQuery('#my-timeline div.timeline-entry.new.reply:visible').length;
+			var new_dm_count      = jQuery('#my-timeline div.timeline-entry.new.dm:visible').length;
 			
+			/*
+				Scroll to the first new if there are new messages
+				and there were already some items in the timeline
+			*/
 			if (new_count > 0) {
+
 				// thisA.playAudioCue('newmsg');
 				
 				if (previous_count > 0) {
@@ -286,11 +297,25 @@ MyTimelineAssistant.prototype.initTimeline = function() {
 				}
 			}
 			
-			if (new_count > 0 && !thisA.isFullScreen) {
-				thisA.newMsgBanner(new_count);
-			} else if (thisA.isFullScreen) {
-				dump("I am not showing a banner! in "+thisA.controller.sceneElement.id);
+			/*
+				if we're not fullscreen, show a dashboard notification of new count(s)
+			*/
+			if (!thisA.isFullScreen) {
+				
+				if (new_count > 0 && sc.app.prefs.get('notify-newmessages')) {
+					thisA.newMsgBanner(new_count, 'newMessages');
+				}
+				if (new_mention_count > 0 && sc.app.prefs.get('notify-mentions')) {
+					thisA.newMsgBanner(new_mention_count, 'newMentions');
+				}
+				if (new_dm_count > 0 && sc.app.prefs.get('notify-dms')) {
+					thisA.newMsgBanner(new_dm_count, 'newDirectMessages');
+				}
+				
+			} else {
+				sch.dump("I am not showing a banner! in "+thisA.controller.sceneElement.id);
 			}
+			
 			thisA.hideInlineSpinner('activity-spinner-my-timeline');
 			
 			thisA.saveTimelineCache();

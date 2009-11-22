@@ -19,6 +19,11 @@ var default_preferences = {
 
     'network-autoadjustrefreshinterval': true,
 
+	'notify-newmessages':true,
+	'notify-mentions':true,
+	'notify-dms':true,
+	'notify-searchresults':true,
+
     'timeline-scrollonupdate': true,
     'timeline-maxentries': 100,
     'timeline-maxentries-dm': 10, 

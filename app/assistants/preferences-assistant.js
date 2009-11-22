@@ -33,7 +33,7 @@ PreferencesAssistant.prototype.setup = function() {
 	*/
 	this.model = {
 		'sound-enabled': 			sc.app.prefs.get('sound-enabled'),
-		'vibration-enabled': 			sc.app.prefs.get('vibration-enabled'),
+		'vibration-enabled': 		sc.app.prefs.get('vibration-enabled'),
 		'timeline-scrollonupdate': 	sc.app.prefs.get('timeline-scrollonupdate'),
 		'twitter-api-base-url': 	sc.app.prefs.get('twitter-api-base-url'),
 		'network-refreshinterval': 	sc.app.prefs.get('network-refreshinterval'),
@@ -42,7 +42,11 @@ PreferencesAssistant.prototype.setup = function() {
 		'timeline-replies-getcount':sc.app.prefs.get('timeline-replies-getcount'),
 		'timeline-dm-getcount':     sc.app.prefs.get('timeline-dm-getcount'),
 		'timeline-text-size':       sc.app.prefs.get('timeline-text-size'),
-		'image-uploader':           sc.app.prefs.get('image-uploader')
+		'image-uploader':           sc.app.prefs.get('image-uploader'),
+		'notify-newmessages':       sc.app.prefs.get('notify-newmessages'),
+		'notify-mentions':          sc.app.prefs.get('notify-mentions'),
+		'notify-dms':               sc.app.prefs.get('notify-dms'),
+		'notify-searchresults':     sc.app.prefs.get('notify-searchresults')
 	};
 	
 	
@@ -78,12 +82,53 @@ PreferencesAssistant.prototype.setup = function() {
 		this.model
 	);
 	
+
+	/*
+		Notification preferences
+	*/
+	this.controller.setupWidget("checkbox-notify-newmessages",
+		this.soundEnabledAtts = {
+			fieldName: 'notify-newmessages',
+			modelProperty: 'notify-newmessages',
+			disabledProperty: 'notify-newmessages_disabled'
+		},
+		this.model
+	);
+	this.controller.setupWidget("checkbox-notify-mentions",
+		this.soundEnabledAtts = {
+			fieldName: 'notify-mentions',
+			modelProperty: 'notify-mentions',
+			disabledProperty: 'notify-mentions_disabled'
+		},
+		this.model
+	);
+	this.controller.setupWidget("checkbox-notify-dms",
+		this.soundEnabledAtts = {
+			fieldName: 'notify-dms',
+			modelProperty: 'notify-dms',
+			disabledProperty: 'notify-dms_disabled'
+		},
+		this.model
+	);
+	this.controller.setupWidget("checkbox-notify-searchresults",
+		this.soundEnabledAtts = {
+			fieldName: 'notify-searchresults',
+			modelProperty: 'notify-searchresults',
+			disabledProperty: 'notify-searchresults_disabled'
+		},
+		this.model
+	);
+	
 	/*
 		temporarily disabling sound and vibration prefs until we can sort out how to tell if sound is off
 	*/
 	// this.controller.listen('checkbox-sound-enabled', Mojo.Event.propertyChange, this.saveSettings.bindAsEventListener(this));
 	// this.controller.listen('checkbox-vibration-enabled', Mojo.Event.propertyChange, this.saveSettings.bindAsEventListener(this));
 	this.controller.listen('checkbox-timeline-scrollonupdate', Mojo.Event.propertyChange, this.saveSettings.bindAsEventListener(this));
+	this.controller.listen('checkbox-notify-newmessages', Mojo.Event.propertyChange, this.saveSettings.bindAsEventListener(this));
+	this.controller.listen('checkbox-notify-mentions', Mojo.Event.propertyChange, this.saveSettings.bindAsEventListener(this));
+	this.controller.listen('checkbox-notify-dms', Mojo.Event.propertyChange, this.saveSettings.bindAsEventListener(this));
+	this.controller.listen('checkbox-notify-searchresults', Mojo.Event.propertyChange, this.saveSettings.bindAsEventListener(this));
 
 
 	/*
@@ -264,5 +309,9 @@ PreferencesAssistant.prototype.cleanup = function(event) {
 	// this.controller.stopListening('checkbox-sound-enabled', Mojo.Event.propertyChange, this.saveSettings);
 	// this.controller.stopListening('checkbox-vibration-enabled', Mojo.Event.propertyChange, this.saveSettings);
 	this.controller.stopListening('checkbox-timeline-scrollonupdate', Mojo.Event.propertyChange, this.saveSettings);
+	this.controller.stopListening('checkbox-timeline-newmessages', Mojo.Event.propertyChange, this.saveSettings);
+	this.controller.stopListening('checkbox-timeline-mentions', Mojo.Event.propertyChange, this.saveSettings);
+	this.controller.stopListening('checkbox-timeline-dms', Mojo.Event.propertyChange, this.saveSettings);
+	this.controller.stopListening('checkbox-timeline-searchresults', Mojo.Event.propertyChange, this.saveSettings);
 	
 };

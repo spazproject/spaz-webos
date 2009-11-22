@@ -32,22 +32,17 @@ MessageDetailAssistant.prototype.setup = function() {
 			viewMenuItems: [
 				{
 					items:[
-						{label: $L("Message Details"), command:'scroll-top', 'class':"palm-header left", width:320}				
+						{label: $L("Message Details"), command:'scroll-top', 'class':"palm-header left", width:320}		
 					]
 				}
 
 			],
 			cmdMenuItems:[
-				{
-					items: [
-						{label:$L('Compose'),  icon:'compose', command:'compose', shortcut:'N'},
-						{label:$L('Reply'),  icon:'compose', command:'reply', shortcut:'R'},
-						{label:$L('Forward'),  icon:'compose', command:'compose', shortcut:'N'},
-						{label:$L('Favorite'),  icon:'compose', command:'compose', shortcut:'N'},
-						{}
-					]
-				}
-
+				{label:$L('Compose'),  icon:'compose', command:'compose', shortcut:'N'},
+				// {},
+				// {label:$L('Reply'),  icon:'reply', command:'reply', shortcut:'R'},
+				// {label:$L('Forward'),  icon:'forward-email', command:'retweet', shortcut:'N'},
+				// {label:$L('Favorite'),  iconPath:'images/theme/menu-icon-favorite-outline.png', command:'compose', shortcut:'N'}
 			]
 		});
 		

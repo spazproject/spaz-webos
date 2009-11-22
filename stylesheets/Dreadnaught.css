@@ -423,22 +423,45 @@ div.spaz-drawer {
 	background-repeat: repeat-x;
 	background-color:#2B3235;
 	min-height:480px;
-	padding:8px 0px;
+	padding:0px 0px;
 	-khtml-border-radius:10px;
 }
 
 
 #message-detail {
-	padding: 10px 0px;
+	padding: 0px 0px;
 	clear:both;
 	overflow:hidden;
 /*	color:#000;*/
 /*	background-color: rgba(50,50,14,.9) !important;*/
 }
 
+	#message-detail div.user {
+		display:block;
+		clear:both;
+		overflow:visible;
+		background-color:rgba(0,0,0,.5);
+		padding:8px;
+		min-height:48px;
+		-khtml-border-top-left-radius: 10px;
+		-khtml-border-top-right-radius:10px;
+		border-bottom:2px solid #000000;
+	}
+
+	#message-detail div.user .screen_name {
+		margin-left: 56px;
+		margin-top:  0px;
+		font-size:14pt;
+		font-weight:bold;
+	}
+	#message-detail div.user .real_name {
+		margin-left: 56px;
+		font-size:12pt;
+		font-weight:normal;
+	}
+
 	#message-detail-image {
 		float:left;
-		margin-left:8px;
 		width:48px;
 		height:48px;
 /*		border:1px solid #333;*/
@@ -448,14 +471,13 @@ div.spaz-drawer {
 		display:block;
 	}
 	
+	
+	
 	#message-detail .status {
-		margin-left: 64px;
-		margin-right:10px;
+		margin-left: 8px;
+		margin-right:8px;
+		clear:both;
 	}
-		#message-detail .status .screen_name {
-			font-size:14pt;
-			font-weight:bold;
-		}
 		#message-detail .status .thumbnails {
 			margin:5px 0 0;
 /*			padding:7px;*/
@@ -475,10 +497,12 @@ div.spaz-drawer {
 		}
 
 		#message-detail .status .meta {
+/*			background-color:rgba(0,0,0,.5);*/
+/*			padding:3px 0px;*/
+/*			-khtml-border-radius: 1em;*/
 			font-size:11pt;
-			margin-top: .3em;
-			padding-top:.3em;
-			border-top:  1px solid #999999;
+			margin: .7em 0;
+			color:#CCCCCC;
 			font-family:"Coconut-Medium";
 		}
 		
@@ -500,13 +524,13 @@ div.spaz-drawer {
 /*					-webkit-border-image: url(../images/dreadnaught/text-link-bg-active.png) 0 7 0 7;*/
 				}
 
-			#message-detail .status .meta .protected-icon {
-				display:block;
-				margin:5px 0px;
+			#message-detail .protected-icon {
+				display:inline-block;
+				margin:0px 0px;
 				padding-left:18px;
 				background-image: url(../images/dreadnaught/tiny-lock-icon.png);
 				background-repeat: no-repeat;
-				background-position: 0px 2px;
+				background-position: 0px 6px;
 			}
 
 

@@ -16,19 +16,26 @@ sc.app.tpl.addTemplateMethod('message-detail', function(d) {
 		thumbHTML += '</div>';
 	}
 	
-	html += '<div data-user-screen_name="'+d.user.screen_name+'" data-user-id="'+d.user.id+'" data-status-id="'+d.id+'">'
-	+ ' <div class="rounded-user-image" style="background-image:url('+d.user.profile_image_url+')" id="message-detail-image" data-screen_name="'+d.user.screen_name+'" title="View user\'s profile"></div>'
+	html += ''
+	+ '	<div class="user" data-user-screen_name="'+d.user.screen_name+'" data-user-id="'+d.user.id+'" data-status-id="'+d.id+'">'
+	+ '		<div class="rounded-user-image" style="background-image:url('+d.user.profile_image_url+')" id="message-detail-image" data-screen_name="'+d.user.screen_name+'" title="View user\'s profile"></div>'
+	+ '		<div class="screen_name" data-screen_name="'+d.user.screen_name+'">'
+	+ 			d.user.screen_name;
+	if (d.user.protected) {
+		html += '			<div class="protected-icon">&nbsp;</div>';
+	}
+	html += '	</div>';
+	if (d.user.name && d.user.name !== d.user.screen_name) {
+		html += '		<div class="real_name" data-screen_name="'+d.user.screen_name+'">'+d.user.name+'</div>';
+	}
+	html += '	</div>'
 	+ '	<div class="status">'
-	+ '		<div class="screen_name" data-screen_name="'+d.user.screen_name+'">'+d.user.screen_name+'</div>'
 	+ '		'+thumbHTML
 	+ '		<div class="text">'+d.text+'</div>'
 	+ '		<div class="meta" data-status-id="'+d.id+'">'
-	+ '			<div class="date"><strong>Posted</strong> <span class="date-relative" data-created_at="'+d.created_at+'">'+sch.getRelativeTime(d.created_at)+'</span> <strong>from</strong> <span class="source-link">'+d.source+'</span></div>';
+	+ '			<div class="date"><strong>Posted</strong> <span class="date-relative" data-created_at="'+d.created_at+'">'+sch.getRelativeTime(d.created_at)+'</span> from <span class="source-link">'+d.source+'</span></div>';
 	if (d.in_reply_to_status_id) {
 		html += '			<div class="in-reply-to"><strong>In-reply-to</strong>: <span class="in-reply-to-link clickable" data-irt-status-id="'+d.in_reply_to_status_id+'">@'+d.in_reply_to_screen_name+'</span></div>';
-	}
-	if (d.user.protected) {
-		html += '			<div class="protected-icon">Protected user</div>';
 	}
 	html += '		</div>';
 	html += '	</div>';

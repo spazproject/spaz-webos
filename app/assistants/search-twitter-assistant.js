@@ -135,7 +135,7 @@ SearchTwitterAssistant.prototype.setup = function() {
 	};
 	this.searchButtonModel = {
 		buttonLabel : "Search",
-		buttonClass: 'Primary'
+		buttonClass : 'Primary'
 	};
 	
 	this.controller.setupWidget('submit-search-button', this.searchButtonAttributes, this.searchButtonModel);
@@ -242,11 +242,16 @@ SearchTwitterAssistant.prototype.activate = function(event) {
 			Update relative dates
 		*/
 		sch.updateRelativeTimes('#search-timeline>div.timeline-entry .meta>.date', 'data-created_at');
-		// e.data.thisAssistant.hideInlineSpinner('#search-spinner-container');
 		e.data.thisAssistant.deactivateSpinner();
 		e.data.thisAssistant.startRefresher();
 		
-		if (new_count > 0 && !thisA.isFullScreen) {
+		/*
+			show a banner if need be
+		*/
+		alert(new_count);
+		alert(thisA.isFullScreen);
+		alert(sc.app.prefs.get('notify-searchresults'));
+		if (new_count > 0 && !thisA.isFullScreen && sc.app.prefs.get('notify-searchresults')) {
 			thisA.newSearchResultsBanner(new_count, e.data.thisAssistant.lastQuery);
 			// thisA.playAudioCue('newmsg');
 		} else if (thisA.isFullScreen) {

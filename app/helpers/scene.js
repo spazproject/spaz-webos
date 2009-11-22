@@ -531,7 +531,9 @@ scene_helpers.addCommonSceneMethods = function(assistant) {
 		jQuery('#'+id).get(0).mojo.start();
 	};
 
-
+	/**
+	 * stops and hides a spinner 
+	 */
 	assistant.hideInlineSpinner = function(id) {
 		jQuery('#'+id).get(0).mojo.stop();
 		jQuery('#'+id+'-container').hide();
@@ -580,26 +582,58 @@ scene_helpers.addCommonSceneMethods = function(assistant) {
 	};
 
 	
-	
-	assistant.newMsgBanner = function(count) {
+	/**
+	 * creates a new dashboard notification for new message counts
+	 * @param {Integer} count
+	 * @param {String} category newMessages (default), newMentions or newDirectMessages
+	 */
+	assistant.newMsgBanner = function(count, category) {
+		
+		var title, msg;
+		
+		if (!category) {
+			category = 'newMessages';
+		}
+		
+		switch(category) {
+			case 'newMessages':
+				title = 'New Message(s)';
+				msg   = "You have "+count+" new message(s)";
+				break;
+			case 'newMentions':
+				title = 'New @Mention(s)';
+				msg   = "You have "+count+" new mention(s)";
+				break;
+			case 'newDirectMessages':
+				title = 'New Direct Message(s)';
+				msg   = "You have "+count+" new direct message(s)";
+				break;
+		}
+		
 		var launchArgs = {
 			'fromstage':this.getStageName()
 		};
+		
 		var bannerArgs = {
-			'messageText':"There are "+count+" new messages"
+			'messageText':msg
 		};
+		
 		if (sc.app.prefs.get('sound-enabled')) {
 			bannerArgs.soundClass = 'alerts';
 		}
-		var category = 'newMessages';
+		
 		var appController = Mojo.Controller.getAppController();
 		
 		appController.showBanner(bannerArgs, launchArgs, category);
-		this.showDashboard($L('New Messages'), bannerArgs.messageText, count, this.getStageName());
+		this.showDashboard($L(title), bannerArgs.messageText, count, this.getStageName());
 	};
 
 
-
+	/**
+	 * creates a new dashboard notification for new search result counts
+	 * @param {Integer} count
+	 * @param {String} query the search query
+	 */
 	assistant.newSearchResultsBanner = function(count, query) {				
 		var category = 'newSearchResults_'+query;
 		var appController = Mojo.Controller.getAppController();
@@ -608,7 +642,7 @@ scene_helpers.addCommonSceneMethods = function(assistant) {
 			'fromstage':this.getStageName()
 		};
 		var bannerArgs = {
-			'messageText':count+" new results for '"+query+"'"
+			'messageText':count+" new result(s) for '"+query+"'"
 		};
 		if (sc.app.prefs.get('sound-enabled')) {
 			bannerArgs.soundClass = 'alerts';
@@ -616,15 +650,16 @@ scene_helpers.addCommonSceneMethods = function(assistant) {
 		
 		
 		appController.showBanner(bannerArgs, launchArgs, category);
-		this.showDashboard($L('New Messages'), bannerArgs.messageText, count, this.getStageName());
+		this.showDashboard($L('New Search Results'), bannerArgs.messageText, count, this.getStageName());
 		
 	};
 	
 	
-	
+	/**
+	 * generalized method to show a dashboard notification 
+	 */
 	assistant.showDashboard   = function(title, message, count, fromstage) {
-		
-		//  Post a banner notification and create or update Dashboard if there are new stories 
+ 
 		var appController = Mojo.Controller.getAppController(); 
 		var dashboardStageController = appController.getStageProxy(SPAZ_DASHBOARD_STAGENAME); 
 
@@ -786,7 +821,9 @@ scene_helpers.addCommonSceneMethods = function(assistant) {
 	};
 	
 	
-	
+	/**
+	 * Check to see if we are connected to the Internet 
+	 */
 	assistant.checkInternetStatus = function(on_success, on_failure) {
 		this.controller.serviceRequest('palm://com.palm.connectionmanager', {
 		    method: 'getstatus',
@@ -796,7 +833,6 @@ scene_helpers.addCommonSceneMethods = function(assistant) {
 		});
 	};
 
-	
 	
 	
 	
@@ -830,25 +866,19 @@ scene_helpers.addCommonSceneMethods = function(assistant) {
 		}
 
 		var dialog_widget = Mojo.Controller.errorDialog(error_html);
-
-		
-		// /*
-		// 	We want to be able to pass html into the error dialogs, but escaping is on,
-		// 	so we do a little dynamic workaround
-		// */
-		// var dialog_widget = Mojo.Controller.errorDialog(msg+' {{error_html}}');
-		// dialog_widget.innerHTML = dialog_widget.innerHTML.replace('{{error_html}}', error_html);
 		
 	};
 
-
+	
 	assistant.clearTimelineCache = function(callback) {
 		this.cacheDepot = TempCache.clear();
 	};
 	
 	
 	
-	
+	/**
+	 * Binds jQuery listeners for timeline entry taps contained in the passed selector. Uses .live()
+	 */
 	assistant.bindTimelineEntryTaps = function(tl_selector) {
 		var thisA = this;
 		
@@ -920,6 +950,10 @@ scene_helpers.addCommonSceneMethods = function(assistant) {
 		});
 	};
 	
+	
+	/**
+	 * Unbinds jQuery listeners for timeline entry taps contained in the passed selector. Uses .die()
+	 */
 	assistant.unbindTimelineEntryTaps = function(tl_selector) {
 		jQuery(tl_selector+' div.timeline-entry', this.scroller).die(Mojo.Event.hold);
 		jQuery(tl_selector+' div.timeline-entry', this.scroller).die(Mojo.Event.tap);
@@ -951,7 +985,7 @@ scene_helpers.addCommonSceneMethods = function(assistant) {
 		dump(event.originalEvent);
 		dump("DUMPING CALLBACK");
 		dump(callback);
-		if (event && Mojo.Char.isEnterKey(event.originalEvent.keyCode)) {
+		if (event && event.originalEvent && Mojo.Char.isEnterKey(event.originalEvent.keyCode)) {
 			dump("CALLING CALLBACK");
 			callback.call(this);
 			return;
@@ -1054,10 +1088,14 @@ scene_helpers.addCommonSceneMethods = function(assistant) {
 	};
 
 	assistant._setNotFullScreen = function(event) {
-		this.isFullScreen = false;//send notifications
+		alert('_setNotFullScreen');
+		alert('this.lastQuery:'+this.lastQuery);
+		this.isFullScreen = false; // send notifications
 	};
 	assistant._setFullScreen = function(event) {
-		this.isFullScreen = true; //dont send notifications
+		alert('_setFullScreen');
+		alert('this.lastQuery:'+this.lastQuery);
+		this.isFullScreen = true;  // dont send notifications
 		Spaz.closeDashboard();
 	};
 	
