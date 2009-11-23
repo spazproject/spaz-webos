@@ -123,13 +123,13 @@ Spaz.sendEmail = function(opts) {
 	}                                                       
 	                                                        
 	if (cc_addresses) {                                     
-		for (var i=0; i < cc_addresses.length; i++) {       
+		for (i=0; i < cc_addresses.length; i++) {       
 			recipients.push( makeRecipientObj(cc_addresses[i].address, 'cc', cc_addresses[i].name) );
 		};                                                  
 	}                                                       
 	                                                        
 	if (bcc_addresses) {                                    
-		for (var i=0; i < bcc_addresses.length; i++) {      
+		for (i=0; i < bcc_addresses.length; i++) {      
 			recipients.push( makeRecipientObj(bcc_addresses[i].address, 'bcc', bcc_addresses[i].name) );
 		};
 	}
@@ -161,10 +161,103 @@ Spaz.sendEmail = function(opts) {
 	);
 };
 
+Spaz.postToService = function(options) {
+  var defaultOptions = {
+    api: "twitpic",
+    fileName: "",
+    message: "",
+    controller: null
+  };
+  
+  for(var opt in defaultOptions) {
+    if(!options[opt])
+      options[opt] = defaultOptions[opt];
+  }
+  
+  if(!options.controller)
+    throw "Without a controller no service request possible";
+  
+  var apis = {
+    twitpic: {
+      url: "http://twitpic.com/api/uploadAndPost",
+      usernameFieldName: "username",
+      passwordFieldName: "password",
+      messageFieldName: "message",
+      fileLabelName: "media"
+    },
+    yfrog: {
+      url: "",
+      usernameFieldName: "username",
+      passwordFieldName: "password",
+      messageFieldName: "message",
+      fileLabel: "media"
+    },
+    twitgoo: {
+      url: "",
+      usernameFieldName: "username",
+      passwordFieldName: "password",
+      messageFieldName: "message",
+      fileLabelName: "media"
+    },
+    pikchur: {
+      url: "",
+      usernameFieldName: "username",
+      passwordFieldName: "password",
+      messageFieldName: "message",
+      fileLabel: "media"
+    },
+    tweetphoto: {
+      url: "",
+      usernameFieldName: "username",
+      passwordFieldName: "password",
+      messageFieldName: "message",
+      fileLabelName: "media"
+    },
+    "pic.gd": {
+      url: "",
+      usernameFieldName: "username",
+      passwordFieldName: "password",
+      messageFieldName: "message",
+      fileLabel: "media"
+    }
+  };
+  
+  var usernameObj = {};
+  usernameObj.key = apis[options.api].usernameFieldName;
+  usernameObj.value = sc.app.username;
+  
+  var passwordObj = {};
+  passwordObj.key = apis[options.api].passwordFieldName;
+  passwordObj.value = sc.app.password;
+  
+  var messageObj = {};
+  messageObj.key = apis[options.api].messageFieldName;
+  messageObj.value = options.message;
+  
+  var postParams = [usernameObj, passwordObj, messageObj];
+  
+  options.controller.serviceRequest('palm://com.palm.downloadmanager/', {
+    method: 'upload',
+    parameters: {
+      fileName: options.fileName,
+      fileLabel: apis[options.api].fileLabelName,
+      url: apis[options.api].url,
+      contentType: 'img',
+      postParameters: postParams
+    },
+    onSuccess : function (resp){
+      Mojo.Log.info('Successfully uploading message');
+    },
+    onFailure : function (e){
+      Mojo.Log.info('Failed uploading image');
+    }.bind(this)
+  });
+};
+
 
 
 Spaz.closeDashboard = function(name) {
-	var name = name || SPAZ_DASHBOARD_STAGENAME;
+	name = name || SPAZ_DASHBOARD_STAGENAME;
 	
 	Mojo.Controller.getAppController().closeStage(name);
 };

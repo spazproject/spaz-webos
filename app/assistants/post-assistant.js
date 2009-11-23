@@ -517,13 +517,18 @@ PostAssistant.prototype.postImageMessage = function(post_add_obj, message, file_
 	
 	file_obj = {'fullPath':file_path};
 	
-    Spaz.sendEmail({
-      to: [post_add_obj],
-      msg: message,
-      subject: message,
-      attachments: [file_obj],
-      controller: this.controller
-    });
+  Spaz.postToService({
+    fileName: file_path,
+    message: message,
+    controller: this.controller
+  });
+    // Spaz.sendEmail({
+    //   to: [post_add_obj],
+    //   msg: message,
+    //   subject: message,
+    //   attachments: [file_obj],
+    //   controller: this.controller
+    // });
     // next line should close new post "dialog"
     //this.controller.stageController.popScene();
 };
