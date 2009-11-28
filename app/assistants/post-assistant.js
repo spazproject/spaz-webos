@@ -427,6 +427,11 @@ PostAssistant.prototype.sendPost = function(event) {
 	if (status.length > 0 && status.length <= 140) {
 		var in_reply_to = parseInt(jQuery('#post-panel-irt-message', this.controller.getSceneScroller()).attr('data-status-id'), 10);
 		
+		/*
+			@todo WE NEED TO CHECK TO SEE IF WE HAVE AN ATTACMENT HERE
+			IF WE DO, POST THROUGH THE IMAGE UPLOADER API
+		*/
+		
 		if (in_reply_to > 0) {
 			this.twit.update(status, null, in_reply_to);
 		} else {
@@ -517,21 +522,26 @@ PostAssistant.prototype.postImageMessage = function(post_add_obj, message, file_
 	
 	file_obj = {'fullPath':file_path};
 	
-  Spaz.postToService({
-    fileName: file_path,
-    message: message,
-    controller: this.controller
-  });
-    // Spaz.sendEmail({
-    //   to: [post_add_obj],
-    //   msg: message,
-    //   subject: message,
-    //   attachments: [file_obj],
-    //   controller: this.controller
-    // });
-    // next line should close new post "dialog"
-    //this.controller.stageController.popScene();
+	Spaz.postToService({
+		fileName: file_path,
+		message: message,
+		controller: this.controller
+	});
+
 };
+
+
+PostAssistant.prototype.emailImageMessage = function(post_add_obj, message, file_path) {
+	Spaz.sendEmail({
+      to: [post_add_obj],
+      msg: message,
+      subject: message,
+      attachments: [file_obj],
+      controller: this.controller
+    });
+    // next line should close new post "dialog"
+    this.controller.stageController.popScene();
+}
 
 /**
  * opens the file picker for images, and passes a callback to change the post scene state to reflect
@@ -581,14 +591,17 @@ PostAssistant.prototype.chooseImage = function(posting_address, message, filepat
 
 
 PostAssistant.prototype.onReturnFromFilePicker = function() {
+	sch.debug('returned from file picker');
+	
+	var thisA = this;
 	
 	this.cancelAttachImage();
 	jQuery('#post-panel-attachment').show();
 	jQuery('#post-panel-attachment-dismiss').one('click', function() {
-		this.postMode = 'normal';
+		thisA.postMode = 'normal';
 		jQuery('#post-panel-attachment').hide();
-		this.model.attachment = null;
-		this.cancelAttachImage();
+		thisA.model.attachment = null;
+		thisA.cancelAttachImage();
 	});
 	
 };
