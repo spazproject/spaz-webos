@@ -107,6 +107,7 @@ UserDetailAssistant.prototype.setup = function() {
 		
 		var itemhtml = sc.app.tpl.parseTemplate('user-detail', thisA.userobj);
 		jQuery('#user-detail').html(itemhtml);
+		sch.debug(jQuery('#user-detail').get(0).outerHTML);
 		
 		thisA.twit.getUserTimeline(thisA.userobj.id);
 	});

@@ -68,7 +68,7 @@ ViewImageAssistant.prototype.activate = function(event) {
 	// var height = jQuery('#imageview').parent().height();
 	var width  = window.innerWidth;
 	var height = window.innerHeight - parseInt(jQuery('#imageview').offset().top, 10) - 40;
-	sch.error(width+"x"+height);
+	sch.debug(width+"x"+height);
 
 
 	this.controller.get('imageview').mojo.manualSize(width, height);
@@ -101,7 +101,7 @@ ViewImageAssistant.prototype.onRight = function() {
 
 ViewImageAssistant.prototype.changedImage = function(event) {
 	if (event.error) {
-		sch.error("Failed to load image!");
+		sch.debug("Failed to load image!");
 		sch.dump(event.error);
 	} else {
 		sch.dump("Loaded the image okay!", event.url);

@@ -13,11 +13,15 @@ var Tweets = function(replace) {
 Tweets.prototype._init  = function(replace) {
 	var opts = {
 		'name'    : 'ext:SpazDepotTweets',
-		'replace' : false
+		'replace' : false,
+		'estimatedSize': 10*1024*1024 // 10MB
 	};
 	
 	if (replace === true) {
+		sch.debug('REPLACING DEPOT!!!!!!!!!!!=======================');
 		opts.replace = true;
+	} else {
+		sch.debug('NOT REPLACING DEPOT!!!!!!!!!!====================');
 	}
 	
 	if (!this.mojoDepot) {

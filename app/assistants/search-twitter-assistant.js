@@ -248,9 +248,9 @@ SearchTwitterAssistant.prototype.activate = function(event) {
 		/*
 			show a banner if need be
 		*/
-		alert(new_count);
-		alert(thisA.isFullScreen);
-		alert(sc.app.prefs.get('notify-searchresults'));
+		// alert(new_count);
+		// alert(thisA.isFullScreen);
+		// alert(sc.app.prefs.get('notify-searchresults'));
 		if (new_count > 0 && !thisA.isFullScreen && sc.app.prefs.get('notify-searchresults')) {
 			thisA.newSearchResultsBanner(new_count, e.data.thisAssistant.lastQuery);
 			// thisA.playAudioCue('newmsg');
@@ -483,7 +483,7 @@ SearchTwitterAssistant.prototype.removeSearch = function(searchstr) {
 		jQuery().unbind('destroy_saved_search_succeeded');
 	});
 
-	alert(thisA.saved_id);
+	// alert(thisA.saved_id);
 	this.twit.removeSavedSearch(thisA.saved_id);
 	
 };

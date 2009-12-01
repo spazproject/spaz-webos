@@ -5819,7 +5819,7 @@ SpazPrefs.prototype.migrateFromMojoDepot = function() {
 	
 	var thisPrefs = this;
 	
-	sch.error('MIGRATING FROM DEPOT! ============================ ');
+	sch.debug('MIGRATING FROM DEPOT! ============================ ');
 	
 	sc.helpers.dump('this is webOS');
 	if (!this.mojoDepot) {

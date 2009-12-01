@@ -292,7 +292,7 @@ scene_helpers.addCommonSceneMethods = function(assistant) {
 	 */
 	assistant.addPostPopup = function(event) {
 
-		alert('DEPRECATED');
+		// alert('DEPRECATED');
 
 		
 	};
@@ -337,7 +337,7 @@ scene_helpers.addCommonSceneMethods = function(assistant) {
 	 */
 	assistant.removePostPopup = function(event) {
 		
-		alert('DEPRECATED');
+		// alert('DEPRECATED');
 		
 	};
 
@@ -1088,13 +1088,13 @@ scene_helpers.addCommonSceneMethods = function(assistant) {
 	};
 
 	assistant._setNotFullScreen = function(event) {
-		alert('_setNotFullScreen');
-		alert('this.lastQuery:'+this.lastQuery);
+		// alert('_setNotFullScreen');
+		// alert('this.lastQuery:'+this.lastQuery);
 		this.isFullScreen = false; // send notifications
 	};
 	assistant._setFullScreen = function(event) {
-		alert('_setFullScreen');
-		alert('this.lastQuery:'+this.lastQuery);
+		// alert('_setFullScreen');
+		// alert('this.lastQuery:'+this.lastQuery);
 		this.isFullScreen = true;  // dont send notifications
 		Spaz.closeDashboard();
 	};

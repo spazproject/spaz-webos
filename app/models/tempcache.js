@@ -118,7 +118,7 @@ TempCache.loadFromDB = function() {
 		var json_cache = rs.rows.item(0).value;
 		sch.debug(json_cache);
 		window.spaztmpcache = sch.deJSON(json_cache);
-		sch.error(window.spaztmpcache);
+		sch.debug(window.spaztmpcache);
 		sch.triggerCustomEvent('temp_cache_load_db_success', document, window.spaztmpcache);
 	}
 	function failure(tx, err) {

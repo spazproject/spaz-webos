@@ -464,7 +464,7 @@ div.spaz-drawer {
 /*	background-color: rgba(50,50,14,.9) !important;*/
 }
 
-	#message-detail-image {
+	#message-detail .user-image {
 		float:left;
 		margin-left:8px;
 		width:48px;

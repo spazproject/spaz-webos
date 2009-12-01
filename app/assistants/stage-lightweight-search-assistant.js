@@ -1,7 +1,7 @@
 function StageLightweightSearchAssistant () {
 	this.firstload = true;
 	
-	alert('this is the lightweight search assistant!');
+	// alert('this is the lightweight search assistant!');
 	
 	/*
 		sc is attached to the appController.assistant at startup, 

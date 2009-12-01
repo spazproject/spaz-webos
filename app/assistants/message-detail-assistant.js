@@ -111,7 +111,7 @@ MessageDetailAssistant.prototype.activate = function(event) {
 			sc.app.Tweets.get(this.status_id, this.isdm,
 				function(data) {
 					if (data !== null) {
-						sch.dump('Message '+data.status_id+' pulled from DB');
+						sch.debug('Message '+data.id+' pulled from DB');
 						jQuery().trigger('get_one_status_succeeded', [data]);
 					} else { // if nothing is returned, get it from Twitter
 						sch.error('DM was not in sc.app.Tweets cache');
@@ -120,7 +120,7 @@ MessageDetailAssistant.prototype.activate = function(event) {
 					
 				},
 				function(message) {
-					sch.dump('Couldn\'t retrieve message from Depot:'+message);
+					sch.debug('Couldn\'t retrieve message from Depot:'+message);
 					thisA.showAlert($L('There was an error retrieving the message data'));
 				}
 			);
@@ -132,16 +132,15 @@ MessageDetailAssistant.prototype.activate = function(event) {
 			sc.app.Tweets.get(this.status_id, this.isdm,
 				function(data) {
 					if (data !== null) {
-						sch.dump('Message '+data.status_id+' pulled from DB');
+						sch.debug('Message '+data.id+' pulled from DB');
 						jQuery().trigger('get_one_status_succeeded', [data]);
 					} else { // if nothing is returned, get it from Twitter
-						sch.dump('Message '+this.status_id+' missing from DB; retrieving from Twitter');
+						sch.debug('Message '+this.status_id+' missing from DB; retrieving from Twitter');
 						thisA.twit.getOne(thisA.status_id);
-					}
-					
+					}	
 				},
 				function(message) {
-					sch.dump('Couldn\'t retrieve message from Depot:'+message);
+					sch.debug('Couldn\'t retrieve message from Depot:'+message);
 					thisA.twit.getOne(thisA.status_id);
 				}
 			);
@@ -186,7 +185,7 @@ MessageDetailAssistant.prototype.activate = function(event) {
 	});
 	
 	
-	jQuery('#message-detail-container .username.clickable', this.scroller).live(Mojo.Event.tap, function(e) {
+	jQuery('#message-detail-container .user', this.scroller).live(Mojo.Event.tap, function(e) {
 		var userid = jQuery(this).attr('data-user-screen_name');
 		Mojo.Controller.stageController.pushScene('user-detail', userid);
 	});
@@ -222,7 +221,7 @@ MessageDetailAssistant.prototype.deactivate = function(event) {
 	jQuery('#message-detail-action-dm', this.scroller).die(Mojo.Event.tap);
 	jQuery('#message-detail-action-favorite', this.scroller).die(Mojo.Event.tap);
 	
-	jQuery('#message-detail-container .username.clickable', this.scroller).die(Mojo.Event.tap);
+	jQuery('#message-detail-container .user', this.scroller).die(Mojo.Event.tap);
 	jQuery('#message-detail-container .hashtag.clickable', this.scroller).die(Mojo.Event.tap);
 	jQuery('#message-detail-container div.timeline-entry>.status>.meta', this.scroller).die(Mojo.Event.tap);
 	jQuery('#message-detail-container img.thumbnail', this.scroller).die(Mojo.Event.tap);

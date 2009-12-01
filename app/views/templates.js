@@ -18,7 +18,7 @@ sc.app.tpl.addTemplateMethod('message-detail', function(d) {
 	
 	html += ''
 	+ '	<div class="user" data-user-screen_name="'+d.user.screen_name+'" data-user-id="'+d.user.id+'" data-status-id="'+d.id+'">'
-	+ '		<div class="rounded-user-image" style="background-image:url('+d.user.profile_image_url+')" id="message-detail-image" data-screen_name="'+d.user.screen_name+'" title="View user\'s profile"></div>'
+	+ '		<div class="user-image rounded-user-image" style="background-image:url('+d.user.profile_image_url+')" data-screen_name="'+d.user.screen_name+'" title="View user\'s profile"></div>'
 	+ '		<div class="screen_name" data-screen_name="'+d.user.screen_name+'">'
 	+ 			d.user.screen_name;
 	if (d.user.protected) {
@@ -75,10 +75,22 @@ sc.app.tpl.addTemplateMethod('message-detail', function(d) {
 sc.app.tpl.addTemplateMethod('message-detail-dm', function(d) {
 	var html = '';
 	
-	html += '<div data-user-screen_name="'+d.sender.screen_name+'" data-user-id="'+d.sender.id+'" data-status-id="'+d.id+'" data-isdm="true">'
-	+ ' <div class="rounded-user-image" style="background-image:url('+d.sender.profile_image_url+')" id="message-detail-image" data-screen_name="'+d.sender.screen_name+'" title="View user\'s profile"></div>'
-	+ '	<div class="status">'
-	+ '		<div class="screen_name" data-screen_name="'+d.sender.screen_name+'">'+d.sender.screen_name+'</div>'
+	
+	html += ''
+	+ '	<div class="user" data-user-screen_name="'+d.sender.screen_name+'" data-user-id="'+d.sender.id+'" data-status-id="'+d.id+'">'
+	+ '		<div class="user-image rounded-user-image" style="background-image:url('+d.sender.profile_image_url+')" data-screen_name="'+d.sender.screen_name+'" title="View user\'s profile"></div>'
+	+ '		<div class="screen_name" data-screen_name="'+d.sender.screen_name+'">'
+	+ 			d.sender.screen_name;
+	if (d.sender.protected) {
+		html += '			<div class="protected-icon">&nbsp;</div>';
+	}
+	html += '	</div>';
+	if (d.sender.name && d.sender.name !== d.sender.screen_name) {
+		html += '		<div class="real_name" data-screen_name="'+d.sender.screen_name+'">'+d.sender.name+'</div>';
+	}
+	html +='	</div>'
+	
+	html += '	<div class="status">'
 	+ '		<div class="text">'+d.text+'</div>'
 	+ '		<div class="meta" data-status-id="'+d.id+'">'
 	+ '			<div class="date"><strong>Direct message sent</strong> <span class="date-relative" data-created_at="'+d.created_at+'">'+sch.getRelativeTime(d.created_at)+'</span></div>'
@@ -120,30 +132,35 @@ sc.app.tpl.addTemplateMethod('message-detail-searchresult', function(d) {
 sc.app.tpl.addTemplateMethod('user-detail', function(d) {
 	var html = '';
 	
-	html += '	<div data-screen_name="'+d.screen_name+'" data-id="'+d.id+'">'
-	+ ' 	<div class="rounded-user-image" style="background-image:url('+d.profile_image_url+')" id="user-detail-image" data-screen_name="'+d.screen_name+'" title="View user\'s profile"></div>'
-	+ '		<div id="user-detail-info">'
-	+ '			<div id="user-detail-name" data-screen_name="'+d.screen_name+'">'
-	+ '			'+d.name;
-	if (d.name !== d.screen_name) {
-		html += '			('+d.screen_name+')';
-	}
-	html += '			</div>';
-	
-	html += '			<div id="user-detail-description">'+d.description+'</div>';
-
-	if (d.location) {
-		html += '		    <div><a id="user-detail-location" href="http://maps.google.com/?q=' +encodeURIComponent(d.location)+ '" title="View this location on a map">'+d.location+'</a></div>';
-	}
-	if (d.url) {
-		html += '			<div><a id="user-detail-homepage" href="'+d.url+'" title="Open user\'s homepage">Homepage</a></div>';
-	}
+	html += ''
+	+ '<div id="user-detail">'
+	+ '	<div class="user" data-user-screen_name="'+d.screen_name+'" data-user-id="'+d.id+'" data-status-id="'+d.id+'">'
+	+ '		<div class="user-image rounded-user-image" style="background-image:url('+d.profile_image_url+')" data-screen_name="'+d.screen_name+'" title="View user\'s profile"></div>'
+	+ '		<div class="screen_name" data-screen_name="'+d.screen_name+'">'
+	+ 			d.screen_name;
 	if (d.protected) {
-		html += '			<div class="protected-icon">Protected user</div>';
+		html += '			<div class="protected-icon">&nbsp;</div>';
 	}
 	html += '		</div>';
+	if (d.name && d.name !== d.screen_name) {
+		html += '		<div class="real_name" data-screen_name="'+d.screen_name+'">'+d.name+'</div>';
+	}
+	html +='	</div>'
 	
-	html += '<div>'
+	html += '	<div class="user-info">'
+	html += '		<div class="user-description">'+d.description+'</div>';
+	if (d.location) {
+		html += '   	 <div><a class="user-location" href="http://maps.google.com/?q=' +encodeURIComponent(d.location)+ '" title="View this location on a map">'+d.location+'</a></div>';
+	}
+	if (d.url) {
+		html += '		<div><a class="user-homepage" href="'+d.url+'" title="Open user\'s homepage">Homepage</a></div>';
+	}
+	// if (d.protected) {
+	// 	html += '		<div class="protected-icon">Protected user</div>';
+	// }
+	html += '	</div>';
+	
+	html += ''
 	+ '	<table class="palm-divider collapsible" id="user-timeline-trigger" x-mojo-tap-highlight="momentary">'
 	+ '		<tbody>'
 	+ '			<tr>'
@@ -171,7 +188,7 @@ sc.app.tpl.addTemplateMethod('user-detail', function(d) {
 	+ '					<div class="palm-group-title" id="search-toggle" x-mojo-loc="">Actions</div>'
 	+ '					<div class="palm-list">'
 	+ '						<div class="palm-row single">'
-	+ '							<button id="search-user"class="palm-button" data-screen_name="'+d.screen_name+'">Search for user</button>'
+	+ '							<button id="search-user" class="palm-button" data-screen_name="'+d.screen_name+'">Search for user</button>'
 	+ '						</div>';
 	if (sc.app.username && sc.app.password) {
 		html += '						<div class="palm-row single">'
