@@ -138,7 +138,7 @@ MyTimelineAssistant.prototype.setup = function() {
 
 
 
-MyTimelineAssistant.prototype.activate = function(event) {
+MyTimelineAssistant.prototype.activate = function(params) {
 	
 	sch.debug('ACTIVATE');
 	
@@ -158,7 +158,7 @@ MyTimelineAssistant.prototype.activate = function(event) {
 	/*
 		start the mytimeline 
 	*/
-	if (this.refreshOnActivate) {
+	if (this.refreshOnActivate || (params && params.refresh === true)) {
 		this.mytl.start();
 		this.refreshOnActivate = false;
 	}

@@ -1,4 +1,4 @@
-/*********** Built 2009-11-10 15:55:35 EST ***********/
+/*********** Built 2009-12-07 13:38:56 EST ***********/
 /*jslint 
 browser: true,
 nomen: false,
@@ -2884,6 +2884,7 @@ var SPAZCORE_EVENTDATA_ATTRIBUTE = 'sc_data';
  * @param {object} target
  * @param {string} event_type
  * @param {function} handler  a method that will take the event as a param, and "this" refers to target
+ * @param {Object} scope the scope to execute the handler within (what "this" refers to)
  * @param {boolean} use_capture  defaults to false
  * @function
  */
@@ -2919,10 +2920,15 @@ sc.helpers.addListener = function(target, event_type, handler, scope, use_captur
  * @param {object} target
  * @param {string} event_type
  * @param {function} handler  a method that will take the event as a param, and "this" refers to target
+ * @param {Object} scope the scope to execute the handler
  * @param {boolean} use_capture  defaults to false
  * @function
  */
 sc.helpers.removeListener = function(target, event_type, handler, scope, use_capture) {
+
+	sch.dump('removing listener for '+event_type);
+	sch.dump('on target nodeName:'+target.nodeName);
+
 
 	function scope_perserver(e) {
 		handler.call(scope, e);
@@ -2939,6 +2945,29 @@ sc.helpers.removeListener = function(target, event_type, handler, scope, use_cap
 	}
 };
 
+/**
+ * @param {DOMElement} base_target The base target where the delegated listener will be set-up
+ * @param {string} selector The CSS Selector that will be used to match incoming events. Matching is done with jQuery
+ * @param {string} event_type The event type 
+ * @param {Function} handler a method that will take the event as a param, and "this" refers to target
+ * @param {Object} [scope] the scope to execute the handler
+ * @param {Boolean} [use_capture] Describe this parameter
+ */
+sc.helpers.addDelegatedListener = function(base_target, selector, event_type, handler, scope, use_capture) {
+	
+};
+
+/**
+ * @param {DOMElement} base_target The base target where the delegated listener will be set-up
+ * @param {string} selector The CSS Selector that will be used to match incoming events. Matching is done with jQuery
+ * @param {string} event_type The event type 
+ * @param {Function} handler a method that will take the event as a param, and "this" refers to target
+ * @param {Object} [scope] the scope to execute the handler
+ * @param {Boolean} [use_capture] Describe this parameter
+ */
+sc.helpers.removeDelegatedListener = function(base_target, selector, event_type, handler, scope, use_capture) {
+	
+};
 
 /**
  * This triggers a custom event using document.createEvent('Events') and target.dispatchEvent()
@@ -2952,7 +2981,7 @@ sc.helpers.removeListener = function(target, event_type, handler, scope, use_cap
 sc.helpers.triggerCustomEvent = function(event_type, target, data, bubble) {
 	
 	sch.dump('triggering '+event_type);
-	sch.dump('target nodeName:'+target.nodeName);
+	sch.dump('on target nodeName:'+target.nodeName);
 	
 	if (bubble !== false) {
 		bubble = true;
@@ -2987,6 +3016,19 @@ sc.helpers.listen = sc.helpers.addListener;
  * @function
  */
 sc.helpers.unlisten = sc.helpers.removeListener;
+
+/**
+ * Alias for sc.helpers.addDelegatedListener
+ * @function 
+ */
+sc.helpers.live = sc.helpers.addDelegatedListener;
+
+/**
+ * Alias for sc.helpers.removeDelegatedListener
+ * @function 
+ */
+sc.helpers.die = sc.helpers.removeDelegatedListener;
+
 
 /**
  * Alias for sc.helpers.triggerCustomEvent 
@@ -3878,6 +3920,9 @@ sc.helpers.clone = function(oldObj) {
 	return jQuery.extend({}/* clone */, oldObj);
 };
 
+/**
+ * @todo 
+ */
 sc.helpers.each = function(arr, f) {
 	
 };
@@ -3895,7 +3940,27 @@ sc.helpers.extend = function(child, supertype)
 {
    child.prototype.__proto__ = supertype.prototype;
 };
-/*jslint 
+
+/**
+ * Designed to fill in default values for an options argument passed to a
+ * function. Merges the provided defaults with the passed object, using items
+ * from defaults if they don't exist in passed 
+ * 
+ * @param {object} defaults the default key/val pairs
+ * @param {object} passed   the values provided to the calling method
+ * @returns {object} a set of key/vals that have defaults filled-in
+ */
+sc.helpers.defaults = function(defaults, passed) {
+	
+	var args = defaults;
+	
+	/* override the defaults if necessary */
+	for (var key in passed) {
+		args[key] = passed[key];
+	}
+	
+	return args;
+}/*jslint 
 browser: true,
 nomen: false,
 debug: true,
@@ -4132,8 +4197,9 @@ var sc;
 
 /**
  * Stub 
+ * @platformstub
  */
-function getCurrentLocation() {
+sc.helpers.getCurrentLocation = function() {
 	
 }/*jslint 
 bitwise: false,
@@ -4896,7 +4962,7 @@ sc.helpers.error = function(obj) {
  * @platformstub
  */
 sc.helpers.dump = function(obj, level) {
-	// stub
+	console.log(obj);
 };
 
 /**
@@ -4979,7 +5045,7 @@ sc.helpers.getEncryptedValue = function(key) {
  * Sets a value in the EncryptedLocalStore of AIR
  * @platformstub
  */
-sc.helpers.setEncyrptedValue = function(key, val) {
+sc.helpers.setEncryptedValue = function(key, val) {
 	// stub
 };
 
@@ -5117,7 +5183,12 @@ white: false,
 onevar: false 
  */
 var sc, DOMParser;
- 
+
+/**
+ * Given a string, this returns an XMLDocument
+ * @param {string} string
+ * @return {XMLDocument}
+ */
 sc.helpers.createXMLFromString = function (string) {
 	var xmlParser, xmlDocument;
 	try {
@@ -5301,6 +5372,7 @@ SpazImageURL.prototype.findServiceUrlsInString = function(str) {
  * find the image service URLs that work with our defined APIs in a given string
  * @param {object} matches
  * @return {object|null} fullurl:thumburl key:val pairs
+ * 
  */
 SpazImageURL.prototype.getThumbsForMatches = function(matches) {
 	var x, service, api, thumburl, thumburls = {}, num_urls = 0;
@@ -5339,6 +5411,20 @@ SpazImageURL.prototype.getThumbsForUrls = function(str) {
 		return null;
 	}
 	
+};
+
+/**
+ * given a single image hosting service URL, this returns a URL to the thumbnail image itself
+ * @param {string} url
+ * @return {string|null}
+ */
+SpazImageURL.prototype.getThumbForUrl = function(url) {
+	var urls = this.getThumbsForUrls(url);
+	if (urls) {
+		return urls[url];
+	} else {
+		return null;
+	}
 };
 
 
@@ -5400,6 +5486,395 @@ SpazImageURL.prototype.getImageForUrl = function(url) {
 		return null;
 	}
 };
+/*jslint 
+browser: true,
+nomen: false,
+debug: true,
+forin: true,
+undef: true,
+white: false,
+onevar: false 
+ */
+var sc, DOMParser, jQuery;
+
+
+/**
+ * A file uploader class for SpazCore 
+ */
+
+/**
+ * Events used by this library 
+ */
+if (!sc.events) { sc.events = {}; }
+sc.events.fileUploadStart	= 'fileUploadStart';
+sc.events.fileUploadSuccess	= 'fileUploadSuccess';
+sc.events.fileUploadFailure	= 'fileUploadFailure';
+
+
+
+/**
+ * Constructor
+ * 
+ * opts = {
+ *   api:'',
+ *   startEvent:'',
+ *   successEvent:'',
+ *   failureEvent:'',
+ *   eventTarget:DOMElement
+ * } 
+ */
+function SpazFileUploader(opts) {
+
+	if (!opts) { opts = {}; }
+		
+	if (opts.api) {
+		this.setAPI(opts.api);
+	}
+	this.startEvent   = opts.startEvent   || sc.events.fileUploadStart;
+	this.successEvent = opts.successEvent || sc.events.fileUploadSuccess;
+	this.failureEvent = opts.failureEvent || sc.events.fileUploadFailure;
+	this.eventTarget  = opts.eventTarget  || document;
+	
+	this.apis = this.getAPIs();
+
+}
+
+/**
+ * returns an array of API labels
+ * @return array 
+ */
+SpazFileUploader.prototype.getAPILabels = function() {
+	var labels = [];
+	for ( var key in this.getAPIs() ) {
+		labels.push(key);
+	}
+	return labels;
+};
+
+
+/**
+ * This builds the apis hash and returns it. All API stuff is defined inside here
+ */
+SpazFileUploader.prototype.getAPIs = function() {
+
+	var thisSFU = this;
+
+	var apis = {
+		'pikchur' : {
+		    'upload_url' : 'http://api.pikchur.com/simple/upload',
+		    'post_url' : 'http://api.pikchur.com/simple/uploadAndPost',
+			'api_key_field': 'api_key', // setting this to non-empty means we MUST set an api key
+			'processResult': function(event, apiobj) {
+				var loader = event.target;
+				
+				var returnobj = {}
+
+				var parser=new DOMParser();
+				var xmldoc = parser.parseFromString(loader.data,"text/xml");
+
+				var rspAttr = xmldoc.getElementsByTagName("rsp")[0].attributes;
+				if (rspAttr.getNamedItem("stat").nodeValue === 'ok')
+				{
+					returnobj['mediaurl'] = jQuery(xmldoc).find('mediaurl').text();
+				} 
+				else
+				{
+					returnobj['errAttributes'] = xmldoc.getElementsByTagName("err")[0].attributes;
+					returnobj['errMsg'] = errAttributes.getNamedItem("msg").nodeValue;
+				}
+				sch.debug(returnobj);
+				return returnobj;
+			}
+		},
+		'yfrog' : {
+		    'upload_url' : 'http://yfrog.com/api/upload',
+		    'post_url' : 'http://yfrog.com/api/uploadAndPost',
+			'processResult': function(event, apiobj) {
+				var loader = event.target;
+
+				var parser=new DOMParser();
+				var xmldoc = parser.parseFromString(loader.data,"text/xml");
+
+				var rspAttr = xmldoc.getElementsByTagName("rsp")[0].attributes;
+				if (rspAttr.getNamedItem("stat").nodeValue === 'ok')
+				{
+					returnobj['mediaurl'] = jQuery(xmldoc).find('mediaurl').text();
+				} 
+				else
+				{
+					returnobj['errAttributes'] = xmldoc.getElementsByTagName("err")[0].attributes;
+					returnobj['errMsg'] = errAttributes.getNamedItem("msg").nodeValue;
+				}
+				sch.debug(returnobj);
+				return returnobj;
+			}
+		},
+	    'twitpic' : {
+			'upload_url' : 'http://twitpic.com/api/upload',
+		    'post_url'   : 'http://twitpic.com/api/uploadAndPost',
+			'processResult': function(event, apiobj) {
+				var loader = event.target;
+				
+				sch.debug('PROCESSING: EVENT');
+				sch.debug(event);
+
+				var parser=new DOMParser();
+				var xmldoc = parser.parseFromString(event.data,"text/xml");
+
+				var rspAttr = xmldoc.getElementsByTagName("rsp")[0].attributes;
+				if (rspAttr.getNamedItem("stat").nodeValue === 'ok')
+				{
+					returnobj['mediaurl'] = jQuery(xmldoc).find('mediaurl').text();
+				} 
+				else
+				{
+					returnobj['errAttributes'] = xmldoc.getElementsByTagName("err")[0].attributes;
+					returnobj['errMsg'] = errAttributes.getNamedItem("msg").nodeValue;
+				}
+				sch.debug(returnobj);
+				return returnobj;
+			}
+		},
+		'twitgoo' : {
+			'upload_url' : 'http://twitgoo.com/api/upload',
+			'post_url'   : 'http://twitgoo.com/api/uploadAndPost',
+			'processResult': function(event, apiobj) {
+				var loader = event.target;
+
+				var parser=new DOMParser();
+				var xmldoc = parser.parseFromString(loader.data,"text/xml");
+
+				var rspAttr = xmldoc.getElementsByTagName("rsp")[0].attributes;
+				if (rspAttr.getNamedItem("stat").nodeValue === 'ok')
+				{
+					returnobj['mediaurl'] = jQuery(xmldoc).find('mediaurl').text();
+				} 
+				else
+				{
+					returnobj['errAttributes'] = xmldoc.getElementsByTagName("err")[0].attributes;
+					returnobj['errMsg'] = errAttributes.getNamedItem("msg").nodeValue;
+				}
+				sch.debug(returnobj);
+				return returnobj;
+			}
+		}//,
+		/*
+			Not sure if we should continue to support tweetphoto; API is complex
+		*/
+		// 'tweetphoto': {
+		// 	'upload_url' : 'http://tweetphotoapi.com/api/tpapi.svc/upload2',
+		// 	'api_key_field': 'TPAPIKEY', // this means we need to set the api key
+		// 	'onBeforeSend' : function(extraParams, api.upload_url, file_url) {
+		// 	
+		// 	},
+		// 	'processResult': function(event, apiobj) {
+		// 		var loader = event.target;
+		// 
+		// 		var parser=new DOMParser();
+		// 		var xmldoc = parser.parseFromString(loader.data,"text/xml");
+		// 
+		// 		if (jQuery(xmldoc).find('Status').text().toLowerCase() === 'ok')
+		// 		{
+		// 			var mediaurl = jQuery(xmldoc).find('MediaUrl').text();
+		// 		} 
+		// 		else
+		// 		{
+		// 			sch.error('There was an error uploading to TweetPhoto')
+		// 			var errAttributes = xmldoc.getElementsByTagName("err")[0].attributes;
+		// 			var errMsg = errAttributes.getNamedItem("msg").nodeValue;
+		// 		}
+		// 	}	
+		// }
+		
+	};
+
+	return apis;
+
+};
+
+/**
+ * Pass the api you want to use as a string
+ * @param {string} apilabel 
+ */
+SpazFileUploader.prototype.setAPI = function(apilabel) {
+	this.api = this.apis[apilabel];
+};
+
+/**
+ * some services require an api key or app identifier. This sets that.
+ * @param {string} api_key
+ */
+SpazFileUploader.prototype.setAPIKey = function(api_key) {
+	if (this.api) {
+		this.api.api_key = api_key;
+	} else {
+		sch.error('Must set the API before setting API key');
+	}
+};
+
+/**
+ * some services require an api key or app identifier. This sets that.
+ * @param {string} api_key
+ */
+SpazFileUploader.prototype.getAPIKey = function() {
+	if (this.api) {
+		return this.api.api_key;
+	} else {
+		sch.error('Must set the API before getting API key');
+	}
+};
+
+/**
+ * opts = {
+ *   'api':'', // use if not set already
+ *   'username':'xxx',
+ *   'password':'xxx',
+ *   'source':'xxx',
+ *   'message':''
+ *   
+ * } 
+ * 
+ * This uploads a file located at the given file_url. It uses the
+ * sc.helpers.HTTPUploadFile as defined for your given platform.  Events are
+ * raised as set in the constructor on start, success and failure.
+ * 
+ * Note that in the webOS implementation, success events are raised every time
+ * progress is reported, NOT just when completion happens. Check for the
+ * "completed" boolean property in the response object. This may change in the
+ * future.
+ * 
+ * @param {string} post_url  the url we're uploading the file to
+ * @param {string} file_url  the local url of the file we're uploading
+ * @param {object} opts  a set of key/val pairs
+ */
+SpazFileUploader.prototype.uploadFile = function(post_url, file_url, opts) {
+
+	var api, api_key;
+
+	var thisSFU = this;
+
+	if (opts.api) {
+		api = this.apis.api;
+	} else if (this.api) {
+		api = this.api;
+	} else {
+		sch.error('Must set the API before uploading');
+		return;
+	}
+	
+	var username = opts.username || null;
+	var password = opts.password || null;
+	var source   = opts.source   || null;
+	var message  = opts.message  || null;
+	
+	/*
+		platform opts are for platform-specific options. For now we're using
+		this because webOS requires the scene controller to call the service
+		request, so we pass a reference to the scene assistant
+	*/
+	var platformOpts = opts.platform || null;
+
+	var onStart = opts.onStart || null;
+
+	var extraParams = {
+		"username": username,
+		"password": password,
+		"source":   source,
+		"message":  message
+	};
+	
+	/**
+	 * if we have an API key field, then we need the api key 
+	 */
+	if ( (api.api_key_field) ) {
+		extraParams[api.api_key_field] = this.getAPIKey();
+	}
+
+	/*
+		A callback in case we need to massage the data before upload
+	*/
+	if (api.onBeforeSend) {
+		api.onBeforeSend.call(api, extraParams, api.upload_url, file_url);
+	}
+	
+	/*
+		trigger upload start event
+	*/
+	sc.helpers.triggerCustomEvent(thisSFU.startEvent, thisSFU.eventTarget);
+	
+	// upload the file
+	sc.helpers.HTTPUploadFile({
+			'extra'   : extraParams,
+			'url'     : post_url,
+			'file_url': file_url,
+			'platform': platformOpts
+		},
+		function(event) {
+			sch.debug('UPLOAD SUCCESS, PROCESSING');
+			/*
+				For now we're not using the processResult methods, as the 
+				implementation can vary by platform. For now, process response
+				externally.
+			*/
+			// var data = api.processResult.call(thisSFU, event, api);
+			// sch.debug(data);
+			sc.helpers.triggerCustomEvent(thisSFU.successEvent, thisSFU.eventTarget, event);
+		},
+		function(event) {
+			sch.debug('UPLOAD FAILURE, PROCESSING');
+			/*
+				For now we're not using the processResult methods, as the 
+				implementation can vary by platform. For now, process response
+				externally.
+			*/
+			// var data = api.processResult.call(thisSFU, event, api);
+			// sch.debug(data);
+			sc.helpers.triggerCustomEvent(thisSFU.failureEvent, thisSFU.eventTarget, event);
+		}
+	);
+};
+
+
+
+/**
+ * a wrapper for uploadFile that uses the post_url from the API definition 
+ */
+SpazFileUploader.prototype.uploadAndPost = function(file_url, opts) {
+	var api;
+	
+	if (opts.api) {
+		api = this.apis.api;
+	} else if (this.api) {
+		api = this.api;
+	} else {
+		sch.error('Must set the API before uploading');
+		return;
+	}
+	
+	this.uploadFile(api.post_url, file_url, opts);
+	
+};
+
+/**
+ * a wrapper for uploadFile that uses the upload_url from the API definition 
+ */
+SpazFileUploader.prototype.upload = function(file_url, opts) {
+	
+	var api;
+	
+	if (opts.api) {
+		api = this.apis.api;
+	} else if (this.api) {
+		api = this.api;
+	} else {
+		sch.error('Must set the API before uploading');
+		return;
+	}
+	
+	this.uploadFile(api.upload_url, file_url, opts);
+	
+};
+
 /*jslint 
 browser: true,
 nomen: false,
@@ -5819,7 +6294,7 @@ SpazPrefs.prototype.migrateFromMojoDepot = function() {
 	
 	var thisPrefs = this;
 	
-	sch.debug('MIGRATING FROM DEPOT! ============================ ');
+	sch.error('MIGRATING FROM DEPOT! ============================ ');
 	
 	sc.helpers.dump('this is webOS');
 	if (!this.mojoDepot) {
@@ -7229,6 +7704,287 @@ browser: true,
 nomen: false,
 debug: true,
 forin: true,
+undef: true,
+white: false,
+onevar: false 
+ */
+var sc, DOMParser, jQuery, sch;
+ 
+/**
+ * A library to interact with the API for theMovieDB.org 
+ * @see <a href="http://api.themoviedb.org/2.1/">The API docs</a>
+ */
+
+/**
+ * events raised here 
+ */
+if (!sc.events) { sc.events = {}; }
+sc.events.tmdbMethodSuccess		= 'tmdbMethodSuccess';
+sc.events.tmdbMethodFailure		= 'tmdbMethodFailure';
+sc.events.tmdbMovieSearchSuccess		= 'tmdbMovieSearchSuccess';
+sc.events.tmdbMovieSearchFailure		= 'tmdbMovieSearchFailure';
+sc.events.tmdbMovieIMDBLookupSuccess	= 'tmdbMovieIMDBLookupSuccess';
+sc.events.tmdbMovieIMDBLookupFailure	= 'tmdbMovieIMDBLookupFailure';
+sc.events.tmdbMovieGetInfoSuccess		= 'tmdbMovieGetInfoSuccess';
+sc.events.tmdbMovieGetInfoFailure		= 'tmdbMovieGetInfoFailure';
+sc.events.tmdbMovieGetImagesSuccess		= 'tmdbMovieGetImagesSuccess';
+sc.events.tmdbMovieGetImagesFailure		= 'tmdbMovieGetImagesFailure';
+sc.events.tmdbPersonSearchSuccess		= 'tmdbPersonSearchSuccess';
+sc.events.tmdbPersonSearchFailure		= 'tmdbPersonSearchFailure';
+sc.events.tmdbPersonGetInfoSuccess		= 'tmdbPersonGetInfoSuccess';
+sc.events.tmdbPersonGetInfoFailure		= 'tmdbPersonGetInfoFailure';
+sc.events.tmdbHashGetInfoSuccess		= 'tmdbHashGetInfoSuccess';
+sc.events.tmdbHashGetInfoFailure		= 'tmdbHashGetInfoFailure';
+
+
+
+/**
+ * @constructor
+ * @param {Object} opts
+ * @param {string} opts.apikey the api key
+ * @param {string} [opts.lang] a language code. default is 'en'
+ * @param {string} [opts.format] the data format to return. default is 'json'
+ * @param {DOMElement} [opts.eventTarget] what to target triggered events with. default is the document element
+ */
+function SpazTMDB(opts) {
+	
+	/*
+		set defaults
+	*/
+	opts = sch.defaults({
+		'apikey':null,
+		'lang'  :'en',
+		'format':'json',
+		'eventTarget':document
+	}, opts);
+	
+	this.apikey = opts.apikey;
+	this.lang   = opts.lang;
+	this.format = opts.format;
+	this.eventTarget = opts.eventTarget;
+	
+	this.baseURL = 'http://api.themoviedb.org/2.1/';
+		
+}
+
+/**
+ * Sets the API key
+ * @param {string} apikey the api key used to access the API 
+ */
+SpazTMDB.prototype.setAPIKey = function(apikey) {
+	this.apikey = apikey;
+};
+
+/**
+ * Gets the API key
+ * @returns {string} the api key that was previously set 
+ */
+SpazTMDB.prototype.getAPIKey = function() {
+	return this.apikey;
+};
+
+/**
+ * Search for movies by title
+ * @param {string} value the value passed to the search method
+ * @param {function} [onSuccess] a callback 
+ * @param {function} [onFailure] a callback 
+ */
+SpazTMDB.prototype.movieSearch = function(value, onSuccess, onFailure) {
+	this.callMethod({
+		'method':'Movie.search',
+		'value' :value,
+		'successEvent':sc.events.tmdbMovieSearchSuccess,
+		'failureEvent':sc.events.tmdbMovieSearchFailure,
+		'onSuccess':onSuccess,
+		'onFailure':onFailure
+ 	});
+};
+
+
+
+/**
+ * Get info for a movie
+ * @param {string|number} id The id of the movie (numeric)
+ * @param {function} [onSuccess] a callback 
+ * @param {function} [onFailure] a callback 
+ */
+SpazTMDB.prototype.movieInfo = function(id, onSuccess, onFailure) {
+	this.callMethod({
+		'method':'Movie.getInfo',
+		'value' :id,
+		'successEvent':sc.events.tmdbMovieGetInfoSuccess,
+		'failureEvent':sc.events.tmdbMovieGetInfoFailure,
+		'onSuccess':onSuccess,
+		'onFailure':onFailure
+ 	});
+};
+
+
+
+/**
+ * Get images for a movie
+ * @param {string|number} id The id of the movie (numeric)
+ * @param {function} [onSuccess] a callback 
+ * @param {function} [onFailure] a callback 
+ */
+SpazTMDB.prototype.movieImages = function(id, onSuccess, onFailure) {
+	this.callMethod({
+		'method':'Movie.getImages',
+		'value' :id,
+		'successEvent':sc.events.tmdbMovieGetInfoSuccess,
+		'failureEvent':sc.events.tmdbMovieGetInfoFailure,
+		'onSuccess':onSuccess,
+		'onFailure':onFailure
+ 	});
+};
+
+
+
+/**
+ * Lookup a movie by IMDB id
+ * @param {string} id The IMDB id of the movie. ex "tt0137523"
+ * @param {function} [onSuccess] a callback 
+ * @param {function} [onFailure] a callback 
+ */
+SpazTMDB.prototype.movieInfoIMDB = function(id, onSuccess, onFailure) {
+	this.callMethod({
+		'method':'Movie.imdbLookup',
+		'value' :id,
+		'successEvent':sc.events.tmdbMovieIMDBLookupSuccess,
+		'failureEvent':sc.events.tmdbMovieIMDBLookupFailure,
+		'onSuccess':onSuccess,
+		'onFailure':onFailure
+ 	});
+};
+
+
+
+/**
+ * Search for a person
+ * @param {string|number} id The id of the person (numeric)
+ * @param {function} [onSuccess] a callback 
+ * @param {function} [onFailure] a callback 
+ */
+SpazTMDB.prototype.personInfo = function(id, onSuccess, onFailure) {
+	this.callMethod({
+		'method':'Person.getInfo',
+		'value' :id,
+		'successEvent':sc.events.tmdbPersonGetInfoSuccess,
+		'failureEvent':sc.events.tmdbPersonGetInfoFailure,
+		'onSuccess':onSuccess,
+		'onFailure':onFailure
+ 	});
+};
+
+
+
+/**
+ * Search for a person
+ * @param {string} name The name to search for
+ * @param {function} [onSuccess] a callback 
+ * @param {function} [onFailure] a callback 
+ */
+SpazTMDB.prototype.personSearch = function(name, onSuccess, onFailure) {
+	this.callMethod({
+		'method':'Person.search',
+		'value' :name,
+		'successEvent':sc.events.tmdbPersonSearchSuccess,
+		'failureEvent':sc.events.tmdbPersonSearchFailure,
+		'onSuccess':onSuccess,
+		'onFailure':onFailure
+ 	});
+};
+
+
+
+
+/**
+ * Get movie info by file hash
+ * @param {string} hash The hash corresponding to the movie
+ * @param {function} [onSuccess] a callback 
+ * @param {function} [onFailure] a callback 
+ * @see <a href="http://trac.opensubtitles.org/projects/opensubtitles/wiki/HashSourceCodes">Hash Source Codes</a>
+ */
+SpazTMDB.prototype.movieInfoHash = function(hash, onSuccess, onFailure) {
+	this.callMethod({
+		'method':'Hash.getInfo',
+		'value' :hash,
+		'successEvent':sc.events.tmdbHashGetInfoSuccess,
+		'failureEvent':sc.events.tmdbHashGetInfoFailure,
+		'onSuccess':onSuccess,
+		'onFailure':onFailure
+ 	});
+};
+
+
+
+
+
+
+/**
+ * Method to construct an API URL from the passed method and value strings
+ * @param {string} method the string for this parameter. See API docs for list
+ * @param {string} value the value we're passing to the API method. This will be encoded using encodeURIComponent() 
+ * @returns {string} the URL string
+ */
+SpazTMDB.prototype.getURL = function(method, value) {
+	var url  = this.baseURL + method + "/" + this.lang + "/" + this.format + "/" + this.apikey + "/" + encodeURIComponent(value);
+	return url;
+};
+
+
+
+
+/**
+ * a general purpose method for calling API methods via ajax and raising
+ * events on success/failure. callbacks can optionally be set for success
+ * or failure as well
+ * @param {Object} opts options for the method call
+ * @param {string} opts.method the method to call
+ * @param {string} opts.value value passed to method
+ * @param {string} [opts.successEvent] the type of event to raise on success. default is {@link sc.events.tmdbMethodSuccess}
+ * @param {string} [opts.failureEvent] the type of event to raise on failure. default is {@link sc.events.tmdbMethodFailure}
+ * @param {function} [opts.onSuccess] a callback function called on success. takes args data, textStatus
+ * @param {function} [opts.onFailure] a callback function called on failure. takes args xhr, msg, exc
+ * 
+ */
+SpazTMDB.prototype.callMethod = function(opts) {
+	var that = this;
+	
+	opts = sch.defaults({
+		'method'      :'Movie.search',
+		'value'       :'Road House',
+		'successEvent':sc.events.tmdbMethodSuccess,
+		'failureEvent':sc.events.tmdbMethodFailure,
+		'onSuccess'   :null, // callback on success
+		'onFailure'   :null  // callback on failure
+	}, opts);
+	
+	var url = this.getURL(opts.method, opts.value);
+	
+	jQuery.ajax({
+		'url' :url,
+		'type':'GET',
+		'success':function(data, textStatus) {
+			if (opts.onSuccess) {
+				opts.onSuccess.call(that, data, textStatus);
+			}
+			sch.trigger(opts.successEvent, that.eventTarget, data);
+		},
+		'error':function(xhr, msg, exc) {
+			if (opts.onFailure) {
+				opts.onFailure.call(that, xhr, msg, exc);
+			}
+			sch.trigger(opts.failure, that.eventTarget, {'url':url, 'xhr':xhr, 'msg':msg});
+		}
+	});
+};
+
+/*jslint 
+browser: true,
+nomen: false,
+debug: true,
+forin: true,
 plusplus: false,
 regexp: false,
 sub: true,
@@ -7261,12 +8017,15 @@ var SPAZCORE_SECTION_SEARCH = 'search';
 var SPAZCORE_SECTION_USER = 'user-timeline';
 var SPAZCORE_SECTION_FRIENDLIST = 'friendslist';
 var SPAZCORE_SECTION_FOLLOWERSLIST = 'followerslist';
+var SPAZCORE_SECTION_USERLISTS = 'userlists';
 
 var SPAZCORE_SERVICE_TWITTER = 'twitter';
 var SPAZCORE_SERVICE_IDENTICA = 'identi.ca';
 var SPAZCORE_SERVICE_CUSTOM = 'custom';
 var SPAZCORE_SERVICEURL_TWITTER = 'https://api.twitter.com/1/';
 var SPAZCORE_SERVICEURL_IDENTICA = 'https://identi.ca/api/';
+
+
 
 /**
  * A Twitter API library for Javascript
@@ -7332,7 +8091,7 @@ function SpazTwit(username, password, opts) {
 	this.opts            = opts || {};
 	this.opts.event_mode = this.opts.event_mode || 'DOM';
 	this.opts.event_target = this.opts.event_target || document;
-	this.opts.timeout    = this.opts.timeout || 1000*60; // 60 seconds default
+	this.opts.timeout    = this.opts.timeout || this.DEFAULT_TIMEOUT; // 60 seconds default
 	
 	this.setSource('SpazCore');
 	
@@ -7364,6 +8123,9 @@ function SpazTwit(username, password, opts) {
 		};
 	}
 }
+
+
+SpazTwit.prototype.DEFAULT_TIMEOUT = 1000*60;
 
 
 SpazTwit.prototype.getUsername = function() {
@@ -7457,6 +8219,12 @@ SpazTwit.prototype.initializeData = function() {
 		'lastresultdata':{},
 		'max':200,
 		'min_age':30
+	};
+	this.data[SPAZCORE_SECTION_USERLISTS] = {
+		'items':   [],
+		'newitems':[],
+		'max':500,
+		'min_age':5*60
 	};
 	// this.data.byid = {};
 };
@@ -7605,9 +8373,18 @@ SpazTwit.prototype.getAPIURL = function(key, urldata) {
     urls.verify_credentials = "account/verify_credentials.json";
     urls.ratelimit_status   = "account/rate_limit_status.json";
 	urls.update_profile		= "account/update_profile.json";
-
 	urls.saved_searches		= "saved_searches.json";
-	
+
+    // User lists URLs
+    urls.lists              = "{{USER}}/lists.json";
+    urls.lists_list         = "{{USER}}/lists/{{SLUG}}.json";
+    urls.lists_memberships  = "{{USER}}/lists/memberships.json";
+    urls.lists_timeline     = "{{USER}}/lists/{{SLUG}}/statuses.json";
+    urls.lists_members      = "{{USER}}/{{SLUG}}/members.json";
+    urls.lists_check_member = "{{USER}}/{{SLUG}}/{{ID}}.json";
+    urls.lists_subscribers  = "{{USER}}/{{SLUG}}/subscribers.json";
+    urls.lists_check_subscriber = "{{USER}}/{{SLUG}}/subscribers/{{ID}}.json";
+
 	// search
 	if (this.baseurl === SPAZCORE_SERVICEURL_TWITTER) {
 		urls.search				= "http://search.twitter.com/search.json";
@@ -7630,7 +8407,19 @@ SpazTwit.prototype.getAPIURL = function(key, urldata) {
 		}
 		
 	}
-	
+
+    // Token replacement for user lists
+    if (urls[key].indexOf('{{USER}}') > - 1) {
+        if (urldata && typeof(urldata) === 'object') {
+            urls[key] = urls[key].replace('{{USER}}', urldata.user);
+        }
+    }
+
+    if (urls[key].indexOf('{{SLUG}}') > -1) {
+        if (urldata && typeof(urldata) === 'object') {
+            urls[key] = urls[key].replace('{{SLUG}}', urldata.slug);
+        }
+    }
 
     if (urls[key]) {
 	
@@ -7698,11 +8487,10 @@ SpazTwit.prototype.verifyCredentials = function(username, password) {
  * @param {string} finished_event the type of event to fire 
  * @private
  */
-SpazTwit.prototype._processAuthenticatedUser = function(data, finished_event) {
+SpazTwit.prototype._processAuthenticatedUser = function(data, opts) {
 	this.me = data;
 	this.initializeData();
-	// jQuery().trigger(finished_event, [this.me]);
-	this.triggerEvent(finished_event, this.me);
+	this.triggerEvent(opts.success_event_type, this.me);
 	
 };
 
@@ -7770,8 +8558,8 @@ SpazTwit.prototype.getHomeTimeline = function(since_id, count, page, processing_
 /**
  * @private
  */
-SpazTwit.prototype._processHomeTimeline = function(ret_items, finished_event, processing_opts) {
-	this._processTimeline(SPAZCORE_SECTION_HOME, ret_items, finished_event, processing_opts);
+SpazTwit.prototype._processHomeTimeline = function(ret_items, opts, processing_opts) {
+	this._processTimeline(SPAZCORE_SECTION_HOME, ret_items, opts, processing_opts);
 };
 
 
@@ -7826,8 +8614,8 @@ SpazTwit.prototype.getFriendsTimeline = function(since_id, count, page, processi
 /**
  * @private
  */
-SpazTwit.prototype._processFriendsTimeline = function(ret_items, finished_event, processing_opts) {
-	this._processTimeline(SPAZCORE_SECTION_FRIENDS, ret_items, finished_event, processing_opts);
+SpazTwit.prototype._processFriendsTimeline = function(ret_items, opts, processing_opts) {
+	this._processTimeline(SPAZCORE_SECTION_FRIENDS, ret_items, opts, processing_opts);
 };
 
 
@@ -7880,9 +8668,9 @@ SpazTwit.prototype.getReplies = function(since_id, count, page, processing_opts)
 /**
  * @private
  */
-SpazTwit.prototype._processRepliesTimeline = function(ret_items, finished_event, processing_opts) {
+SpazTwit.prototype._processRepliesTimeline = function(ret_items, opts, processing_opts) {
 	sc.helpers.dump('Processing '+ret_items.length+' items returned from replies method');
-	this._processTimeline(SPAZCORE_SECTION_REPLIES, ret_items, finished_event, processing_opts);
+	this._processTimeline(SPAZCORE_SECTION_REPLIES, ret_items, opts, processing_opts);
 };
 
 /**
@@ -7932,9 +8720,9 @@ SpazTwit.prototype.getDirectMessages = function(since_id, count, page, processin
 /**
  * @private
  */
-SpazTwit.prototype._processDMTimeline = function(ret_items, finished_event, processing_opts) {
+SpazTwit.prototype._processDMTimeline = function(ret_items, opts, processing_opts) {
 	sc.helpers.dump('Processing '+ret_items.length+' items returned from DM method');
-	this._processTimeline(SPAZCORE_SECTION_DMS, ret_items, finished_event, processing_opts);
+	this._processTimeline(SPAZCORE_SECTION_DMS, ret_items, opts, processing_opts);
 };
 
 /**
@@ -7967,8 +8755,8 @@ SpazTwit.prototype.getFavorites = function(page, processing_opts) {
 /**
  * @private
  */
-SpazTwit.prototype._processFavoritesTimeline = function(ret_items, finished_event, processing_opts) {
-	this._processTimeline(SPAZCORE_SECTION_FAVORITES, ret_items, finished_event, processing_opts);
+SpazTwit.prototype._processFavoritesTimeline = function(ret_items, opts, processing_opts) {
+	this._processTimeline(SPAZCORE_SECTION_FAVORITES, ret_items, opts, processing_opts);
 };
 
 
@@ -8007,8 +8795,8 @@ SpazTwit.prototype.getUserTimeline = function(id, count, page) {
 /**
  * @private
  */
-SpazTwit.prototype._processUserTimeline = function(ret_items, finished_event, processing_opts) {
-	this._processTimeline(SPAZCORE_SECTION_USER, ret_items, finished_event, processing_opts);
+SpazTwit.prototype._processUserTimeline = function(ret_items, opts, processing_opts) {
+	this._processTimeline(SPAZCORE_SECTION_USER, ret_items, opts, processing_opts);
 };
 
 
@@ -8109,7 +8897,7 @@ SpazTwit.prototype.search = function(query, since_id, results_per_page, page, la
 /**
  * @private
  */
-SpazTwit.prototype._processSearchTimeline = function(search_result, finished_event, processing_opts) {	
+SpazTwit.prototype._processSearchTimeline = function(search_result, opts, processing_opts) {	
 	/*
 		Search is different enough that we need to break it out and 
 		write a custom alternative to _processTimeline
@@ -8174,14 +8962,12 @@ SpazTwit.prototype._processSearchTimeline = function(search_result, finished_eve
 			'page'             : search_result.page,
 			'query'            : search_result.query
 		};
-		// jQuery().trigger(finished_event, [this.data[SPAZCORE_SECTION_SEARCH].newitems, search_info]);
-		this.triggerEvent(finished_event, [this.data[SPAZCORE_SECTION_SEARCH].newitems, search_info]);
+		this.triggerEvent(opts.success_event_type, [this.data[SPAZCORE_SECTION_SEARCH].newitems, search_info]);
 		
 
 
 	} else { // no new items, but we should fire off success anyway
-		// jQuery().trigger(finished_event, [[]]);
-		this.triggerEvent(finished_event, []);
+		this.triggerEvent(opts.success_event_type, []);
 	}
 	
 };
@@ -8261,7 +9047,7 @@ SpazTwit.prototype.getTrends = function() {
 /**
  * @private
  */
-SpazTwit.prototype._processTrends = function(trends_result, finished_event, processing_opts) {
+SpazTwit.prototype._processTrends = function(trends_result, opts, processing_opts) {
 
 	if (!processing_opts) { processing_opts = {}; }
 	
@@ -8279,7 +9065,7 @@ SpazTwit.prototype._processTrends = function(trends_result, finished_event, proc
 			}
 		}
 		// jQuery().trigger(finished_event, [ret_items]);
-		this.triggerEvent(finished_event, ret_items);
+		this.triggerEvent(opts.success_event_type, ret_items);
 		
 	}
 };
@@ -8292,7 +9078,23 @@ SpazTwit.prototype._processTrends = function(trends_result, finished_event, proc
  */
 SpazTwit.prototype._getTimeline = function(opts) {
 	
-	sc.helpers.dump(opts.data);
+	opts = sch.defaults({
+		'method':'GET',
+		'timeout':this.DEFAULT_TIMEOUT,
+		'url':null,
+		'data':null,
+		'username':null,
+		'password':null,
+		'process_callback':null,
+		'processing_opts':null,
+		'success_event_type':null,
+		'failure_event_type':null,
+		'success_callback':null,
+		'failure_callback':null
+	}, opts);
+
+	sch.debug(opts.data);
+
 	
 	/*
 		for closure references
@@ -8300,7 +9102,7 @@ SpazTwit.prototype._getTimeline = function(opts) {
 	var stwit = this;
 	
 	var xhr = jQuery.ajax({
-		'timeout' :this.opts.timeout,
+		'timeout' :opts.timeout,
         'complete':function(xhr, msg){
             sc.helpers.dump(opts.url + ' complete:'+msg);
 			if (msg === 'timeout') {
@@ -8324,6 +9126,9 @@ SpazTwit.prototype._getTimeline = function(opts) {
 						}
 					}
 				}
+				if (opts.failure_callback) {
+					opts.failure_callback(xhr, msg, exc);
+				}
 				if (opts.failure_event_type) {
 					sc.helpers.dump("opts.failure_event_type:"+opts.failure_event_type);
 					// jQuery().trigger(opts.failure_event_type, [{'url':opts.url, 'xhr':xhr, 'msg':msg}]);
@@ -8333,6 +9138,9 @@ SpazTwit.prototype._getTimeline = function(opts) {
 	
 	        } else {
                 sc.helpers.dump("Error:Unknown from "+opts['url']);
+				if (opts.failure_callback) {
+					opts.failure_callback(null, msg, exc);
+				}
 				if (opts.failure_event_type) {
 					// jQuery().trigger(opts.failure_event_type, [{'url':opts.url, 'xhr':null, 'msg':'Unknown Error'}]);
 					stwit.triggerEvent(opts.failure_event_type, {'url':opts.url, 'xhr':xhr, 'msg':'Unknown Error'});
@@ -8349,7 +9157,7 @@ SpazTwit.prototype._getTimeline = function(opts) {
 				sc.helpers.dump(stwit.combined_errors);
 				sc.helpers.dump(stwit.combined_finished);
 				if (opts.process_callback) {
-					opts.process_callback.call(stwit, [], opts.failure_event_type, opts.processing_opts);
+					opts.process_callback.call(stwit, [], opts, opts.processing_opts);
 				}
 			}
 			
@@ -8363,22 +9171,21 @@ SpazTwit.prototype._getTimeline = function(opts) {
 			} catch(e) {
 				stwit.triggerEvent(document, opts.failure_event_type, {'url':opts.url, 'xhr':xhr, 'msg':'Error decoding data from server'});
 			}
-			
-			
-			
+
 			if (opts.process_callback) {
 				/*
 					using .call here and passing stwit as the first param
 					ensures that "this" inside the callback refers to our
 					SpazTwit object, and not the jQuery.Ajax object
 				*/
-				opts.process_callback.call(stwit, data, opts.success_event_type, opts.processing_opts);
+				opts.process_callback.call(stwit, data, opts, opts.processing_opts);
 			} else {
+				if (opts.success_callback) {
+					opts.success_callback(data);
+				}
 				// jQuery().trigger(opts.success_event_type, [data]);
 				stwit.triggerEvent(opts.success_event_type, data);
-				
-			}
-			
+			}			
         },
         'beforeSend':function(xhr){
 			sc.helpers.dump("beforesend");
@@ -8386,7 +9193,7 @@ SpazTwit.prototype._getTimeline = function(opts) {
 				xhr.setRequestHeader("Authorization", "Basic " + sc.helpers.Base64.encode(opts.username + ":" + opts.password));
 			}
         },
-        'type':"GET",
+        'type': 	opts.method,
         'url': 		opts.url,
         'data': 	opts.data
 	});
@@ -8399,7 +9206,9 @@ SpazTwit.prototype._getTimeline = function(opts) {
  * general processor for timeline data 
  * @private
  */
-SpazTwit.prototype._processTimeline = function(section_name, ret_items, finished_event, processing_opts) {
+SpazTwit.prototype._processTimeline = function(section_name, ret_items, opts, processing_opts) {
+	
+	sch.debug(opts);
 	
 	if (!processing_opts) { processing_opts = {}; }
 
@@ -8431,7 +9240,7 @@ SpazTwit.prototype._processTimeline = function(section_name, ret_items, finished
 		
 		if (section_name === SPAZCORE_SECTION_USER) { // special case -- we don't keep this data, just parse and fire it off
 
-			this.triggerEvent(finished_event, ret_items);
+			this.triggerEvent(opts.success_event_type, ret_items);
 			
 		} else { // this is a "normal" timeline that we want to be persistent
 			
@@ -8455,7 +9264,7 @@ SpazTwit.prototype._processTimeline = function(section_name, ret_items, finished
 				Fire off the new section data event
 			*/
 			if (!processing_opts.combined) {
-				this.triggerEvent(finished_event, this.data[section_name].items);
+				this.triggerEvent(opts.success_event_type, this.data[section_name].items);
 			} else {
 				this.combined_finished[section_name] = true;
 				sc.helpers.dump("this.combined_finished["+section_name+"]:"+this.combined_finished[section_name]);
@@ -8474,7 +9283,7 @@ SpazTwit.prototype._processTimeline = function(section_name, ret_items, finished
 	} else { // no new items, but we should fire off success anyway
 		if (!processing_opts.combined) {
 			// jQuery().trigger(finished_event, []);
-			this.triggerEvent(finished_event);
+			this.triggerEvent(opts.success_event_type);
 			
 		} else {
 			this.combined_finished[section_name] = true;
@@ -8562,6 +9371,13 @@ SpazTwit.prototype._processItem = function(item, section_name) {
 		if (item.in_reply_to_screen_name.toLowerCase() === item.SC_user_received_by.toLowerCase() ) {
 			item.SC_is_reply = true;
 		}
+	}
+	
+	/*
+		is an official API retweet? then add .SC_is_retweet
+	*/
+	if ( item.retweet_status ) {
+		item.SC_is_retweet = true;
 	}
 	
 	/*
@@ -8667,9 +9483,33 @@ SpazTwit.prototype._processUser = function(item, section_name) {
  * use this to call methods that will return a single response 
  * 
  * @param {obj} opts a set of options for this method 
- * @private
+ * @param {string} opts.url The url for the request
+ * @param {string} [opts.method] the HTTP method to use. default is POST
+ * @param {number} [opts.timeout] the timeout for the request. default is 60 seconds
+ * @param {object} [opts.data] data to pass with the request
+ * @param {string} [opts.username]
+ * @param {string} [opts.password]
+ * @param {function} [opts.process_callback] a function to call on the retured data for extra processing on success
+ * @param {string} [opts.success_event_type] the event to trigger on success
+ * @param {string} [opts.failure_event_type] the event to trigger on failure
+ * @param {function} [opts.success_callback] a callback to fire on success
+ * @param {function} [opts.failure_callback] a callback to fire on failure
  */
 SpazTwit.prototype._callMethod = function(opts) {
+	
+	opts = sch.defaults({
+		'method':'POST',
+		'timeout':this.DEFAULT_TIMEOUT,
+		'url':null,
+		'data':null,
+		'username':null,
+		'password':null,
+		'process_callback':null,
+		'success_event_type':null,
+		'failure_event_type':null,
+		'success_callback':null,
+		'failure_callback':null
+	}, opts);
 	
 	var method;
 	
@@ -8691,11 +9531,9 @@ SpazTwit.prototype._callMethod = function(opts) {
 	    },
 	    'error':function(xhr, msg, exc) {
 			sc.helpers.dump(opts.url + ' error:'+msg);
-			sc.helpers.debug("response: "+data);
 	        if (xhr) {
 				if (!xhr.readyState < 4) {
 					sc.helpers.dump("Error:"+xhr.status+" from "+opts['url']);
-					sc.helpers.dump("Response: "+xhr.responseText);
 					if (xhr.responseText) {
 						try {
 							var data = sc.helpers.deJSON(xhr.responseText);
@@ -8705,6 +9543,9 @@ SpazTwit.prototype._callMethod = function(opts) {
 						}
 					}
 				}
+				if (opts.failure_callback) {
+					opts.failure_callback(xhr, msg, exc);
+				}
 				if (opts.failure_event_type) {
 					// jQuery().trigger(opts.failure_event_type, [{'url':opts.url, 'xhr':xhr, 'msg':msg}]);
 					stwit.triggerEvent(opts.failure_event_type, {'url':opts.url, 'xhr':xhr, 'msg':msg});
@@ -8712,6 +9553,9 @@ SpazTwit.prototype._callMethod = function(opts) {
 	
 	        } else {
 	            sc.helpers.dump("Error:Unknown from "+opts['url']);
+				if (opts.failure_callback) {
+					opts.failure_callback(null, msg, exc);
+				}
 				if (opts.failure_event_type) {
 					// jQuery().trigger(opts.failure_event_type, [{'url':opts.url, 'xhr':null, 'msg':'Unknown Error'}]);
 					stwit.triggerEvent(opts.failure_event_type, {'url':opts.url, 'xhr':null, 'msg':'Unknown Error'});
@@ -8723,7 +9567,6 @@ SpazTwit.prototype._callMethod = function(opts) {
 	    },
 	    'success':function(data) {
 			sc.helpers.dump(opts.url + ' success');
-			sc.helpers.debug("response: "+data);
 			data = sc.helpers.deJSON(data);
 			if (opts.process_callback) {
 				/*
@@ -8731,8 +9574,11 @@ SpazTwit.prototype._callMethod = function(opts) {
 					ensures that "this" inside the callback refers to our
 					SpazTwit object, and not the jQuery.Ajax object
 				*/
-				opts.process_callback.call(stwit, data, opts.success_event_type);
+				opts.process_callback.call(stwit, data, opts);
 			} else {
+				if (opts.success_callback) {
+					opts.success_callback(data);
+				}
 				// jQuery().trigger(opts.success_event_type, [data]);
 				stwit.triggerEvent(opts.success_event_type, data);
 				
@@ -8796,8 +9642,8 @@ SpazTwit.prototype.getFriendsList = function() {
 /**
  * @private
  */
-SpazTwit.prototype._processFriendsList = function(ret_items, finished_event, processing_opts) {
-	this._processUserList(SPAZCORE_SECTION_FRIENDLIST, ret_items, finished_event, processing_opts);
+SpazTwit.prototype._processFriendsList = function(ret_items, opts, processing_opts) {
+	this._processUserList(SPAZCORE_SECTION_FRIENDLIST, ret_items, opts.success_event_type, processing_opts);
 };
 
 
@@ -8823,8 +9669,8 @@ SpazTwit.prototype.getFollowersList = function() {
 /**
  * @private
  */
-SpazTwit.prototype._processFollowersList = function(ret_items, finished_event, processing_opts) {
-	this._processUserList(SPAZCORE_SECTION_FOLLOWERSLIST, ret_items, finished_event, processing_opts);
+SpazTwit.prototype._processFollowersList = function(ret_items, opts, processing_opts) {
+	this._processUserList(SPAZCORE_SECTION_FOLLOWERSLIST, ret_items, opts.success_event_type, processing_opts);
 };
 
 
@@ -8833,7 +9679,7 @@ SpazTwit.prototype._processFollowersList = function(ret_items, finished_event, p
  * general processor for timeline data 
  * @private
  */
-SpazTwit.prototype._processUserList = function(section_name, ret_items, finished_event, processing_opts) {
+SpazTwit.prototype._processUserList = function(section_name, ret_items, opts, processing_opts) {
 	
 	if (!processing_opts) { processing_opts = {}; }
 
@@ -8862,10 +9708,10 @@ SpazTwit.prototype._processUserList = function(section_name, ret_items, finished
 
 		this._addToSectionItems(section_name, this.data[section_name].newitems);
 		
-		this.triggerEvent(finished_event,this.data[section_name].newitems );
+		this.triggerEvent(opts.success_event_type,this.data[section_name].newitems );
 
 	} else { // no new items, but we should fire off success anyway
-		this.triggerEvent(finished_event);
+		this.triggerEvent(opts.success_event_type);
 	}
 
 };
@@ -8995,19 +9841,19 @@ SpazTwit.prototype.update = function(status, source, in_reply_to_status_id) {
 	
 };
 
-SpazTwit.prototype._processUpdateReturn = function(data, finished_event) {
+SpazTwit.prototype._processUpdateReturn = function(data, opts) {
 	
 	/*
 		Add this to the HOME section and fire off the event when done
 	*/	
-	this._processTimeline(SPAZCORE_SECTION_HOME, [data], finished_event);
+	this._processTimeline(SPAZCORE_SECTION_HOME, [data], opts);
 };
 
 SpazTwit.prototype.destroy = function(id) {};
 SpazTwit.prototype.destroyDirectMessage = function(id) {};
 
 
-SpazTwit.prototype.getOne = function(id) {
+SpazTwit.prototype.getOne = function(id, onSuccess) {
 	var data = {};
 	data['id'] = id;
 	
@@ -9019,6 +9865,7 @@ SpazTwit.prototype.getOne = function(id) {
 		'password':this.password,
 		'process_callback': this._processOneItem,
 		'success_event_type':'get_one_status_succeeded',
+		'success_callback':onSuccess,
 		'failure_event_type':'get_one_status_failed',
 		'method':'GET'
 	};
@@ -9030,15 +9877,17 @@ SpazTwit.prototype.getOne = function(id) {
 };
 
 
-SpazTwit.prototype._processOneItem = function(data, finished_event) {
+SpazTwit.prototype._processOneItem = function(data, opts) {
 	
 	/*
 		this item needs to be added to the friends timeline
 		so we can avoid dupes
 	*/
 	data = this._processItem(data);
-	// jQuery().trigger(finished_event, [data]);
-	this.triggerEvent(finished_event, data);
+	if (opts.success_callback) {
+		opts.success_callback(data);
+	}
+	this.triggerEvent(opts.success_event_type, data);
 	
 };
 
@@ -9349,42 +10198,232 @@ SpazTwit.prototype.removeSavedSearch = function(search_id) {
 /**
  * retrieves the list of lists 
  */
-SpazTwit.prototype.getLists = function() {};
+SpazTwit.prototype.getLists = function(user) {
+	if (!user && !this.username) {
+		return false;
+	} else if (!user) {
+	    user = this.username;
+	}
+
+	var url = this.getAPIURL('lists', {
+	    'user':user
+	});
+	
+	var opts = {
+		'url':url,
+		'username':this.username,
+		'password':this.password,
+		'success_event_type':'get_lists_succeeded',
+		'failure_event_type':'get_lists_failed',
+		'method':'GET'
+	};
+
+	var xhr = this._getTimeline(opts);
+};
+
+
+
+
+/**
+ * general processor for user lists data
+ * @private
+ */
+SpazTwit.prototype._processUserLists = function(section_name, ret_items, opts, processing_opts) {
+  
+    if (!processing_opts) { processing_opts = {}; }
+
+	if (ret_items.length > 0){
+		/*
+			we process each item, adding some attributes and generally making it cool
+		*/
+		for (var k=0; k<ret_items.length; k++) {
+			ret_items[k] = this._processList(ret_items[k], section_name);
+			sch.dump(ret_items[k]);
+		}
+
+		/*
+			sort items
+		*/
+		ret_items.sort(this._sortItemsAscending);
+
+		// set lastid
+		var lastid = ret_items[ret_items.length-1].id;
+		this.data[section_name].lastid = lastid;
+		sc.helpers.dump('this.data['+section_name+'].lastid:'+this.data[section_name].lastid);
+
+		// add new items to data.newitems array
+		this.data[section_name].newitems = ret_items;
+
+		this._addToSectionItems(section_name, this.data[section_name].newitems);
+		
+		this.triggerEvent(opts.success_event_type, this.data[section_name].newitems );
+
+	} else { // no new items, but we should fire off success anyway
+		this.triggerEvent(opts.success_event_type);
+	}
+};
+
+/**
+ * This modifies a Twitter user list, adding some properties. All new properties are
+ * prepended with "SC_"
+ * 
+ * this executes within the jQuery.each scope, so this === the item 
+ */
+SpazTwit.prototype._processList = function(item, section_name) {	
+	/*
+		add .SC_retrieved_unixtime
+	*/
+	if (!item.SC_retrieved_unixtime) {
+		item.SC_retrieved_unixtime = sc.helpers.getTimeAsInt();
+	}
+	
+	return item;
+};
+
 
 /**
  * retrieves a given list timeline
  * @param {string} list 
  */
-SpazTwit.prototype.getList = function(list) {};
+SpazTwit.prototype.getListInfo = function(list, user) {
+	if (!user && !this.username) {
+		sch.error('must pass a username or have one set to get list');
+		return false;
+	}
+	
+	user = user || this.username;
+
+	var url = this.getAPIURL('lists_list', {
+	    'user':user,
+		'slug':list
+	});
+	
+	var opts = {
+		'url':url,
+		'username':this.username,
+		'password':this.password,
+		'success_event_type':'get_list_succeeded',
+		'failure_event_type':'get_list_failed',
+		'method':'GET'
+	};
+
+	var xhr = this._callMethod(opts);
+};
+
+
+/**
+ * retrieves a given list timeline
+ * @param {string} list 
+ */
+SpazTwit.prototype.getListTimeline = function(list, user) {
+	if (!user && !this.username) {
+		sch.error('must pass a username or have one set to get list');
+		return false;
+	}
+	
+	user = user || this.username;
+
+	var url = this.getAPIURL('lists_timeline', {
+	    'user':user,
+		'slug':list
+	});
+	
+	var opts = {
+		'url':url,
+		'username':this.username,
+		'password':this.password,
+		'success_event_type':'get_list_timeline_succeeded',
+		'failure_event_type':'get_list_timeline_failed',
+		'method':'GET',
+		'process_callback':this._processListTimeline,
+		'processing_opts': {
+			'user':user,
+			'slug':list
+		}
+	};
+
+	var xhr = this._getTimeline(opts);
+};
+
+
+SpazTwit.prototype._processListTimeline = function(data, opts, processing_opts) {
+	if (!processing_opts) { processing_opts = {}; }
+	
+	var user = processing_opts.user || null;
+	var slug = processing_opts.slug || null;
+	
+	var rdata = {
+		'statuses':data,
+		'user':user,
+		'slug':slug
+	};
+	
+	/*
+		grab the array of items
+	*/
+	// jQuery().trigger(finished_event, [ret_items]);
+	this.triggerEvent(opts.success_event_type, rdata);
+};
 
 /**
  * retrieves a given list's members
  * @param {string} list 
  */
-SpazTwit.prototype.getListMembers = function(list) {};
+SpazTwit.prototype.getListMembers = function(list, user) {
+	if (!user && !this.username) {
+		sch.error('must pass a username or have one set to get list');
+		return false;
+	}
+	
+	user = user || this.username;
+
+	var url = this.getAPIURL('lists_members', {
+	    'user':user,
+		'slug':list
+	});
+	
+	var opts = {
+		'url':url,
+		'username':this.username,
+		'password':this.password,
+		'success_event_type':'get_list_members_succeeded',
+		'failure_event_type':'get_list_members_failed',
+		'method':'GET',
+		'process_callback':this._processListTimeline,
+		'processing_opts': {
+			'user':user,
+			'slug':list
+		}
+	};
+
+	var xhr = this._getTimeline(opts);
+};
 
 /**
- * create a new list
+ * create a new list for the authenticated user
  * @param {string} list  The list name
  * @param {string} visibility   "public" or "private"
+ * @param {string} [description]  The list description
  */
-SpazTwit.prototype.addList = function(list, visibility) {};
+SpazTwit.prototype.addList = function(list, visibility, description) {
+	
+};
 
 /**
  * delete a list
  * @param {string} list  The list name 
  */
-SpazTwit.prototype.removeList = function(list) {};
+SpazTwit.prototype.removeList = function(list, user) {};
 
 /**
  * add a user to a list
  */
-SpazTwit.prototype.addUserToList = function(user, list) {};
+SpazTwit.prototype.addUserToList = function(user, list, list_user) {};
 
 /**
  * delete a user from a list 
  */
-SpazTwit.prototype.removeUserFromList = function(user, list) {};
+SpazTwit.prototype.removeUserFromList = function(user, list, list_user) {};
 
 
 
@@ -9406,7 +10445,6 @@ SpazTwit.prototype.triggerEvent = function(type, data) {
 	}
 	
 };
-
 
 /**
  * shortcut for SpazTwit if the SpazCore libraries are being used
@@ -9542,7 +10580,85 @@ if (sc) {
 }
 * 
 * 
-*//*jslint 
+*/
+/*jslint 
+browser: true,
+nomen: false,
+debug: true,
+forin: true,
+undef: true,
+white: false,
+onevar: false 
+ */
+var sc, Mojo, use_palmhost_proxy;
+
+/**
+ * opts = {
+ *  content_type:'', // optional
+ *  field_name:'', //optional, default to 'media;
+ *  file_url:'',
+ *  url:'', // REQ
+ *  platform: {
+ * 		sceneAssistant:{} // REQ; the sceneAssistant we're firing the service req from
+ *  }
+ * 	extra:{...} // extra post fields (text/plain only atm)
+ * } 
+ * @param Function onSuccess 
+ */
+sc.helpers.HTTPUploadFile = function(opts, onSuccess, onFailure) {
+	
+	sch.debug('in HTTPUploadFile ================!!!!!!!!!!!!!!');
+	
+	var key, val, postparams = [];
+	var file_url   = opts.file_url || null;
+	var url        = opts.url      || null;
+	var field_name = opts.field_name || 'media';
+	var content_type = opts.content_type || 'img';
+	
+	if (opts.extra) {
+		for (key in opts.extra) {
+			val = opts.extra[key];
+			postparams.push({ 'key' :key, 'data':val, contentType:'text/plain' });
+		}
+	}
+	
+	if (opts.platform) {
+		var sceneAssistant = opts.platform.sceneAssistant;
+	} else {
+		sch.error('You must pass the opts.platform.sceneAssistant argument to upload on webOS');
+		return;
+	}
+	
+	sch.debug('OPTS =============');
+	sch.debug(opts);
+	sch.debug('OPTS.EXTRA =============');
+	sch.debug(opts.extra);
+	sch.debug('ONSUCCESS =============');
+	sch.debug(onSuccess);
+	sch.debug('ONFAILURE =============');
+	sch.debug(onFailure);
+	sch.debug('POSTPARAMS =============');
+	sch.debug(postparams);
+	sch.debug('sceneAssistant =============');
+	sch.debug(sceneAssistant);
+
+	
+	sceneAssistant.controller.serviceRequest('palm://com.palm.downloadmanager/', {
+		method: 'upload', 
+		parameters: {
+			'url'        : url,
+			'contentType': content_type,
+			'fileLabel'  : field_name,
+			'fileName'   : file_url,
+			'postParameters': postparams,
+			cookies      : {}, // optional
+			customHttpHeaders: [], // optional
+			subscribe    : true 
+		},
+		'onSuccess' : onSuccess,
+		'onFailure' : onFailure
+	 });
+};/*jslint 
 browser: true,
 nomen: false,
 debug: true,
@@ -9556,7 +10672,7 @@ var sc, Mojo, use_palmhost_proxy;
  
  
 /**
- * This should contain definitions for all methods from helpers/sys.js tagged @platformsub 
+ * This should contain definitions for all methods from helpers/sys.js tagged @platformstub 
  */
 
 /**
@@ -9598,6 +10714,9 @@ sc.helpers.dump = function(obj, level) {
  */
 sc.helpers.getMojoURL = function(url) {
 	if (typeof Mojo !== "undefined") { // we're in webOS		
+		/*
+			I would like to apologize for using a global here. ick.
+		*/
 		if (use_palmhost_proxy) { // we are not on an emu or device, so proxy calls
 			var re = /https?:\/\/.[^\/:]*(?::[0-9]+)?/;
 			var match = url.match(re);

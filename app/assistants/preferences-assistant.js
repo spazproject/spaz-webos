@@ -266,8 +266,8 @@ PreferencesAssistant.prototype.setupChoices = function(){
 		{label:$L('Venti'), value:'venti'}		
 	];
 	
-	var spm = new SpazPhotoMailer();
-	var uploaders = spm.getAPILabels();
+	var sfu = new SpazFileUploader();
+	var uploaders = sfu.getAPILabels();
 	this.validImageUploaders = [];
 	for (var i=0; i < uploaders.length; i++) {
 		this.validImageUploaders.push({label:$L(uploaders[i]),  value:uploaders[i]});
