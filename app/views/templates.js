@@ -48,12 +48,12 @@ sc.app.tpl.addTemplateMethod('message-detail', function(d) {
 		+ '				<div class="palm-row single">'
 		+ '					<button class="palm-button" id="message-detail-action-reply" data-status-id="'+d.id+'" data-screen_name="'+d.user.screen_name+'">@Reply to this message</button>'
 		+ '				</div>'
+		// + '				<div class="palm-row single">'
+		// + '					<button class="palm-button" id="message-detail-action-retweet" data-status-id="'+d.id+'">ReTweet this message</button>'
+		// + '				</div>'
 		+ '				<div class="palm-row single">'
-		+ '					<button class="palm-button" id="message-detail-action-retweet" data-status-id="'+d.id+'">ReTweet this message</button>'
+		+ '					<button class="palm-button" id="message-detail-action-share" data-status-id="'+d.id+'">Share this message</button>'
 		+ '				</div>'
-		+ '   			<div class="palm-row single">'
-		+ '					<button class="palm-button" id="message-detail-action-dm" data-screen_name="'+d.user.screen_name+'">Direct message this user</button>'
-		+ '				</div>';
 		if (d.favorited) {
 			html += '   			<div class="palm-row single">'
 			 + '					<button class="palm-button" id="message-detail-action-favorite" data-status-id="'+d.id+'" data-screen_name="'+d.user.screen_name+'" data-favorited="true">Remove as favorite</button>'
@@ -63,7 +63,10 @@ sc.app.tpl.addTemplateMethod('message-detail', function(d) {
 			+ '					<button class="palm-button" id="message-detail-action-favorite" data-status-id="'+d.id+'" data-screen_name="'+d.user.screen_name+'" data-favorited="false">Add as favorite</button>'
 			+ '				</div>';
 		}
-		html += '			</div>'
+		html += '   			<div class="palm-row single">'
+		+ '					<button class="palm-button" id="message-detail-action-dm" data-screen_name="'+d.user.screen_name+'">Direct message this user</button>'
+		+ '				</div>'
+		+ '			</div>'
 		+ '		</div>'
     + '	</div>';
 	}

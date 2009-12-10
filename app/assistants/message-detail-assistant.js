@@ -167,8 +167,20 @@ MessageDetailAssistant.prototype.activate = function(event) {
 		var in_reply_to = jQuery(this).attr('data-status-id');
 		thisA.prepReply(screen_name, in_reply_to, thisA.statusobj);
 	});
-	jQuery('#message-detail-action-retweet', this.scroller).live(Mojo.Event.tap, function(e) {
-		thisA.prepRetweet(thisA.statusobj);
+	// jQuery('#message-detail-action-retweet', this.scroller).live(Mojo.Event.tap, function(e) {
+	// 	thisA.prepRetweet(thisA.statusobj);
+	// });
+	jQuery('#message-detail-action-share', this.scroller).live(Mojo.Event.tap, function(e) {
+		thisA.controller.popupSubmenu({
+			onChoose:  thisA.sharePopupmenuChoose,
+			placeNear: e.target,
+			items: [
+				{label: 'ReTweet', command: 'retweet'},
+				{label: 'Quote', command:   'quote'},
+				{label: 'Email', command:   'email'},
+				{label: 'SMS/IM', command:  'sms'}
+			]
+		});
 	});
 	jQuery('#message-detail-action-dm', this.scroller).live(Mojo.Event.tap, function(e) {
 		thisA.prepDirectMessage(jQuery(this).attr('data-screen_name'));
@@ -217,7 +229,8 @@ MessageDetailAssistant.prototype.deactivate = function(event) {
 	jQuery('#message-detail-container .in-reply-to-link', this.scroller).die(Mojo.Event.tap);
 	jQuery('#message-detail-image', this.scroller).die(Mojo.Event.tap);
 	jQuery('#message-detail-action-reply', this.scroller).die(Mojo.Event.tap);
-	jQuery('#message-detail-action-retweet', this.scroller).die(Mojo.Event.tap);
+	// jQuery('#message-detail-action-retweet', this.scroller).die(Mojo.Event.tap);
+	jQuery('#message-detail-action-share', this.scroller).die(Mojo.Event.tap);
 	jQuery('#message-detail-action-dm', this.scroller).die(Mojo.Event.tap);
 	jQuery('#message-detail-action-favorite', this.scroller).die(Mojo.Event.tap);
 	
@@ -271,4 +284,25 @@ MessageDetailAssistant.prototype.processStatusReturn = function(e, statusobj) {
 	
 	sch.updateRelativeTimes('#message-detail .status>.meta>.date>.date-relative', 'data-created_at');
 	
+};
+
+
+MessageDetailAssistant.prototype.sharePopupmenuChoose = function(cmd) {
+	
+	switch (cmd) {
+		case 'retweet':
+			this.prepRetweet(this.statusobj);
+			break;
+		case 'quote':
+			this.prepQuote(this.statusobj);
+			break;
+		case 'email':
+			this.emailTweet(this.statusobj);
+			break;
+		case 'sms':
+			this.SMSTweet(this.statusobj);
+			break;
+		default:
+			return;
+	}
 };

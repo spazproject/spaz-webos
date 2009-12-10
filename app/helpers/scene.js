@@ -166,7 +166,7 @@ scene_helpers.addCommonSceneMethods = function(assistant) {
 				case 'refresh':
 					this.refresh(); // need to have a "refresh" method defined for each scene asst
 					break;
-					
+				
 				/*
 					This is only in the search-twitter-assistant scene
 				*/
@@ -392,8 +392,67 @@ scene_helpers.addCommonSceneMethods = function(assistant) {
 			'select_start' : text.length,
 			'select_length': text.length
 		});
+	};
+
+	/**
+	 *  
+	 */
+	assistant.prepQuote = function(entryobj) {
+		var text = entryobj.SC_text_raw;
+		var screenname = entryobj.user.screen_name;
+
+		var text = text+' /via @' + screenname;
+		
+		this.showPostPanel({
+			'text'         : text,
+			'type'         : null,
+			'select_start' : text.length,
+			'select_length': text.length
+		});
+	};
 
 
+	/**
+	 *  
+	 */
+	assistant.emailTweet = function(tweetobj) {
+		
+		var message = '';
+		
+		message = ""
+			+ "From @"+tweetobj.user.screen_name + ":<br><br>"
+			+ sch.autolink(tweetobj.SC_text_raw) + "<br><br>"
+			+ sch.autolink("Shared from Spaz http://getspaz.com")+"\n\n";
+		
+		Spaz.sendEmail({
+	      msg: message,
+	      subject: "A tweet by @"+tweetobj.user.screen_name+" shared from Spaz",
+	      controller: this.controller
+	    });
+	};
+
+
+	/**
+	 *  
+	 */
+	assistant.SMSTweet = function(tweetobj) {
+		
+		var message = '';
+		
+		message = ""
+			+ "From @"+tweetobj.user.screen_name+":\n"
+			+ tweetobj.SC_text_raw+"\n\n"
+			+ "Shared from Spaz http://getspaz.com\n\n";
+		
+		this.controller.serviceRequest('palm://com.palm.applicationManager', {
+			method:'launch',
+			parameters:{
+				id:"com.palm.app.messaging",
+				params:{
+					'messageText':message
+				}
+			}
+		});
 	};
 
 	/**
