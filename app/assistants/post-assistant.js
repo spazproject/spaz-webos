@@ -164,9 +164,9 @@ PostAssistant.prototype.setup = function() {
 	/*
 		Listen for file upload events
 	*/
-	Mojo.Event.listen(document, sc.events.fileUploadStart, thisA.onUploadStart.bindAsEventListener(this));
-	Mojo.Event.listen(document, sc.events.fileUploadSuccess, thisA.onUploadSuccess.bindAsEventListener(this));
-	Mojo.Event.listen(document, sc.events.fileUploadFailure, thisA.onUploadFailure.bindAsEventListener(this));
+	Mojo.Event.listen(document, sc.events.fileUploadStart, thisA.onUploadStart.bindAsEventListener(thisA));
+	Mojo.Event.listen(document, sc.events.fileUploadSuccess, thisA.onUploadSuccess.bindAsEventListener(thisA));
+	Mojo.Event.listen(document, sc.events.fileUploadFailure, thisA.onUploadFailure.bindAsEventListener(thisA));
 
 	
 	Mojo.Event.listen($('post-textfield'), Mojo.Event.propertyChange, this._updateCharCount.bindAsEventListener(this));	
@@ -375,7 +375,7 @@ PostAssistant.prototype.shortenURLs = function(event) {
 			'version':'2.0.1',
 			'format':'json',
 			'login':'spazcore',
-			'apiKey':'R_f3b86681a63a6bbefc7d8949fd915f1d'
+			'apiKey':sc.app.prefs.get('services-bitly-apikey')
 		}
 	});
 	
@@ -461,23 +461,22 @@ PostAssistant.prototype.sendPost = function(event) {
 		if (status.length > 0 && status.length <= 140) {
 			var in_reply_to = parseInt(jQuery('#post-panel-irt-message', this.controller.getSceneScroller()).attr('data-status-id'), 10);
 
-			/*
-				@todo WE NEED TO CHECK TO SEE IF WE HAVE AN ATTACHMENT HERE
-				IF WE DO, POST THROUGH THE IMAGE UPLOADER API
-			*/
 			if (this.model.attachment) { // we have an attachment; post through service
-				
-				// Mojo.Controller.notYetImplemented();
-				// 
-				// return;
-				// 
-				
+
+				var source = 'spaz'
+
 				this.SFU.setAPI(this.imageUploaderModel['image-uploader']);
+
+				if (this.imageUploaderModel['image-uploader'] === 'pikchur') {
+					this.SFU.setAPIKey(sc.app.prefs.get('services-pikchur-apikey'));
+					source = sc.app.prefs.get('services-pikchur-source');
+				}
+
 				
 				this.SFU.uploadAndPost(this.model.attachment, {
 					'username' : sc.app.username,
 					'password' : sc.app.password,
-					'source'   : 'spaz',
+					'source'   : source,
 					'message'  : status,
 					'platform' : {
 						'sceneAssistant' : this
@@ -781,6 +780,10 @@ PostAssistant.prototype.onUploadSuccess = function(e) {
 	*/
 	if (data.completed) {
 		var parser=new DOMParser();
+		
+		sch.error("returned from upload:");
+		sch.error(data.responseString);
+		
 		var xmldoc = parser.parseFromString(data.responseString,"text/xml");
 		var rspAttr = xmldoc.getElementsByTagName("rsp")[0].attributes;
 		
@@ -836,9 +839,9 @@ PostAssistant.prototype.onUploadSuccess = function(e) {
  * fires when upload from this.SFU fails
  */
 PostAssistant.prototype.onUploadFailure = function(e) {
-	Mojo.Log.info('fileUploadFailure');
-	var data = sch.getEventData(e);
-	sch.debug(data);
+	// var data = sch.getEventData(e);
+	sch.error("File Upload Failure. Data:");
+	sch.error(e);
 	
 	this.deactivateSpinner();
 	this.postTextFieldModel.disabled = false;

@@ -43,6 +43,10 @@ var default_preferences = {
     'services-pingfm-sendreplies': false,
     'services-pingfm-updatetype': 'default',
 
+	'services-pikchur-apikey': 	'aJMHC7eHRbhnA7FLdXmAtA',
+	'services-pikchur-source': 	'NjMw',
+	'services-bitly-apikey': 	'R_f3b86681a63a6bbefc7d8949fd915f1d',
+
     'twitter-api-base-url': 'https://twitter.com/',
     'twitter-www-base-url': 'http://twitter.com/',
 
