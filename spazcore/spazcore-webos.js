@@ -1,4 +1,4 @@
-/*********** Built 2009-12-07 13:38:56 EST ***********/
+/*********** Built 2009-12-16 11:05:23 EST ***********/
 /*jslint 
 browser: true,
 nomen: false,
@@ -4280,13 +4280,49 @@ sc.helpers.autolink = function(str, type, extra_code, maxlen) {
 		type = 'both';
 	}
 
+	var re_nohttpurl = /((^|\s)(www\.)?([a-zA-Z_\-]+\.)(com|net|org)($|\s))/gi;
+
 	var re_noemail = /(^|\s|\(|:)((http(s?):\/\/)|(www\.))(\w+[^\s\)<]+)/gi;
 	var re_nourl   = /(^|\s|\()([a-zA-Z0-9_\.\-\+]+)@([a-zA-Z0-9\-]+)\.([a-zA-Z0-9\-\.]*)([^\s\)<]+)/gi;
 	
 	var x, ms, period = '';
 
 	if (type !== 'email')
-	{
+	{	
+		while ((ms = re_nohttpurl.exec(str))) { // look for URLs without a preceding "http://"
+			// if ( /\.$/.test(ms[4]) ) {
+			// 	period = '.';
+			//	ms[5] = ms[5].slice(0, -1);
+			// }
+			
+			/*
+				sometimes we can end up with a null instead of a blank string,
+				so we need to force the issue in javascript.
+			*/
+			for (x=0; x<ms.length; x++) {
+				if (!ms[x]) {
+					ms[x] = '';
+				}
+			}
+
+			if (extra_code) {
+				extra_code = ' '+extra_code;
+			} else {
+				extra_code = '';
+			}
+			
+			var desc = ms[3]+ms[4]+ms[5];
+
+			if (maxlen && maxlen > 0 && desc.length > maxlen) {
+				desc = desc.substr(0, maxlen)+'...';
+			}
+
+			var newstr = ms[2]+'<a href="http://'+ms[3]+ms[4]+ms[5]+'"'+extra_code+'>'+desc+'</a>'+ms[6];
+			sch.error(newstr);
+			str = str.replace(ms[0], newstr);
+		}
+		
+		
 		while ((ms = re_noemail.exec(str))) {
 
 			if ( /\.$/.test(ms[6]) ) {
@@ -5261,7 +5297,7 @@ SpazImageURL.prototype.initAPIs = function() {
 		'url_regex'       : /http:\/\/(?:pikchur\.com|pk\.gd)\/([a-zA-Z0-9]+)/gi,
 		'getThumbnailUrl' : function(id) {
 			// http://img.pikchur.com/pic_GPT_t.jpg
-			var url = 'http://img.pikchur.com/pic_'+id+'_m.jpg';
+			var url = 'http://img.pikchur.com/pic_'+id+'_s.jpg';
 			return url;
 		},
 		'getImageUrl'     : function(id) {
@@ -5612,6 +5648,32 @@ SpazFileUploader.prototype.getAPIs = function() {
 	    'twitpic' : {
 			'upload_url' : 'http://twitpic.com/api/upload',
 		    'post_url'   : 'http://twitpic.com/api/uploadAndPost',
+			'processResult': function(event, apiobj) {
+				var loader = event.target;
+				
+				sch.debug('PROCESSING: EVENT');
+				sch.debug(event);
+
+				var parser=new DOMParser();
+				var xmldoc = parser.parseFromString(event.data,"text/xml");
+
+				var rspAttr = xmldoc.getElementsByTagName("rsp")[0].attributes;
+				if (rspAttr.getNamedItem("stat").nodeValue === 'ok')
+				{
+					returnobj['mediaurl'] = jQuery(xmldoc).find('mediaurl').text();
+				} 
+				else
+				{
+					returnobj['errAttributes'] = xmldoc.getElementsByTagName("err")[0].attributes;
+					returnobj['errMsg'] = errAttributes.getNamedItem("msg").nodeValue;
+				}
+				sch.debug(returnobj);
+				return returnobj;
+			}
+		},
+	    'posterous' : {
+			'upload_url' : 'http://posterous.com/api/upload',
+		    'post_url'   : 'http://posterous.com/api/uploadAndPost',
 			'processResult': function(event, apiobj) {
 				var loader = event.target;
 				
@@ -6985,8 +7047,9 @@ var sc, jQuery;
  * Constants to refer to services 
  */
 var SPAZCORE_SHORTURL_SERVICE_SHORTIE = 'short.ie';
-var SPAZCORE_SHORTURL_SERVICE_ISGD	= 'is.gd';
-var SPAZCORE_SHORTURL_SERVICE_BITLY	= 'bit.ly';
+var SPAZCORE_SHORTURL_SERVICE_ISGD	  = 'is.gd';
+var SPAZCORE_SHORTURL_SERVICE_BITLY	  = 'bit.ly';
+var SPAZCORE_SHORTURL_SERVICE_JMP     = 'j.mp';
 
 var SPAZCORE_EXPANDABLE_DOMAINS = [
 	'ad.vu',
@@ -7055,6 +7118,38 @@ SpazShortURL.prototype.getAPIObj = function(service) {
 		},
 		'processResult' : function(data) {
 			if (apis[SPAZCORE_SHORTURL_SERVICE_BITLY].processing_multiple === true) {
+				var result = sc.helpers.deJSON(data);
+				var rs = {};
+				for (var i in result.results) {
+					rs[i] = result.results[i].shortUrl;
+				}
+				return rs;
+			} else {
+				return data;
+			}
+		}
+		
+	};
+		
+	apis[SPAZCORE_SHORTURL_SERVICE_JMP] = {
+		'url'	  : 'http://j.mp/api',
+		'getData' : function(longurl, opts){
+			
+			/*
+				use the api if we're doing multiple URLs
+			*/
+			if (sc.helpers.isArray(longurl)) {
+				apis[SPAZCORE_SHORTURL_SERVICE_JMP].processing_multiple = true;
+				apis[SPAZCORE_SHORTURL_SERVICE_JMP].url = 'http://api.j.mp/shorten';
+				opts.longUrl = longurl;
+				return opts;
+			} else {
+				apis[SPAZCORE_SHORTURL_SERVICE_JMP].processing_multiple = false;
+				return { 'url':longurl };				
+			}
+		},
+		'processResult' : function(data) {
+			if (apis[SPAZCORE_SHORTURL_SERVICE_JMP].processing_multiple === true) {
 				var result = sc.helpers.deJSON(data);
 				var rs = {};
 				for (var i in result.results) {
@@ -7480,6 +7575,16 @@ SpazTimeline.prototype._init = function(opts) {
 
 
 };
+
+/**
+ * the timeline 
+ */
+SpazTimeline.prototype.last_id = -1;
+
+/**
+ * an array of data items that are represented in the timeline 
+ */
+SpazTimeline.prototype.model = [];
 
 /**
  * call this after initialization 
@@ -9092,9 +9197,6 @@ SpazTwit.prototype._getTimeline = function(opts) {
 		'success_callback':null,
 		'failure_callback':null
 	}, opts);
-
-	sch.debug(opts.data);
-
 	
 	/*
 		for closure references
@@ -9181,6 +9283,7 @@ SpazTwit.prototype._getTimeline = function(opts) {
 				opts.process_callback.call(stwit, data, opts, opts.processing_opts);
 			} else {
 				if (opts.success_callback) {
+					sch.error('CALLING SUCCESS CALLBACK');
 					opts.success_callback(data);
 				}
 				// jQuery().trigger(opts.success_event_type, [data]);
@@ -10198,7 +10301,7 @@ SpazTwit.prototype.removeSavedSearch = function(search_id) {
 /**
  * retrieves the list of lists 
  */
-SpazTwit.prototype.getLists = function(user) {
+SpazTwit.prototype.getLists = function(user, onSuccess, onFailure) {
 	if (!user && !this.username) {
 		return false;
 	} else if (!user) {
@@ -10215,6 +10318,8 @@ SpazTwit.prototype.getLists = function(user) {
 		'password':this.password,
 		'success_event_type':'get_lists_succeeded',
 		'failure_event_type':'get_lists_failed',
+		'success_callback':onSuccess,
+		'failure_callback':onFailure,
 		'method':'GET'
 	};
 
@@ -10314,8 +10419,11 @@ SpazTwit.prototype.getListInfo = function(list, user) {
 /**
  * retrieves a given list timeline
  * @param {string} list 
+ * @param {string} user the user who owns this list
+ * @param {function} [onSuccess] function to call on success
+ * @param {function} [onFailure] function to call on failure
  */
-SpazTwit.prototype.getListTimeline = function(list, user) {
+SpazTwit.prototype.getListTimeline = function(list, user, onSuccess, onFailure) {
 	if (!user && !this.username) {
 		sch.error('must pass a username or have one set to get list');
 		return false;
@@ -10334,6 +10442,8 @@ SpazTwit.prototype.getListTimeline = function(list, user) {
 		'password':this.password,
 		'success_event_type':'get_list_timeline_succeeded',
 		'failure_event_type':'get_list_timeline_failed',
+		'success_callback':onSuccess,
+		'failure_callback':onFailure,
 		'method':'GET',
 		'process_callback':this._processListTimeline,
 		'processing_opts': {

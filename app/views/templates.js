@@ -350,7 +350,7 @@ sc.app.tpl.addTemplateMethod('error_info_text', function(d) {
 	* twitter_msg':	    		
 	*/
 	
-	dump(d);
+	sch.debug(d);
 	
 	var html = '';
 	
@@ -359,8 +359,10 @@ sc.app.tpl.addTemplateMethod('error_info_text', function(d) {
 		html += $L('Twitter error')+  ':'+d.twitter_msg+"\n"
 		+ $L('Twitter request')+':'+d.twitter_request+"\n";
 	}
+	// html += $L('Status code')+':'+d.status+"\n"
+	// + $L('Status text')+':'+d.statusText+"\n"
+	// + $L('URL')        +':'+d.url+"\n";
 	html += $L('Status code')+':'+d.status+"\n"
-	+ $L('Status text')+':'+d.statusText+"\n"
 	+ $L('URL')        +':'+d.url+"\n";
 	
 	return html;

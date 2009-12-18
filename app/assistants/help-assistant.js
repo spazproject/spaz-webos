@@ -7,7 +7,15 @@ function HelpAssistant() {
 }
 
 HelpAssistant.prototype.setup = function(){
-
+	
+	this.initAppMenu({ 'items':[
+		Mojo.Menu.editItem,
+		{ label: $L('New Search Card'),	command: 'new-search-card' },
+		{ label: $L('Accounts...'), command:'accounts' },
+		{ label: $L('Preferences...'),	command:Mojo.Menu.prefsCmd },
+		{ label: $L('About Spaz'),		command: 'appmenu-about' },
+	]});
+	
 	this.setupCommonMenus({
 		viewMenuItems: [
 			{

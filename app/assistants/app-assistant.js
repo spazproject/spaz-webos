@@ -5,6 +5,7 @@ var loggedin_appmenu_items = [
 	Mojo.Menu.editItem,
 	{ label: $L('Update Location...'),	command: 'update-location' },
 	{ label: $L('New Search Card'),	command: 'new-search-card' },
+	{ label: $L('Accounts...'), command:'accounts' },
 	{ label: $L('Preferences...'),	command:Mojo.Menu.prefsCmd },
 	{ label: $L('About Spaz'),		command: 'appmenu-about' },
 	{ label: $L('Help...'),			command:Mojo.Menu.helpCmd }

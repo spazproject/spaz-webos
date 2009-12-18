@@ -8,7 +8,15 @@ function AboutAssistant() {
 
 AboutAssistant.prototype.setup = function() {
 	this.scroller = this.controller.getSceneScroller();
-	this.initAppMenu();
+
+	this.initAppMenu({ 'items':[
+		Mojo.Menu.editItem,
+		{ label: $L('New Search Card'),	command: 'new-search-card' },
+		{ label: $L('Accounts...'), command:'accounts' },
+		{ label: $L('Preferences...'),	command:Mojo.Menu.prefsCmd },
+		{ label: $L('Help...'),			command:Mojo.Menu.helpCmd }
+	]});
+
 	this.setupCommonMenus({
 		viewMenuItems: [
 			{

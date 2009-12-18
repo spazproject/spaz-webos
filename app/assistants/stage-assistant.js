@@ -78,7 +78,7 @@ StageAssistant.prototype.handleCommand = function(event){
 			/*
 				Navigation
 			*/
-			case 'home':
+			case 'accounts':
 				Spaz.findAndSwapScene("startlogin", active_scene);
 				break;
 			case 'my-timeline':

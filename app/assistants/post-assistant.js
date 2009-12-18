@@ -18,6 +18,8 @@ PostAssistant.prototype.setup = function() {
 	
 	this.initTwit();
 	
+	this.initAppMenu({ 'items':loggedin_appmenu_items });
+	
 	this.postMode = 'normal'; // 'normal' or 'email'
 	
 	this.postTextField = $('post-textfield');
@@ -181,8 +183,21 @@ PostAssistant.prototype.setup = function() {
 };
 
 PostAssistant.prototype.activate = function(args) {
-	
+
 	var thisA = this;
+	
+	/*
+		Tweetphoto is no longer valid, so we need to change that
+	*/
+	if (this.imageUploaderModel['image-uploader'] == 'tweetphoto') {
+		this.imageUploaderModel['image-uploader'] = 'yfrog';
+		sc.app.prefs.set('image-uploader', 'yfrog');
+		this.showAlert(
+			$L('Tweetphoto is no longer supported by Spaz, so I\'ve changed your image hosting preference to yfrog. You can pick a different service under the App menu in Preferences.'),
+			$L('Change in image hosting service')
+		);
+	}
+	
 
 	if (this.args) {
 		

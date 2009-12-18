@@ -34,7 +34,7 @@ var default_preferences = {
 
     'url-shortener': 'bitly',
 
-    'image-uploader': 'tweetphoto',
+    'image-uploader': 'yfrog',
 
     'services-twitpic-sharepassword': false,
 
