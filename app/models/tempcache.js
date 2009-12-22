@@ -42,9 +42,11 @@ TempCache.save = function(key, val, idkey) {
 	if (!idkey) {
 		idkey = sc.app.userid;
 	}
-	
-	sch.dump(idkey);
-	
+
+
+	sch.error("saving key:"+key);
+	sch.error("saving val:"+val);
+	sch.error("saving idkey:"+idkey);	
 	
 	if (!window.spaztmpcache) {
 		TempCache.init();
@@ -55,6 +57,12 @@ TempCache.save = function(key, val, idkey) {
 	}
 	
 	window.spaztmpcache[idkey][key] = val;
+
+	var jsonver = sch.enJSON(spaztmpcache);
+
+	sch.error("jsonver.length:"+jsonver.length);
+	sch.error(jsonver);
+
 };
 
 /**

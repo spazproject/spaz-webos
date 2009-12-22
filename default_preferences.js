@@ -25,9 +25,9 @@ var default_preferences = {
 	'notify-searchresults':true,
 
     'timeline-scrollonupdate': true,
-    'timeline-maxentries': 100,
-    'timeline-maxentries-dm': 10, 
-    'timeline-maxentries-reply': 10, 
+    'timeline-maxentries': 60,
+    'timeline-maxentries-dm': 20, 
+    'timeline-maxentries-reply': 20, 
     'timeline-friends-getcount': 20,
     'timeline-replies-getcount': 5,
     'timeline-dm-getcount': 5,

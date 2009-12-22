@@ -32,7 +32,11 @@ function AppAssistant(appController) {
 		
 	};
 	sc.helpers.enJSON = function(obj) {
-		var json = obj.toJSON();
+		if (obj.toJSON) {
+			var json = obj.toJSON();
+		} else {
+			var json = JSON.stringify(obj);
+		}
 		return json;
 	};
 

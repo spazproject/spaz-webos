@@ -342,6 +342,7 @@ MyTimelineAssistant.prototype.initTimeline = function() {
 		override the standard removeExtraItems
 	*/
 	this.mytl.removeExtraItems = this.removeExtraItems;
+	
 };
 
 
@@ -409,7 +410,7 @@ MyTimelineAssistant.prototype.saveTimelineCache = function() {
 	twitdata[SPAZCORE_SECTION_REPLIES + '_lastid'] = this.twit.getLastId(SPAZCORE_SECTION_REPLIES);
 	twitdata[SPAZCORE_SECTION_DMS     + '_lastid'] = this.twit.getLastId(SPAZCORE_SECTION_DMS);
 	
-	sch.dump(twitdata);
+	sch.debug(twitdata);
 		
 	TempCache.save('mytimelinecache', twitdata);
 	
@@ -532,12 +533,27 @@ MyTimelineAssistant.prototype.addTweetToModel = function(twobj) {
 
 
 MyTimelineAssistant.prototype.removeExtraItems = function() {
+
+	sch.error('Removing Extra Items ==================================================');
+
+	sch.error("normal tweets: " + jQuery('#my-timeline div.timeline-entry:not(.reply):not(.dm)').length);
+	sch.error("reply tweets: "  + jQuery('#my-timeline div.timeline-entry.reply').length);
+	sch.error("dm tweets: "     + jQuery('#my-timeline div.timeline-entry.dm').length);
+
 	/*
 		from html timeline
 	*/
 	sch.removeExtraElements('#my-timeline div.timeline-entry:not(.reply):not(.dm)', sc.app.prefs.get('timeline-maxentries'));
 	sch.removeExtraElements('#my-timeline div.timeline-entry.reply', sc.app.prefs.get('timeline-maxentries-reply'));
 	sch.removeExtraElements('#my-timeline div.timeline-entry.dm', sc.app.prefs.get('timeline-maxentries-dm'));
+
+	jQuery('#my-timeline>div:empty').remove(); // remove empty containers
+
+	sch.error("normal tweets: " + jQuery('#my-timeline div.timeline-entry:not(.reply):not(.dm)').length);
+	sch.error("reply tweets: "  + jQuery('#my-timeline div.timeline-entry.reply').length);
+	sch.error("dm tweets: "     + jQuery('#my-timeline div.timeline-entry.dm').length);	
+	sch.error("jQuery('.timeline').children().length:"+jQuery('.timeline').children().length);
+	sch.error("jQuery('#my-timeline').get(0).outerHTML:\n"+jQuery('#my-timeline').get(0).outerHTML);
 };
 
 
