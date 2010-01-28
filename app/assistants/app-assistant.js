@@ -22,21 +22,17 @@ function AppAssistant(appController) {
 	*/
 	sc.helpers.deJSON = function(str) {
 		try {
-			var obj = Mojo.parseJSON(str);
+			var obj = JSON.parse(str);
 			return obj;
 		} catch(e) {
-			sch.warn('There was a problem decoding the JSON string');
-			sch.warn('Here is the JSON string: '+str);
+			sch.error('There was a problem decoding the JSON string');
+			sch.error('Here is the JSON string: '+str);
 			return null;
 		}
 		
 	};
 	sc.helpers.enJSON = function(obj) {
-		if (obj.toJSON) {
-			var json = obj.toJSON();
-		} else {
-			var json = JSON.stringify(obj);
-		}
+		var json = JSON.stringify(obj);
 		return json;
 	};
 
