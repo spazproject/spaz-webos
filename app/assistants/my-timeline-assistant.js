@@ -249,6 +249,8 @@ MyTimelineAssistant.prototype.initTimeline = function() {
 			
 			var previous_count = jQuery('#my-timeline div.timeline-entry').length;
 			
+			var $oldFirst = jQuery('#my-timeline div.timeline-entry:first');
+			
 			for (var i=0; i < data.length; i++) {
 				
 				/*
@@ -264,6 +266,37 @@ MyTimelineAssistant.prototype.initTimeline = function() {
 			};
 			
 			thisA.mytl.addItems(no_dupes);
+			
+			/*
+				sort timeline
+			*/
+			var before = new Date();
+			
+			// don't sort if we don't have anything new!
+			if (no_dupes.length > 0) {
+				// get first of new times
+				var new_first_time = no_dupes[0].SC_created_at_unixtime;
+				// get last of new times
+				var new_last_time  = no_dupes[no_dupes.length-1].SC_created_at_unixtime;
+				// get first of OLD times
+				var old_first_time = parseInt($oldFirst.attr('data-timestamp'));
+				
+				sch.error('new_first_time:'+new_first_time);
+				sch.error('new_last_time:'+new_last_time);
+				sch.error('old_first_time:'+old_first_time);
+				
+				// sort if either first new or last new is OLDER than the first old
+				if (new_first_time < old_first_time || new_last_time < old_first_time) {
+					jQuery('#my-timeline div.timeline-entry').tsort({attr:'data-timestamp', place:'orig', order:'desc'});					
+				} else {
+					sch.error('Didn\'t resort…');
+				}
+
+			}
+			var after = new Date();
+			var total = new Date();
+			total.setTime(after.getTime() - before.getTime());
+			sch.error('Sorting took ' + total.getMilliseconds() + 'ms');
 			
 			sc.helpers.updateRelativeTimes('#my-timeline div.timeline-entry span.date', 'data-created_at');
 			
@@ -377,7 +410,7 @@ MyTimelineAssistant.prototype.loadTimelineCache = function() {
 			thisA.twit.setLastId(SPAZCORE_SECTION_DMS,     data[SPAZCORE_SECTION_DMS     + '_lastid']);
 
 			document.getElementById('my-timeline').innerHTML = data.tweets_html;
-			sch.markAllAsRead('#my-timeline div.timeline-entry');		
+			sch.markAllAsRead('#my-timeline div.timeline-entry');
 		}
 		sch.unlisten(document, 'temp_cache_load_db_success', this._loadTimelineCache);
 	};
