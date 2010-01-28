@@ -908,6 +908,9 @@ div.spaz-row {
 	line-height:40pt;
 	border-width: 0 21px 0 21px;
 	-webkit-border-image: url(../images/dreadnaught/spaz-button-large-bg.png) 0 21 0 21;
+	overflow:hidden;
+	text-overflow:ellipsis;
+	white-space:nowrap;
 }
 	div.spaz-row:active {
 		-webkit-border-image: url(../images/dreadnaught/spaz-button-large-active-bg.png) 0 21 0 21;
