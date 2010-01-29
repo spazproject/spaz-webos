@@ -1,4 +1,4 @@
-/*********** Built 2010-01-27 13:08:07 EST ***********/
+/*********** Built 2010-01-29 13:07:07 EST ***********/
 /*jslint 
 browser: true,
 nomen: false,
@@ -5674,6 +5674,7 @@ var sc;
  */
 sc.helpers.deJSON = function(json)
  {
+
 	// Fix twitter data bug
 	// var re = new RegExp("Couldn\\'t\\ find\\ Status\\ with\\ ID\\=[0-9]+\\,", "g");
 	// json = json.replace(re, "");
@@ -10578,8 +10579,8 @@ SpazTwit.prototype.getAPIURL = function(key, urldata) {
     urls.block_destroy		= "blocks/destroy/{{ID}}.json";
     urls.start_notifications= "notifications/follow/{{ID}}.json";
     urls.stop_notifications = "notifications/leave/{{ID}}.json";
-    urls.favorites_create 	= "favourings/create/{{ID}}.json";
-    urls.favorites_destroy	= "favourings/destroy/{{ID}}.json";
+    urls.favorites_create 	= "favorites/create/{{ID}}.json";
+    urls.favorites_destroy	= "favorites/destroy/{{ID}}.json";
     urls.saved_searches_create 	= "saved_searches/create.json";
     urls.saved_searches_destroy	= "saved_searches/destroy/{{ID}}.json";
     urls.verify_credentials = "account/verify_credentials.json";
@@ -10881,9 +10882,7 @@ SpazTwit.prototype.getReplies = function(since_id, count, page, processing_opts)
  * @private
  */
 SpazTwit.prototype._processRepliesTimeline = function(ret_items, opts, processing_opts) {
-	if (ret_items) {
-		sc.helpers.dump('Processing '+ret_items.length+' items returned from replies method');
-	}
+	sc.helpers.dump('Processing '+ret_items.length+' items returned from replies method');
 	this._processTimeline(SPAZCORE_SECTION_REPLIES, ret_items, opts, processing_opts);
 };
 
@@ -10935,10 +10934,7 @@ SpazTwit.prototype.getDirectMessages = function(since_id, count, page, processin
  * @private
  */
 SpazTwit.prototype._processDMTimeline = function(ret_items, opts, processing_opts) {
-	if (ret_items) {
-		sc.helpers.dump('Processing '+ret_items.length+' items returned from DM method');
-	}
-	
+	sc.helpers.dump('Processing '+ret_items.length+' items returned from DM method');
 	this._processTimeline(SPAZCORE_SECTION_DMS, ret_items, opts, processing_opts);
 };
 
@@ -11325,7 +11321,6 @@ SpazTwit.prototype._getTimeline = function(opts) {
 			}
         },
         'error':function(xhr, msg, exc) {
-	
 			sc.helpers.dump(opts.url + ' error:"'+msg+'"');
 			if (msg.toLowerCase().indexOf('timeout') !== -1) {
 				stwit.triggerEvent(document, opts.failure_event_type, {'url':opts.url, 'xhr':null, 'msg':msg});
@@ -11379,7 +11374,7 @@ SpazTwit.prototype._getTimeline = function(opts) {
         },
         'success':function(data) {
 			// sc.helpers.dump("Success! \n\n" + data);
-			sc.helpers.error(opts.url + ' success!'+" data:"+data);
+			sc.helpers.dump(opts.url + ' success!'+" data:"+data);
 			
 			try {
 				data = sc.helpers.deJSON(data);
@@ -11412,7 +11407,7 @@ SpazTwit.prototype._getTimeline = function(opts) {
         'type': 	opts.method,
         'url': 		opts.url,
         'data': 	opts.data,
-		'dataType': 'text'
+		'dataType':'text'
 	});
 	
 	return xhr;
@@ -11438,7 +11433,7 @@ SpazTwit.prototype._processTimeline = function(section_name, ret_items, opts, pr
 	}
 	
 
-	if (ret_items && ret_items.length > 0){
+	if (ret_items.length > 0){
 		
 		
 		/*
@@ -11809,7 +11804,8 @@ SpazTwit.prototype._callMethod = function(opts) {
 	    },
 	    'type': method,
 	    'url' : opts.url,
-		'data': opts.data
+		'data': opts.data,
+		'dataType':'text'
 	});
 	return xhr;
 };
