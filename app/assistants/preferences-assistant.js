@@ -52,7 +52,10 @@ PreferencesAssistant.prototype.setup = function() {
 		'notify-newmessages':       sc.app.prefs.get('notify-newmessages'),
 		'notify-mentions':          sc.app.prefs.get('notify-mentions'),
 		'notify-dms':               sc.app.prefs.get('notify-dms'),
-		'notify-searchresults':     sc.app.prefs.get('notify-searchresults')
+		'notify-searchresults':     sc.app.prefs.get('notify-searchresults'),
+		'post-rt-cursor-position':  sc.app.prefs.get('post-rt-cursor-position'),
+		'post-send-on-enter':       sc.app.prefs.get('post-send-on-enter')
+		
 	};
 	
 	
@@ -124,6 +127,14 @@ PreferencesAssistant.prototype.setup = function() {
 		},
 		this.model
 	);
+	this.controller.setupWidget("checkbox-post-send-on-enter",
+		this.soundEnabledAtts = {
+			fieldName: 'post-send-on-enter',
+			modelProperty: 'post-send-on-enter',
+			disabledProperty: 'post-send-on-enter_disabled'
+		},
+		this.model
+	);
 	
 	/*
 		temporarily disabling sound and vibration prefs until we can sort out how to tell if sound is off
@@ -135,6 +146,7 @@ PreferencesAssistant.prototype.setup = function() {
 	this.controller.listen('checkbox-notify-mentions', Mojo.Event.propertyChange, this.saveSettings.bindAsEventListener(this));
 	this.controller.listen('checkbox-notify-dms', Mojo.Event.propertyChange, this.saveSettings.bindAsEventListener(this));
 	this.controller.listen('checkbox-notify-searchresults', Mojo.Event.propertyChange, this.saveSettings.bindAsEventListener(this));
+	this.controller.listen('checkbox-post-send-on-enter', Mojo.Event.propertyChange, this.saveSettings.bindAsEventListener(this));
 
 
 	/*
@@ -203,6 +215,19 @@ PreferencesAssistant.prototype.setup = function() {
 		this.model
 	);
 	this.controller.listen('timeline-text-size', Mojo.Event.propertyChange, this.saveSettings.bindAsEventListener(this));
+
+
+	this.controller.setupWidget('post-rt-cursor-position',
+		{
+			label: $L('RT/Q. Cursor Position'),
+			choices: this.validRTCursorPositions,
+			modelProperty:'post-rt-cursor-position'
+		},
+		this.model
+	);
+	this.controller.listen('post-rt-cursor-position', Mojo.Event.propertyChange, this.saveSettings.bindAsEventListener(this));
+
+
 	
 	this.controller.setupWidget('image-uploader',
 		{
@@ -270,6 +295,11 @@ PreferencesAssistant.prototype.setupChoices = function(){
 		{label:$L('Tall'),  value:'tall'}, 
 		{label:$L('Grande'),value:'grande'}, 
 		{label:$L('Venti'), value:'venti'}		
+	];
+	
+	this.validRTCursorPositions = [
+		{label:$L('Beginning'),  value:'beginning'}, 
+		{label:$L('End'),value:'end'}
 	];
 	
 	var sfu = new SpazFileUploader();

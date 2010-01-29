@@ -53,4 +53,7 @@ var default_preferences = {
     'twitter-source': 'spaz',
 
 	'timeline-text-size': 'tall', // also grande, venti
+	
+	'post-rt-cursor-position': 'beginning', // 'beginning' or 'end'
+	'post-send-on-enter': true
 }
