@@ -388,7 +388,7 @@ scene_helpers.addCommonSceneMethods = function(assistant) {
 		
 		this.showPostPanel({
 			'text'         : text,
-			'type'         : null,
+			'type'         : 'rt',
 			'select_start' : text.length,
 			'select_length': text.length
 		});
@@ -405,7 +405,7 @@ scene_helpers.addCommonSceneMethods = function(assistant) {
 		
 		this.showPostPanel({
 			'text'         : text,
-			'type'         : null,
+			'type'         : 'quote',
 			'select_start' : text.length,
 			'select_length': text.length
 		});
@@ -468,7 +468,7 @@ scene_helpers.addCommonSceneMethods = function(assistant) {
 	
 		this.showPostPanel({
 			'text'         : text,
-			'type'         : null,
+			'type'         : 'dm',
 			'select_start' : 2,
 			'select_length': text.length
 		});
@@ -490,7 +490,7 @@ scene_helpers.addCommonSceneMethods = function(assistant) {
 		
 		this.showPostPanel({
 			'text'         : text,
-			'type'         : null,
+			'type'         : 'photo',
 			'select_start' : url.length+1,
 			'select_length': text.length
 		});		
@@ -510,7 +510,7 @@ scene_helpers.addCommonSceneMethods = function(assistant) {
 	
 		this.showPostPanel({
 			'text'         : text,
-			'type'         : null,
+			'type'         : 'reply',
 			'select_start' : text.length,
 			'select_length': text.length,
 			'irt_status'   : statusobj,
@@ -931,6 +931,7 @@ scene_helpers.addCommonSceneMethods = function(assistant) {
 	
 	assistant.clearTimelineCache = function(callback) {
 		this.cacheDepot = TempCache.clear();
+		sc.app.Tweets.reset();
 	};
 	
 	
@@ -956,8 +957,10 @@ scene_helpers.addCommonSceneMethods = function(assistant) {
 					sch.error(e.target.outerHTML);
 					
 					if (jQuery(e.target).is('div.timeline-entry')) {
-						jqthis = jQuery(this).is('div.timeline-entry'); // we're on the timeline element
+						sch.error('we are on the entry');
+						jqthis = jQuery(e.target); // we're on the timeline element
 					} else {
+						sch.error('we are below the entry');
 						jqthis = jQuery(e.target).parents('div.timeline-entry'); // get the containing timeline entry
 					}
 					
@@ -968,12 +971,13 @@ scene_helpers.addCommonSceneMethods = function(assistant) {
 					var status_id  = jqthis.attr('data-status-id');
 					sch.error(status_id);
 
-					var is_dm      = jqthis.hasClass('dm');
+					var is_dm      = !!jqthis.hasClass('dm');
 					sch.error(is_dm);
 					
-					jQuery().one('retrieved_tweet_for_holdmenu', function(e, status_obj) {
+					sc.app.Tweets.get(status_id, is_dm, function(status_obj) {
 						sch.error('status_obj:');
 						sch.error(status_obj);
+
 						switch (cmd) {
 							case 'reply':
 								thisA.prepReply(username, status_id, status_obj);
@@ -986,8 +990,9 @@ scene_helpers.addCommonSceneMethods = function(assistant) {
 								break;
 							default:
 								return;
-						};
+						};						
 					});
+					
 				},
 				placeNear: e.target,
 				items: [
