@@ -4,28 +4,21 @@
  */
 var Tweets = function(replace) {
 	
-	this.bucket = "tweets";
-	this.dm_bucket = "dms";
+	this.bucket = new Lawnchair({name:"ext:tweets"});
+	this.dm_bucket = new Lawnchair({name:"ext:dms"});
+	this.user_bucket = new Lawnchair({name:"ext:users"});
 	
 	this._init(replace);
 };
 
 Tweets.prototype._init  = function(replace) {
-	var opts = {
-		'name'    : 'ext:SpazDepotTweets',
-		'replace' : false,
-		'estimatedSize': 10*1024*1024 // 10MB
-	};
-	
 	if (replace === true) {
-		sch.debug('REPLACING DEPOT!!!!!!!!!!!=======================');
-		opts.replace = true;
+		sch.error('REPLACING DEPOT!!!!!!!!!!!=======================');
+		this.bucket.nuke();
+		this.dm_bucket.nuke();
+		this.user_bucket.nuke();
 	} else {
-		sch.debug('NOT REPLACING DEPOT!!!!!!!!!!====================');
-	}
-	
-	if (!this.mojoDepot) {
-		this.mojoDepot = new Mojo.Depot(opts);
+		sch.error('NOT REPLACING DEPOT!!!!!!!!!!====================');
 	}
 };
 
@@ -37,9 +30,9 @@ Tweets.prototype.get    = function(id, is_dm, onSuccess, onFailure) {
 	id = parseInt(id, 10);
 	
 	if (!is_dm) {
-		this.mojoDepot.getSingle(this.bucket, id, onSuccess, onFailure);
+		this.bucket.get(id, onSuccess, onFailure);
 	} else {
-		this.mojoDepot.getSingle(this.dm_bucket, id, onSuccess, onFailure);
+		this.dm_bucket.get(id, onSuccess, onFailure);
 	}
 };
 
@@ -57,19 +50,49 @@ Tweets.prototype.save   = function(object, onSuccess, onFailure) {
 	*/
 	objid = parseInt(objid, 10);
 	
-	dump("Saving id "+objid);
+	object.key = objid;
+	
+	
+	sch.error("Saving id "+objid);
 	if (!object.SC_is_dm) {
-		dump("Saving TWEET "+objid);
-		this.mojoDepot.addSingle(this.bucket, objid, object, null, function(){ dump('save '+objid+' success'); }, function(msg){ dump('save '+objid+' fail:'+msg); });
+		sch.error("Saving TWEET "+objid);
+		this.bucket.save(object);
+		this.user_bucket.save(object.user);
 	} else {
-		dump("Saving DM "+objid);
-		this.mojoDepot.addSingle(this.dm_bucket, objid, object, null, function(){ dump('save '+objid+' success'); }, function(msg){ dump('save '+objid+' fail:'+msg); });
+		sch.error("Saving DM "+objid);
+		this.dm_bucket.save(object);
+		this.user_bucket.save(object.sender);
+		this.user_bucket.save(object.recipient);
 	}
 };
 
-Tweets.prototype.remove = function(objid, onSuccess, onFailure) {
+Tweets.prototype.remove = function(objid, isdm, onSuccess, onFailure) {
+	isdm = isdm === true || false;
+	objid = parseInt(objid, 10);
+	if (!isdm) {
+		this.bucket.remove(objid);
+	} else {
+		this.dm_bucket.remove(objid);
+	}
 	
 };
+
+
+
+Tweets.prototype.saveUser = function(userobj) { 
+	userobj.key = parseInt(userobj.id, 10);
+	this.user_bucket.save(userobj);
+};
+
+Tweets.prototype.getUser = function(id, onSuccess, onFailure) {
+	this.user_bucket.get(id, onSuccess, onFailure);
+};
+
+Tweets.prototype.removeUser = function(id) {
+	this.user_bucket.remove(id);
+};
+
+
 
 Tweets.prototype.onSaveSuccess = function(obj, msg) {
 	dump('TweetModel Saved');
