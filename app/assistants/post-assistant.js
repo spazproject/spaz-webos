@@ -7,6 +7,8 @@ function PostAssistant(args) {
 		this.args = args;
 	}
 	
+	sch.error(this.args);
+	
 	this.returningFromFilePicker = false;
 	
 	scene_helpers.addCommonSceneMethods(this);
@@ -205,7 +207,26 @@ PostAssistant.prototype.activate = function(args) {
 		
 		if (this.args.text) { this.postTextField.mojo.setText(this.args.text); }
 		
-		if (this.args.type) { /*type is ignored for now*/ }
+		if (this.args.type) {
+			/*
+				set cursor position
+			*/
+			switch(this.args.type) {
+				case 'quote':
+					this.postTextField.mojo.setCursorPosition(0,0)
+					break;
+					if (sc.app.prefs.get('post-rt-cursor-position') == 'beginning') {
+						this.postTextField.mojo.setCursorPosition(0,0)
+					}					
+				case 'rt':
+					if (sc.app.prefs.get('post-rt-cursor-position') == 'beginning') {
+						this.postTextField.mojo.setCursorPosition(0,0)
+					}
+					break;
+				default:
+					break;
+			}
+		}
 		
 		/*this.postTextField.mojo.setCursorPosition(this.args.select_start, this.args.select_start+this.args.select_length);*/
 		
@@ -225,6 +246,10 @@ PostAssistant.prototype.activate = function(args) {
 	
 
 	jQuery('#post-panel-username').text(sc.app.username);
+	
+
+	
+	
 	thisA._updateCharCount();
 
 
