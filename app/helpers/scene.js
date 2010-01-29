@@ -946,6 +946,57 @@ scene_helpers.addCommonSceneMethods = function(assistant) {
 				Set this so we don't fire a tap after firing the hold
 			*/
 			e.target.holdFired = true;
+			
+			
+			
+			thisA.controller.popupSubmenu({
+				onChoose: function(cmd) {
+					var jqthis;
+					
+					sch.error(e.target.outerHTML);
+					
+					if (jQuery(e.target).is('div.timeline-entry')) {
+						jqthis = jQuery(this).is('div.timeline-entry'); // we're on the timeline element
+					} else {
+						jqthis = jQuery(e.target).parents('div.timeline-entry'); // get the containing timeline entry
+					}
+					
+					
+					var username   = jqthis.attr('data-user-screen_name');
+					sch.error(username);
+					
+					var status_id  = jqthis.attr('data-status-id');
+					sch.error(status_id);
+
+					var is_dm      = jqthis.hasClass('dm');
+					sch.error(is_dm);
+					
+					jQuery().one('retrieved_tweet_for_holdmenu', function(e, status_obj) {
+						sch.error('status_obj:');
+						sch.error(status_obj);
+						switch (cmd) {
+							case 'reply':
+								thisA.prepReply(username, status_id, status_obj);
+								break;
+							case 'retweet':
+								thisA.prepRetweet(status_obj);
+								break;
+							case 'quote':
+								thisA.prepQuote(status_obj);
+								break;
+							default:
+								return;
+						};
+					});
+				},
+				placeNear: e.target,
+				items: [
+					{label: '@reply', command: 'reply'},
+					{label: 'ReTweet', command: 'retweet'},
+					{label: 'Quote', command:   'quote'}
+				]
+			});
+			
 		});
 		
 		jQuery(tl_selector+' div.timeline-entry', this.scroller).live(Mojo.Event.tap, function(e) {
@@ -1008,6 +1059,10 @@ scene_helpers.addCommonSceneMethods = function(assistant) {
 			}
 		});
 	};
+	
+	
+	
+
 	
 	
 	/**
