@@ -61,7 +61,7 @@ PostAssistant.prototype.setup = function() {
 	this.controller.setupWidget('post-shorten-urls-button', this.buttonAttributes, this.shortenURLsButtonModel);
 	this.controller.setupWidget('post-textfield', {
 			'multiline':true,
-			'enterSubmits':true,
+			'enterSubmits':sc.app.prefs.get('post-send-on-enter'),
 			'autoFocus':true,
 			'changeOnKeyPress':true
 			
@@ -140,8 +140,10 @@ PostAssistant.prototype.setup = function() {
 	Mojo.Event.listen($('post-shorten-text-button'), Mojo.Event.tap, this.shortenText.bindAsEventListener(this));
 	Mojo.Event.listen($('post-shorten-urls-button'), Mojo.Event.tap, this.shortenURLs.bindAsEventListener(this));
 	this.listenForEnter('post-textfield', function() {
-		this.controller.get('post-send-button').mojo.activate();
-		this.sendPost();
+		if (sc.app.prefs.get('post-send-on-enter')) {
+			this.controller.get('post-send-button').mojo.activate();
+			this.sendPost();
+		}
 	});
 	Mojo.Event.listen($('image-uploader'), Mojo.Event.propertyChange, this.changeImageUploader.bindAsEventListener(this));	
 	Mojo.Event.listen($('image-uploader-email'), Mojo.Event.propertyChange, this.setImageUploaderEmail.bindAsEventListener(this));	
@@ -501,7 +503,7 @@ PostAssistant.prototype.sendPost = function(event) {
 				
 				
 			} else { // normal post without attachment
-
+				
 				if (in_reply_to > 0) {
 					this.twit.update(status, null, in_reply_to);
 				} else {
