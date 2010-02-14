@@ -111,7 +111,7 @@ MessageDetailAssistant.prototype.activate = function(event) {
 			sc.app.Tweets.get(this.status_id, this.isdm,
 				function(data) {
 					if (data !== null) {
-						sch.debug('Message '+data.id+' pulled from DB');
+						sch.error('Message '+thisA.status_id+' pulled from DB');
 						jQuery().trigger('get_one_status_succeeded', [data]);
 					} else { // if nothing is returned, get it from Twitter
 						sch.error('DM was not in sc.app.Tweets cache');
@@ -120,33 +120,43 @@ MessageDetailAssistant.prototype.activate = function(event) {
 					
 				},
 				function(message) {
-					sch.debug('Couldn\'t retrieve message from Depot:'+message);
+					sch.error('Couldn\'t retrieve message from Depot:'+message);
 					thisA.showAlert($L('There was an error retrieving the message data'));
 				}
 			);
 		}
 	} else {
-		if (this.status_obj){
-			jQuery().trigger('get_one_status_succeeded', [this.status_obj]);
-		} else {
-			sc.app.Tweets.get(this.status_id, this.isdm,
-				function(data) {
-					if (data !== null) {
-						sch.debug('Message '+data.id+' pulled from DB');
-						jQuery().trigger('get_one_status_succeeded', [data]);
-					} else { // if nothing is returned, get it from Twitter
-						sch.debug('Message '+this.status_id+' missing from DB; retrieving from Twitter');
-						thisA.twit.getOne(thisA.status_id);
-					}	
-				},
-				function(message) {
-					sch.debug('Couldn\'t retrieve message from Depot:'+message);
-					thisA.twit.getOne(thisA.status_id);
-				}
-			);
-			
-
-		}
+		sc.app.Tweets.get(
+			this.status_id,
+			this.isdm,
+			function(data) {
+				jQuery().trigger('get_one_status_succeeded', [data]);
+			},
+			function(message) {
+				sch.error('Couldn\'t retrieve message:'+message);
+			}
+		);
+		// if (this.status_obj){
+		// 			jQuery().trigger('get_one_status_succeeded', [this.status_obj]);
+		// 		} else {
+		// 			sc.app.Tweets.get(this.status_id, this.isdm,
+		// 				function(data) {
+		// 					if (data !== null) {
+		// 						sch.error('Message '+data.id+' pulled from DB');
+		// 						jQuery().trigger('get_one_status_succeeded', [data]);
+		// 					} else { // if nothing is returned, get it from Twitter
+		// 						sch.error('Message '+this.status_id+' missing from DB; retrieving from Twitter');
+		// 						thisA.twit.getOne(thisA.status_id);
+		// 					}	
+		// 				},
+		// 				function(message) {
+		// 					sch.error('Couldn\'t retrieve message from Depot:'+message);
+		// 					thisA.twit.getOne(thisA.status_id);
+		// 				}
+		// 			);
+		// 			
+		// 
+		// 		}
 	}
 	
 
@@ -268,7 +278,7 @@ MessageDetailAssistant.prototype.processStatusReturn = function(e, statusobj) {
 	/*
 		save this tweet to Depot
 	*/
-	sc.app.Tweets.save(statusobj);
+	// sc.app.Tweets.save(statusobj);
 	
 	/*
 		render tweet
