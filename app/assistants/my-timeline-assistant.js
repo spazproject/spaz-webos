@@ -413,6 +413,7 @@ MyTimelineAssistant.prototype.loadTimelineCache = function() {
 			sch.markAllAsRead('#my-timeline div.timeline-entry');
 		}
 		sch.unlisten(document, 'temp_cache_load_db_success', this._loadTimelineCache);
+		
 	};
 
 	
@@ -541,17 +542,11 @@ MyTimelineAssistant.prototype.stopRefresher = function() {
 
 
 /**
- * Gets tweet from this.tweetsModel, or false if DNE 
+ * fires 'get_one_status_succeeded' on retrieval
  */
-MyTimelineAssistant.prototype.getTweetFromModel = function(id) {
+MyTimelineAssistant.prototype.getTweetFromModel = function(id, isdm) {
 	
-	// for(var i=0; i < this.tweetsModel.length; i++) {
-	// 	if (this.tweetsModel[i].id == id) {
-	// 		return this.tweetsModel[i];
-	// 	}
-	// }
-	// 
-	// return false;
+
 };
 
 
