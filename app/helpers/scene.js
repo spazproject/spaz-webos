@@ -718,14 +718,39 @@ scene_helpers.addCommonSceneMethods = function(assistant) {
 	 * generalized method to show a dashboard notification 
 	 */
 	assistant.showDashboard   = function(title, message, count, fromstage) {
- 
+ 		
+		var sceneArgs;
+
+		/*
+			if title is a string, then we're getting the 4-param args. otherwise we assume
+			there is only one arg and it's the sceneArgs
+		*/
+		if (sch.isString(title)) {
+			sceneArgs = {
+				'template_data':{
+					'title': title,
+					'message': message,
+					'count': count
+				},
+				'fromstage':fromstage
+			};
+		} else {
+			sceneArgs = title;
+		}
+
 		var appController = Mojo.Controller.getAppController(); 
 		var dashboardStageController = appController.getStageProxy(SPAZ_DASHBOARD_STAGENAME); 
 
 		if (dashboardStageController) { 
-			dashboardStageController.delegateToSceneAssistant("updateDashboard", title, message, count, fromstage); 
+			dashboardStageController.delegateToSceneAssistant("updateDashboard", {
+				'template_data': {
+					'title':title,
+					'message':message,
+					'count':count
+				},
+				'fromstage':fromstage
+			}); 
 		} else {
-			var sceneArgs = {'title': title, 'message': message, 'count': count, 'fromstage':fromstage};
 			var pushDashboard = function(stageController){
 				stageController.pushScene('dashboard', sceneArgs); 
 			}; 
