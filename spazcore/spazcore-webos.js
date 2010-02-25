@@ -6963,6 +6963,7 @@ sc.helpers.updateRelativeTimes = function(item_selector, time_attribute) {
  * @requires jQuery
  */
 sc.helpers.markAllAsRead = function(item_selector) {
+	sch.error('MARKING ALL AS READ');
 	jQuery(item_selector).removeClass('new');
 };
 /*jslint 
