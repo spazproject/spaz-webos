@@ -11,8 +11,6 @@ function SearchTwitterAssistant(args) {
 	
 	scene_helpers.addCommonSceneMethods(this);
 	
-	sc = Mojo.Controller.getAppController().assistant.sc;
-	
 	if (args && args.searchterm) {
 		this.passedSearch = args.searchterm;
 	}
@@ -113,8 +111,8 @@ SearchTwitterAssistant.prototype.setup = function() {
 		"hintText":	      'Enter search terms',
 		"focusMode":      Mojo.Widget.focusSelectMode,
 		"fieldName":'search-twitter',
-		enterSubmits: true,
-		requiresEnterKey: true,
+		"enterSubmits": true,
+		"requiresEnterKey": true,
 		"changeOnKeyPress": true
 	};
 	this.searchBoxModel = {
@@ -131,11 +129,11 @@ SearchTwitterAssistant.prototype.setup = function() {
 	});
 	
 	this.searchButtonAttributes = {
-		type: Mojo.Widget.activityButton
+		"type": Mojo.Widget.activityButton
 	};
 	this.searchButtonModel = {
-		buttonLabel : "Search",
-		buttonClass : 'Primary'
+		"buttonLabel" : "Search",
+		"buttonClass" : 'Primary'
 	};
 	
 	this.controller.setupWidget('submit-search-button', this.searchButtonAttributes, this.searchButtonModel);
@@ -367,7 +365,7 @@ SearchTwitterAssistant.prototype.search = function(e, type) {
 			clear any existing results
 		*/
 		if (e !== this.lastQuery) {
-			this.clear()
+			this.clear();
 		}
 		
 		this.lastQuery = sch.fromHTMLSpecialChars(e);
@@ -385,7 +383,7 @@ SearchTwitterAssistant.prototype.search = function(e, type) {
 			clear any existing results
 		*/
 		if (e.value !== this.lastQuery) {
-			this.clear()
+			this.clear();
 		}
 
 
@@ -405,7 +403,7 @@ SearchTwitterAssistant.prototype.refresh = function() {
 SearchTwitterAssistant.prototype.clear = function() {
 	jQuery('#search-timeline').empty();
 	dump('Emptied #search-timeline');
-}
+};
 
 
 SearchTwitterAssistant.prototype.startRefresher = function() {

@@ -87,7 +87,7 @@ scene_helpers.addCommonSceneMethods = function(assistant) {
 
 	assistant.createStage = function(sceneName, sceneArgs, stageName) {
 		// "nocache:true" tells sysmanager to not use the card caching strategy on compose cards
-		var params = {name: stageName, assistantName:'StageLightweightSearchAssistant'};
+		var params = {name: stageName, assistantName:'StageAssistant'};
 		var callback = function(stageController) {
 			stageController.pushScene(sceneName, sceneArgs, stageName);
 		};
@@ -121,7 +121,11 @@ scene_helpers.addCommonSceneMethods = function(assistant) {
 				case 'new-search-card':
 
 					sc.app.new_search_card++;
-					this.createStage('search-twitter', { 'lightweight':true }, sc.app.search_card_prefix+sc.app.new_search_card);
+					this.createStage(
+						'search-twitter',
+						{'lightweight':'false'},
+						sc.app.search_card_prefix+sc.app.new_search_card
+					);
 
 					break;
 					
@@ -564,7 +568,7 @@ scene_helpers.addCommonSceneMethods = function(assistant) {
 
 		jQuery('#'+id+'-title').text(message);
 		jQuery('#'+id+'-container').show();
-		$(id).mojo.start();
+		jQuery('#'+id)[0].mojo.start();
 		
 		dump("SPINNER CONTAINER HTML (start):"+jQuery('#'+id+'-container').get(0).outerHTML);
 	};
@@ -1317,14 +1321,14 @@ var LocationDialogAssistant = Class.create({
 	
 	activate: function() {
 		var thisA = this;
-		Mojo.Event.listen($('update-location-button'), Mojo.Event.tap, this.updateLocation.bind(this));
-		Mojo.Event.listen($('get-location-button'), Mojo.Event.tap, this.getLocation.bind(this));
+		Mojo.Event.listen(jQuery('#update-location-button')[0], Mojo.Event.tap, this.updateLocation.bind(this));
+		Mojo.Event.listen(jQuery('#get-location-button')[0], Mojo.Event.tap, this.getLocation.bind(this));
 	},
 	
 	deactivate: function() {
 		var thisA = this;
-		Mojo.Event.stopListening($('update-location-button'), Mojo.Event.tap, this.updateLocation.bind(this));
-		Mojo.Event.stopListening($('get-location-button'), Mojo.Event.tap, this.getLocation.bind(this));
+		Mojo.Event.stopListening(jQuery('#update-location-button')[0], Mojo.Event.tap, this.updateLocation.bind(this));
+		Mojo.Event.stopListening(jQuery('#get-location-button')[0], Mojo.Event.tap, this.getLocation.bind(this));
 	},
 	
 	getLocation: function() {

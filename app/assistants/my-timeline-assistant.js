@@ -240,8 +240,8 @@ MyTimelineAssistant.prototype.initTimeline = function() {
 
 		'request_data': function() {
 			if (thisA.isTopmostScene()) {
-				sch.error('marking all as read');
-				sc.helpers.markAllAsRead('#my-timeline div.timeline-entry');
+				// sc.helpers.markAllAsRead('#my-timeline div.timeline-entry.new');
+				jQuery('#my-timeline div.timeline-entry.new').removeClass('new');
 			}
 			thisA.getData();
 		},

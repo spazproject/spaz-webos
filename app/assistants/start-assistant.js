@@ -63,8 +63,8 @@ StartAssistant.prototype.setup = function() {
 	
 	this.initAppMenu();
 	
-	Mojo.Event.listen($('start-login-button'), Mojo.Event.tap, this.showLogin.bind(this));
-	Mojo.Event.listen($('start-search-button'), Mojo.Event.tap, this.showSearch.bind(this));
+	Mojo.Event.listen(jQuery('#start-login-button')[0], Mojo.Event.tap, this.showLogin.bind(this));
+	Mojo.Event.listen(jQuery('#start-search-button')[0], Mojo.Event.tap, this.showSearch.bind(this));
 };
 
 
@@ -106,8 +106,8 @@ StartAssistant.prototype.deactivate = function(event) {
 StartAssistant.prototype.cleanup = function(event) {
 	/* this function should do any cleanup needed before the scene is destroyed as 
 	   a result of being popped off the scene stack */
-	Mojo.Event.stopListening($('start-login-button'), Mojo.Event.tap, this.showLogin);
-	Mojo.Event.stopListening($('start-search-button'), Mojo.Event.tap, this.showSearch);
+	Mojo.Event.stopListening(jQuery('#start-login-button')[0], Mojo.Event.tap, this.showLogin);
+	Mojo.Event.stopListening(jQuery('#start-search-button')[0], Mojo.Event.tap, this.showSearch);
 	
 };
 

@@ -24,7 +24,7 @@ PostAssistant.prototype.setup = function() {
 	
 	this.postMode = 'normal'; // 'normal' or 'email'
 	
-	this.postTextField = $('post-textfield');
+	this.postTextField = jQuery('#post-textfield')[0];
 	
 	this.Users = new Users(sc.app.prefs);
 	
@@ -137,18 +137,18 @@ PostAssistant.prototype.setup = function() {
 	/*
 		Bind listeners for UI stuff 
 	*/
-	Mojo.Event.listen($('post-send-button'), Mojo.Event.tap, this.sendPost.bindAsEventListener(this));
-	Mojo.Event.listen($('attach-image-button'), Mojo.Event.tap, this.attachImage.bindAsEventListener(this));
-	Mojo.Event.listen($('post-shorten-text-button'), Mojo.Event.tap, this.shortenText.bindAsEventListener(this));
-	Mojo.Event.listen($('post-shorten-urls-button'), Mojo.Event.tap, this.shortenURLs.bindAsEventListener(this));
+	Mojo.Event.listen(jQuery('#post-send-button')[0], Mojo.Event.tap, this.sendPost.bindAsEventListener(this));
+	Mojo.Event.listen(jQuery('#attach-image-button')[0], Mojo.Event.tap, this.attachImage.bindAsEventListener(this));
+	Mojo.Event.listen(jQuery('#post-shorten-text-button')[0], Mojo.Event.tap, this.shortenText.bindAsEventListener(this));
+	Mojo.Event.listen(jQuery('#post-shorten-urls-button')[0], Mojo.Event.tap, this.shortenURLs.bindAsEventListener(this));
 	this.listenForEnter('post-textfield', function() {
 		if (sc.app.prefs.get('post-send-on-enter')) {
 			this.controller.get('post-send-button').mojo.activate();
 			this.sendPost();
 		}
 	});
-	Mojo.Event.listen($('image-uploader'), Mojo.Event.propertyChange, this.changeImageUploader.bindAsEventListener(this));	
-	Mojo.Event.listen($('image-uploader-email'), Mojo.Event.propertyChange, this.setImageUploaderEmail.bindAsEventListener(this));	
+	Mojo.Event.listen(jQuery('#image-uploader')[0], Mojo.Event.propertyChange, this.changeImageUploader.bindAsEventListener(this));	
+	Mojo.Event.listen(jQuery('#image-uploader-email')[0], Mojo.Event.propertyChange, this.setImageUploaderEmail.bindAsEventListener(this));	
 
 
 
@@ -175,7 +175,7 @@ PostAssistant.prototype.setup = function() {
 	Mojo.Event.listen(document, sc.events.fileUploadFailure, thisA.onUploadFailure.bindAsEventListener(thisA));
 
 	
-	Mojo.Event.listen($('post-textfield'), Mojo.Event.propertyChange, this._updateCharCount.bindAsEventListener(this));	
+	Mojo.Event.listen(jQuery('#post-textfield')[0], Mojo.Event.propertyChange, this._updateCharCount.bindAsEventListener(this));	
 	
 
 	jQuery('#post-panel-irt-dismiss').bind(Mojo.Event.tap, function(e) {
@@ -266,17 +266,17 @@ PostAssistant.prototype.cleanup = function(event) {
 	
 	var thisA = this;
 	
-	Mojo.Event.stopListening($('post-send-button'), Mojo.Event.tap, this.sendPost); 
-	Mojo.Event.stopListening($('attach-image-button'), Mojo.Event.tap, this.attachImage);
-	Mojo.Event.stopListening($('post-shorten-text-button'), Mojo.Event.tap, this.shortenText);
-	Mojo.Event.stopListening($('post-shorten-urls-button'), Mojo.Event.tap, this.shortenURLs);
-	Mojo.Event.stopListening($('image-uploader'), Mojo.Event.propertyChange, this.changeImageUploader);	
-	Mojo.Event.stopListening($('image-uploader-email'), Mojo.Event.propertyChange, this.setImageUploaderEmail);	
+	Mojo.Event.stopListening(jQuery('#post-send-button')[0], Mojo.Event.tap, this.sendPost); 
+	Mojo.Event.stopListening(jQuery('#attach-image-button')[0], Mojo.Event.tap, this.attachImage);
+	Mojo.Event.stopListening(jQuery('#post-shorten-text-button')[0], Mojo.Event.tap, this.shortenText);
+	Mojo.Event.stopListening(jQuery('#post-shorten-urls-button')[0], Mojo.Event.tap, this.shortenURLs);
+	Mojo.Event.stopListening(jQuery('#image-uploader')[0], Mojo.Event.propertyChange, this.changeImageUploader);	
+	Mojo.Event.stopListening(jQuery('#image-uploader-email')[0], Mojo.Event.propertyChange, this.setImageUploaderEmail);	
 	
 	
 	this.stopListeningForEnter('post-textfield');
 	
-	Mojo.Event.stopListening($('post-textfield'), Mojo.Event.propertyChange, this._updateCharCount.bindAsEventListener(this));	
+	Mojo.Event.stopListening(jQuery('#post-textfield')[0], Mojo.Event.propertyChange, this._updateCharCount.bindAsEventListener(this));	
 	
 	jQuery('#post-panel-irt-dismiss').unbind(Mojo.Event.tap);
 	jQuery('#post-image-lookup-email').unbind(Mojo.Event.tap);
@@ -367,7 +367,7 @@ PostAssistant.prototype.shortenText = function(event) {
 
 PostAssistant.prototype.shortenURLs = function(event) {
 	
-	var event_target = $('post-shorten-urls-button');
+	var event_target = jQuery('#post-shorten-urls-button')[0];
 	
 	var surl = new SpazShortURL(SPAZCORE_SHORTURL_SERVICE_BITLY);
 	var longurls = sc.helpers.extractURLs(this.postTextFieldModel.value);
@@ -574,7 +574,7 @@ PostAssistant.prototype.attachImage = function() {
 
 			thisA.showAlert(
 				$L(help_text),
-				$('Look-Up Posting Email Address'),
+				jQuery('#Look-Up Posting Email Address')[0],
 				function(choice) {
 					if (choice === 'Open Browser') {
 						thisA.openInBrowser(email_info_url);

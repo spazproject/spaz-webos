@@ -96,15 +96,15 @@ StartsearchAssistant.prototype.setup = function() {
 	/*
 		Setup reload trends button
 	*/
-	this.postButtonAttributes = {
+	this.reloadTrendsButtonAttributes = {
 		type: Mojo.Widget.activityButton
 	};
-	this.postButtonModel = {
+	this.reloadTrendsButtonModel = {
 		buttonLabel : "Update Trends",
 		buttonClass: 'Primary'
 	};
-	this.controller.setupWidget('reload-trends-button', this.postButtonAttributes, this.postButtonModel);
-	Mojo.Event.listen($('reload-trends-button'), Mojo.Event.tap, function() {
+	this.controller.setupWidget('reload-trends-button', this.reloadTrendsButtonAttributes, this.reloadTrendsButtonModel);
+	Mojo.Event.listen(jQuery('#reload-trends-button')[0], Mojo.Event.tap, function() {
 		thisA.refreshTrends();
 	});
 
@@ -113,22 +113,19 @@ StartsearchAssistant.prototype.setup = function() {
 		Setup reload saved searches button
 	*/
 	if (sc.app.username && sc.app.password) {
-		
-		this.controller.setupWidget(
-			'reload-searches-button',
-			this.reloadSearchesButtonAttributes = {
-				type: Mojo.Widget.activityButton
-			},
-			this.reloadSearchesButtonModel = {
-				buttonLabel : "Update Saved Searches",
-				buttonClass: 'Primary'
-			}
-		);
-		Mojo.Event.listen($('reload-searches-button'), Mojo.Event.tap, function() {
+		this.reloadSearchesButtonAttributes = {
+			type: Mojo.Widget.activityButton
+		};
+		this.reloadSearchesButtonModel = {
+			buttonLabel : "Update Saved Searches",
+			buttonClass: 'Primary'
+		};
+				
+		this.controller.setupWidget('reload-searches-button', this.reloadSearchesButtonAttributes, this.reloadSearchesButtonModel);
+		Mojo.Event.listen(jQuery('#reload-searches-button')[0], Mojo.Event.tap, function() {
 			thisA.refreshSearches();
 		});
 		jQuery('#saved-searches-container').show();
-
 	}
 
 
@@ -137,7 +134,7 @@ StartsearchAssistant.prototype.setup = function() {
 	/*
 		Setup search submit button
 	*/	
-	Mojo.Event.listen($('search-button'), Mojo.Event.tap, this.handleSearch.bind(this));
+	Mojo.Event.listen(jQuery('#search-button')[0], Mojo.Event.tap, this.handleSearch.bind(this));
 	
 	
 	/*
@@ -312,10 +309,10 @@ StartsearchAssistant.prototype.cleanup = function(event) {
 	
 	this.stopListeningForEnter('search');
 	
-	Mojo.Event.stopListening($('reload-trends-button'), Mojo.Event.tap, function() {
+	Mojo.Event.stopListening(jQuery('#reload-trends-button')[0], Mojo.Event.tap, function() {
 		thisA.refreshTrends();
 	});
-	Mojo.Event.stopListening($('search-button'), Mojo.Event.tap, this.handleSearch);
+	Mojo.Event.stopListening(jQuery('#search-button')[0], Mojo.Event.tap, this.handleSearch);
 	jQuery().unbind('new_trends_data');
 	jQuery().unbind('new_saved_searches_data');
 };

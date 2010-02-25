@@ -60,7 +60,7 @@ StartloginAssistant.prototype.setup = function() {
 	this.Users = new Users(sc.app.prefs);
 	this.Users.load();
 	
-	dump(this.Users);
+	sch.error(this.Users);
 	
 	this.controller.setupWidget("accountList",
 		this.accountsAtts = {
@@ -78,13 +78,13 @@ StartloginAssistant.prototype.setup = function() {
 		}
 	);
 	
-	dump(this.accountsModel.items);
+	sch.error(this.accountsModel.items);
 	
 	
 	/*
 		Tap on list
 	*/
-    Mojo.Event.listen($('accountList'), Mojo.Event.listTap, function(e) {
+    Mojo.Event.listen(jQuery('#accountList')[0], Mojo.Event.listTap, function(e) {
 		sc.app.username = e.item.username;
 		sc.app.password = e.item.password;
 		sc.app.type     = e.item.type;
@@ -100,7 +100,7 @@ StartloginAssistant.prototype.setup = function() {
 	/*
 		add to list
 	*/
-    Mojo.Event.listen($('accountList'), Mojo.Event.listAdd, function(e) {
+    Mojo.Event.listen(jQuery('#accountList')[0], Mojo.Event.listAdd, function(e) {
 		// alert("This would show a popup for input of a username and password. When submitted, the popup would verify the credentials. If successful, it would be added to the list");
 		
 		thisA.controller.showDialog({
@@ -114,14 +114,14 @@ StartloginAssistant.prototype.setup = function() {
 	/*
 		Change list
 	*/
-    Mojo.Event.listen($('accountList'), Mojo.Event.listChange, function(e) {
+    Mojo.Event.listen(jQuery('#accountList')[0], Mojo.Event.listChange, function(e) {
 		dump("list change!");
 	});
 	
 	/*
 		delete from list
 	*/
-    Mojo.Event.listen($('accountList'), Mojo.Event.listDelete, function(e) {
+    Mojo.Event.listen(jQuery('#accountList')[0], Mojo.Event.listDelete, function(e) {
 		dump(thisA.accountsModel.items);
 		thisA.accountsModel.items.splice(thisA.accountsModel.items.indexOf(e.item), 1);
 		dump(thisA.accountsModel.items);
@@ -131,7 +131,7 @@ StartloginAssistant.prototype.setup = function() {
 	/*
 		Reorder list
 	*/
-    Mojo.Event.listen($('accountList'), Mojo.Event.listReorder, function(e) {
+    Mojo.Event.listen(jQuery('#accountList')[0], Mojo.Event.listReorder, function(e) {
 		thisA.accountsModel.items.splice(thisA.accountsModel.items.indexOf(e.item), 1);
 		thisA.accountsModel.items.splice(e.toIndex, 0, e.item);
 		thisA.Users.setAll(thisA.accountsModel.items);
@@ -231,7 +231,7 @@ var NewAccountDialogAssistant = Class.create({
 	setup : function(widget) {
 		this.widget = widget;
 		
-		$('saveAccountButton').addEventListener(
+		jQuery('#saveAccountButton')[0].addEventListener(
 							Mojo.Event.tap,
 							this.handleVerifyPassword.bindAsEventListener(this)
 						);
@@ -353,7 +353,7 @@ var NewAccountDialogAssistant = Class.create({
 			
 			thisA.sceneAssistant.Users.setMeta(newItem.username, newItem.type, 'api-url', thisA.newAccountModel['api-url']);
 			
-			$('accountList').mojo.noticeAddedItems(thisA.sceneAssistant.accountsModel.items.length, [newItem]);
+			jQuery('#accountList')[0].mojo.noticeAddedItems(thisA.sceneAssistant.accountsModel.items.length, [newItem]);
 			thisA.widget.mojo.close();
 		});
 
@@ -410,7 +410,7 @@ var NewAccountDialogAssistant = Class.create({
 		/* this function should do any cleanup needed before the scene is destroyed as 
 		   a result of being popped off the scene stack */
 		
-		$('saveAccountButton').removeEventListener(
+		jQuery('#saveAccountButton')[0].removeEventListener(
 							Mojo.Event.tap,
 							this.handleVerifyPassword
 						);
