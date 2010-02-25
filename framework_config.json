@@ -3,6 +3,6 @@
 "timingEnabled": false,
 "useNativeJSONParser":false,
 "debuggingEnabled":true,
-"logEvents":true,
+"logEvents":false,
 "escapeHTMLInTemplates": true
 }
