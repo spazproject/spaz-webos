@@ -38,7 +38,7 @@ function MyTimelineAssistant(argFromPusher) {
 	 */
 	this.resetTwitState = function() {
 		jQuery('.timeline').empty();
-		thisA.twit.setLastId(SPAZCORE_SECTION_FRIENDS, 0);
+		thisA.twit.setLastId(SPAZCORE_SECTION_HOME, 0);
 		thisA.twit.setLastId(SPAZCORE_SECTION_REPLIES, 0);
 		thisA.twit.setLastId(SPAZCORE_SECTION_DMS,     0);
 
@@ -185,6 +185,7 @@ MyTimelineAssistant.prototype.deactivate = function(event) {
 	/*
 		save timeline cache
 	*/
+	sch.error('saving timeline cache…');
 	this.saveTimelineCache();
 	
 };
@@ -239,6 +240,7 @@ MyTimelineAssistant.prototype.initTimeline = function() {
 
 		'request_data': function() {
 			if (thisA.isTopmostScene()) {
+				sch.error('marking all as read');
 				sc.helpers.markAllAsRead('#my-timeline div.timeline-entry');
 			}
 			thisA.getData();
@@ -405,7 +407,7 @@ MyTimelineAssistant.prototype.loadTimelineCache = function() {
 		var data = TempCache.load('mytimelinecache');
 
 		if (data !== null) {
-			thisA.twit.setLastId(SPAZCORE_SECTION_FRIENDS, data[SPAZCORE_SECTION_FRIENDS + '_lastid']);
+			thisA.twit.setLastId(SPAZCORE_SECTION_HOME, data[SPAZCORE_SECTION_HOME + '_lastid']);
 			thisA.twit.setLastId(SPAZCORE_SECTION_REPLIES, data[SPAZCORE_SECTION_REPLIES + '_lastid']);
 			thisA.twit.setLastId(SPAZCORE_SECTION_DMS,     data[SPAZCORE_SECTION_DMS     + '_lastid']);
 
@@ -440,11 +442,16 @@ MyTimelineAssistant.prototype.saveTimelineCache = function() {
 	var twitdata = {};
 	twitdata['version']                            = this.cacheVersion || -1;
 	twitdata['tweets_html']                        = tweetsModel_html;
-	twitdata[SPAZCORE_SECTION_FRIENDS + '_lastid'] = this.twit.getLastId(SPAZCORE_SECTION_FRIENDS);
+	twitdata[SPAZCORE_SECTION_HOME + '_lastid'] = this.twit.getLastId(SPAZCORE_SECTION_HOME);
 	twitdata[SPAZCORE_SECTION_REPLIES + '_lastid'] = this.twit.getLastId(SPAZCORE_SECTION_REPLIES);
 	twitdata[SPAZCORE_SECTION_DMS     + '_lastid'] = this.twit.getLastId(SPAZCORE_SECTION_DMS);
 	
 	sch.debug(twitdata);
+	sch.error('LASTIDS!');
+	sch.debug(twitdata[SPAZCORE_SECTION_HOME + '_lastid'])
+	sch.debug(twitdata[SPAZCORE_SECTION_REPLIES + '_lastid'])
+	sch.debug(twitdata[SPAZCORE_SECTION_DMS     + '_lastid']);
+	
 		
 	TempCache.save('mytimelinecache', twitdata);
 	
