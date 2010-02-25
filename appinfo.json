@@ -9,5 +9,5 @@
 	"vendor": "Funkatron Productions",
 	"vendorurl": "http://funkatron.com",
 	"theme":"dark",	
-	"noWindow":true
+	"noWindow":false
 }
