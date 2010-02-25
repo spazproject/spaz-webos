@@ -226,7 +226,11 @@ AppAssistant.prototype.handleCommand = function(event){
  */
 AppAssistant.prototype.mapSpazcoreNamespace = function(stageController) {
 	stageController.window.sc = sc; // map spazcore namespace
-	window.setIntercval = stageController.window.setInterval;
+	/*
+		re-map setInterval to the stageController's window.setInterval,
+		as Mojo unsets it when we make a noWindow app.
+	*/
+	window.setInterval = stageController.window.setInterval;
 };
 
 
