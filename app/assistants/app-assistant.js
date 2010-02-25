@@ -22,60 +22,7 @@ function AppAssistant(appController) {
 
 
 
-AppAssistant.prototype.initialize = function() {
-	sch.error('INITIALIZING EVERYTHING');
-	
-	/*
-		Remap JSON parser because JSON2.js one was causing probs with unicode
-	*/
-	sc.helpers.deJSON = function(str) {
-		try {
-			var obj = JSON.parse(str);
-			return obj;
-		} catch(e) {
-			sch.error('There was a problem decoding the JSON string');
-			sch.error('Here is the JSON string: '+str);
-			return null;
-		}
 
-	};
-	sc.helpers.enJSON = function(obj) {
-		var json = JSON.stringify(obj);
-		return json;
-	};
-
-	sc.info = Mojo.Log.info;
-	sc.warn = Mojo.Log.warn;
-	sc.error = Mojo.Log.error;
-
-	/*
-		model for saving Tweets to Depot. We replace on every start to make sure we don't go over-budget
-	*/
-	sc.app.Tweets = new Tweets(false);
-
-	sc.app.search_cards = [];
-	sc.app.new_search_card = 0;
-	sc.app.search_card_prefix = "searchcard_";
-
-	sc.app.username = null;
-	sc.app.password = null;
-
-	sc.app.prefs = null;
-
-
-	/*
-		load our prefs
-		default_preferences is from default_preferences.js, loaded in index.html
-	*/
-	sc.app.prefs = new SpazPrefs(default_preferences);
-	sc.app.prefs.load(); // this is sync on webOS, b/c loading from Mojo.Model.Cookie
-	sc.app.twit = new scTwit(null, null, {
-		'event_mode':'jquery'
-	});
-
-	sc.app.bgnotifier = new BackgroundNotifier();
-
-};
 
 // 
 // AppAssistant.prototype.cleanup = function() {
@@ -93,56 +40,57 @@ AppAssistant.prototype.handleLaunch = function(launchParams) {
 	
 	var cardStageProxy = this.controller.getStageProxy(SPAZ_MAIN_STAGENAME);
 	var cardStageController = this.controller.getStageController(SPAZ_MAIN_STAGENAME);
+	sch.error('cardStageController:');
+	sch.error(cardStageController);
 	var appController = Mojo.Controller.getAppController();
 	var dashboardStage = this.controller.getStageProxy(SPAZ_DASHBOARD_STAGENAME);
 	
 	Mojo.Log.info("Logging from AppAssistant handleLaunch");
-	var thisA = this;
 
 	Mojo.Log.info("Launch Parameters:");
 	Mojo.Log.info(sch.enJSON(launchParams));
 	
 	Spaz.closeDashboard();
 
-	/**
-	 * opens the main app stage. embedded here for closure's sake
-	 */
-	var that = this;
-	function openMainStage() {
-		// sc.app.bgnotifier.stop();
-		if (!cardStageController) {
-			
-			that.initialize();
-			
-			sch.error('NO CARDSTAGECONTROLLER EXISTS');
-			sch.error('FIRSTLOAD ----------------------');
-			var pushStart = function(stageController) {
-				that.mapSpazcoreNamespace(stageController);
-				that.gotoMyTimeline(stageController);
-			};
-			var stageArguments = {
-				"name": SPAZ_MAIN_STAGENAME,
-				"assistantName":"StageAssistant"
-			};
-			sch.error('Creating stage');
-			that.controller.createStageWithCallback(stageArguments, pushStart.bind(that), "card");
-			
-		} else {
-			sch.error("cardStageController Exists -----------------------");
-			if (!window.sc) {
-				that.mapSpazcoreNamespace(cardStageController);
-			}
-			sch.error('Focusing stage controller window');
-			cardStageController.window.focus();
-		}
-	}
+	// /**
+	//  * opens the main app stage. embedded here for closure's sake
+	//  */
+	// var that = this;
+	// function openMainStage() {
+	// 	// sc.app.bgnotifier.stop();
+	// 	if (!cardStageController) {
+	// 		
+	// 		that.initialize();
+	// 		
+	// 		sch.error('NO CARDSTAGECONTROLLER EXISTS');
+	// 		sch.error('FIRSTLOAD ----------------------');
+	// 		var pushStart = function(stageController) {
+	// 			that.mapObjectsToNewStage(stageController);
+	// 			that.gotoMyTimeline(stageController);
+	// 		};
+	// 		var stageArguments = {
+	// 			"name": SPAZ_MAIN_STAGENAME,
+	// 			"assistantName":"StageAssistant"
+	// 		};
+	// 		sch.error('Creating stage');
+	// 		that.controller.createStageWithCallback(stageArguments, pushStart.bind(that), "card");
+	// 		
+	// 	} else {
+	// 		sch.error("cardStageController Exists -----------------------");
+	// 		if (!window.sc) {
+	// 			that.mapObjectsToNewStage(cardStageController);
+	// 		}
+	// 		sch.error('Focusing stage controller window');
+	// 		cardStageController.window.focus();
+	// 	}
+	// }
 
 	/*
 		if there are no launchparams, open the main stage as normal
 	*/
 	if (!launchParams) {
 		sch.error('No launchParams - OPENING MAIN STAGE');
-		openMainStage();
+		// openMainStage();
 	}
 	
 	if (launchParams) {
@@ -177,17 +125,18 @@ AppAssistant.prototype.handleLaunch = function(launchParams) {
 					
 				default:
 					sch.error('default action - OPENING MAIN STAGE');
-					openMainStage();
+					// openMainStage();
 			}
 		} else if (launchParams.fromstage) {
 			sch.error("fromstage:", launchParams.fromstage);
-			switch(launchParams.fromstage) {
-				
-				
-				default:
-					sch.error('OPENING MAIN STAGE');
-					openMainStage();
-			}		
+			if (launchParams.fromstage === SPAZ_MAIN_STAGENAME) {
+				PalmSystem.activate();
+			} else {
+				var stageController = this.controller.getStageController(launchParams.fromstage);
+				if (stageController) {
+					stageController.window.focus();
+				}			
+			}
 		}
 	}
 };
@@ -224,8 +173,9 @@ AppAssistant.prototype.handleCommand = function(event){
  * Because the app assistant doesn't share a window object with the stages, 
  * we need to map the sc. namespace to the stageController.window 
  */
-AppAssistant.prototype.mapSpazcoreNamespace = function(stageController) {
+AppAssistant.prototype.mapObjectsToNewStage = function(stageController) {
 	stageController.window.sc = sc; // map spazcore namespace
+	// stageController.window.jQuery = jQuery; // map jQuery
 	/*
 		re-map setInterval to the stageController's window.setInterval,
 		as Mojo unsets it when we make a noWindow app.
@@ -234,27 +184,4 @@ AppAssistant.prototype.mapSpazcoreNamespace = function(stageController) {
 };
 
 
-AppAssistant.prototype.gotoMyTimeline = function(stageController) {
-		/*
-			load users from prefs obj
-		*/
-		var users = new Users(sc.app.prefs);
-		users.load();
-		
-		/*
-			get last user
-		*/
-		var last_userid = sc.app.prefs.get('last_userid');
-		var last_user_obj = users.getUser(last_userid);
-		if (last_user_obj !== false) {
-			dump(last_user_obj);
-			sc.app.username = last_user_obj.username;
-			sc.app.password = last_user_obj.password;
-			sc.app.type     = last_user_obj.type;
-			sc.app.userid   = last_user_obj.id;
-			stageController.pushScene('my-timeline');
-		} else {
-			dump("Tried to load last_user_object, but failed.");
-		}
 
-};
