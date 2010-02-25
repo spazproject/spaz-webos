@@ -62,4 +62,4 @@ var default_preferences = {
 	
 	'post-rt-cursor-position': 'beginning', // 'beginning' or 'end'
 	'post-send-on-enter': true
-}
+};
