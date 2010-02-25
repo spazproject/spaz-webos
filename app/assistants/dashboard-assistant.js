@@ -1,14 +1,15 @@
 function DashboardAssistant(args) {
 	
-	this.args = sch.defaults(args, {
+	this.args = sch.defaults({
 		'template_data': {
 			'title':'Dashboard Title',
 			'message':'Dashboard Message',
 			'count':99			
-		}
-		'fromstage':'main',
+		},
+		'fromstage':SPAZ_MAIN_STAGENAME,
 		'template':'dashboard/item-info'
-	});
+	}, args);
+	
 };
 
 DashboardAssistant.prototype.setup = function() {

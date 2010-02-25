@@ -10,6 +10,9 @@ StartloginAssistant.prototype.setup = function() {
 
 	var thisA = this;
 
+	Mojo.Log.info('StartloginAssistant setup!');
+	Mojo.Log.info('sc.app.prefs', sc.app.prefs);
+
 	this.scroller = this.controller.getSceneScroller();
 	
 	this.initAppMenu();
@@ -86,6 +89,8 @@ StartloginAssistant.prototype.setup = function() {
 		sc.app.password = e.item.password;
 		sc.app.type     = e.item.type;
 		sc.app.userid	= e.item.id;
+		
+		
 		
 		sc.app.prefs.set('last_userid', sc.app.userid);
 				

@@ -1,16 +1,16 @@
 <div class="dashboard-notification-module"> 
-    <!-- <div class="palm-dashboard-icon-container"> 
+    <div class="palm-dashboard-icon-container"> 
         <div class="dashboard-newitem"> 
-            <span>#{count}</span> 
+            <span>#{count_total}</span> 
         </div> 
         <div id="dashboard-icon" class="palm-dashboard-icon"></div> 
-    </div>  -->
+    </div> 
     <div class="palm-dashboard-text-container"> 
         <div class="dashboard-title"> 
           #{title} 
         </div> 
-       <div id='dashboard-text' class="palm-dashboard-text">#{count-dm} #{message-dm}</div> 
-       <div id='dashboard-text' class="palm-dashboard-text">#{count-mention} #{message-mention}</div> 
-       <div id='dashboard-text' class="palm-dashboard-text">#{count-home} #{message-home}</div> 
+       <span id='dashboard-text-dm' class="palm-dashboard-text">#{count_dm} #{message_dm}</span> • 
+       <span id='dashboard-text-mention' class="palm-dashboard-text">#{count_mention} #{message_mention}</span> •
+       <span id='dashboard-text-home' class="palm-dashboard-text">#{count_home} #{message_home}</span> 
     </div> 
 </div>

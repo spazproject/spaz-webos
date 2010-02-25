@@ -99,8 +99,8 @@ scene_helpers.addCommonSceneMethods = function(assistant) {
 	 */
 	assistant.handleCommand = function(event){
 		
-		dump(event);
-		dump(event.command);
+		sch.error(event);
+		sch.error(event.command);
 		
 		if (event.type == Mojo.Event.command) {
 			switch (event.command) {
@@ -1182,7 +1182,7 @@ scene_helpers.addCommonSceneMethods = function(assistant) {
 		if (window.name) {
 			var stagename = window.name;
 		} else {
-			var stagename = 'main';
+			var stagename = SPAZ_MAIN_STAGENAME;
 		}
 		return stagename;
 	};
@@ -1201,7 +1201,7 @@ scene_helpers.addCommonSceneMethods = function(assistant) {
 		
 		var is_topmost = (topmost === this.controller);
 		
-		sch.debug('is_topmost:'+is_topmost);
+		sch.error('is_topmost:'+is_topmost);
 		
 		return is_topmost;
 	};

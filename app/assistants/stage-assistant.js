@@ -1,6 +1,5 @@
 function StageAssistant () {
 	Mojo.Log.info("Logging from StageAssistant Constructor");
-	this.firstload = true;
 	
 	/*
 		sc is attached to the appController.assistant at startup, 
@@ -8,52 +7,23 @@ function StageAssistant () {
 		in different stages
 	*/
 	// var sc = Mojo.Controller.getAppController().assistant.sc;
+	
+	/*
+		overwrite this re-tarderd action;
+	*/
+	
+	setInterval = window.setInterval;
 }
 
 StageAssistant.prototype.setup = function() {
 	Mojo.Log.info("Logging from StageAssistant Setup");
-	var thisSA = this;	
-	
-	/*
-		We can't go to the login screen until the 
-		prefs have fully loaded
-	*/
-	jQuery().bind('spazprefs_loaded', function() {
-		Mojo.Log.info("Prefs loaded!");
-		
-		sc.app.twit = new scTwit(null, null, {
-			'event_mode':'jquery'
-		});
-	
-		if (thisSA.firstload) {
-			dump('FIRSTLOAD ----------------------');
-			thisSA.controller.pushScene('start', {'firstload':true});
-			thisSA.firstload = false;
-		} else {
-			thisSA.controller.pushScene('start');
-		}
-		
-	});
-	
-	
-	/*
-		load our prefs
-		default_preferences is from default_preferences.js, loaded in index.html
-	*/
-	sc.app.prefs = new SpazPrefs(default_preferences);
-	sc.app.prefs.load();
-	Mojo.Log.info("loading prefs…");
+	var thisSA = this;
 };
-
-
-StageAssistant.prototype.loadPrefsFromDepot = function() {
-
-}
 
 
 StageAssistant.prototype.cleanup = function() {
 	
-	jQuery().unbind('spazprefs_loaded');
+	Mojo.Log.info("StageAssistant cleanup");
 	
 	var sc = null;
 	
@@ -67,7 +37,7 @@ StageAssistant.prototype.cleanup = function() {
 
 StageAssistant.prototype.handleCommand = function(event){
 	
-	dump(event.command);
+	sch.error("StageAssistant handleCommand:"+event.command);
 	
 	var active_scene = this.controller.activeScene();
 	

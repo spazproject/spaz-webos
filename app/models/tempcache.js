@@ -24,6 +24,8 @@ TempCache.initUser = function(idkey) {
 		idkey = sc.app.userid;
 	}
 	
+	sch.debug('TempCache: idkey for user is '+idkey);
+	
 	if (!window.spaztmpcache) {
 		TempCache.init();
 	}
@@ -42,7 +44,6 @@ TempCache.save = function(key, val, idkey) {
 	if (!idkey) {
 		idkey = sc.app.userid;
 	}
-
 
 	sch.error("saving key:"+key);
 	sch.error("saving val:"+val);
@@ -82,7 +83,9 @@ TempCache.load = function(key, idkey) {
 		TempCache.initUser(idkey);
 		return null;
 	}
-
+	
+	sch.error("TempCache: loading key:"+key);
+	sch.error("TempCache: loading idkey:"+idkey);
 	
 	if (window.spaztmpcache[idkey][key]) {
 		return window.spaztmpcache[idkey][key];
@@ -124,7 +127,7 @@ TempCache.loadFromDB = function() {
 	function success(tx, rs) {
 		sch.debug("SUCCESS LOADING TEMP CACHE");
 		var json_cache = rs.rows.item(0).value;
-		sch.debug(json_cache);
+		sch.debug('json_cache:'+json_cache);
 		window.spaztmpcache = sch.deJSON(json_cache);
 		sch.debug(window.spaztmpcache);
 		sch.triggerCustomEvent('temp_cache_load_db_success', document, window.spaztmpcache);

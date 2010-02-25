@@ -23,6 +23,12 @@ var default_preferences = {
 	'notify-mentions':true,
 	'notify-dms':true,
 	'notify-searchresults':true,
+	
+	'bgnotify-enabled':false,
+	'bgnotify-on-dm':true,
+	'bgnotify-on-mention':true,
+	'bgnotify-on-home':false,
+	'bgnotify-wakeoncheck':true,
 
     'timeline-scrollonupdate': true,
     'timeline-maxentries': 60,
