@@ -18,7 +18,8 @@ scene_helpers.addCommonSceneMethods = function(assistant) {
 			{ label: $L('New Search Card'),	command: 'new-search-card' },
 			{ label: $L('Preferences...'),	command:Mojo.Menu.prefsCmd },
 			{ label: $L('About Spaz'),		command: 'appmenu-about' },
-			{ label: $L('Help...'),			command:Mojo.Menu.helpCmd }
+			{ label: $L('Help...'),			command:Mojo.Menu.helpCmd },
+			{ label: $L('Donate...'),		command:'donate' }
 		];
 
 		if (!opts) {
