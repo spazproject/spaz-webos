@@ -1128,13 +1128,13 @@ scene_helpers.addCommonSceneMethods = function(assistant) {
 		);
 	};
 	assistant._listenerForEnter = function(callback, event) {
-		dump("DUMPING EVENT");
-		dump(event);
-		dump(event.originalEvent);
-		dump("DUMPING CALLBACK");
-		dump(callback);
+		sch.debug("DUMPING EVENT");
+		sch.debug(event);
+		sch.debug(event.originalEvent);
+		sch.debug("DUMPING CALLBACK");
+		sch.debug(callback);
 		if (event && event.originalEvent && Mojo.Char.isEnterKey(event.originalEvent.keyCode)) {
-			dump("CALLING CALLBACK");
+			sch.debug("CALLING CALLBACK");
 			callback.call(this);
 			return;
 		}
