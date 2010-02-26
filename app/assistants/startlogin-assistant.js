@@ -94,7 +94,7 @@ StartloginAssistant.prototype.setup = function() {
 		
 		sc.app.prefs.set('last_userid', sc.app.userid);
 				
-		Mojo.Controller.stageController.pushScene('my-timeline');
+		Mojo.Controller.stageController.swapScene('my-timeline');
 	});
 	
 	/*
