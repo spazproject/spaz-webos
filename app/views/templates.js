@@ -288,8 +288,8 @@ sc.app.tpl.addTemplateMethod('search-item', function(d) {
 	var html = '';
 
 	html += '<div class="timeline-entry" data-issearch="true" data-status-id="'+d.id+'" data-user-id="'+d.from_user_id+'" data-user-screen_name="'+d.from_user+'" data-timestamp="'+d.SC_created_at_unixtime+'">'
-	+ '	<div class="user" data-user-id="'+d.from_user_id+'" data-user-screen_name="'+d.from_user+'">'
-	+ '		<img src="'+d.profile_image_url+'" title="'+d.from_user+'" />'
+	+ '	<div class="user" data-user-id="'+d.user.id+'" data-user-screen_name="'+d.user.screen_name+'">'
+	+ '		<div class="user-img rounded-user-image" style="background-image:url('+d.user.profile_image_url+')"></div>'
 	+ '	</div>'
 	+ '	<div class="status">'
 	+ '		<div class="meta-wrapper">'
