@@ -282,14 +282,20 @@ PreferencesAssistant.prototype.setupChoices = function(){
 		{label:$L('10'), value:10},
 		{label:$L('20'), value:20},
 		{label:$L('40'), value:40},
-		{label:$L('60'), value:60}
+		{label:$L('60'), value:60},
+		{label:$L('100'), value:100},
+		{label:$L('200'), value:200}
 	];
 	
 	this.validInitialLoadsDmReply = [
 		{label:$L('2'), value:2},
 		{label:$L('5'), value:5},
 		{label:$L('10'), value:10},
-		{label:$L('20'), value:20}
+		{label:$L('20'), value:20},
+		{label:$L('40'), value:40},
+		{label:$L('60'), value:60},
+		{label:$L('100'), value:100},
+		{label:$L('200'), value:200}		
 	];
 	
 	this.validTimelineTextSizes = [
