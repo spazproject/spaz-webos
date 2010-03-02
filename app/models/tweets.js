@@ -190,7 +190,7 @@ Tweets.prototype.getRemote = function(id, isdm, onSuccess, onFailure) {
 
 
 Tweets.prototype.initSpazTwit = function() {
-	var event_mode = event_mode || 'jquery'; // default this to jquery because we have so much using it
+	var event_mode = 'jquery'; // default this to jquery because we have so much using it
 	
 	var users = new Users(sc.app.prefs);
 	
