@@ -2,7 +2,7 @@
 _APP_Name = 'Spaz';
 _APP_VersionNumber = '1.1.0';
 _APP_PublisherName = 'Funkatron.com';
-_APP_Copyright = '&copy; Copyright 2009 Funkatron Productions.';
+_APP_Copyright = '&copy; Copyright 2010 Funkatron Productions.';
 
 // At least one of these three is required
 _APP_Support_URL = 'funkatron.com/spaz-webos';   // label = "Support Website"
