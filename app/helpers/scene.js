@@ -1049,13 +1049,13 @@ scene_helpers.addCommonSceneMethods = function(assistant) {
 			e.stopImmediatePropagation();
 
 			if (jqtarget.is('div.timeline-entry>.user') || jqtarget.is('div.timeline-entry>.user img')) {
-				var userid = jQuery(this).attr('data-user-screen_name');
+				var userid = jQuery(this).attr('data-user-id');
 				Mojo.Controller.stageController.pushScene('user-detail', userid);
 				return;
 
 			} else if (jqtarget.is('.username.clickable')) {
 				var userid = jqtarget.attr('data-user-screen_name');
-				Mojo.Controller.stageController.pushScene('user-detail', userid);
+				Mojo.Controller.stageController.pushScene('user-detail', '@'+userid);
 				return;
 
 			} else if (jqtarget.is('.hashtag.clickable')) {

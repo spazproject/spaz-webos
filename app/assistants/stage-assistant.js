@@ -1,8 +1,11 @@
 function StageAssistant () {
 	Mojo.Log.info("Logging from StageAssistant Constructor");
+	// sc.setDumpLevel(5);
+	
 }
 
 StageAssistant.prototype.initialize = function() {
+	
 	sch.error('INITIALIZING EVERYTHING');
 	
 	/*
@@ -47,7 +50,56 @@ StageAssistant.prototype.initialize = function() {
 		load our prefs
 		default_preferences is from default_preferences.js, loaded in index.html
 	*/
-	sc.app.prefs = new SpazPrefs(default_preferences);
+	sc.app.prefs = new SpazPrefs(default_preferences, null, {
+		'timeline-maxentries': {
+			'onGet': function(key, value){
+				if (sc.app.prefs.get('timeline-friends-getcount') > value) {
+					value = sc.app.prefs.get('timeline-friends-getcount');
+				}
+				sch.debug(key + ':' + value);
+				return value;
+			},
+			'onSet': function(key, value){
+				if (sc.app.prefs.get('timeline-friends-getcount') > value) {
+					value = sc.app.prefs.get('timeline-friends-getcount');
+				}
+				sch.debug(key + ':' + value);
+				return value;					
+			}
+		},
+		'timeline-maxentries-dm': {
+			'onGet': function(key, value){
+				if (sc.app.prefs.get('timeline-dm-getcount') > value) {
+					value = sc.app.prefs.get('timeline-dm-getcount');
+				}
+				sch.debug(key + ':' + value);
+				return value;
+			},
+			'onSet': function(key, value){
+				if (sc.app.prefs.get('timeline-dm-getcount') > value) {
+					value = sc.app.prefs.get('timeline-dm-getcount');
+				}
+				sch.debug(key + ':' + value);
+				return value;					
+			}
+		},
+		'timeline-maxentries-reply': {
+			'onGet': function(key, value){
+				if (sc.app.prefs.get('timeline-replies-getcount') > value) {
+					value = sc.app.prefs.get('timeline-replies-getcount');
+				}
+				sch.debug(key + ':' + value);
+				return value;
+			},
+			'onSet': function(key, value){
+				if (sc.app.prefs.get('timeline-replies-getcount') > value) {
+					value = sc.app.prefs.get('timeline-replies-getcount');
+				}
+				sch.debug(key + ':' + value);
+				return value;					
+			}
+		}
+	});
 	sc.app.prefs.load(); // this is sync on webOS, b/c loading from Mojo.Model.Cookie
 	sc.app.twit = new scTwit(null, null, {
 		'event_mode':'jquery'
@@ -60,6 +112,7 @@ StageAssistant.prototype.initialize = function() {
 
 StageAssistant.prototype.setup = function() {
 	Mojo.Log.info("Logging from StageAssistant Setup");
+	
 	var thisSA = this;
 	this.initialize();
 	this.gotoMyTimeline();

@@ -18,7 +18,7 @@ sc.app.tpl.addTemplateMethod('message-detail', function(d) {
 	
 	html += ''
 	+ '	<div class="user" data-user-screen_name="'+d.user.screen_name+'" data-user-id="'+d.user.id+'" data-status-id="'+d.id+'">'
-	+ '		<div class="user-image rounded-user-image" style="background-image:url('+d.user.profile_image_url+')" data-screen_name="'+d.user.screen_name+'" title="View user\'s profile"></div>'
+	+ '		<div class="user-image rounded-user-image" style="background-image:url('+d.user.profile_image_url+')" data-screen_name="'+d.user.screen_name+'" data-user-id="'+d.user.id+'" title="View user\'s profile"></div>'
 	+ '		<div class="screen_name" data-screen_name="'+d.user.screen_name+'">'
 	+ 			d.user.screen_name;
 	if (d.user.protected) {

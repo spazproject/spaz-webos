@@ -31,9 +31,11 @@ var default_preferences = {
 	'bgnotify-wakeoncheck':true,
 
     'timeline-scrollonupdate': true,
-    'timeline-maxentries': 60,
-    'timeline-maxentries-dm': 20, 
-    'timeline-maxentries-reply': 20, 
+
+    'timeline-maxentries': 100,
+    'timeline-maxentries-dm': 50, 
+    'timeline-maxentries-reply': 50, 
+
     'timeline-friends-getcount': 20,
     'timeline-replies-getcount': 5,
     'timeline-dm-getcount': 5,
