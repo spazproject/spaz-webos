@@ -102,7 +102,7 @@ UserDetailAssistant.prototype.setup = function() {
 		thisA.userRetrieved = true;
 		thisA.userobj = userobj;
 		
-		sch.debug(thisA.userobj.);
+		sch.debug(thisA.userobj);
 		
 		thisA.userobj.description = Spaz.makeItemsClickable(thisA.userobj.description);
 		
