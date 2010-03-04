@@ -1,6 +1,6 @@
 function DashboardAssistant(args) {
-	
-	this.args = sch.defaults({
+
+	this.default_args = {
 		'template_data': {
 			'title':'Dashboard Title',
 			'message':'Dashboard Message',
@@ -8,9 +8,12 @@ function DashboardAssistant(args) {
 		},
 		'fromstage':SPAZ_MAIN_STAGENAME,
 		'template':'dashboard/item-info'
-	}, args);
+	};
+	
+	this.args = sch.defaults(this.default_args, args);
 	
 };
+
 
 DashboardAssistant.prototype.setup = function() {
 	this.updateDashboard();
@@ -45,9 +48,7 @@ DashboardAssistant.prototype.cleanup = function(event) {
 
 DashboardAssistant.prototype.updateDashboard = function(args) { 
 	
-	if (args) {
-		this.args = args;
-	}
+	this.args = sch.defaults(this.default_args, args);
 	
 	/*
 		Use render to convert the object and its properties
