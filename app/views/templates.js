@@ -228,6 +228,11 @@ sc.app.tpl.addTemplateMethod('user-detail', function(d) {
 sc.app.tpl.addTemplateMethod('tweet', function(d) {
 	var html = '';
 	
+	if (!d.user || !d.user.id) {
+		sch.error('Tweet did not contain a user object');
+		sch.error('Tweet object: '+sch.enJSON(d));
+	}
+	
 	html += '<div class="timeline-entry';
 	if (!d.not_new) {
 		html += ' new';

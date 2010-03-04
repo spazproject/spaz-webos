@@ -237,7 +237,7 @@ MyTimelineAssistant.prototype.initTimeline = function() {
 		'event_target' :document,
 		
 		'refresh_time':sc.app.prefs.get('network-refreshinterval'),
-		'max_items':100,
+		'max_items':100, // this isn't actually used atm
 
 		'request_data': function() {
 			if (thisA.isTopmostScene()) {
@@ -247,7 +247,7 @@ MyTimelineAssistant.prototype.initTimeline = function() {
 			thisA.getData();
 		},
 		'data_success': function(e, data) {
-			var data = data.reverse();
+			data = data.reverse();
 			var no_dupes = [];
 			
 			var previous_count = jQuery('#my-timeline div.timeline-entry').length;
@@ -282,7 +282,7 @@ MyTimelineAssistant.prototype.initTimeline = function() {
 				// get last of new times
 				var new_last_time  = no_dupes[no_dupes.length-1].SC_created_at_unixtime;
 				// get first of OLD times
-				var old_first_time = parseInt($oldFirst.attr('data-timestamp'));
+				var old_first_time = parseInt($oldFirst.attr('data-timestamp'), 10);
 				
 				sch.debug('new_first_time:'+new_first_time);
 				sch.debug('new_last_time:'+new_last_time);
@@ -364,10 +364,16 @@ MyTimelineAssistant.prototype.initTimeline = function() {
 			thisA.displayErrorInfo(err_msg, error_array);
 		},
 		'renderer': function(obj) {
-			if (obj.SC_is_dm) {
-				return sc.app.tpl.parseTemplate('dm', obj);
-			} else {
-				return sc.app.tpl.parseTemplate('tweet', obj);
+			try {
+				if (obj.SC_is_dm) {
+					return sc.app.tpl.parseTemplate('dm', obj);
+				} else {
+					return sc.app.tpl.parseTemplate('tweet', obj);
+				}				
+			} catch(err) {
+				sch.error("There was an error rendering the object: "+sch.enJSON(obj));
+				sch.error("Error:"+sch.enJSON(err));
+				return '';
 			}
 			
 			
@@ -449,8 +455,8 @@ MyTimelineAssistant.prototype.saveTimelineCache = function() {
 	
 	sch.debug(twitdata);
 	sch.debug('LASTIDS!');
-	sch.debug(twitdata[SPAZCORE_SECTION_HOME + '_lastid'])
-	sch.debug(twitdata[SPAZCORE_SECTION_REPLIES + '_lastid'])
+	sch.debug(twitdata[SPAZCORE_SECTION_HOME + '_lastid']);
+	sch.debug(twitdata[SPAZCORE_SECTION_REPLIES + '_lastid']);
 	sch.debug(twitdata[SPAZCORE_SECTION_DMS     + '_lastid']);
 	
 		
