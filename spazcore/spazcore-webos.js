@@ -1,4 +1,4 @@
-/*********** Built 2010-02-25 09:24:46 EST ***********/
+/*********** Built 2010-03-03 10:17:54 EST ***********/
 /*jslint 
 browser: true,
 nomen: false,
@@ -6725,7 +6725,7 @@ sc.helpers.dump = function(obj, level) {
  * @platformstub
  */
 sc.helpers.openInBrowser = function(url) {
-	// stub
+	window.open(url);
 };
 
 /**
@@ -6906,6 +6906,12 @@ sc.helpers.removeExtraElements = function(item_selector, max_items, remove_from_
 	var parent = jqitems.parent().get(0);
 
 	var diff = jqitems.length - max_items;
+	
+	sch.debug('removing extra elements from '+item_selector);
+	sch.debug('matching item count '+jqitems.length);
+	sch.debug('max_items: '+max_items);
+	sch.debug('diff: '+diff);
+	sch.debug('remove_from_top: '+remove_from_top);
 
 	if (diff > 0) {
 
@@ -6963,7 +6969,6 @@ sc.helpers.updateRelativeTimes = function(item_selector, time_attribute) {
  * @requires jQuery
  */
 sc.helpers.markAllAsRead = function(item_selector) {
-	sch.error('MARKING ALL AS READ');
 	jQuery(item_selector).removeClass('new');
 };
 /*jslint 
@@ -8213,12 +8218,12 @@ var SPAZCORE_PREFS_MOJO_COOKIENAME = 'preferences.json';
  * @param {object} sanity_methods a JS object of key:object pairs that defines methods to be called when the pref is get() or set(). Example:
  * {
  * 	foo:{
- * 		onGet:function() {};
- * 		onSet:function() {};
+ * 		onGet:function(key, value) {};
+ * 		onSet:function(key, value) {};
  * 	},
  * 	bar:{
- * 		onGet:function() {};
- * 		onSet:function() {};
+ * 		onGet:function(key, value) {};
+ * 		onSet:function(key, value) {};
  * 	}
  * }
  * 
@@ -8245,7 +8250,8 @@ function SpazPrefs(defaults, id, sanity_methods) {
 
 
 	if (sanity_methods) {
-		sc.helpers.dump('need to add sanity_method parsing');
+		sch.debug('adding sanity methods to prefs');
+		this._sanity_methods = sanity_methods;
 	}
 	
 	if (id) {
@@ -8277,13 +8283,8 @@ SpazPrefs.prototype.setDefaults = function(defaults) {
 SpazPrefs.prototype._applyDefaults = function() {
 	var key;
 	for (key in this._defaults) {
-		sc.helpers.dump('Copying default "' + key + '":"' + this._defaults[key] + '" (' + typeof(this._defaults[key]) + ')');
+		sc.helpers.debug('Copying default "' + key + '":"' + this._defaults[key] + '" (' + typeof(this._defaults[key]) + ')');
 		this._prefs[key] = this._defaults[key];
-
-		if (this._sanity_methods[key] && this._sanity_methods[key].onSet) {
-			sc.helpers.dump("Calling "+key+".onSet()");
-			this._sanity_methods[key].onSet();
-		}
 	}
 };
 
@@ -8303,18 +8304,33 @@ SpazPrefs.prototype.resetPrefs = function() {
  * Note that FALSE is returned if the key does not exist
  */
 SpazPrefs.prototype.get = function(key, encrypted) {
+	var value;
+	
+	// if (this._sanity_methods[key] && this._sanity_methods[key].onSet) {
+	// 	sc.helpers.debug("Calling "+key+".onSet()");
+	// 	this._sanity_methods[key].onSet();
+	// }
+	
+	
 	if (encrypted) {
-		return this.getEncrypted(key);
-	} 
-	
-	sc.helpers.dump('Looking for pref "'+key+'"');
-	
-	if (this._prefs[key]) {
-		sc.helpers.dump('Found pref "'+key+'" of value "'+this._prefs[key]+'" ('+typeof(this._prefs[key])+')');
-		return this._prefs[key];
+		value = this.getEncrypted(key);
 	} else {
-		return false;
+		sc.helpers.debug('Looking for pref "'+key+'"');
+
+		if (this._prefs[key]) {
+			sc.helpers.debug('Found pref "'+key+'" of value "'+this._prefs[key]+'" ('+typeof(this._prefs[key])+')');
+			value = this._prefs[key];
+		} else {
+			value = false;
+		}
 	}
+	
+	if (this._sanity_methods[key] && this._sanity_methods[key].onGet) {
+		sc.helpers.debug("Calling "+key+".onGet()");
+		value = this._sanity_methods[key].onGet.call(this, key, value);
+	}
+		
+	return value;
 };
 
 
@@ -8323,13 +8339,20 @@ SpazPrefs.prototype.get = function(key, encrypted) {
  */
 SpazPrefs.prototype.set = function(key, val, encrypted) {
 	
-	sc.helpers.dump('Setting and saving "'+key+'" to "'+val+'" ('+typeof(val)+')');
+	sc.helpers.debug('Setting and saving "'+key+'" to "'+val+'" ('+typeof(val)+')');
+	
+	if (this._sanity_methods[key] && this._sanity_methods[key].onSet) {
+		sc.helpers.debug("Calling "+key+".onSet()");
+		val = this._sanity_methods[key].onSet.call(this, key, val);
+	}
 	
 	if (encrypted) {
-		return this.setEncrypted(key, val);
-	} 
+		this.setEncrypted(key, val);
+	} else {
+		this._prefs[key] = val;
+	}
 
-	this._prefs[key] = val;
+	
 	
 	this.save();
 };
@@ -8348,7 +8371,7 @@ SpazPrefs.prototype.set = function(key, val, encrypted) {
 SpazPrefs.prototype.setSanityMethod = function(key, type, method) {
 	
 	if (type !== 'onGet' && type !== 'onSet') {
-		return false;
+		sch.error('sanity method type must be onGet or onSet');
 	}
 	
 	this._sanity_methods[key][type] = method;
@@ -10783,6 +10806,7 @@ SpazTwit.prototype.getHomeTimeline = function(since_id, count, page, processing_
  * @private
  */
 SpazTwit.prototype._processHomeTimeline = function(ret_items, opts, processing_opts) {
+	sc.helpers.dump('Processing '+ret_items.length+' items returned from home method');
 	this._processTimeline(SPAZCORE_SECTION_HOME, ret_items, opts, processing_opts);
 };
 
@@ -10841,6 +10865,7 @@ SpazTwit.prototype.getFriendsTimeline = function(since_id, count, page, processi
  * @private
  */
 SpazTwit.prototype._processFriendsTimeline = function(ret_items, opts, processing_opts) {
+	sc.helpers.dump('Processing '+ret_items.length+' items returned from friends method');
 	this._processTimeline(SPAZCORE_SECTION_FRIENDS, ret_items, opts, processing_opts);
 };
 
@@ -11184,8 +11209,10 @@ SpazTwit.prototype._processSearchTimeline = function(search_result, opts, proces
 			concat new items onto data.items array
 		*/
 		this.data[SPAZCORE_SECTION_SEARCH].items = this.data[SPAZCORE_SECTION_SEARCH].items.concat(this.data[SPAZCORE_SECTION_SEARCH].newitems);
+		
 		this.data[SPAZCORE_SECTION_SEARCH].items = this.removeDuplicates(this.data[SPAZCORE_SECTION_SEARCH].items);
-		this.data[SPAZCORE_SECTION_SEARCH].items = this.removeExtraElements(this.data[SPAZCORE_SECTION_SEARCH].items, this.data[SPAZCORE_SECTION_SEARCH].max);
+		sch.debug('NOT removing extras from search -- we don\'t do that anymore');
+		// this.data[SPAZCORE_SECTION_SEARCH].items = this.removeExtraElements(this.data[SPAZCORE_SECTION_SEARCH].items, this.data[SPAZCORE_SECTION_SEARCH].max);
 
 
 		var search_info = {
@@ -11564,8 +11591,9 @@ SpazTwit.prototype._processTimeline = function(section_name, ret_items, opts, pr
 		
 		// sort these items -- the timelines can be out of order when combined
 
-		sc.helpers.dump('Removing duplicates in '+SPAZCORE_SECTION_COMBINED+' newitems');
 		
+		// sc.helpers.dump('Removing duplicates in '+SPAZCORE_SECTION_COMBINED+' newitems');
+		// 
 		this.data[SPAZCORE_SECTION_COMBINED].newitems = this._cleanupItemArray(this.data[SPAZCORE_SECTION_COMBINED].newitems, this.data[SPAZCORE_SECTION_COMBINED].max, this._sortItemsByDateAsc);
 		
 		if (this.combinedTimelineHasErrors()) {
@@ -11579,6 +11607,7 @@ SpazTwit.prototype._processTimeline = function(section_name, ret_items, opts, pr
 		if (opts.success_callback) {
 			opts.success_callback(this.data[SPAZCORE_SECTION_COMBINED].newitems);
 		}
+		sch.debug('this.data[SPAZCORE_SECTION_COMBINED].newitems has '+this.data[SPAZCORE_SECTION_COMBINED].newitems.length+' items');
 		this.triggerEvent('new_combined_timeline_data', this.data[SPAZCORE_SECTION_COMBINED].newitems);
 		this.data[SPAZCORE_SECTION_COMBINED].newitems = []; // reset combined.newitems
 		this.initializeCombinedTracker();
@@ -11598,7 +11627,7 @@ SpazTwit.prototype._addToSectionItems = function(section_name, arr, sortfunc) {
 	this.data[section_name].items = this.data[section_name].items.concat(arr);
 
 	this._cleanupItemArray(this.data[section_name].items, this.data[section_name].max, sortfunc);
-}
+};
 
 /**
  * Sorts (optionally), removes dupes, and removes extra items from a given
@@ -11615,7 +11644,8 @@ SpazTwit.prototype._cleanupItemArray = function(arr, max, sortfunc) {
 		arr = arr.sort(sortfunc);
 	}
 	arr = this.removeDuplicates(arr);
-	arr = this.removeExtraElements(arr, max);
+	sch.debug('NOT removing extras -- we don\'t do that anymore');
+	// arr = this.removeExtraElements(arr, max);
 	return arr;
 };
 
@@ -13067,6 +13097,23 @@ sc.helpers.dump = function(obj, level) {
 };
 
 
+/*
+	Open a URL in the default system web browser
+*/
+sc.helpers.openInBrowser = function(url) {
+	var c = Mojo.Controller.getAppController();
+	c.serviceRequest('palm://com.palm.applicationManager', {
+		method: 'open',
+		parameters: {
+			id: 'com.palm.app.browser',
+			params: {
+				target: url
+			}
+		}
+	});
+};
+
+
 /**
  * this is specific to webOS, for retrieving the proper URL prefixed with the Palm Host proxy if needed 
  * @param {string} url
@@ -13091,7 +13138,8 @@ sc.helpers.getMojoURL = function(url) {
 		return url;
 	}
 	
-};/*jslint 
+};
+/*jslint 
 browser: true,
 nomen: false,
 debug: true,

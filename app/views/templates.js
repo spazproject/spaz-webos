@@ -18,7 +18,7 @@ sc.app.tpl.addTemplateMethod('message-detail', function(d) {
 	
 	html += ''
 	+ '	<div class="user" data-user-screen_name="'+d.user.screen_name+'" data-user-id="'+d.user.id+'" data-status-id="'+d.id+'">'
-	+ '		<div class="user-image rounded-user-image" style="background-image:url('+d.user.profile_image_url+')" data-screen_name="'+d.user.screen_name+'" title="View user\'s profile"></div>'
+	+ '		<div class="user-image rounded-user-image" style="background-image:url('+d.user.profile_image_url+')" data-screen_name="'+d.user.screen_name+'" data-user-id="'+d.user.id+'" title="View user\'s profile"></div>'
 	+ '		<div class="screen_name" data-screen_name="'+d.user.screen_name+'">'
 	+ 			d.user.screen_name;
 	if (d.user.protected) {
@@ -228,6 +228,11 @@ sc.app.tpl.addTemplateMethod('user-detail', function(d) {
 sc.app.tpl.addTemplateMethod('tweet', function(d) {
 	var html = '';
 	
+	if (!d.user || !d.user.id) {
+		sch.error('Tweet did not contain a user object');
+		sch.error('Tweet object: '+sch.enJSON(d));
+	}
+	
 	html += '<div class="timeline-entry';
 	if (!d.not_new) {
 		html += ' new';
@@ -288,8 +293,8 @@ sc.app.tpl.addTemplateMethod('search-item', function(d) {
 	var html = '';
 
 	html += '<div class="timeline-entry" data-issearch="true" data-status-id="'+d.id+'" data-user-id="'+d.from_user_id+'" data-user-screen_name="'+d.from_user+'" data-timestamp="'+d.SC_created_at_unixtime+'">'
-	+ '	<div class="user" data-user-id="'+d.from_user_id+'" data-user-screen_name="'+d.from_user+'">'
-	+ '		<img src="'+d.profile_image_url+'" title="'+d.from_user+'" />'
+	+ '	<div class="user" data-user-id="'+d.user.id+'" data-user-screen_name="'+d.user.screen_name+'">'
+	+ '		<div class="user-img rounded-user-image" style="background-image:url('+d.user.profile_image_url+')"></div>'
 	+ '	</div>'
 	+ '	<div class="status">'
 	+ '		<div class="meta-wrapper">'

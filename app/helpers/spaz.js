@@ -44,6 +44,12 @@ Spaz.findAndSwapScene = function(targetScene, returnValue) {
 
 
 
+Spaz.popAllAndPushScene = function(targetScene, returnValue) {
+	Mojo.Controller.stageController.popScenesTo();
+	Mojo.Controller.stageController.pushScene(targetScene, returnValue);
+};
+
+
 /**
  * converts various items in a timeline entry's text into clickables
  * @param {string} str

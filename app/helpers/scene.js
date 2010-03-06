@@ -18,7 +18,8 @@ scene_helpers.addCommonSceneMethods = function(assistant) {
 			{ label: $L('New Search Card'),	command: 'new-search-card' },
 			{ label: $L('Preferences...'),	command:Mojo.Menu.prefsCmd },
 			{ label: $L('About Spaz'),		command: 'appmenu-about' },
-			{ label: $L('Help...'),			command:Mojo.Menu.helpCmd }
+			{ label: $L('Help...'),			command:Mojo.Menu.helpCmd },
+			{ label: $L('Donate...'),		command:'donate' }
 		];
 
 		if (!opts) {
@@ -1048,13 +1049,13 @@ scene_helpers.addCommonSceneMethods = function(assistant) {
 			e.stopImmediatePropagation();
 
 			if (jqtarget.is('div.timeline-entry>.user') || jqtarget.is('div.timeline-entry>.user img')) {
-				var userid = jQuery(this).attr('data-user-screen_name');
+				var userid = jQuery(this).attr('data-user-id');
 				Mojo.Controller.stageController.pushScene('user-detail', userid);
 				return;
 
 			} else if (jqtarget.is('.username.clickable')) {
 				var userid = jqtarget.attr('data-user-screen_name');
-				Mojo.Controller.stageController.pushScene('user-detail', userid);
+				Mojo.Controller.stageController.pushScene('user-detail', '@'+userid);
 				return;
 
 			} else if (jqtarget.is('.hashtag.clickable')) {
@@ -1128,13 +1129,13 @@ scene_helpers.addCommonSceneMethods = function(assistant) {
 		);
 	};
 	assistant._listenerForEnter = function(callback, event) {
-		dump("DUMPING EVENT");
-		dump(event);
-		dump(event.originalEvent);
-		dump("DUMPING CALLBACK");
-		dump(callback);
+		sch.debug("DUMPING EVENT");
+		sch.debug(event);
+		sch.debug(event.originalEvent);
+		sch.debug("DUMPING CALLBACK");
+		sch.debug(callback);
 		if (event && event.originalEvent && Mojo.Char.isEnterKey(event.originalEvent.keyCode)) {
-			dump("CALLING CALLBACK");
+			sch.debug("CALLING CALLBACK");
 			callback.call(this);
 			return;
 		}

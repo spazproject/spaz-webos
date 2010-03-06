@@ -271,12 +271,12 @@ SearchTwitterAssistant.prototype.activate = function(event) {
 		
 		if (jqtarget.is('div.timeline-entry>.user') || jqtarget.is('div.timeline-entry>.user img')) {
 			var userid = jQuery(this).attr('data-user-screen_name');
-			Mojo.Controller.stageController.pushScene('user-detail', userid);
+			Mojo.Controller.stageController.pushScene('user-detail', '@'+userid);
 			return;
 			
 		} else if (jqtarget.is('.username.clickable')) {
 			var userid = jqtarget.attr('data-user-screen_name');
-			Mojo.Controller.stageController.pushScene('user-detail', userid);
+			Mojo.Controller.stageController.pushScene('user-detail', '@'+userid);
 			return;
 			
 		} else if (jqtarget.is('.hashtag.clickable')) {

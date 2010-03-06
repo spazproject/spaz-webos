@@ -5,6 +5,7 @@
 
 
 function MyTimelineAssistant(argFromPusher) {
+	
 	/* this is the creator function for your scene assistant object. It will be passed all the 
 	   additional parameters (after the scene name) that were passed to pushScene. The reference
 	   to the scene controller (this.controller) has not be established yet, so any initialization
@@ -185,7 +186,7 @@ MyTimelineAssistant.prototype.deactivate = function(event) {
 	/*
 		save timeline cache
 	*/
-	sch.error('saving timeline cache…');
+	sch.debug('saving timeline cache…');
 	this.saveTimelineCache();
 	
 };
@@ -236,7 +237,7 @@ MyTimelineAssistant.prototype.initTimeline = function() {
 		'event_target' :document,
 		
 		'refresh_time':sc.app.prefs.get('network-refreshinterval'),
-		'max_items':100,
+		'max_items':100, // this isn't actually used atm
 
 		'request_data': function() {
 			if (thisA.isTopmostScene()) {
@@ -246,7 +247,7 @@ MyTimelineAssistant.prototype.initTimeline = function() {
 			thisA.getData();
 		},
 		'data_success': function(e, data) {
-			var data = data.reverse();
+			data = data.reverse();
 			var no_dupes = [];
 			
 			var previous_count = jQuery('#my-timeline div.timeline-entry').length;
@@ -281,24 +282,24 @@ MyTimelineAssistant.prototype.initTimeline = function() {
 				// get last of new times
 				var new_last_time  = no_dupes[no_dupes.length-1].SC_created_at_unixtime;
 				// get first of OLD times
-				var old_first_time = parseInt($oldFirst.attr('data-timestamp'));
+				var old_first_time = parseInt($oldFirst.attr('data-timestamp'), 10);
 				
-				sch.error('new_first_time:'+new_first_time);
-				sch.error('new_last_time:'+new_last_time);
-				sch.error('old_first_time:'+old_first_time);
+				sch.debug('new_first_time:'+new_first_time);
+				sch.debug('new_last_time:'+new_last_time);
+				sch.debug('old_first_time:'+old_first_time);
 				
 				// sort if either first new or last new is OLDER than the first old
 				if (new_first_time < old_first_time || new_last_time < old_first_time) {
 					jQuery('#my-timeline div.timeline-entry').tsort({attr:'data-timestamp', place:'orig', order:'desc'});					
 				} else {
-					sch.error('Didn\'t resort…');
+					sch.debug('Didn\'t resort…');
 				}
 
 			}
 			var after = new Date();
 			var total = new Date();
 			total.setTime(after.getTime() - before.getTime());
-			sch.error('Sorting took ' + total.getMilliseconds() + 'ms');
+			sch.debug('Sorting took ' + total.getMilliseconds() + 'ms');
 			
 			sc.helpers.updateRelativeTimes('#my-timeline div.timeline-entry span.date', 'data-created_at');
 			
@@ -363,10 +364,16 @@ MyTimelineAssistant.prototype.initTimeline = function() {
 			thisA.displayErrorInfo(err_msg, error_array);
 		},
 		'renderer': function(obj) {
-			if (obj.SC_is_dm) {
-				return sc.app.tpl.parseTemplate('dm', obj);
-			} else {
-				return sc.app.tpl.parseTemplate('tweet', obj);
+			try {
+				if (obj.SC_is_dm) {
+					return sc.app.tpl.parseTemplate('dm', obj);
+				} else {
+					return sc.app.tpl.parseTemplate('tweet', obj);
+				}				
+			} catch(err) {
+				sch.error("There was an error rendering the object: "+sch.enJSON(obj));
+				sch.error("Error:"+sch.enJSON(err));
+				return '';
 			}
 			
 			
@@ -447,9 +454,9 @@ MyTimelineAssistant.prototype.saveTimelineCache = function() {
 	twitdata[SPAZCORE_SECTION_DMS     + '_lastid'] = this.twit.getLastId(SPAZCORE_SECTION_DMS);
 	
 	sch.debug(twitdata);
-	sch.error('LASTIDS!');
-	sch.debug(twitdata[SPAZCORE_SECTION_HOME + '_lastid'])
-	sch.debug(twitdata[SPAZCORE_SECTION_REPLIES + '_lastid'])
+	sch.debug('LASTIDS!');
+	sch.debug(twitdata[SPAZCORE_SECTION_HOME + '_lastid']);
+	sch.debug(twitdata[SPAZCORE_SECTION_REPLIES + '_lastid']);
 	sch.debug(twitdata[SPAZCORE_SECTION_DMS     + '_lastid']);
 	
 		
@@ -569,26 +576,27 @@ MyTimelineAssistant.prototype.addTweetToModel = function(twobj) {
 
 MyTimelineAssistant.prototype.removeExtraItems = function() {
 
-	sch.error('Removing Extra Items ==================================================');
+	sch.debug('Removing Extra Items ==================================================');
 
-	sch.error("normal tweets: " + jQuery('#my-timeline div.timeline-entry:not(.reply):not(.dm)').length);
-	sch.error("reply tweets: "  + jQuery('#my-timeline div.timeline-entry.reply').length);
-	sch.error("dm tweets: "     + jQuery('#my-timeline div.timeline-entry.dm').length);
+	sch.debug("normal tweets: " + jQuery('#my-timeline div.timeline-entry:not(.reply):not(.dm)').length);
+	sch.debug("reply tweets: "  + jQuery('#my-timeline div.timeline-entry.reply').length);
+	sch.debug("dm tweets: "     + jQuery('#my-timeline div.timeline-entry.dm').length);
 
 	/*
 		from html timeline
 	*/
+	sch.debug('timeline-maxentries:'+sc.app.prefs.get('timeline-maxentries'));
 	sch.removeExtraElements('#my-timeline div.timeline-entry:not(.reply):not(.dm)', sc.app.prefs.get('timeline-maxentries'));
 	sch.removeExtraElements('#my-timeline div.timeline-entry.reply', sc.app.prefs.get('timeline-maxentries-reply'));
 	sch.removeExtraElements('#my-timeline div.timeline-entry.dm', sc.app.prefs.get('timeline-maxentries-dm'));
 
 	jQuery('#my-timeline>div:empty').remove(); // remove empty containers
 
-	sch.error("normal tweets: " + jQuery('#my-timeline div.timeline-entry:not(.reply):not(.dm)').length);
-	sch.error("reply tweets: "  + jQuery('#my-timeline div.timeline-entry.reply').length);
-	sch.error("dm tweets: "     + jQuery('#my-timeline div.timeline-entry.dm').length);	
-	sch.error("jQuery('.timeline').children().length:"+jQuery('.timeline').children().length);
-	sch.error("jQuery('#my-timeline').get(0).outerHTML:\n"+jQuery('#my-timeline').get(0).outerHTML);
+	sch.debug("normal tweets: " + jQuery('#my-timeline div.timeline-entry:not(.reply):not(.dm)').length);
+	sch.debug("reply tweets: "  + jQuery('#my-timeline div.timeline-entry.reply').length);
+	sch.debug("dm tweets: "     + jQuery('#my-timeline div.timeline-entry.dm').length);	
+	sch.debug("jQuery('.timeline').children().length:"+jQuery('.timeline').children().length);
+	sch.debug("jQuery('#my-timeline').get(0).outerHTML:\n"+jQuery('#my-timeline').get(0).outerHTML);
 };
 
 

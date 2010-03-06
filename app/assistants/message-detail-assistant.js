@@ -38,7 +38,7 @@ MessageDetailAssistant.prototype.setup = function() {
 
 			],
 			cmdMenuItems:[
-				{label:$L('Compose'),  icon:'compose', command:'compose', shortcut:'N'},
+				{label:$L('Compose'),  icon:'compose', command:'compose', shortcut:'N'}
 				// {},
 				// {label:$L('Reply'),  icon:'reply', command:'reply', shortcut:'R'},
 				// {label:$L('Forward'),  icon:'forward-email', command:'retweet', shortcut:'N'},
@@ -133,7 +133,7 @@ MessageDetailAssistant.prototype.activate = function(event) {
 				jQuery().trigger('get_one_status_succeeded', [data]);
 			},
 			function(message) {
-				sch.error('Couldn\'t retrieve message:'+message);
+				thisA.showAlert($L('There was an error retrieving the message data'));
 			}
 		);
 		// if (this.status_obj){
@@ -168,7 +168,7 @@ MessageDetailAssistant.prototype.activate = function(event) {
 
 
 	jQuery('#message-detail-image', this.scroller).live(Mojo.Event.tap, function(e) {
-		var userid = jQuery(this).attr('data-screen_name');
+		var userid = jQuery(this).attr('data-user-id');
 		Mojo.Controller.stageController.pushScene('user-detail', userid);
 	});
 	
@@ -208,8 +208,13 @@ MessageDetailAssistant.prototype.activate = function(event) {
 	
 	
 	jQuery('#message-detail-container .user', this.scroller).live(Mojo.Event.tap, function(e) {
-		var userid = jQuery(this).attr('data-user-screen_name');
+		var userid = jQuery(this).attr('data-user-id');
 		Mojo.Controller.stageController.pushScene('user-detail', userid);
+	});
+
+	jQuery('#message-detail-container .username.clickable', this.scroller).live(Mojo.Event.tap, function(e) {
+		var userid = jQuery(this).attr('data-user-screen_name');
+		Mojo.Controller.stageController.pushScene('user-detail', '@'+userid);
 	});
 
 	jQuery('#message-detail-container .hashtag.clickable', this.scroller).live(Mojo.Event.tap, function(e) {
@@ -245,6 +250,7 @@ MessageDetailAssistant.prototype.deactivate = function(event) {
 	jQuery('#message-detail-action-favorite', this.scroller).die(Mojo.Event.tap);
 	
 	jQuery('#message-detail-container .user', this.scroller).die(Mojo.Event.tap);
+	jQuery('#message-detail-container .username.clickable', this.scroller).die(Mojo.Event.tap);
 	jQuery('#message-detail-container .hashtag.clickable', this.scroller).die(Mojo.Event.tap);
 	jQuery('#message-detail-container div.timeline-entry>.status>.meta', this.scroller).die(Mojo.Event.tap);
 	jQuery('#message-detail-container img.thumbnail', this.scroller).die(Mojo.Event.tap);
@@ -260,7 +266,7 @@ MessageDetailAssistant.prototype.cleanup = function(event) {
 
 
 MessageDetailAssistant.prototype.processStatusReturn = function(e, statusobj) {
-	
+	var itemhtml;
 	
 	var sui = new SpazImageURL();
 	
@@ -284,9 +290,9 @@ MessageDetailAssistant.prototype.processStatusReturn = function(e, statusobj) {
 		render tweet
 	*/
 	if (e.data.thisAssistant.isdm) {
-		var itemhtml = sc.app.tpl.parseTemplate('message-detail-dm', e.data.thisAssistant.statusobj);
+		itemhtml = sc.app.tpl.parseTemplate('message-detail-dm', e.data.thisAssistant.statusobj);
 	} else {
-		var itemhtml = sc.app.tpl.parseTemplate('message-detail', e.data.thisAssistant.statusobj);
+		itemhtml = sc.app.tpl.parseTemplate('message-detail', e.data.thisAssistant.statusobj);
 	}
 	
 	

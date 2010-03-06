@@ -3,14 +3,20 @@ const SPAZ_DASHBOARD_STAGENAME = 'dashboard';
 const SPAZ_MAIN_STAGENAME      = 'main';
 const SPAZ_BGNOTIFIER_DASHBOARD_STAGENAME = 'bgnotifier';
 
+const SPAZ_DONATION_URL = 'http://getspaz.com/donate';
+
+
+
 var loggedin_appmenu_items = [
 	Mojo.Menu.editItem,
 	{ label: $L('Update Location...'),	command: 'update-location' },
 	{ label: $L('New Search Card'),	command: 'new-search-card' },
-	{ label: $L('Accounts...'), command:'accounts' },
+	{ label: $L('Accounts...'), 	command:'accounts' },
 	{ label: $L('Preferences...'),	command:Mojo.Menu.prefsCmd },
 	{ label: $L('About Spaz'),		command: 'appmenu-about' },
-	{ label: $L('Help...'),			command:Mojo.Menu.helpCmd }
+	{ label: $L('Help...'),			command:Mojo.Menu.helpCmd },
+	{ label: $L('Donate...'),		command:'donate' }
+	
 ];
 
 
@@ -161,6 +167,19 @@ AppAssistant.prototype.handleCommand = function(event){
 
 			case 'search-trends':
 				Mojo.Controller.notYetImplemented();
+				break;
+				
+			case 'donate':
+				var sr = new Mojo.Service.Request("palm://com.palm.applicationManager", {
+				  method: "open",
+				  parameters:  {
+				      id: 'com.palm.app.browser',
+				      params: {
+				          target: SPAZ_DONATION_URL
+				      }
+				  }
+				});
+				
 				break;
 
 		}
