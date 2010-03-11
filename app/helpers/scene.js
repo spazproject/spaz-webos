@@ -197,7 +197,7 @@ scene_helpers.addCommonSceneMethods = function(assistant) {
 		}
 		this.topContainer = this.scroller.down();
 		dump('Scrolling to top');
-		this.scroller.mojo.revealTop(this.topContainer);
+		this.scroller.mojo.scrollTo(0,0, true);
 	};
 	
 	/**
@@ -534,7 +534,7 @@ scene_helpers.addCommonSceneMethods = function(assistant) {
 		if (!saved_id) {
 			saved_id = null;
 		} else {
-			saved_id = parseInt(saved_id);
+			saved_id = parseInt(saved_id, 10);
 		}
 		
 		var lightweight = false;
