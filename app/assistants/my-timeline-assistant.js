@@ -219,12 +219,11 @@ MyTimelineAssistant.prototype.cleanup = function(event) {
 MyTimelineAssistant.prototype.initTimeline = function() {
 	
 	sch.debug('initializing Timeline in assistant');
-	
+  // TODO: Timeline list widget
+	this.timelineModel = {items: []};
+  // this.controller.setupWidget("list-id", {}, this.timelineModel);
 	
 	var thisA = this;
-	
-
-
 	/*
 		set up the combined "my" timeline
 	*/
@@ -269,6 +268,13 @@ MyTimelineAssistant.prototype.initTimeline = function() {
 			};
 			
 			thisA.mytl.addItems(no_dupes);
+
+      // TODO: Timeline list widget
+      sc.app.Tweets.bucket.all(function(tweets) {
+        thisA.timelineModel.items = tweets;
+        sc.info("Finished loading tweets. There are now " + tweets.length);
+      //   thisA.controller.modelChanged(thisA.timelineModel);
+      });
 			
 			/*
 				sort timeline

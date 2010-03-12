@@ -1,4 +1,4 @@
-var TempCache = {}
+var TempCache = {};
 
 /**
  * Initialize a temporary property we use to store 
