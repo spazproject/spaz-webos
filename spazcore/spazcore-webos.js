@@ -1,4 +1,4 @@
-/*********** Built 2010-03-03 10:17:54 EST ***********/
+/*********** Built 2010-06-12 13:45:14 EDT ***********/
 /*jslint 
 browser: true,
 nomen: false,
@@ -4512,7 +4512,7 @@ sc.helpers.getRelativeTime = function(time_value, labels, use_dateparse) {
 
 
 sc.helpers.httpTimeToInt = function(entry_date, use_dateparse) {
-	return sc.helpers.dateToInt(entry_date, use_dateparse)
+	return sc.helpers.dateToInt(entry_date, use_dateparse);
 };
 
 /**
@@ -4547,11 +4547,6 @@ onevar: false
  */
 var sc;
  
-/**
- * a constant that defines the attribute where we'll store extra data in the event 
- */
-var SPAZCORE_EVENTDATA_ATTRIBUTE = 'sc_data';
-
 
 /**
  * add an event listener to a target (element, window, etc). Uses target.addEventListener
@@ -4565,29 +4560,18 @@ var SPAZCORE_EVENTDATA_ATTRIBUTE = 'sc_data';
  * @function
  */
 sc.helpers.addListener = function(target, event_type, handler, scope, use_capture) {
-
-	sch.dump('listening for '+event_type);
-	sch.dump('on target nodeName:'+target.nodeName);
-	
-	if (use_capture !== true) {
-		use_capture = false;
-	}
-	
-	
 	
 	if (scope) {
-		
-		var __handler = _.bind(handler, scope);
-		target.addEventListener(event_type, __handler, use_capture);
-		return __handler;
-		
-	} else {
-		
-		target.addEventListener(event_type, handler, use_capture);
-		return handler;
-
+		sch.warn('scope no longer supported! use a closure or reference "scope" in your event handler');
+	}
+	if (use_capture) {
+		sch.warn('use_capture no longer supported!');
 	}
 	
+	sch.error('listening for '+event_type);
+	sch.error('on target nodeName:'+target.nodeName);
+	
+	jQuery(target).bind(event_type, handler);
 	
 };
 
@@ -4606,14 +4590,14 @@ sc.helpers.addListener = function(target, event_type, handler, scope, use_captur
  */
 sc.helpers.removeListener = function(target, event_type, handler, use_capture) {
 
-	sch.dump('removing listener for '+event_type);
-	sch.dump('on target nodeName:'+target.nodeName);
+	sch.error('removing listener for '+event_type);
+	sch.error('on target nodeName:'+target.nodeName);
 
-	if (use_capture !== true) {
-		use_capture = false;
+	if (use_capture) {
+		sch.warn('use_capture no longer supported!');
 	}
 	
-	target.removeEventListener(event_type, handler, use_capture);
+	jQuery(target).unbind(event_type, handler);
 };
 
 /**
@@ -4626,28 +4610,14 @@ sc.helpers.removeListener = function(target, event_type, handler, use_capture) {
  */
 sc.helpers.addDelegatedListener = function(base_target, selector, event_type, handler, scope) {
 	
-	sch.dump('listening for '+event_type);
-	sch.dump('on target nodeName:'+target.nodeName);
-	sch.dump('for selector:'+selector);
+	sch.warn('scope no longer supported! use a closure or reference "scope" in your event handler');
 	
-	if (use_capture !== true) {
-		use_capture = false;
-	}
+	sch.debug('listening for '+event_type);
+	sch.debug('on target nodeName:'+target.nodeName);
+	sch.debug('for selector:'+selector);
 	
-	
-	
-	if (scope) {
-		
-		var __handler = _.bind(handler, scope);
-		target.addEventListener(event_type, __handler, use_capture);
-		return __handler;
-		
-	} else {
-		
-		target.addEventListener(event_type, handler, use_capture);
-		return handler;
+	jQuery(base_target).delegate(selector, event_type, handler);
 
-	}
 	
 };
 
@@ -4657,9 +4627,11 @@ sc.helpers.addDelegatedListener = function(base_target, selector, event_type, ha
  * @param {string} event_type The event type 
  * @param {Function} handler a method that will take the event as a param, and "this" refers to target
  * @param {Object} [scope] the scope to execute the handler
- * @param {Boolean} [use_capture] Describe this parameter
  */
-sc.helpers.removeDelegatedListener = function(base_target, selector, event_type, handler, scope, use_capture) {
+sc.helpers.removeDelegatedListener = function(base_target, selector, event_type, handler, scope) {
+	sch.warn('scope no longer supported! use a closure or reference "scope" in your event handler');
+	
+	jQuery(base_target).delegate(selector, event_type, handler);
 	
 };
 
@@ -4668,35 +4640,37 @@ sc.helpers.removeDelegatedListener = function(base_target, selector, event_type,
  * 
  * @param {string}  event_type
  * @param {DOMElement}  target   the target for the event (element, window, etc)
- * @param {object}  data     data to pass with event
+ * @param {object}  data     data to pass with event. it is always passed as the second parameter to the handler (after the event object)
  * @param {boolean} bubble   whether the event should bubble or not. defaults to true
  * @function
  */
 sc.helpers.triggerCustomEvent = function(event_type, target, data, bubble) {
 	
-	sch.dump('triggering '+event_type);
-	sch.dump('on target nodeName:'+target.nodeName);
+	sch.error('triggering '+event_type);
+	sch.error('on target nodeName:'+target.nodeName);
+	sch.error('event data:');
+	// sch.error(sch.enJSON(data));
 	
-	if (bubble !== false) {
-		bubble = true;
+	if (bubble) {
+		sch.warn('bubble is no longer supported!');
 	}
-
-	var ev = document.createEvent("Events"); // use the Events event module
-
-	ev.initEvent(event_type, bubble, true);
-
-	ev[SPAZCORE_EVENTDATA_ATTRIBUTE] = data;
-
-	target.dispatchEvent(ev);
+	
+	if (data) {
+		data = [data];
+	}
+	
+	jQuery(target).trigger(event_type, data);
 	
 };
 
 /**
  * retrieves the data added to this event object
  * @param {DOMEvent} event_obj 
+ * @deprecated
  */
 sc.helpers.getEventData = function(event_obj) {
-	return event_obj[SPAZCORE_EVENTDATA_ATTRIBUTE];
+	sch.error('getEventData is DEPRECATED. Use second param on event handler');
+	return null;
 };
 
 /**
@@ -4715,13 +4689,13 @@ sc.helpers.unlisten = sc.helpers.removeListener;
  * Alias for sc.helpers.addDelegatedListener
  * @function 
  */
-sc.helpers.live = sc.helpers.addDelegatedListener;
+sc.helpers.delegate = sc.helpers.addDelegatedListener;
 
 /**
  * Alias for sc.helpers.removeDelegatedListener
  * @function 
  */
-sc.helpers.die = sc.helpers.removeDelegatedListener;
+sc.helpers.undelegate = sc.helpers.removeDelegatedListener;
 
 
 /**
@@ -5560,7 +5534,7 @@ sc.helpers.UUID = (function() {
  */
 sc.helpers.isUUID = function(val) {
 	return val.match(/^[0-9A-Z]{8}-[0-9A-Z]{4}-[0-9A-Z]{4}-[0-9A-Z]{4}-[0-9A-Z]{12}$/);
-}
+};
 /*jslint 
 browser: true,
 nomen: false,
@@ -5654,7 +5628,7 @@ sc.helpers.defaults = function(defaults, passed) {
 	}
 	
 	return args;
-}
+};
 
 
 /*jslint 
@@ -5898,7 +5872,7 @@ var sc;
  */
 sc.helpers.getCurrentLocation = function() {
 	
-}/*jslint 
+};/*jslint 
 bitwise: false,
 browser: true,
 newcap: false,
@@ -5929,15 +5903,50 @@ sc.helpers.containsScreenName = function(str, sn) {
 	
 };
 
+sc.helpers.extractScreenNames = function(str) {
+	var re_uname = /(^|\s|\(\[?|,|\.|)?@([a-zA-Z0-9_]+)([^a-zA-Z0-9_]|$)/gi;
+	var usernames = [];
+	var ms = [];
+	while (ms = re_uname.exec(str))
+	{
+		
+		/*
+			sometimes we can end up with a null instead of a blank string,
+			so we need to force the issue in javascript.
+		*/
+		for (var x=0; x<ms.length; x++) {
+			if (!ms[x]) {
+				ms[x] = '';
+			}
+		}
+		
+		if(ms[2] != ''){
+			usernames.push(ms[2]);
+		}
+	}
+	return usernames;
+};
+
 /**
  * find URLs within the given string 
  */
 sc.helpers.extractURLs = function(str) {
-	var wwwlinks = /(^|\s|\(|:)(((http(s?):\/\/)|(www\.))(\w+[^\s\)<]+))/gi;
-	var match = [];
+	// var wwwlinks = /(^|\s)((https?|ftp)\:\/\/)?([a-z0-9+!*(),;?&=\$_.-]+(\:[a-z0-9+!*(),;?&=\$_.-]+)?@)?([✪a-z0-9-.]*)\.([a-z]{2,3})(\:[0-9]{2,5})?(\/([a-z0-9+\$_-]\.?)+)*\/?(\?[a-z+&\$_.-][a-z0-9;:@&%=+\/\$_.-]*)?(#[a-z_.-][a-z0-9+\$_.-]*)?(\s|$)/gi;
+	var wwwlinks = /(^|\s|\(|:)(((http(s?):\/\/)|(www\.))([\w✪]+[^\s\)<]+))/gi;
+		
+	var ms = [];
 	var URLs = [];
-	while ( (match = wwwlinks.exec(str)) !== null ) {
-		URLs.push(match[2]);
+	while ( (ms = wwwlinks.exec(str)) !== null ) {
+		for (var x=0; x<ms.length; x++) {
+			if (!ms[x]) {
+				ms[x] = '';
+			}
+		}
+		var last = ms[7].charAt(ms[7].length - 1);
+		if (last.search(/[\.,;\?]/) !== -1) { // if ends in common punctuation, strip
+			ms[7] = ms[7].slice(0,-1);
+		}
+		URLs.push(ms[3]+ms[7]);
 	}
 	return URLs;
 };
@@ -5963,8 +5972,9 @@ sc.helpers.replaceMultiple = function(str, map) {
 
 
 /**
- * This is a port of the CodeIgniter helper "autolink" to javascript
- * It finds and links both web addresses and email addresses
+ * This is a port of the CodeIgniter helper "autolink" to javascript.
+ * It finds and links both web addresses and email addresses. It will ignore
+ * links within HTML (as attributes or between tag pairs)
  * 
  * @param {string} str
  * @param {string} type  'email', 'url', or 'both' (default is 'both')
@@ -5977,9 +5987,9 @@ sc.helpers.autolink = function(str, type, extra_code, maxlen) {
 		type = 'both';
 	}
 
-	var re_nohttpurl = /((^|\s)(www\.)?([a-zA-Z_\-]+\.)(com|net|org)($|\s))/gi;
+	var re_nohttpurl = /((^|\s)(www\.)?([a-zA-Z_\-]+\.)(com|net|org|uk)($|\s))/gi;
 
-	var re_noemail = /(^|\s|\(|:)((http(s?):\/\/)|(www\.))(\w+[^\s\)<]+)/gi;
+	var re_noemail = /(^|[\s\(:。])((http(s?):\/\/)|(www\.))([\w✪]+[^\s\)<]+)/gi;
 	var re_nourl   = /(^|\s|\()([a-zA-Z0-9_\.\-\+]+)@([a-zA-Z0-9\-]+)\.([a-zA-Z0-9\-\.]*)([^\s\)<]+)/gi;
 	
 	var x, ms, period = '';
@@ -5987,11 +5997,6 @@ sc.helpers.autolink = function(str, type, extra_code, maxlen) {
 	if (type !== 'email')
 	{	
 		while ((ms = re_nohttpurl.exec(str))) { // look for URLs without a preceding "http://"
-			// if ( /\.$/.test(ms[4]) ) {
-			// 	period = '.';
-			//	ms[5] = ms[5].slice(0, -1);
-			// }
-			
 			/*
 				sometimes we can end up with a null instead of a blank string,
 				so we need to force the issue in javascript.
@@ -6021,11 +6026,6 @@ sc.helpers.autolink = function(str, type, extra_code, maxlen) {
 		
 		
 		while ((ms = re_noemail.exec(str))) {
-
-			if ( /\.$/.test(ms[6]) ) {
-				period = '.';
-				ms[6] = ms[6].slice(0, -1);
-			}
 			
 			/*
 				sometimes we can end up with a null instead of a blank string,
@@ -6043,12 +6043,24 @@ sc.helpers.autolink = function(str, type, extra_code, maxlen) {
 				extra_code = '';
 			}
 			
+			/*
+				if the last character is one of . , ; ?, we strip it off and
+				stick it on the end of newstr below as "period"
+			*/
+			var last = ms[6].charAt(ms[6].length - 1);
+			if (last.search(/[\.,;\?]/) !== -1) {
+				ms[6] = ms[6].slice(0,-1);
+				period = last;
+			}
+
+
 			var desc = ms[5]+ms[6];
 
 			if (maxlen && maxlen > 0 && desc.length > maxlen) {
 				desc = desc.substr(0, maxlen)+'...';
 			}
-
+			
+			
 			var newstr = ms[1]+'<a href="http'+ms[4]+'://'+ms[5]+ms[6]+'"'+extra_code+'>'+desc+'</a>'+period;
 			str = str.replace(ms[0], newstr);
 		}
@@ -6276,7 +6288,7 @@ sc.helpers.htmlspecialchars = function(string, quote_style) {
     }
 
     return tmp_str;
-}
+};
 
 
 
@@ -6587,7 +6599,8 @@ sc.helpers.nl2br = function(str, breaktag) {
 	
 	str = str.replace(/(\r\n|\n\r|\r|\n)/g, breaktag+'$1');
 	return str;
-};/*jslint 
+};
+/*jslint 
 browser: true,
 nomen: false,
 debug: true,
@@ -6596,7 +6609,7 @@ undef: true,
 white: false,
 onevar: false 
  */
-var sc, window;
+var sc;
  
 /**
  * These are system-oriented functions, mostly utilizing AIR apis
@@ -6855,18 +6868,18 @@ sc.helpers.isOS = function(str) {
 		return true;
 	}
 	return false;
-}
+};
 
 sc.helpers.isWindows = function() {
-	return sc.helpers.isOS(SPAZCORE_OS_WINDOWS)
+	return sc.helpers.isOS(SPAZCORE_OS_WINDOWS);
 };
 
 sc.helpers.isLinux = function() {
-	return sc.helpers.isOS(SPAZCORE_OS_LINUX)
+	return sc.helpers.isOS(SPAZCORE_OS_LINUX);
 };
 
 sc.helpers.isMacOS = function() {
-	return sc.helpers.isOS(SPAZCORE_OS_MACOS)
+	return sc.helpers.isOS(SPAZCORE_OS_MACOS);
 };
 /*jslint 
 browser: true,
@@ -7060,7 +7073,7 @@ SpazAccounts.prototype.load	= function() {
 		this._accounts = [];
 	}
 	
-	sch.debug("this._accounts:'"+this._accounts+"'")
+	sch.debug("this._accounts:'"+this._accounts+"'");
 	
 };
 
@@ -7068,21 +7081,18 @@ SpazAccounts.prototype.load	= function() {
  * saves the accounts array to the prefs obj 
  */
 SpazAccounts.prototype.save	= function() {
-	
-	
 	this.prefs.set(this.prefskey, sch.enJSON(this._accounts));
 	sch.debug('saved users to "'+this.prefskey+'" pref');
 	for (var x in this._accounts) {
 		sch.debug(this._accounts[x].id);
 	};
 	
-	sch.debug('THE ACCOUNTS:')
+	sch.debug('THE ACCOUNTS:');
 	sch.debug(sch.enJSON(this._accounts));
 
-	sch.debug('ALL PREFS:')
+	sch.debug('ALL PREFS:');
 	sch.debug(sch.enJSON(this.prefs._prefs));
 
-	
 };
 
 /**
@@ -7123,7 +7133,7 @@ SpazAccounts.prototype.update = function(id, acctobj) {
 		sch.error('No account with id "'+id+'" exists');
 		return null;
 	}
-}
+};
 
 
 
@@ -7170,12 +7180,13 @@ SpazAccounts.prototype.add = function(username, password, type) {
  * @param {string} id the UUID of the account to delete 
  */
 SpazAccounts.prototype.remove = function(id) {
-	sch.debug("Deleting '"+id+"'…");
+	sch.error("Deleting '"+id+"'…");
 	
 	var index = this._findUserIndex(id);
 	if (index !== false) {
 		var deleted = this._accounts.splice(index, 1);
 		sch.debug("Deleted account '"+deleted[0].id+"'");
+		this.save();
 		return deleted[0];
 	} else {
 		sch.error("Could not find this id to delete: '"+id+"'");
@@ -7193,7 +7204,7 @@ SpazAccounts.prototype.getByType = function(type) {
 	
 	for (var i=0; i < this._accounts.length; i++) {
 		if (this._accounts[i].type === type) {
-			matches.push(this._accounts[i])
+			matches.push(this._accounts[i]);
 		}
 	};
 	
@@ -7209,7 +7220,7 @@ SpazAccounts.prototype.getByUsername = function(username) {
 
 	for (var i=0; i < this._accounts.length; i++) {
 		if (this._accounts[i].username === username) {
-			matches.push(this._accounts[i])
+			matches.push(this._accounts[i]);
 		}
 	};
 	
@@ -7226,7 +7237,7 @@ SpazAccounts.prototype.getByUsernameAndType = function(username, type) {
 
 	for (var i=0; i < this._accounts.length; i++) {
 		if (this._accounts[i].username === username && this._accounts[i].type === type) {
-			matches.push(this._accounts[i])
+			matches.push(this._accounts[i]);
 		}
 	};
 	
@@ -7339,6 +7350,18 @@ function SpazImageURL(args) {
  * Creates the initial default set of API descriptions 
  */
 SpazImageURL.prototype.initAPIs = function() {
+  this.addAPI('drippic', {
+		'url_regex'       : new RegExp("http://drippic.com/([a-zA-Z0-9]+)", "gi"),
+		'getThumbnailUrl' : function(id) {
+			var url = 'http://drippic.com/drippic/show/thumb/'+id;
+			return url;
+		},
+		'getImageUrl'     : function(id) {
+			var url = 'http://drippic.com/drippic/show/full/'+id;
+			return url;
+		}
+	});
+  
 	this.addAPI('twitpic', {
 		'url_regex'       : new RegExp("http://twitpic.com/([a-zA-Z0-9]+)", "gi"),
 		'getThumbnailUrl' : function(id) {
@@ -7682,6 +7705,31 @@ SpazFileUploader.prototype.getAPIs = function() {
 	var thisSFU = this;
 
 	var apis = {
+	    'drippic' : {
+			'upload_url' : 'http://drippic.com/drippic/upload',
+		    'post_url'   : 'http://drippic.com/drippic/upload/tweet',
+			'processResult': function(event, apiobj) {
+				var loader = event.target;
+				
+				sch.debug('PROCESSING: EVENT');
+				sch.debug(event);
+
+				var parser=new DOMParser();
+				var xmldoc = parser.parseFromString(event.data,"text/xml");
+
+				var rspAttr = xmldoc.getElementsByTagName("rsp")[0].attributes;
+				if (rspAttr.getNamedItem("stat").nodeValue === 'ok')
+				{
+					returnobj['mediaurl'] = jQuery(xmldoc).find('mediaurl').text();
+				} 
+				else
+				{
+					returnobj['errMsg'] = jQuery(xmldoc).find('error').text();
+				}
+				sch.debug(returnobj);
+				return returnobj;
+			}
+		},
 		'pikchur' : {
 		    'upload_url' : 'http://api.pikchur.com/simple/upload',
 		    'post_url' : 'http://api.pikchur.com/simple/uploadAndPost',
@@ -7689,7 +7737,7 @@ SpazFileUploader.prototype.getAPIs = function() {
 			'processResult': function(event, apiobj) {
 				var loader = event.target;
 				
-				var returnobj = {}
+				var returnobj = {};
 
 				var parser=new DOMParser();
 				var xmldoc = parser.parseFromString(loader.data,"text/xml");
@@ -8126,6 +8174,7 @@ SpazPhotoMailer.prototype.getAPIs = function() {
 					var TPAPI_header = 'TPAPI: '+username+","+password;
 					
 					jQuery.ajax({
+                	    'dataType':'text',
 						
 						'success':function(data, textStatus) {
 							var profile = sc.helpers.deJSON(data);
@@ -8152,6 +8201,7 @@ SpazPhotoMailer.prototype.getAPIs = function() {
 					var TPAPI_header = 'TPAPI: '+username+","+password;
 					
 					jQuery.ajax({
+                	    'dataType':'text',
 						
 						'success':function(data, textStatus) {
 							var settings = sc.helpers.deJSON(data);
@@ -8198,13 +8248,15 @@ undef: true,
 white: false,
 onevar: false 
  */
-var sc, Titanium, air, window, jQuery, Mojo;
+var sc, Titanium, air, jQuery, Mojo;
 
 var SPAZCORE_PREFS_TI_KEY = 'preferences_json';
 
 var SPAZCORE_PREFS_AIR_FILENAME = 'preferences.json';
 
 var SPAZCORE_PREFS_MOJO_COOKIENAME = 'preferences.json';
+
+var SPAZCORE_PREFS_STANDARD_COOKIENAME = 'preferences_json';
  
 /**
  * A preferences lib for AIR JS apps. This requires the json2.js library
@@ -8301,27 +8353,21 @@ SpazPrefs.prototype.resetPrefs = function() {
 
 /**
  * Get a preference
- * Note that FALSE is returned if the key does not exist
+ * Note that undefined is returned if the key does not exist
  */
 SpazPrefs.prototype.get = function(key, encrypted) {
 	var value;
-	
-	// if (this._sanity_methods[key] && this._sanity_methods[key].onSet) {
-	// 	sc.helpers.debug("Calling "+key+".onSet()");
-	// 	this._sanity_methods[key].onSet();
-	// }
-	
 	
 	if (encrypted) {
 		value = this.getEncrypted(key);
 	} else {
 		sc.helpers.debug('Looking for pref "'+key+'"');
 
-		if (this._prefs[key]) {
+		if (this._prefs[key] !== undefined) {
 			sc.helpers.debug('Found pref "'+key+'" of value "'+this._prefs[key]+'" ('+typeof(this._prefs[key])+')');
 			value = this._prefs[key];
 		} else {
-			value = false;
+			value = undefined;
 		}
 	}
 	
@@ -8372,6 +8418,10 @@ SpazPrefs.prototype.setSanityMethod = function(key, type, method) {
 	
 	if (type !== 'onGet' && type !== 'onSet') {
 		sch.error('sanity method type must be onGet or onSet');
+	}
+	
+	if (!this._sanity_methods[key]) {
+		this._sanity_methods[key] = {};
 	}
 	
 	this._sanity_methods[key][type] = method;
@@ -9121,7 +9171,7 @@ SpazShortText.prototype.shorten = function(text) {
 	
 	for (var key in this.map) {
 		var re = this.map[key].regex;
-		var rp = this.map[key].short;
+		var rp = this.map[key]["short"];
 		text = text.replace(re, rp);
 	}
 	
@@ -9180,23 +9230,86 @@ var SPAZCORE_SHORTURL_SERVICE_BITLY	  = 'bit.ly';
 var SPAZCORE_SHORTURL_SERVICE_JMP     = 'j.mp';
 
 var SPAZCORE_EXPANDABLE_DOMAINS = [
-	'ad.vu',
-	'bit.ly',
-	'cli.gs',
-	'ff.im',
-	'is.gd',
-	'j.mp',
-	'ow.ly',
-	'poprl.com',
-	'short.ie',
-	'sn.im',
-	'snipr.com',
-	'tinyurl.com',
-	'tr.im',
-	'twurl.nl',
-	'urlzen.com',
-	'xrl.us',
-	'zi.ma'
+	"bit.ly",
+	"cli.gs",
+	"digg.com",
+	"fb.me",
+	"is.gd",
+	"j.mp",
+	"kl.am",
+	"su.pr",
+	"tinyurl.com",
+	"goo.gl",
+	"307.to",
+	"adjix.com",
+	"b23.ru",
+	"bacn.me",
+	"bloat.me",
+	"budurl.com",
+	"clipurl.us",
+	"cort.as",
+	"dwarfurl.com",
+	"ff.im",
+	"fff.to",
+	"href.in",
+	"idek.net",
+	"korta.nu",
+	"lin.cr",
+	"livesi.de",
+	"ln-s.net",
+	"loopt.us",
+	"lost.in",
+	"memurl.com",
+	"merky.de",
+	"migre.me",
+	"moourl.com",
+	"nanourl.se",
+	"om.ly",
+	"ow.ly",
+	"peaurl.com",
+	"ping.fm",
+	"piurl.com",
+	"plurl.me",
+	"pnt.me",
+	"poprl.com",
+	"post.ly",
+	"rde.me",
+	"reallytinyurl.com",
+	"redir.ec",
+	"retwt.me",
+	"rubyurl.com",
+	"short.ie",
+	"short.to",
+	"smallr.com",
+	"sn.im",
+	"sn.vc",
+	"snipr.com",
+	"snipurl.com",
+	"snurl.com",
+	"tiny.cc",
+	"tinysong.com",
+	"togoto.us",
+	"tr.im",
+	"tra.kz",
+	"trg.li",
+	"twurl.cc",
+	"twurl.nl",
+	"u.mavrev.com",
+	"u.nu",
+	"ur1.ca",
+	"url.az",
+	"url.ie",
+	"urlx.ie",
+	"w34.us",
+	"xrl.us",
+	"yep.it",
+	"zi.ma",
+	"zurl.ws",
+	"chilp.it",
+	"notlong.com",
+	"qlnk.net",
+	"trim.li",
+	"url4.eu"
 ];
 
 
@@ -9349,6 +9462,8 @@ SpazShortURL.prototype.shorten = function(longurl, opts) {
 		
 
 	var xhr = jQuery.ajax({
+		'traditional':true, // so we don't use square brackets on arrays in data. Bit.ly doesn't like it
+		'dataType':'text',
 		complete:function(xhr, rstr) {
 		},
 		'error':function(xhr, msg, exc) {
@@ -9358,9 +9473,9 @@ SpazShortURL.prototype.shorten = function(longurl, opts) {
 			
 			if (xhr) {
 				errobj.xhr = xhr;
-				sc.helpers.dump("Error:"+xhr.status+" from "+ shortener.api.url);
+				sc.helpers.error("Error:"+xhr.status+" from "+ shortener.api.url);
 			} else {
-				sc.helpers.dump("Error:Unknown from "+ shortener.api.url);
+				sc.helpers.error("Error:Unknown from "+ shortener.api.url);
 				errobj.msg = 'Unknown Error';
 			}
 			shortener._onShortenResponseFailure(errobj, opts.event_target);
@@ -9376,6 +9491,7 @@ SpazShortURL.prototype.shorten = function(longurl, opts) {
 					'longurl' :longurl
 				};
 			}
+			sch.error(return_data);
 			shortener._onShortenResponseSuccess(return_data, opts.event_target);
 		},
 		'type':"POST",
@@ -9401,7 +9517,7 @@ SpazShortURL.prototype.expand = function(shorturl, opts) {
 	var longurl;
 	
 	if (!opts) {
-		opts = {}
+		opts = {};
 	}
 	
 	opts.event_target = opts.event_target || document;
@@ -9423,6 +9539,7 @@ SpazShortURL.prototype.expand = function(shorturl, opts) {
 		if not cached, do query to look it up
 	*/
 	var xhr = jQuery.ajax({
+    	'dataType':'text',
 		complete:function(xhr, rstr) {
 		},
 		'error':function(xhr, msg, exc) {
@@ -9481,7 +9598,7 @@ SpazShortURL.prototype._onExpandResponseFailure = function(errobj, target) {
 SpazShortURL.prototype.findExpandableURLs = function(str) {
 	var x, i, matches = [], re_matches, key, thisdomain, thisregex, regexes = [];
 	
-	for (var i=0; i < SPAZCORE_EXPANDABLE_DOMAINS.length; i++) {
+	for (i=0; i < SPAZCORE_EXPANDABLE_DOMAINS.length; i++) {
 		thisdomain = SPAZCORE_EXPANDABLE_DOMAINS[i];
 		if (thisdomain == 'ff.im') {
 			regexes.push(new RegExp("http://"+thisdomain+"/(-?[a-zA-Z0-9]+)", "gi"));
@@ -9491,7 +9608,7 @@ SpazShortURL.prototype.findExpandableURLs = function(str) {
 		
 	};
 	
-	for (var i=0; i < regexes.length; i++) {
+	for (i=0; i < regexes.length; i++) {
 		thisregex = regexes[i];
 		sch.dump("looking for "+thisregex+ " in '"+str+"'");
 		while( (re_matches = thisregex.exec(sch.trim(str))) != null) {
@@ -9640,9 +9757,8 @@ var SpazTimeline = function(opts) {
 	/**
 	 * Again, due to scope issues, we define this here to take advantage of the closure 
 	 */
-	this.onSuccess = function(e) {
+	this.onSuccess = function(e, data) {
 		sch.debug('onSuccess timeline');
-		var data = sc.helpers.getEventData(e);
 		thisTL.data_success.call(thisTL, e, data);
 		thisTL.startRefresher();	
 	};
@@ -9650,9 +9766,8 @@ var SpazTimeline = function(opts) {
 	/**
 	 * Again, due to scope issues, we define this here to take advantage of the closure 
 	 */
-	this.onFailure = function(e) {
+	this.onFailure = function(e, data) {
 		sch.debug('onFailure timeline');
-		var data = sc.helpers.getEventData(e);
 		thisTL.data_failure.call(thisTL, e, data);
 		thisTL.startRefresher();	
 	};
@@ -9760,8 +9875,8 @@ SpazTimeline.prototype.startListening = function() {
 SpazTimeline.prototype.stopListening = function() {
 	var thisTL = this;
 	sc.helpers.debug("Stopping listening for "+thisTL.success_event);
-	sc.helpers.unlisten(thisTL.event_target, thisTL.success_event, thisTL.onSuccess);
-	sc.helpers.unlisten(thisTL.event_target, thisTL.failure_event, thisTL.onFailure);
+	sc.helpers.unlisten(thisTL.event_target, thisTL.success_event);
+	sc.helpers.unlisten(thisTL.event_target, thisTL.failure_event);
 };
 
 SpazTimeline.prototype.startRefresher = function() {
@@ -10226,7 +10341,7 @@ undef: true,
 white: false,
 onevar: false 
  */
-var sc, jQuery, window, Mojo, use_palmhost_proxy;
+var sc, jQuery, Mojo, use_palmhost_proxy;
 
 /**
  * @depends ../helpers/string.js 
@@ -10311,6 +10426,10 @@ var SPAZCORE_SERVICEURL_WORDPRESS_TWITTER = 'https://twitter-api.wordpress.com/'
  * 'create_block_failed'
  * 'destroy_block_succeeded'
  * 'destroy_block_failed'
+ * 'follow_succeeded'
+ * 'follow_failed'
+ * 'unfollow_succeeded'
+ * 'unfollow_failed'
  * 
  * 
  * @param username string
@@ -10322,10 +10441,11 @@ function SpazTwit(username, password, opts) {
 	this.username = username;
 	this.password = password;
 	
-	this.opts            = opts || {};
-	this.opts.event_mode = this.opts.event_mode || 'DOM';
-	this.opts.event_target = this.opts.event_target || document;
-	this.opts.timeout    = this.opts.timeout || this.DEFAULT_TIMEOUT; // 60 seconds default
+	this.opts                = opts || {};
+	this.opts.event_mode     = this.opts.event_mode || 'DOM';
+	this.opts.event_target   = this.opts.event_target || document;
+	this.opts.timeout        = this.opts.timeout || this.DEFAULT_TIMEOUT; // 60 seconds default
+	this.opts.oauth_consumer = this.opts.oauth_consumer || null;
 	
 	this.setSource('SpazCore');
 	
@@ -10431,6 +10551,7 @@ SpazTwit.prototype.initializeData = function() {
 	this.data[SPAZCORE_SECTION_COMBINED] = {
 		'items':   [],
 		'newitems':[],
+		'updates' :[],
 		'max':400,
 		'min_age':5*60
 	};
@@ -10501,6 +10622,48 @@ SpazTwit.prototype.combinedTimelineHasErrors = function() {
 	}
 };
 
+/**
+ * Checks to see if the combined timeline contains sent updates
+ * @return {boolean}
+ */
+SpazTwit.prototype.combinedTimelineHasUpdates = function() {
+	return this.data[SPAZCORE_SECTION_COMBINED].updates.length > 0;
+};
+
+/**
+ * Adds ids of array of statuses to updates
+ */
+SpazTwit.prototype.combinedTimelineAddUpdates = function(items) {
+	if (items.id) {
+		items = [items];
+	}
+	var i;
+	for (i in items) {
+		this.data[SPAZCORE_SECTION_COMBINED].updates.push(items[i].id);
+	}
+};
+
+/**
+ * Removes the update items from combined newitems
+ */
+SpazTwit.prototype.combinedNewItemsRemoveUpdates = function() {
+	if (!this.combinedTimelineHasUpdates()) {
+		return;
+	}
+	var data = this.data[SPAZCORE_SECTION_COMBINED],
+		iStr = ':' + data.updates.join(':') + ':',
+		news = data.newitems,
+		keep = [],
+		i;
+
+	for (i in news) {
+		if (!RegExp(':' + news[i].id + ':').test(iStr)) {
+			keep.push(news[i]);
+		}
+	}
+	data.newitems = keep;
+	data.updates  = [];
+};
 
 
 /**
@@ -10557,6 +10720,11 @@ SpazTwit.prototype.setCredentials= function(username, password) {
 };
 
 
+SpazTwit.prototype.setOAuthConsumer = function(consumer) {
+	this.opts.oauth_consumer = consumer;
+};
+
+
 /**
  * set the source string we will pass on updates
  * 
@@ -10579,61 +10747,74 @@ SpazTwit.prototype.getAPIURL = function(key, urldata) {
 
 
     // Timeline URLs
-    urls.public_timeline    = "statuses/public_timeline.json";
-    urls.friends_timeline   = "statuses/friends_timeline.json";
-    urls.home_timeline		= "statuses/home_timeline.json";
-    urls.user_timeline      = "statuses/user_timeline.json";
-    urls.replies_timeline   = "statuses/replies.json";
-    urls.show				= "statuses/show/{{ID}}.json";
-    urls.favorites          = "favorites.json";
-    urls.user_favorites     = "favorites/{{ID}}.json"; // use this to retrieve favs of a user other than yourself
-    urls.dm_timeline        = "direct_messages.json";
-    urls.dm_sent            = "direct_messages/sent.json";
-    urls.friendslist        = "statuses/friends.json";
-    urls.followerslist      = "statuses/followers.json";
-    urls.show_user			= "users/show/{{ID}}.json";
-    urls.featuredlist       = "statuses/featured.json";
+	urls.public_timeline    = "statuses/public_timeline.json";
+	urls.friends_timeline   = "statuses/friends_timeline.json";
+	urls.home_timeline		= "statuses/home_timeline.json";
+	urls.user_timeline      = "statuses/user_timeline.json";
+	urls.replies_timeline   = "statuses/replies.json";
+	urls.show				= "statuses/show/{{ID}}.json";
+	urls.favorites          = "favorites.json";
+	urls.user_favorites     = "favorites/{{ID}}.json"; // use this to retrieve favs of a user other than yourself
+	urls.dm_timeline        = "direct_messages.json";
+	urls.dm_sent            = "direct_messages/sent.json";
+	urls.friendslist        = "statuses/friends.json";
+	urls.followerslist      = "statuses/followers.json";
+	urls.show_user			= "users/show/{{ID}}.json";
+	urls.featuredlist       = "statuses/featured.json";
 
-    // Action URLs
-    urls.update           	= "statuses/update.json";
-    urls.destroy_status   	= "statuses/destroy/{{ID}}.json";
-    urls.friendship_create  = "friendships/create/{{ID}}.json";
-    urls.friendship_destroy	= "friendships/destroy/{{ID}}.json";
-    urls.block_create		= "blocks/create/{{ID}}.json";
-    urls.block_destroy		= "blocks/destroy/{{ID}}.json";
-    urls.start_notifications= "notifications/follow/{{ID}}.json";
-    urls.stop_notifications = "notifications/leave/{{ID}}.json";
-    urls.favorites_create 	= "favorites/create/{{ID}}.json";
-    urls.favorites_destroy	= "favorites/destroy/{{ID}}.json";
-    urls.saved_searches_create 	= "saved_searches/create.json";
-    urls.saved_searches_destroy	= "saved_searches/destroy/{{ID}}.json";
-    urls.verify_credentials = "account/verify_credentials.json";
-    urls.ratelimit_status   = "account/rate_limit_status.json";
+	// Action URLs
+	urls.update           	= "statuses/update.json";
+	urls.destroy_status   	= "statuses/destroy/{{ID}}.json";
+	urls.friendship_create  = "friendships/create/{{ID}}.json";
+	urls.friendship_destroy	= "friendships/destroy/{{ID}}.json";
+	urls.block_create		= "blocks/create/{{ID}}.json";
+	urls.block_destroy		= "blocks/destroy/{{ID}}.json";
+	urls.follow             = "notifications/follow/{{ID}}.json";
+	urls.unfollow			= "notifications/leave/{{ID}}.json";
+	urls.favorites_create 	= "favorites/create/{{ID}}.json";
+	urls.favorites_destroy	= "favorites/destroy/{{ID}}.json";
+	urls.saved_searches_create 	= "saved_searches/create.json";
+	urls.saved_searches_destroy	= "saved_searches/destroy/{{ID}}.json";
+	urls.verify_credentials = "account/verify_credentials.json";
+	urls.ratelimit_status   = "account/rate_limit_status.json";
 	urls.update_profile		= "account/update_profile.json";
 	urls.saved_searches		= "saved_searches.json";
+	urls.report_spam		= "report_spam.json";
 
     // User lists URLs
-    urls.lists              = "{{USER}}/lists.json";
-    urls.lists_list         = "{{USER}}/lists/{{SLUG}}.json";
-    urls.lists_memberships  = "{{USER}}/lists/memberships.json";
-    urls.lists_timeline     = "{{USER}}/lists/{{SLUG}}/statuses.json";
-    urls.lists_members      = "{{USER}}/{{SLUG}}/members.json";
-    urls.lists_check_member = "{{USER}}/{{SLUG}}/{{ID}}.json";
-    urls.lists_subscribers  = "{{USER}}/{{SLUG}}/subscribers.json";
-    urls.lists_check_subscriber = "{{USER}}/{{SLUG}}/subscribers/{{ID}}.json";
+	urls.lists              = "{{USER}}/lists.json";
+	urls.lists_list         = "{{USER}}/lists/{{SLUG}}.json";
+	urls.lists_memberships  = "{{USER}}/lists/memberships.json";
+	urls.lists_timeline     = "{{USER}}/lists/{{SLUG}}/statuses.json";
+	urls.lists_members      = "{{USER}}/{{SLUG}}/members.json";
+	urls.lists_check_member = "{{USER}}/{{SLUG}}/members/{{ID}}.json";
+	urls.lists_subscribers  = "{{USER}}/{{SLUG}}/subscribers.json";
+	urls.lists_check_subscriber = "{{USER}}/{{SLUG}}/subscribers/{{ID}}.json";
+	urls.lists_subscriptions = "{{USER}}/lists/subscriptions.json";
+
+	//trends
+	urls.trends				= "trends.json";
+	urls.trends_current		= "trends/current.json";
+	urls.trends_daily		= "trends/daily.json";
+	urls.trends_weekly		= "trends/weekly.json";
+	
+	//retweet
+	urls.retweet			= "statuses/retweet/{{ID}}.json"
+	urls.retweets			= "statuses/retweets/{{ID}}.json"
+	urls.retweeted_by_me	= "statuses/retweeted_by_me.json"
+	urls.retweeted_to_me	= "statuses/retweeted_to_me.json"
+	urls.retweets_of_me		= "statuses/retweets_of_me.json"
 
 	// search
 	if (this.baseurl === SPAZCORE_SERVICEURL_TWITTER) {
 		urls.search				= "http://search.twitter.com/search.json";
-		urls.trends				= "http://search.twitter.com/trends.json";
 	} else {
 		urls.search				= "search.json";
-		urls.trends				= "trends.json";
 	}
 
-    // misc
-    urls.test 			  	= "help/test.json";
-    urls.downtime_schedule	= "help/downtime_schedule.json";
+	// misc
+	urls.test 			  	= "help/test.json";
+	urls.downtime_schedule	= "help/downtime_schedule.json";
 
 	
 	if (urls[key].indexOf('{{ID}}') > -1) {
@@ -10781,7 +10962,11 @@ SpazTwit.prototype.getHomeTimeline = function(since_id, count, page, processing_
 	}
 	
 	var data = {};
-	data['since_id'] = since_id;
+	if (since_id < -1) {
+		data['max_id'] = Math.abs(since_id);
+	} else {
+		data['since_id'] = since_id;
+	}
 	data['count']	 = count;
 	if (page) {
 		data['page'] = page;
@@ -10894,7 +11079,11 @@ SpazTwit.prototype.getReplies = function(since_id, count, page, processing_opts,
 	
 	
 	var data = {};
-	data['since_id'] = since_id;
+	if (since_id < -1) {
+		data['max_id'] = Math.abs(since_id);
+	} else {
+		data['since_id'] = since_id;
+	}
 	if (page) {
 		data['page'] = page;
 	}
@@ -10949,7 +11138,11 @@ SpazTwit.prototype.getDirectMessages = function(since_id, count, page, processin
 	}
 	
 	var data = {};
-	data['since_id'] = since_id;
+	if (since_id < -1) {
+		data['max_id'] = Math.abs(since_id);
+	} else {
+		data['since_id'] = since_id;
+	}
 	if (page) {
 		data['page'] = page;
 	}
@@ -11022,17 +11215,32 @@ SpazTwit.prototype.getSent = function(since_id, count, page, onSuccess, onFailur
 SpazTwit.prototype.getSentDirectMessages = function(since_id, page, onSuccess, onFailure) {};
 
 SpazTwit.prototype.getUserTimeline = function(id, count, page, onSuccess, onFailure) {
-	if (!id) {
-		return false;
+
+	var opts = sch.defaults({
+		'id': id,
+		'since_id': null,
+		'count': count || 10,
+		'page': page || null,
+		'onSuccess': onSuccess,
+		'onFailure': onFailure
+	}, id);
+
+	if (!opts.id || 'object' === typeof opts.id) {
+		return;
 	}
-	if (!page) { page = null;}
-	if (!count) { count = 10;}
-	
+
 	var data = {};
-	data['id']  = id;
-	data['count']	 = count;
-	if (page) {
-		data['page'] = page;
+	data['id']    = opts.id;
+	data['count'] = opts.count;
+	if (opts.since_id) {
+		if (opts.since_id < -1) {
+			data['max_id'] = Math.abs(opts.since_id);
+		} else {
+			data['since_id'] = opts.since_id;
+		}
+	}
+	if (opts.page) {
+		data['page'] = opts.page;
 	}
 	
 	
@@ -11043,8 +11251,8 @@ SpazTwit.prototype.getUserTimeline = function(id, count, page, onSuccess, onFail
 		'username':this.username,
 		'password':this.password,
 		'process_callback'	: this._processUserTimeline,
-		'success_callback':onSuccess,
-		'failure_callback':onFailure,
+		'success_callback':opts.onSuccess,
+		'failure_callback':opts.onFailure,
 		'success_event_type': 'new_user_timeline_data',
 		'failure_event_type': 'error_user_timeline_data'
 	});
@@ -11464,7 +11672,14 @@ SpazTwit.prototype._getTimeline = function(opts) {
         },
         'beforeSend':function(xhr){
 			sc.helpers.dump("beforesend");
-			if (opts.username && opts.password) {
+			if (stwit.opts.oauth_consumer) {
+				var authHeader = consumer.getAuthHeader({
+					'method'    : opts.method,
+					'url'       : opts.url,
+					'parameters': stwit._convertParamsForOAuth(opts.data)
+				});
+				xhr.setRequestHeader('Authorization', authHeader);
+			} else if (opts.username && opts.password) {
 				xhr.setRequestHeader("Authorization", "Basic " + sc.helpers.Base64.encode(opts.username + ":" + opts.password));
 			}
         },
@@ -11475,6 +11690,19 @@ SpazTwit.prototype._getTimeline = function(opts) {
 	});
 	
 	return xhr;
+};
+
+/**
+ * converts jq_style ajax params into the format used by the oAuth lib
+ * @param {object} jq_style key/val params
+ * @returns {array} array based params 
+ */
+SpazTwit.prototype._convertParamsForOAuth = function(jq_style) {
+	var params = [];
+	for (var key in jq_style) {
+		params.push([ key, jq_style[key] ]);
+	}
+	return params;
 };
 
 
@@ -11488,7 +11716,7 @@ SpazTwit.prototype._processTimeline = function(section_name, ret_items, opts, pr
 	
 	if (!processing_opts) { processing_opts = {}; }
 
-	if (!section_name === SPAZCORE_SECTION_USER) { // the user timeline section isn't persistent
+	if (section_name !== SPAZCORE_SECTION_USER) { // the user timeline section isn't persistent
 		/*
 			reset .newitems data properties
 		*/
@@ -11524,10 +11752,17 @@ SpazTwit.prototype._processTimeline = function(section_name, ret_items, opts, pr
 			
 		} else { // this is a "normal" timeline that we want to be persistent
 			
-			// set lastid
-			var lastid = ret_items[ret_items.length-1].id;
-			this.data[section_name].lastid = lastid;
-			sc.helpers.dump('this.data['+section_name+'].lastid:'+this.data[section_name].lastid);
+			if (opts.is_update_item) {
+				/*
+					we do not want this to be the lastid, instead remember it in combined.updates
+				*/
+				this.combinedTimelineAddUpdates(ret_items);
+			} else {
+				// set lastid
+				var lastid = ret_items[ret_items.length-1].id;
+				this.data[section_name].lastid = lastid;
+				sc.helpers.dump('this.data['+section_name+'].lastid:'+this.data[section_name].lastid);
+			}
 
 			// add new items to data.newitems array
 			this.data[section_name].newitems = ret_items;
@@ -11584,6 +11819,11 @@ SpazTwit.prototype._processTimeline = function(section_name, ret_items, opts, pr
 	if (this.combinedTimelineFinished()) {
 		
 		/*
+			Remove those updates from combined newitems
+		*/
+		this.combinedNewItemsRemoveUpdates();
+
+		/*
 			we do this stuff here to avoid processing repeatedly
 		*/
 		
@@ -11624,9 +11864,8 @@ SpazTwit.prototype._processTimeline = function(section_name, ret_items, opts, pr
  */
 SpazTwit.prototype._addToSectionItems = function(section_name, arr, sortfunc) {
 	// concat new items onto data.items array
-	this.data[section_name].items = this.data[section_name].items.concat(arr);
-
-	this._cleanupItemArray(this.data[section_name].items, this.data[section_name].max, sortfunc);
+	var data = this.data[section_name];
+	data.items = this._cleanupItemArray(data.items.concat(arr), null, sortfunc);
 };
 
 /**
@@ -11674,7 +11913,7 @@ SpazTwit.prototype._processItem = function(item, section_name) {
 	/*
 		is an official API retweet? then add .SC_is_retweet
 	*/
-	if ( item.retweet_status ) {
+	if ( item.retweeted_status ) {
 		item.SC_is_retweet = true;
 	}
 	
@@ -11884,7 +12123,14 @@ SpazTwit.prototype._callMethod = function(opts) {
 	    },
 	    'beforeSend':function(xhr){
 			sc.helpers.dump(opts.url + ' beforesend');
-			if (opts.username && opts.password) {
+			if (stwit.opts.oauth_consumer) {
+				var authHeader = consumer.getAuthHeader({
+					'method'    : opts.method,
+					'url'       : opts.url,
+					'parameters': this._convertParamsForOAuth(opts.data)
+				});
+				xhr.setRequestHeader('Authorization', authHeader);
+			} else if (opts.username && opts.password) {
 				xhr.setRequestHeader("Authorization", "Basic " + sc.helpers.Base64.encode(opts.username + ":" + opts.password));
 			}
 	    },
@@ -12116,8 +12362,53 @@ SpazTwit.prototype.unblock = function(user_id, onSuccess, onFailure) {
 
 };
 
-SpazTwit.prototype.follow = function(user_id, onSuccess, onFailure) {}; // to add notification
-SpazTwit.prototype.unfollow = function(user_id, onSuccess, onFailure) {}; // to remove notification
+SpazTwit.prototype.follow = function(user_id, onSuccess, onFailure) { // to add notification
+	var data = {};
+	data['id'] = user_id;
+	
+	var url = this.getAPIURL('follow', data);
+	
+	var opts = {
+		'url':url,
+		'username':this.username,
+		'password':this.password,
+		'success_event_type':'follow_succeeded',
+		'failure_event_type':'follow_failed',
+		'success_callback':onSuccess,
+		'failure_callback':onFailure,
+		'data':data
+	};
+
+	/*
+		Perform a request and get true or false back
+	*/
+	var xhr = this._callMethod(opts);
+    
+};
+
+SpazTwit.prototype.unfollow = function(user_id, onSuccess, onFailure) { // to remove notification
+	var data = {};
+	data['id'] = user_id;
+	
+	var url = this.getAPIURL('unfollow', data);
+	
+	var opts = {
+		'url':url,
+		'username':this.username,
+		'password':this.password,
+		'success_event_type':'unfollow_succeeded',
+		'failure_event_type':'unfollow_failed',
+		'success_callback':onSuccess,
+		'failure_callback':onFailure,
+		'data':data
+	};
+
+	/*
+		Perform a request and get true or false back
+	*/
+	var xhr = this._callMethod(opts);
+    
+};
 
 
 SpazTwit.prototype.update = function(status, source, in_reply_to_status_id, onSuccess, onFailure) {
@@ -12163,6 +12454,7 @@ SpazTwit.prototype._processUpdateReturn = function(data, opts) {
 	/*
 		Add this to the HOME section and fire off the event when done
 	*/	
+	opts.is_update_item = true;
 	this._processTimeline(SPAZCORE_SECTION_HOME, [data], opts);
 };
 
@@ -12208,6 +12500,171 @@ SpazTwit.prototype._processOneItem = function(data, opts) {
 	this.triggerEvent(opts.success_event_type, data);
 	
 };
+
+// Retweet API
+
+/*
+ * Retweets a tweet.
+ * id: the numeric id of a tweet
+ */
+ 
+SpazTwit.prototype.retweet = function(id, onSuccess, onFailure) {
+	var data = {};
+	data['id'] = id;
+	
+	var url = this.getAPIURL('retweet', data);
+	
+	var opts = {
+		'url' : url,
+		'username' : this.username,
+		'password' : this.password,
+		'success_event_type' : 'retweet_succeeded',
+		'failure_event_type' : 'retweet_failed',
+		'success_callback' : onSuccess,
+		'failure_callback' : onFailure,
+		'data' : data
+	};
+	
+	var xhr = this._callMethod(opts);
+}
+
+/*
+ * Gets up to 100 of the latest retweets of a tweet.
+ * id: the tweet to get retweets of
+ * count: the number of retweets to get
+ */
+
+SpazTwit.prototype.getRetweets = function(id, count) {
+	var url = this.getAPIURL('retweets', {
+		'id' : id,
+		'count' : count
+	});
+	
+	var opts = {
+		'url' : url,
+		'username' : this.username,
+		'password' : this.password,
+		'success_event_type' : 'get_retweets_succeeded',
+		'failure_event_Type' : 'get_retweets_failed',
+		'method' : 'GET'
+	};
+	
+	var xhr = this._getTimeline(opts);
+}
+
+/*
+ * Returns up to 200 of the most recent retweets by the user
+ * since: the numeric id of the tweet serving as a floor
+ * max: the numeric id of the tweet serving as a ceiling
+ * count: the number of tweets to return. Cannot be over 200.
+ * page: the page of results to return.
+ */
+ 
+SpazTwit.prototype.retweetedByMe = function(since, max, count, page){
+	var params = {}
+	if(since != null){
+		params['since_id'] = since;
+	}
+	if(max != null){
+		params['max_id'] = max;
+	}
+	if(count == null){
+		count = 20;
+	}
+	params['count'] = count;
+	if(page == null){
+		page = 1;
+	}
+	params['page'] = page;
+	var url = this.getAPIURL('retweeted_by_me', params);
+	
+	var opts = {
+		'url' : url,
+		'username' : this.username,
+		'password' : this.password,
+		'success_event_type' : 'retweeted_by_me_succeeded',
+		'failure_event_type' : 'retweeted_by_me_failed',
+		'method' : 'GET'
+	};
+	
+	var xhr = this._getTimeline(opts);
+}
+
+/*
+ * Returns up to 200 of the most recent retweets by the user's friends
+ * since: the numeric id of the tweet serving as a floor
+ * max: the numeric id of the tweet serving as a ceiling
+ * count: the number of tweets to return. Cannot be over 200.
+ * page: the page of results to return.
+ */
+ 
+SpazTwit.prototype.retweetedToMe = function(since, max, count, page){
+	var params = {}
+	if(since != null){
+		params['since_id'] = since;
+	}
+	if(max != null){
+		params['max_id'] = max;
+	}
+	if(count == null){
+		count = 20;
+	}
+	params['count'] = count;
+	if(page == null){
+		page = 1;
+	}
+	params['page'] = page;
+	var url = this.getAPIURL('retweeted_to_me', params);
+	
+	var opts = {
+		'url' : url,
+		'username' : this.username,
+		'password' : this.password,
+		'success_event_type' : 'retweeted_to_me_succeeded',
+		'failure_event_type' : 'retweeted_to_me_failed',
+		'method' : 'GET'
+	};
+	
+	var xhr = this._getTimeline(opts);
+}
+
+/*
+ * Returns up to 200 of the most recent retweets of the user's tweets
+ * since: the numeric id of the tweet serving as a floor
+ * max: the numeric id of the tweet serving as a ceiling
+ * count: the number of tweets to return. Cannot be over 200.
+ * page: the page of results to return.
+ */
+ 
+SpazTwit.prototype.retweetsOfMe = function(since, max, count, page){
+	var params = {}
+	if(since != null){
+		params['since_id'] = since;
+	}
+	if(max != null){
+		params['max_id'] = max;
+	}
+	if(count == null){
+		count = 20;
+	}
+	params['count'] = count;
+	if(page == null){
+		page = 1;
+	}
+	params['page'] = page;
+	var url = this.getAPIURL('retweets_of_me', params);
+	
+	var opts = {
+		'url' : url,
+		'username' : this.username,
+		'password' : this.password,
+		'success_event_type' : 'retweets_of_me_succeeded',
+		'failure_event_type' : 'retweets_of_me_failed',
+		'method' : 'GET'
+	};
+	
+	var xhr = this._getTimeline(opts);
+}
 
 SpazTwit.prototype.favorite = function(id, onSuccess, onFailure) {
 	var data = {};
@@ -12530,7 +12987,7 @@ SpazTwit.prototype.removeSavedSearch = function(search_id, onSuccess, onFailure)
  */
 SpazTwit.prototype.getLists = function(user, onSuccess, onFailure) {
 	if (!user && !this.username) {
-		return false;
+		return;
 	} else if (!user) {
 	    user = this.username;
 	}
@@ -12550,7 +13007,7 @@ SpazTwit.prototype.getLists = function(user, onSuccess, onFailure) {
 		'method':'GET'
 	};
 
-	var xhr = this._getTimeline(opts);
+	var xhr = this._callMethod(opts);
 };
 
 
@@ -12627,7 +13084,7 @@ SpazTwit.prototype._processList = function(item, section_name) {
 SpazTwit.prototype.getListInfo = function(list, user, onSuccess, onFailure) {
 	if (!user && !this.username) {
 		sch.error('must pass a username or have one set to get list');
-		return false;
+		return;
 	}
 	
 	user = user || this.username;
@@ -12662,7 +13119,7 @@ SpazTwit.prototype.getListInfo = function(list, user, onSuccess, onFailure) {
 SpazTwit.prototype.getListTimeline = function(list, user, onSuccess, onFailure) {
 	if (!user && !this.username) {
 		sch.error('must pass a username or have one set to get list');
-		return false;
+		return;
 	}
 	
 	user = user || this.username;
@@ -12722,7 +13179,7 @@ SpazTwit.prototype._processListTimeline = function(data, opts, processing_opts) 
 SpazTwit.prototype.getListMembers = function(list, user) {
 	if (!user && !this.username) {
 		sch.error('must pass a username or have one set to get list');
-		return false;
+		return;
 	}
 	
 	user = user || this.username;
@@ -12756,28 +13213,346 @@ SpazTwit.prototype.getListMembers = function(list, user) {
  * @param {string} [description]  The list description
  */
 SpazTwit.prototype.addList = function(list, visibility, description) {
+	var data = {};
+	data['name'] = list;
+	data['mode'] = visibility;
+	data['description'] = description;
 	
+	var url = this.getAPIURL('lists', {
+		'user': this.username
+	});
+	
+	var opts = {
+		'url':url,
+		'username':this.username,
+		'password':this.password,
+		'success_event_type':'create_list_succeeded',
+		'failure_event_type':'create_list_failed',
+		'success_callback':null,
+		'failure_callback':null,
+		'data':data
+	};
+	
+	var xhr = this._callMethod(opts);
 };
+
+SpazTwit.prototype.updateList = function(list, name, visibility, description){
+	var data = {};
+	data['name'] = name;
+	data['mode'] = visibility;
+	data['description'] = description;
+	
+	var url = this.getAPIURL('lists_list', {
+		'user': this.username,
+		'slug': list
+	});
+	
+	var opts = {
+		'url':url,
+		'username':this.username,
+		'password':this.password,
+		'success_event_type':'update_list_succeeded',
+		'failure_event_type':'update_list_failed',
+		'data':data
+	};
+	
+	var xhr = this._callMethod(opts);
+}
 
 /**
  * delete a list
  * @param {string} list  The list name 
  */
-SpazTwit.prototype.removeList = function(list, user) {};
+SpazTwit.prototype.removeList = function(list, user) {
+	
+	if (!user && !this.username) {
+		sch.error('must pass a username or have one set to remove list');
+		return;
+	}
+	
+	user = user || this.username;
+	
+	var url = this.getAPIURL('lists_list', {
+		'user': user,
+		'slug':list
+	});
+	
+	var opts = {
+		'url':url,
+		'username':this.username,
+		'password':this.password,
+		'success_event_type':'remove_list_succeeded',
+		'failure_event_type':'remove_list_failed',
+		'method':'DELETE'
+	};
+	
+	var xhr = this._callMethod(opts);
+};
 
 /**
  * add a user to a list
  */
-SpazTwit.prototype.addUserToList = function(user, list, list_user) {};
+SpazTwit.prototype.addUserToList = function(user, list, list_user) {
+	var data = {};
+	data['list_id'] = list;
+	data['id'] = list_user;
+	
+	
+	if (!user && !this.username) {
+		sch.error('must pass a username or have one set to add a user to a list');
+		return;
+	}
+	
+	user = user || this.username;
+	
+	var url = this.getAPIURL('lists_members', {
+		'user': user,
+		'slug': list
+	});
+	
+	var opts = {
+		'url':url,
+		'username':this.username,
+		'password':this.password,
+		'success_event_type':'add_list_user_succeeded',
+		'failure_event_type':'add_list_user_failed',
+		'data':data
+	};
+	
+	var xhr = this._callMethod(opts);
+};
 
 /**
  * delete a user from a list 
  */
-SpazTwit.prototype.removeUserFromList = function(user, list, list_user) {};
+SpazTwit.prototype.removeUserFromList = function(user, list, list_user) {
+	var data = {};
+	data['list_id'] = list;
+	data['id'] = list_user;
+	
+	
+	if (!user && !this.username) {
+		sch.error('must pass a username or have one set to remove a user from a list');
+		return;
+	}
+	
+	user = user || this.username;
+	
+	var url = this.getAPIURL('lists_members', {
+		'user': user,
+		'slug': list
+	});
+	
+	var opts = {
+		'url':url,
+		'username':this.username,
+		'password':this.password,
+		'success_event_type':'remove_list_user_succeeded',
+		'failure_event_type':'remove_list_user_failed',
+		'data':data,
+		'method':'DELETE'
+	};
+	
+	var xhr = this._callMethod(opts);
+};
 
 
+SpazTwit.prototype.listsSubscribedTo = function(user) {
+	if(!user && !this.username) {
+		sch.error('must pass a username or have one set to retrieve subscribed lists');
+		return false;
+	}
+	
+	user = user || this.username;
+	
+	var url = this.getAPIURL('lists_subscriptions', {
+		'user': user
+	});
+	
+	var opts = {
+		'url':url,
+		'username': this.username,
+		'password': this.password,
+		'success_event_type':'get_subscriptions_succeeded',
+		'failure_event_type':'get_subscriptions_failed'
+	};
+	
+	var xhr = this._callMethod(opts);
+}
 
+SpazTwit.prototype.listMemberships = function(user) {
+	if(!user && !this.username) {
+		sch.error('must pass a username or have one set to retrieve list memberships');
+		return false;
+	}
+	
+	user = user || this.username;
+	
+	var url = this.getAPIURL('lists_memberships', {
+		'user': user
+	});
+	
+	var opts = {
+		'url':url,
+		'username': this.username,
+		'password': this.password,
+		'success_event_type':'get_list_memberships_succeeded',
+		'failure_event_type':'get_list_memberships_failed'
+	};
+	
+	var xhr = this._callMethod(opts);
+}
 
+SpazTwit.prototype.getListSubscribers = function(list, user){
+	if(!user && !this.username) {
+		sch.error('must pass a username or have one set to retrieve list subscribers');
+		return false;
+	}
+	
+	user = user || this.username;
+	
+	var url = this.getAPIURL('lists_subscribers', {
+		'user': user,
+		'slug': list
+	});
+	
+	var opts = {
+		'url':url,
+		'username': this.username,
+		'password': this.password,
+		'success_event_type':'get_list_subscribers_succeeded',
+		'failure_event_type':'get_list_subscribers_failed',
+		'method':'GET'
+	};
+	
+	var xhr = this._callMethod(opts);
+}
+
+SpazTwit.prototype.isSubscribed = function(list, list_user, user){
+	if(!user && !this.username) {
+		sch.error('must pass a username or have one set to retrieve list subscribers');
+		return false;
+	}
+	
+	user = user || this.username;
+	
+	var url = this.getAPIURL('lists_check_subscriber', {
+		'user': user,
+		'slug': list,
+		'id': list_user
+	});
+	
+	var opts = {
+		'url':url,
+		'username': this.username,
+		'password': this.password,
+		'success_event_type':'check_list_subscribers_succeeded',
+		'failure_event_type':'check_list_subscribers_failed',
+		'method':'GET'
+	};
+	
+	var xhr = this._callMethod(opts);
+}
+
+SpazTwit.prototype.subscribe = function(list, user){
+	if(!user && !this.username) {
+		sch.error('must pass a username or have one set to subscribe to a list');
+		return false;
+	}
+	
+	user = user || this.username;
+	
+	var url = this.getAPIURL('lists_subscribers', {
+		'user': user,
+		'slug': list
+	});
+	
+	var opts = {
+		'url':url,
+		'username': this.username,
+		'password': this.password,
+		'success_event_type':'list_subscribe_succeeded',
+		'failure_event_type':'list_subscribe_failed',
+		'method':'POST'
+	};
+	
+	var xhr = this._callMethod(opts);
+}
+
+SpazTwit.prototype.unsubscribe = function(list, user){
+	if(!user && !this.username) {
+		sch.error('must pass a username or have one set to unsubscribe');
+		return false;
+	}
+	
+	user = user || this.username;
+	
+	var url = this.getAPIURL('lists_subscribers', {
+		'user': user,
+		'slug': list,
+		'id': list_user
+	});
+	
+	var opts = {
+		'url':url,
+		'username': this.username,
+		'password': this.password,
+		'success_event_type':'list_unsubscribe_succeeded',
+		'failure_event_type':'list_unsubscribe_failed',
+		'method':'DELETE'
+	};
+	
+	var xhr = this._callMethod(opts);
+}
+
+SpazTwit.prototype.isMember = function(list, list_user, user){
+	if(!user && !this.username) {
+		sch.error('must pass a username or have one set to retrieve list memberships');
+		return false;
+	}
+	
+	user = user || this.username;
+	
+	var url = this.getAPIURL('lists_check_member', {
+		'user': user,
+		'slug': list,
+		'id': list_user
+	});
+	
+	var opts = {
+		'url':url,
+		'username': this.username,
+		'password': this.password,
+		'success_event_type':'check_list_members_succeeded',
+		'failure_event_type':'check_list_members_failed',
+		'method':'GET'
+	};
+	
+	var xhr = this._callMethod(opts);
+}
+
+/*
+ * Marks a user as a spammer and blocks them
+ */
+ 
+SpazTwit.prototype.reportSpam = function(user) {
+	var url = this.getAPIURL('report_spam');
+	
+	var data = {};
+	data['screen_name'] = user;
+	
+	var opts = {
+		'url':url,
+		'username': this.username,
+		'password': this.password,
+		'success_event_type':'report_spam_succeeded',
+		'failure_event_type':'report_spam_failed',
+		'method':'POST',
+		'data':data
+	};
+	
+	var xhr = this._callMethod(opts);
+}
 /**
  *  
  */
@@ -12803,7 +13578,6 @@ SpazTwit.prototype.triggerEvent = function(type, data) {
 if (sc) {
 	var scTwit = SpazTwit;
 }
-
 
 
 /*
@@ -13186,7 +13960,7 @@ SpazPrefs.prototype.load = function() {
 
 	
 
-}
+};
 
 SpazPrefs.prototype.save = function() {
 	if (sc.helpers.iswebOS()) {
