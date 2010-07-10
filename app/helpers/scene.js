@@ -309,9 +309,9 @@ scene_helpers.addCommonSceneMethods = function(assistant) {
 		
 		var event_mode = event_mode || 'jquery'; // default this to jquery because we have so much using it
 		
-		var users = new Users(sc.app.prefs);
+		var users = new SpazAccounts(sc.app.prefs);
 		
-		this.twit = new scTwit(null, null, {
+		this.twit = new SpazTwit(null, null, {
 			'event_mode':event_mode,
 			'timeout':1000*60
 		});
@@ -320,7 +320,7 @@ scene_helpers.addCommonSceneMethods = function(assistant) {
 		if (sc.app.userid) {
 			// alert('setting credentials for '+sc.app.username);
 			
-			var userobj = users.getUser(sc.app.userid);
+			var userobj = users.get(sc.app.userid);
 			
 			if (userobj.type === SPAZCORE_SERVICE_CUSTOM) {
 				var api_url = users.getMeta(sc.app.userid, 'api-url');
@@ -336,7 +336,107 @@ scene_helpers.addCommonSceneMethods = function(assistant) {
 	};
 	
 
+	
+	assistant.getAccountsObj = function() {
+		var users = new SpazAccounts(sc.app.prefs);
+		return users;
+	}
+	
+	
+	
+	/**
+	 * retrieves the username for the current account 
+	 */
+	assistant.getUsername = function() {
+		var currentAccountId = Spaz.Prefs.getCurrentAccountId();
+		if (currentAccountId) {
+			var accobj = Spaz.Prefs._accounts.get(currentAccountId);
+			return !!accobj ? accobj.username : null;
+		} else {
+			return null;
+		}
 
+	};
+
+	/**
+	 * DEPRECATED; calls Spaz.Prefs.getAuthKey
+	 */
+	assistant.getPassword = function() {
+		sch.error('Spaz.Prefs.getPassword is deprecated; use Spaz.Prefs.getAuthKey');
+		return Spaz.Prefs.getAuthKey();
+	};
+
+	/**
+	 * Returns the current account's auth key 
+	 */
+	assistant.getAuthKey = function() {
+		var currentAccountId = Spaz.Prefs.getCurrentAccountId();
+		sch.error('getAuthKey currentAccountId:'+currentAccountId);
+		if (currentAccountId) {
+			var accobj = Spaz.Prefs._accounts.get(currentAccountId);
+			return !!accobj ? accobj.auth : null;
+		} else {
+			return null;
+		}	
+	};
+
+	/**
+	 * Returns a SpazAuth object based on the current user's type and auth key 
+	 */
+	assistant.getAuthObject = function() {
+		var authkey = Spaz.Prefs.getAuthKey();
+		sch.error('getAuthObject authkey:'+authkey);
+		if (authkey) {
+			var auth = new SpazAuth(Spaz.Prefs.getAccountType());
+			auth.load(authkey);
+			return auth;
+		} else {
+			return null;
+		}
+	}
+
+	/**
+	 * Returns the current account's type 
+	 */
+	assistant.getAccountType = function() {
+		var currentAccountId = Spaz.Prefs.getCurrentAccountId();
+		if (currentAccountId) {
+			var accobj = Spaz.Prefs._accounts.get(currentAccountId);
+			return !!accobj ? accobj.type : null;
+		} else {
+			return null;
+		}
+
+	};
+
+	/**
+	 * Returns the current account object
+	 */
+	assistant.getCurrentAccount = function() {
+		var currentAccountId = Spaz.Prefs.getCurrentAccountId();
+		if (currentAccountId) {
+			return Spaz.Prefs._accounts.get(currentAccountId);
+		} else {
+			return null;
+		}
+
+	};
+
+
+	assistant.getCurrentAccountId = function() {
+		return Spaz.Prefs.get('current-user-id');
+	}
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
 	/**
 	 *  
 	 */

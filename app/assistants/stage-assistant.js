@@ -101,7 +101,7 @@ StageAssistant.prototype.initialize = function() {
 		}
 	});
 	sc.app.prefs.load(); // this is sync on webOS, b/c loading from Mojo.Model.Cookie
-	sc.app.twit = new scTwit(null, null, {
+	sc.app.twit = new SpazTwit(null, null, {
 		'event_mode':'jquery'
 	});
 
@@ -185,7 +185,7 @@ StageAssistant.prototype.gotoMyTimeline = function(stageController) {
 		/*
 			load users from prefs obj
 		*/
-		var users = new Users(sc.app.prefs);
+		var users = new SpazAccounts(sc.app.prefs);
 		users.load();
 		
 		/*
@@ -193,7 +193,7 @@ StageAssistant.prototype.gotoMyTimeline = function(stageController) {
 		*/
 		if (sc.app.prefs.get('always-go-to-my-timeline')) {
 			var last_userid = sc.app.prefs.get('last_userid');
-			var last_user_obj = users.getUser(last_userid);
+			var last_user_obj = users.get(last_userid);
 			if (last_user_obj !== false) {
 				sch.error(last_user_obj);
 				sc.app.username = last_user_obj.username;

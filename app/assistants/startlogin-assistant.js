@@ -57,7 +57,7 @@ StartloginAssistant.prototype.setup = function() {
 	/*
 		load users from prefs obj
 	*/
-	this.Users = new Users(sc.app.prefs);
+	this.Users = new SpazAccounts(sc.app.prefs);
 	this.Users.load();
 	
 	sch.error(this.Users);

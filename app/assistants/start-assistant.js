@@ -14,14 +14,14 @@ function StartAssistant(argFromPusher) {
 			/*
 				load users from prefs obj
 			*/
-			this.Users = new Users(sc.app.prefs);
+			this.Users = new SpazAccounts(sc.app.prefs);
 			this.Users.load();
 			
 			/*
 				get last user
 			*/
 			var last_userid = sc.app.prefs.get('last_userid');
-			var last_user_obj = this.Users.getUser(last_userid);
+			var last_user_obj = this.Users.get(last_userid);
 			if (last_user_obj !== false) {
 				dump(last_user_obj);
 				sc.app.username = last_user_obj.username;

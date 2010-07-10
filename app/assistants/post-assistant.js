@@ -26,7 +26,7 @@ PostAssistant.prototype.setup = function() {
 	
 	this.postTextField = jQuery('#post-textfield')[0];
 	
-	this.Users = new Users(sc.app.prefs);
+	this.Users = new SpazAccounts(sc.app.prefs);
 	
 	this.model = {
 		'attachment':null,

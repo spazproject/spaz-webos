@@ -81,7 +81,7 @@ BackgroundNotifier.prototype.init = function() {
 	this.prefs = new SpazPrefs(default_preferences);
 	this.prefs.load();
 
-	this.Users = new Users(this.prefs);
+	this.Users = new SpazAccounts(this.prefs);
 	this.Users.load();
 
 	this.notifyOnDM = this.prefs.get('bgnotify-on-dm');
@@ -89,10 +89,10 @@ BackgroundNotifier.prototype.init = function() {
 	// this.notifyOnHome = this.prefs.get('bgnotify-on-home');
 	this.notifyOnHome = true;
 
-	this.twit = new scTwit(null, null);
+	this.twit = new SpazTwit(null, null);
 
 	var last_userid = this.prefs.get('last_userid');
-	var last_user_obj = this.Users.getUser(last_userid);
+	var last_user_obj = this.Users.get(last_userid);
 	if (last_user_obj) {
 		sch.debug(last_user_obj);
 		sc.app.username = last_user_obj.username;
