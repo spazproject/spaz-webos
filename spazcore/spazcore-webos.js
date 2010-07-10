@@ -1,4 +1,4 @@
-/*********** Built 2010-06-12 13:45:14 EDT ***********/
+/*********** Built 2010-07-10 13:33:04 EDT ***********/
 /*jslint 
 browser: true,
 nomen: false,
@@ -2780,1056 +2780,6 @@ replace(/(?:^|:|,)(?:\s*\[)+/g, ''))) {
         };
     }
 })();
-/*!
- * Sizzle CSS Selector Engine - v1.0
- *  Copyright 2009, The Dojo Foundation
- *  Released under the MIT, BSD, and GPL Licenses.
- *  More information: http://sizzlejs.com/
- */
-(function(){
-
-var chunker = /((?:\((?:\([^()]+\)|[^()]+)+\)|\[(?:\[[^[\]]*\]|['"][^'"]*['"]|[^[\]'"]+)+\]|\\.|[^ >+~,(\[\\]+)+|[>+~])(\s*,\s*)?((?:.|\r|\n)*)/g,
-	done = 0,
-	toString = Object.prototype.toString,
-	hasDuplicate = false,
-	baseHasDuplicate = true;
-
-// Here we check if the JavaScript engine is using some sort of
-// optimization where it does not always call our comparision
-// function. If that is the case, discard the hasDuplicate value.
-//   Thus far that includes Google Chrome.
-[0, 0].sort(function(){
-	baseHasDuplicate = false;
-	return 0;
-});
-
-var Sizzle = function(selector, context, results, seed) {
-	results = results || [];
-	var origContext = context = context || document;
-
-	if ( context.nodeType !== 1 && context.nodeType !== 9 ) {
-		return [];
-	}
-	
-	if ( !selector || typeof selector !== "string" ) {
-		return results;
-	}
-
-	var parts = [], m, set, checkSet, extra, prune = true, contextXML = isXML(context),
-		soFar = selector;
-	
-	// Reset the position of the chunker regexp (start from head)
-	while ( (chunker.exec(""), m = chunker.exec(soFar)) !== null ) {
-		soFar = m[3];
-		
-		parts.push( m[1] );
-		
-		if ( m[2] ) {
-			extra = m[3];
-			break;
-		}
-	}
-
-	if ( parts.length > 1 && origPOS.exec( selector ) ) {
-		if ( parts.length === 2 && Expr.relative[ parts[0] ] ) {
-			set = posProcess( parts[0] + parts[1], context );
-		} else {
-			set = Expr.relative[ parts[0] ] ?
-				[ context ] :
-				Sizzle( parts.shift(), context );
-
-			while ( parts.length ) {
-				selector = parts.shift();
-
-				if ( Expr.relative[ selector ] ) {
-					selector += parts.shift();
-				}
-				
-				set = posProcess( selector, set );
-			}
-		}
-	} else {
-		// Take a shortcut and set the context if the root selector is an ID
-		// (but not if it'll be faster if the inner selector is an ID)
-		if ( !seed && parts.length > 1 && context.nodeType === 9 && !contextXML &&
-				Expr.match.ID.test(parts[0]) && !Expr.match.ID.test(parts[parts.length - 1]) ) {
-			var ret = Sizzle.find( parts.shift(), context, contextXML );
-			context = ret.expr ? Sizzle.filter( ret.expr, ret.set )[0] : ret.set[0];
-		}
-
-		if ( context ) {
-			var ret = seed ?
-				{ expr: parts.pop(), set: makeArray(seed) } :
-				Sizzle.find( parts.pop(), parts.length === 1 && (parts[0] === "~" || parts[0] === "+") && context.parentNode ? context.parentNode : context, contextXML );
-			set = ret.expr ? Sizzle.filter( ret.expr, ret.set ) : ret.set;
-
-			if ( parts.length > 0 ) {
-				checkSet = makeArray(set);
-			} else {
-				prune = false;
-			}
-
-			while ( parts.length ) {
-				var cur = parts.pop(), pop = cur;
-
-				if ( !Expr.relative[ cur ] ) {
-					cur = "";
-				} else {
-					pop = parts.pop();
-				}
-
-				if ( pop == null ) {
-					pop = context;
-				}
-
-				Expr.relative[ cur ]( checkSet, pop, contextXML );
-			}
-		} else {
-			checkSet = parts = [];
-		}
-	}
-
-	if ( !checkSet ) {
-		checkSet = set;
-	}
-
-	if ( !checkSet ) {
-		throw "Syntax error, unrecognized expression: " + (cur || selector);
-	}
-
-	if ( toString.call(checkSet) === "[object Array]" ) {
-		if ( !prune ) {
-			results.push.apply( results, checkSet );
-		} else if ( context && context.nodeType === 1 ) {
-			for ( var i = 0; checkSet[i] != null; i++ ) {
-				if ( checkSet[i] && (checkSet[i] === true || checkSet[i].nodeType === 1 && contains(context, checkSet[i])) ) {
-					results.push( set[i] );
-				}
-			}
-		} else {
-			for ( var i = 0; checkSet[i] != null; i++ ) {
-				if ( checkSet[i] && checkSet[i].nodeType === 1 ) {
-					results.push( set[i] );
-				}
-			}
-		}
-	} else {
-		makeArray( checkSet, results );
-	}
-
-	if ( extra ) {
-		Sizzle( extra, origContext, results, seed );
-		Sizzle.uniqueSort( results );
-	}
-
-	return results;
-};
-
-Sizzle.uniqueSort = function(results){
-	if ( sortOrder ) {
-		hasDuplicate = baseHasDuplicate;
-		results.sort(sortOrder);
-
-		if ( hasDuplicate ) {
-			for ( var i = 1; i < results.length; i++ ) {
-				if ( results[i] === results[i-1] ) {
-					results.splice(i--, 1);
-				}
-			}
-		}
-	}
-
-	return results;
-};
-
-Sizzle.matches = function(expr, set){
-	return Sizzle(expr, null, null, set);
-};
-
-Sizzle.find = function(expr, context, isXML){
-	var set, match;
-
-	if ( !expr ) {
-		return [];
-	}
-
-	for ( var i = 0, l = Expr.order.length; i < l; i++ ) {
-		var type = Expr.order[i], match;
-		
-		if ( (match = Expr.leftMatch[ type ].exec( expr )) ) {
-			var left = match[1];
-			match.splice(1,1);
-
-			if ( left.substr( left.length - 1 ) !== "\\" ) {
-				match[1] = (match[1] || "").replace(/\\/g, "");
-				set = Expr.find[ type ]( match, context, isXML );
-				if ( set != null ) {
-					expr = expr.replace( Expr.match[ type ], "" );
-					break;
-				}
-			}
-		}
-	}
-
-	if ( !set ) {
-		set = context.getElementsByTagName("*");
-	}
-
-	return {set: set, expr: expr};
-};
-
-Sizzle.filter = function(expr, set, inplace, not){
-	var old = expr, result = [], curLoop = set, match, anyFound,
-		isXMLFilter = set && set[0] && isXML(set[0]);
-
-	while ( expr && set.length ) {
-		for ( var type in Expr.filter ) {
-			if ( (match = Expr.match[ type ].exec( expr )) != null ) {
-				var filter = Expr.filter[ type ], found, item;
-				anyFound = false;
-
-				if ( curLoop == result ) {
-					result = [];
-				}
-
-				if ( Expr.preFilter[ type ] ) {
-					match = Expr.preFilter[ type ]( match, curLoop, inplace, result, not, isXMLFilter );
-
-					if ( !match ) {
-						anyFound = found = true;
-					} else if ( match === true ) {
-						continue;
-					}
-				}
-
-				if ( match ) {
-					for ( var i = 0; (item = curLoop[i]) != null; i++ ) {
-						if ( item ) {
-							found = filter( item, match, i, curLoop );
-							var pass = not ^ !!found;
-
-							if ( inplace && found != null ) {
-								if ( pass ) {
-									anyFound = true;
-								} else {
-									curLoop[i] = false;
-								}
-							} else if ( pass ) {
-								result.push( item );
-								anyFound = true;
-							}
-						}
-					}
-				}
-
-				if ( found !== undefined ) {
-					if ( !inplace ) {
-						curLoop = result;
-					}
-
-					expr = expr.replace( Expr.match[ type ], "" );
-
-					if ( !anyFound ) {
-						return [];
-					}
-
-					break;
-				}
-			}
-		}
-
-		// Improper expression
-		if ( expr == old ) {
-			if ( anyFound == null ) {
-				throw "Syntax error, unrecognized expression: " + expr;
-			} else {
-				break;
-			}
-		}
-
-		old = expr;
-	}
-
-	return curLoop;
-};
-
-var Expr = Sizzle.selectors = {
-	order: [ "ID", "NAME", "TAG" ],
-	match: {
-		ID: /#((?:[\w\u00c0-\uFFFF-]|\\.)+)/,
-		CLASS: /\.((?:[\w\u00c0-\uFFFF-]|\\.)+)/,
-		NAME: /\[name=['"]*((?:[\w\u00c0-\uFFFF-]|\\.)+)['"]*\]/,
-		ATTR: /\[\s*((?:[\w\u00c0-\uFFFF-]|\\.)+)\s*(?:(\S?=)\s*(['"]*)(.*?)\3|)\s*\]/,
-		TAG: /^((?:[\w\u00c0-\uFFFF\*-]|\\.)+)/,
-		CHILD: /:(only|nth|last|first)-child(?:\((even|odd|[\dn+-]*)\))?/,
-		POS: /:(nth|eq|gt|lt|first|last|even|odd)(?:\((\d*)\))?(?=[^-]|$)/,
-		PSEUDO: /:((?:[\w\u00c0-\uFFFF-]|\\.)+)(?:\((['"]*)((?:\([^\)]+\)|[^\2\(\)]*)+)\2\))?/
-	},
-	leftMatch: {},
-	attrMap: {
-		"class": "className",
-		"for": "htmlFor"
-	},
-	attrHandle: {
-		href: function(elem){
-			return elem.getAttribute("href");
-		}
-	},
-	relative: {
-		"+": function(checkSet, part){
-			var isPartStr = typeof part === "string",
-				isTag = isPartStr && !/\W/.test(part),
-				isPartStrNotTag = isPartStr && !isTag;
-
-			if ( isTag ) {
-				part = part.toLowerCase();
-			}
-
-			for ( var i = 0, l = checkSet.length, elem; i < l; i++ ) {
-				if ( (elem = checkSet[i]) ) {
-					while ( (elem = elem.previousSibling) && elem.nodeType !== 1 ) {}
-
-					checkSet[i] = isPartStrNotTag || elem && elem.nodeName.toLowerCase() === part ?
-						elem || false :
-						elem === part;
-				}
-			}
-
-			if ( isPartStrNotTag ) {
-				Sizzle.filter( part, checkSet, true );
-			}
-		},
-		">": function(checkSet, part){
-			var isPartStr = typeof part === "string";
-
-			if ( isPartStr && !/\W/.test(part) ) {
-				part = part.toLowerCase();
-
-				for ( var i = 0, l = checkSet.length; i < l; i++ ) {
-					var elem = checkSet[i];
-					if ( elem ) {
-						var parent = elem.parentNode;
-						checkSet[i] = parent.nodeName.toLowerCase() === part ? parent : false;
-					}
-				}
-			} else {
-				for ( var i = 0, l = checkSet.length; i < l; i++ ) {
-					var elem = checkSet[i];
-					if ( elem ) {
-						checkSet[i] = isPartStr ?
-							elem.parentNode :
-							elem.parentNode === part;
-					}
-				}
-
-				if ( isPartStr ) {
-					Sizzle.filter( part, checkSet, true );
-				}
-			}
-		},
-		"": function(checkSet, part){
-			var doneName = done++, checkFn = dirCheck;
-
-			if ( !/\W/.test(part) ) {
-				var nodeCheck = part = part.toLowerCase();
-				checkFn = dirNodeCheck;
-			}
-
-			checkFn("parentNode", part, doneName, checkSet, nodeCheck, isXML);
-		},
-		"~": function(checkSet, part){
-			var doneName = done++, checkFn = dirCheck;
-
-			if ( typeof part === "string" && !/\W/.test(part) ) {
-				var nodeCheck = part = part.toLowerCase();
-				checkFn = dirNodeCheck;
-			}
-
-			checkFn("previousSibling", part, doneName, checkSet, nodeCheck, isXML);
-		}
-	},
-	find: {
-		ID: function(match, context, isXML){
-			if ( typeof context.getElementById !== "undefined" && !isXML ) {
-				var m = context.getElementById(match[1]);
-				return m ? [m] : [];
-			}
-		},
-		NAME: function(match, context){
-			if ( typeof context.getElementsByName !== "undefined" ) {
-				var ret = [], results = context.getElementsByName(match[1]);
-
-				for ( var i = 0, l = results.length; i < l; i++ ) {
-					if ( results[i].getAttribute("name") === match[1] ) {
-						ret.push( results[i] );
-					}
-				}
-
-				return ret.length === 0 ? null : ret;
-			}
-		},
-		TAG: function(match, context){
-			return context.getElementsByTagName(match[1]);
-		}
-	},
-	preFilter: {
-		CLASS: function(match, curLoop, inplace, result, not, isXML){
-			match = " " + match[1].replace(/\\/g, "") + " ";
-
-			if ( isXML ) {
-				return match;
-			}
-
-			for ( var i = 0, elem; (elem = curLoop[i]) != null; i++ ) {
-				if ( elem ) {
-					if ( not ^ (elem.className && (" " + elem.className + " ").replace(/[\t\n]/g, " ").indexOf(match) >= 0) ) {
-						if ( !inplace ) {
-							result.push( elem );
-						}
-					} else if ( inplace ) {
-						curLoop[i] = false;
-					}
-				}
-			}
-
-			return false;
-		},
-		ID: function(match){
-			return match[1].replace(/\\/g, "");
-		},
-		TAG: function(match, curLoop){
-			return match[1].toLowerCase();
-		},
-		CHILD: function(match){
-			if ( match[1] == "nth" ) {
-				// parse equations like 'even', 'odd', '5', '2n', '3n+2', '4n-1', '-n+6'
-				var test = /(-?)(\d*)n((?:\+|-)?\d*)/.exec(
-					match[2] == "even" && "2n" || match[2] == "odd" && "2n+1" ||
-					!/\D/.test( match[2] ) && "0n+" + match[2] || match[2]);
-
-				// calculate the numbers (first)n+(last) including if they are negative
-				match[2] = (test[1] + (test[2] || 1)) - 0;
-				match[3] = test[3] - 0;
-			}
-
-			// TODO: Move to normal caching system
-			match[0] = done++;
-
-			return match;
-		},
-		ATTR: function(match, curLoop, inplace, result, not, isXML){
-			var name = match[1].replace(/\\/g, "");
-			
-			if ( !isXML && Expr.attrMap[name] ) {
-				match[1] = Expr.attrMap[name];
-			}
-
-			if ( match[2] === "~=" ) {
-				match[4] = " " + match[4] + " ";
-			}
-
-			return match;
-		},
-		PSEUDO: function(match, curLoop, inplace, result, not){
-			if ( match[1] === "not" ) {
-				// If we're dealing with a complex expression, or a simple one
-				if ( ( chunker.exec(match[3]) || "" ).length > 1 || /^\w/.test(match[3]) ) {
-					match[3] = Sizzle(match[3], null, null, curLoop);
-				} else {
-					var ret = Sizzle.filter(match[3], curLoop, inplace, true ^ not);
-					if ( !inplace ) {
-						result.push.apply( result, ret );
-					}
-					return false;
-				}
-			} else if ( Expr.match.POS.test( match[0] ) || Expr.match.CHILD.test( match[0] ) ) {
-				return true;
-			}
-			
-			return match;
-		},
-		POS: function(match){
-			match.unshift( true );
-			return match;
-		}
-	},
-	filters: {
-		enabled: function(elem){
-			return elem.disabled === false && elem.type !== "hidden";
-		},
-		disabled: function(elem){
-			return elem.disabled === true;
-		},
-		checked: function(elem){
-			return elem.checked === true;
-		},
-		selected: function(elem){
-			// Accessing this property makes selected-by-default
-			// options in Safari work properly
-			elem.parentNode.selectedIndex;
-			return elem.selected === true;
-		},
-		parent: function(elem){
-			return !!elem.firstChild;
-		},
-		empty: function(elem){
-			return !elem.firstChild;
-		},
-		has: function(elem, i, match){
-			return !!Sizzle( match[3], elem ).length;
-		},
-		header: function(elem){
-			return /h\d/i.test( elem.nodeName );
-		},
-		text: function(elem){
-			return "text" === elem.type;
-		},
-		radio: function(elem){
-			return "radio" === elem.type;
-		},
-		checkbox: function(elem){
-			return "checkbox" === elem.type;
-		},
-		file: function(elem){
-			return "file" === elem.type;
-		},
-		password: function(elem){
-			return "password" === elem.type;
-		},
-		submit: function(elem){
-			return "submit" === elem.type;
-		},
-		image: function(elem){
-			return "image" === elem.type;
-		},
-		reset: function(elem){
-			return "reset" === elem.type;
-		},
-		button: function(elem){
-			return "button" === elem.type || elem.nodeName.toLowerCase() === "button";
-		},
-		input: function(elem){
-			return /input|select|textarea|button/i.test(elem.nodeName);
-		}
-	},
-	setFilters: {
-		first: function(elem, i){
-			return i === 0;
-		},
-		last: function(elem, i, match, array){
-			return i === array.length - 1;
-		},
-		even: function(elem, i){
-			return i % 2 === 0;
-		},
-		odd: function(elem, i){
-			return i % 2 === 1;
-		},
-		lt: function(elem, i, match){
-			return i < match[3] - 0;
-		},
-		gt: function(elem, i, match){
-			return i > match[3] - 0;
-		},
-		nth: function(elem, i, match){
-			return match[3] - 0 == i;
-		},
-		eq: function(elem, i, match){
-			return match[3] - 0 == i;
-		}
-	},
-	filter: {
-		PSEUDO: function(elem, match, i, array){
-			var name = match[1], filter = Expr.filters[ name ];
-
-			if ( filter ) {
-				return filter( elem, i, match, array );
-			} else if ( name === "contains" ) {
-				return (elem.textContent || elem.innerText || getText([ elem ]) || "").indexOf(match[3]) >= 0;
-			} else if ( name === "not" ) {
-				var not = match[3];
-
-				for ( var i = 0, l = not.length; i < l; i++ ) {
-					if ( not[i] === elem ) {
-						return false;
-					}
-				}
-
-				return true;
-			}
-		},
-		CHILD: function(elem, match){
-			var type = match[1], node = elem;
-			switch (type) {
-				case 'only':
-				case 'first':
-					while ( (node = node.previousSibling) )	 {
-						if ( node.nodeType === 1 ) { 
-							return false; 
-						}
-					}
-					if ( type == 'first') { 
-						return true; 
-					}
-					node = elem;
-				case 'last':
-					while ( (node = node.nextSibling) )	 {
-						if ( node.nodeType === 1 ) { 
-							return false; 
-						}
-					}
-					return true;
-				case 'nth':
-					var first = match[2], last = match[3];
-
-					if ( first == 1 && last == 0 ) {
-						return true;
-					}
-					
-					var doneName = match[0],
-						parent = elem.parentNode;
-	
-					if ( parent && (parent.sizcache !== doneName || !elem.nodeIndex) ) {
-						var count = 0;
-						for ( node = parent.firstChild; node; node = node.nextSibling ) {
-							if ( node.nodeType === 1 ) {
-								node.nodeIndex = ++count;
-							}
-						} 
-						parent.sizcache = doneName;
-					}
-					
-					var diff = elem.nodeIndex - last;
-					if ( first == 0 ) {
-						return diff == 0;
-					} else {
-						return ( diff % first == 0 && diff / first >= 0 );
-					}
-			}
-		},
-		ID: function(elem, match){
-			return elem.nodeType === 1 && elem.getAttribute("id") === match;
-		},
-		TAG: function(elem, match){
-			return (match === "*" && elem.nodeType === 1) || elem.nodeName.toLowerCase() === match;
-		},
-		CLASS: function(elem, match){
-			return (" " + (elem.className || elem.getAttribute("class")) + " ")
-				.indexOf( match ) > -1;
-		},
-		ATTR: function(elem, match){
-			var name = match[1],
-				result = Expr.attrHandle[ name ] ?
-					Expr.attrHandle[ name ]( elem ) :
-					elem[ name ] != null ?
-						elem[ name ] :
-						elem.getAttribute( name ),
-				value = result + "",
-				type = match[2],
-				check = match[4];
-
-			return result == null ?
-				type === "!=" :
-				type === "=" ?
-				value === check :
-				type === "*=" ?
-				value.indexOf(check) >= 0 :
-				type === "~=" ?
-				(" " + value + " ").indexOf(check) >= 0 :
-				!check ?
-				value && result !== false :
-				type === "!=" ?
-				value != check :
-				type === "^=" ?
-				value.indexOf(check) === 0 :
-				type === "$=" ?
-				value.substr(value.length - check.length) === check :
-				type === "|=" ?
-				value === check || value.substr(0, check.length + 1) === check + "-" :
-				false;
-		},
-		POS: function(elem, match, i, array){
-			var name = match[2], filter = Expr.setFilters[ name ];
-
-			if ( filter ) {
-				return filter( elem, i, match, array );
-			}
-		}
-	}
-};
-
-var origPOS = Expr.match.POS;
-
-for ( var type in Expr.match ) {
-	Expr.match[ type ] = new RegExp( Expr.match[ type ].source + /(?![^\[]*\])(?![^\(]*\))/.source );
-	Expr.leftMatch[ type ] = new RegExp( /(^(?:.|\r|\n)*?)/.source + Expr.match[ type ].source );
-}
-
-var makeArray = function(array, results) {
-	array = Array.prototype.slice.call( array, 0 );
-
-	if ( results ) {
-		results.push.apply( results, array );
-		return results;
-	}
-	
-	return array;
-};
-
-// Perform a simple check to determine if the browser is capable of
-// converting a NodeList to an array using builtin methods.
-try {
-	Array.prototype.slice.call( document.documentElement.childNodes, 0 );
-
-// Provide a fallback method if it does not work
-} catch(e){
-	makeArray = function(array, results) {
-		var ret = results || [];
-
-		if ( toString.call(array) === "[object Array]" ) {
-			Array.prototype.push.apply( ret, array );
-		} else {
-			if ( typeof array.length === "number" ) {
-				for ( var i = 0, l = array.length; i < l; i++ ) {
-					ret.push( array[i] );
-				}
-			} else {
-				for ( var i = 0; array[i]; i++ ) {
-					ret.push( array[i] );
-				}
-			}
-		}
-
-		return ret;
-	};
-}
-
-var sortOrder;
-
-if ( document.documentElement.compareDocumentPosition ) {
-	sortOrder = function( a, b ) {
-		if ( !a.compareDocumentPosition || !b.compareDocumentPosition ) {
-			if ( a == b ) {
-				hasDuplicate = true;
-			}
-			return a.compareDocumentPosition ? -1 : 1;
-		}
-
-		var ret = a.compareDocumentPosition(b) & 4 ? -1 : a === b ? 0 : 1;
-		if ( ret === 0 ) {
-			hasDuplicate = true;
-		}
-		return ret;
-	};
-} else if ( "sourceIndex" in document.documentElement ) {
-	sortOrder = function( a, b ) {
-		if ( !a.sourceIndex || !b.sourceIndex ) {
-			if ( a == b ) {
-				hasDuplicate = true;
-			}
-			return a.sourceIndex ? -1 : 1;
-		}
-
-		var ret = a.sourceIndex - b.sourceIndex;
-		if ( ret === 0 ) {
-			hasDuplicate = true;
-		}
-		return ret;
-	};
-} else if ( document.createRange ) {
-	sortOrder = function( a, b ) {
-		if ( !a.ownerDocument || !b.ownerDocument ) {
-			if ( a == b ) {
-				hasDuplicate = true;
-			}
-			return a.ownerDocument ? -1 : 1;
-		}
-
-		var aRange = a.ownerDocument.createRange(), bRange = b.ownerDocument.createRange();
-		aRange.setStart(a, 0);
-		aRange.setEnd(a, 0);
-		bRange.setStart(b, 0);
-		bRange.setEnd(b, 0);
-		var ret = aRange.compareBoundaryPoints(Range.START_TO_END, bRange);
-		if ( ret === 0 ) {
-			hasDuplicate = true;
-		}
-		return ret;
-	};
-}
-
-// Utility function for retreiving the text value of an array of DOM nodes
-function getText( elems ) {
-	var ret = "", elem;
-
-	for ( var i = 0; elems[i]; i++ ) {
-		elem = elems[i];
-
-		// Get the text from text nodes and CDATA nodes
-		if ( elem.nodeType === 3 || elem.nodeType === 4 ) {
-			ret += elem.nodeValue;
-
-		// Traverse everything else, except comment nodes
-		} else if ( elem.nodeType !== 8 ) {
-			ret += getText( elem.childNodes );
-		}
-	}
-
-	return ret;
-}
-
-// Check to see if the browser returns elements by name when
-// querying by getElementById (and provide a workaround)
-(function(){
-	// We're going to inject a fake input element with a specified name
-	var form = document.createElement("div"),
-		id = "script" + (new Date).getTime();
-	form.innerHTML = "<a name='" + id + "'/>";
-
-	// Inject it into the root element, check its status, and remove it quickly
-	var root = document.documentElement;
-	root.insertBefore( form, root.firstChild );
-
-	// The workaround has to do additional checks after a getElementById
-	// Which slows things down for other browsers (hence the branching)
-	if ( document.getElementById( id ) ) {
-		Expr.find.ID = function(match, context, isXML){
-			if ( typeof context.getElementById !== "undefined" && !isXML ) {
-				var m = context.getElementById(match[1]);
-				return m ? m.id === match[1] || typeof m.getAttributeNode !== "undefined" && m.getAttributeNode("id").nodeValue === match[1] ? [m] : undefined : [];
-			}
-		};
-
-		Expr.filter.ID = function(elem, match){
-			var node = typeof elem.getAttributeNode !== "undefined" && elem.getAttributeNode("id");
-			return elem.nodeType === 1 && node && node.nodeValue === match;
-		};
-	}
-
-	root.removeChild( form );
-	root = form = null; // release memory in IE
-})();
-
-(function(){
-	// Check to see if the browser returns only elements
-	// when doing getElementsByTagName("*")
-
-	// Create a fake element
-	var div = document.createElement("div");
-	div.appendChild( document.createComment("") );
-
-	// Make sure no comments are found
-	if ( div.getElementsByTagName("*").length > 0 ) {
-		Expr.find.TAG = function(match, context){
-			var results = context.getElementsByTagName(match[1]);
-
-			// Filter out possible comments
-			if ( match[1] === "*" ) {
-				var tmp = [];
-
-				for ( var i = 0; results[i]; i++ ) {
-					if ( results[i].nodeType === 1 ) {
-						tmp.push( results[i] );
-					}
-				}
-
-				results = tmp;
-			}
-
-			return results;
-		};
-	}
-
-	// Check to see if an attribute returns normalized href attributes
-	div.innerHTML = "<a href='#'></a>";
-	if ( div.firstChild && typeof div.firstChild.getAttribute !== "undefined" &&
-			div.firstChild.getAttribute("href") !== "#" ) {
-		Expr.attrHandle.href = function(elem){
-			return elem.getAttribute("href", 2);
-		};
-	}
-
-	div = null; // release memory in IE
-})();
-
-if ( document.querySelectorAll ) {
-	(function(){
-		var oldSizzle = Sizzle, div = document.createElement("div");
-		div.innerHTML = "<p class='TEST'></p>";
-
-		// Safari can't handle uppercase or unicode characters when
-		// in quirks mode.
-		if ( div.querySelectorAll && div.querySelectorAll(".TEST").length === 0 ) {
-			return;
-		}
-	
-		Sizzle = function(query, context, extra, seed){
-			context = context || document;
-
-			// Only use querySelectorAll on non-XML documents
-			// (ID selectors don't work in non-HTML documents)
-			if ( !seed && context.nodeType === 9 && !isXML(context) ) {
-				try {
-					return makeArray( context.querySelectorAll(query), extra );
-				} catch(e){}
-			}
-		
-			return oldSizzle(query, context, extra, seed);
-		};
-
-		for ( var prop in oldSizzle ) {
-			Sizzle[ prop ] = oldSizzle[ prop ];
-		}
-
-		div = null; // release memory in IE
-	})();
-}
-
-(function(){
-	var div = document.createElement("div");
-
-	div.innerHTML = "<div class='test e'></div><div class='test'></div>";
-
-	// Opera can't find a second classname (in 9.6)
-	// Also, make sure that getElementsByClassName actually exists
-	if ( !div.getElementsByClassName || div.getElementsByClassName("e").length === 0 ) {
-		return;
-	}
-
-	// Safari caches class attributes, doesn't catch changes (in 3.2)
-	div.lastChild.className = "e";
-
-	if ( div.getElementsByClassName("e").length === 1 ) {
-		return;
-	}
-	
-	Expr.order.splice(1, 0, "CLASS");
-	Expr.find.CLASS = function(match, context, isXML) {
-		if ( typeof context.getElementsByClassName !== "undefined" && !isXML ) {
-			return context.getElementsByClassName(match[1]);
-		}
-	};
-
-	div = null; // release memory in IE
-})();
-
-function dirNodeCheck( dir, cur, doneName, checkSet, nodeCheck, isXML ) {
-	var sibDir = dir == "previousSibling" && !isXML;
-	for ( var i = 0, l = checkSet.length; i < l; i++ ) {
-		var elem = checkSet[i];
-		if ( elem ) {
-			if ( sibDir && elem.nodeType === 1 ){
-				elem.sizcache = doneName;
-				elem.sizset = i;
-			}
-			elem = elem[dir];
-			var match = false;
-
-			while ( elem ) {
-				if ( elem.sizcache === doneName ) {
-					match = checkSet[elem.sizset];
-					break;
-				}
-
-				if ( elem.nodeType === 1 && !isXML ){
-					elem.sizcache = doneName;
-					elem.sizset = i;
-				}
-
-				if ( elem.nodeName.toLowerCase() === cur ) {
-					match = elem;
-					break;
-				}
-
-				elem = elem[dir];
-			}
-
-			checkSet[i] = match;
-		}
-	}
-}
-
-function dirCheck( dir, cur, doneName, checkSet, nodeCheck, isXML ) {
-	var sibDir = dir == "previousSibling" && !isXML;
-	for ( var i = 0, l = checkSet.length; i < l; i++ ) {
-		var elem = checkSet[i];
-		if ( elem ) {
-			if ( sibDir && elem.nodeType === 1 ) {
-				elem.sizcache = doneName;
-				elem.sizset = i;
-			}
-			elem = elem[dir];
-			var match = false;
-
-			while ( elem ) {
-				if ( elem.sizcache === doneName ) {
-					match = checkSet[elem.sizset];
-					break;
-				}
-
-				if ( elem.nodeType === 1 ) {
-					if ( !isXML ) {
-						elem.sizcache = doneName;
-						elem.sizset = i;
-					}
-					if ( typeof cur !== "string" ) {
-						if ( elem === cur ) {
-							match = true;
-							break;
-						}
-
-					} else if ( Sizzle.filter( cur, [elem] ).length > 0 ) {
-						match = elem;
-						break;
-					}
-				}
-
-				elem = elem[dir];
-			}
-
-			checkSet[i] = match;
-		}
-	}
-}
-
-var contains = document.compareDocumentPosition ? function(a, b){
-	return a.compareDocumentPosition(b) & 16;
-} : function(a, b){
-	return a !== b && (a.contains ? a.contains(b) : true);
-};
-
-var isXML = function(elem){
-	// documentElement is verified for cases where it doesn't yet exist
-	// (such as loading iframes in IE - #4833) 
-	var documentElement = (elem ? elem.ownerDocument || elem : 0).documentElement;
-	return documentElement ? documentElement.nodeName !== "HTML" : false;
-};
-
-var posProcess = function(selector, context){
-	var tmpSet = [], later = "", match,
-		root = context.nodeType ? [context] : context;
-
-	// Position selectors must be done after the filter
-	// And so must :not(positional) so we move all PSEUDOs to the end
-	while ( (match = Expr.match.PSEUDO.exec( selector )) ) {
-		later += match[0];
-		selector = selector.replace( Expr.match.PSEUDO, "" );
-	}
-
-	selector = Expr.relative[selector] ? selector + "*" : selector;
-
-	for ( var i = 0, l = root.length; i < l; i++ ) {
-		Sizzle( selector, root[i], tmpSet );
-	}
-
-	return Sizzle.filter( later, tmpSet );
-};
-
-// EXPOSE
-
-window.Sizzle = Sizzle;
-
-})();
 // Underscore.js
 // (c) 2009 Jeremy Ashkenas, DocumentCloud Inc.
 // Underscore is freely distributable under the terms of the MIT license.
@@ -4439,6 +3389,887 @@ window.Sizzle = Sizzle;
   };
 
 })();
+/*
+ * A JavaScript implementation of the Secure Hash Algorithm, SHA-1, as defined
+ * in FIPS 180-1
+ * Version 2.2 Copyright Paul Johnston 2000 - 2009.
+ * Other contributors: Greg Holt, Andrew Kepert, Ydnar, Lostinet
+ * Distributed under the BSD License
+ * See http://pajhome.org.uk/crypt/md5 for details.
+ */
+
+/*
+ * Configurable variables. You may need to tweak these to be compatible with
+ * the server-side, but the defaults work in most cases.
+ */
+var hexcase = 0;  /* hex output format. 0 - lowercase; 1 - uppercase        */
+var b64pad  = ""; /* base-64 pad character. "=" for strict RFC compliance   */
+
+/*
+ * These are the functions you'll usually want to call
+ * They take string arguments and return either hex or base-64 encoded strings
+ */
+function hex_sha1(s)    { return rstr2hex(rstr_sha1(str2rstr_utf8(s))); }
+function b64_sha1(s)    { return rstr2b64(rstr_sha1(str2rstr_utf8(s))); }
+function any_sha1(s, e) { return rstr2any(rstr_sha1(str2rstr_utf8(s)), e); }
+function hex_hmac_sha1(k, d)
+  { return rstr2hex(rstr_hmac_sha1(str2rstr_utf8(k), str2rstr_utf8(d))); }
+function b64_hmac_sha1(k, d)
+  { return rstr2b64(rstr_hmac_sha1(str2rstr_utf8(k), str2rstr_utf8(d))); }
+function any_hmac_sha1(k, d, e)
+  { return rstr2any(rstr_hmac_sha1(str2rstr_utf8(k), str2rstr_utf8(d)), e); }
+
+/*
+ * Perform a simple self-test to see if the VM is working
+ */
+function sha1_vm_test()
+{
+  return hex_sha1("abc").toLowerCase() == "a9993e364706816aba3e25717850c26c9cd0d89d";
+}
+
+/*
+ * Calculate the SHA1 of a raw string
+ */
+function rstr_sha1(s)
+{
+  return binb2rstr(binb_sha1(rstr2binb(s), s.length * 8));
+}
+
+/*
+ * Calculate the HMAC-SHA1 of a key and some data (raw strings)
+ */
+function rstr_hmac_sha1(key, data)
+{
+  var bkey = rstr2binb(key);
+  if(bkey.length > 16) bkey = binb_sha1(bkey, key.length * 8);
+
+  var ipad = Array(16), opad = Array(16);
+  for(var i = 0; i < 16; i++)
+  {
+    ipad[i] = bkey[i] ^ 0x36363636;
+    opad[i] = bkey[i] ^ 0x5C5C5C5C;
+  }
+
+  var hash = binb_sha1(ipad.concat(rstr2binb(data)), 512 + data.length * 8);
+  return binb2rstr(binb_sha1(opad.concat(hash), 512 + 160));
+}
+
+/*
+ * Convert a raw string to a hex string
+ */
+function rstr2hex(input)
+{
+  try { hexcase } catch(e) { hexcase=0; }
+  var hex_tab = hexcase ? "0123456789ABCDEF" : "0123456789abcdef";
+  var output = "";
+  var x;
+  for(var i = 0; i < input.length; i++)
+  {
+    x = input.charCodeAt(i);
+    output += hex_tab.charAt((x >>> 4) & 0x0F)
+           +  hex_tab.charAt( x        & 0x0F);
+  }
+  return output;
+}
+
+/*
+ * Convert a raw string to a base-64 string
+ */
+function rstr2b64(input)
+{
+  try { b64pad } catch(e) { b64pad=''; }
+  var tab = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
+  var output = "";
+  var len = input.length;
+  for(var i = 0; i < len; i += 3)
+  {
+    var triplet = (input.charCodeAt(i) << 16)
+                | (i + 1 < len ? input.charCodeAt(i+1) << 8 : 0)
+                | (i + 2 < len ? input.charCodeAt(i+2)      : 0);
+    for(var j = 0; j < 4; j++)
+    {
+      if(i * 8 + j * 6 > input.length * 8) output += b64pad;
+      else output += tab.charAt((triplet >>> 6*(3-j)) & 0x3F);
+    }
+  }
+  return output;
+}
+
+/*
+ * Convert a raw string to an arbitrary string encoding
+ */
+function rstr2any(input, encoding)
+{
+  var divisor = encoding.length;
+  var remainders = Array();
+  var i, q, x, quotient;
+
+  /* Convert to an array of 16-bit big-endian values, forming the dividend */
+  var dividend = Array(Math.ceil(input.length / 2));
+  for(i = 0; i < dividend.length; i++)
+  {
+    dividend[i] = (input.charCodeAt(i * 2) << 8) | input.charCodeAt(i * 2 + 1);
+  }
+
+  /*
+   * Repeatedly perform a long division. The binary array forms the dividend,
+   * the length of the encoding is the divisor. Once computed, the quotient
+   * forms the dividend for the next step. We stop when the dividend is zero.
+   * All remainders are stored for later use.
+   */
+  while(dividend.length > 0)
+  {
+    quotient = Array();
+    x = 0;
+    for(i = 0; i < dividend.length; i++)
+    {
+      x = (x << 16) + dividend[i];
+      q = Math.floor(x / divisor);
+      x -= q * divisor;
+      if(quotient.length > 0 || q > 0)
+        quotient[quotient.length] = q;
+    }
+    remainders[remainders.length] = x;
+    dividend = quotient;
+  }
+
+  /* Convert the remainders to the output string */
+  var output = "";
+  for(i = remainders.length - 1; i >= 0; i--)
+    output += encoding.charAt(remainders[i]);
+
+  /* Append leading zero equivalents */
+  var full_length = Math.ceil(input.length * 8 /
+                                    (Math.log(encoding.length) / Math.log(2)))
+  for(i = output.length; i < full_length; i++)
+    output = encoding[0] + output;
+
+  return output;
+}
+
+/*
+ * Encode a string as utf-8.
+ * For efficiency, this assumes the input is valid utf-16.
+ */
+function str2rstr_utf8(input)
+{
+  var output = "";
+  var i = -1;
+  var x, y;
+
+  while(++i < input.length)
+  {
+    /* Decode utf-16 surrogate pairs */
+    x = input.charCodeAt(i);
+    y = i + 1 < input.length ? input.charCodeAt(i + 1) : 0;
+    if(0xD800 <= x && x <= 0xDBFF && 0xDC00 <= y && y <= 0xDFFF)
+    {
+      x = 0x10000 + ((x & 0x03FF) << 10) + (y & 0x03FF);
+      i++;
+    }
+
+    /* Encode output as utf-8 */
+    if(x <= 0x7F)
+      output += String.fromCharCode(x);
+    else if(x <= 0x7FF)
+      output += String.fromCharCode(0xC0 | ((x >>> 6 ) & 0x1F),
+                                    0x80 | ( x         & 0x3F));
+    else if(x <= 0xFFFF)
+      output += String.fromCharCode(0xE0 | ((x >>> 12) & 0x0F),
+                                    0x80 | ((x >>> 6 ) & 0x3F),
+                                    0x80 | ( x         & 0x3F));
+    else if(x <= 0x1FFFFF)
+      output += String.fromCharCode(0xF0 | ((x >>> 18) & 0x07),
+                                    0x80 | ((x >>> 12) & 0x3F),
+                                    0x80 | ((x >>> 6 ) & 0x3F),
+                                    0x80 | ( x         & 0x3F));
+  }
+  return output;
+}
+
+/*
+ * Encode a string as utf-16
+ */
+function str2rstr_utf16le(input)
+{
+  var output = "";
+  for(var i = 0; i < input.length; i++)
+    output += String.fromCharCode( input.charCodeAt(i)        & 0xFF,
+                                  (input.charCodeAt(i) >>> 8) & 0xFF);
+  return output;
+}
+
+function str2rstr_utf16be(input)
+{
+  var output = "";
+  for(var i = 0; i < input.length; i++)
+    output += String.fromCharCode((input.charCodeAt(i) >>> 8) & 0xFF,
+                                   input.charCodeAt(i)        & 0xFF);
+  return output;
+}
+
+/*
+ * Convert a raw string to an array of big-endian words
+ * Characters >255 have their high-byte silently ignored.
+ */
+function rstr2binb(input)
+{
+  var output = Array(input.length >> 2);
+  for(var i = 0; i < output.length; i++)
+    output[i] = 0;
+  for(var i = 0; i < input.length * 8; i += 8)
+    output[i>>5] |= (input.charCodeAt(i / 8) & 0xFF) << (24 - i % 32);
+  return output;
+}
+
+/*
+ * Convert an array of big-endian words to a string
+ */
+function binb2rstr(input)
+{
+  var output = "";
+  for(var i = 0; i < input.length * 32; i += 8)
+    output += String.fromCharCode((input[i>>5] >>> (24 - i % 32)) & 0xFF);
+  return output;
+}
+
+/*
+ * Calculate the SHA-1 of an array of big-endian words, and a bit length
+ */
+function binb_sha1(x, len)
+{
+  /* append padding */
+  x[len >> 5] |= 0x80 << (24 - len % 32);
+  x[((len + 64 >> 9) << 4) + 15] = len;
+
+  var w = Array(80);
+  var a =  1732584193;
+  var b = -271733879;
+  var c = -1732584194;
+  var d =  271733878;
+  var e = -1009589776;
+
+  for(var i = 0; i < x.length; i += 16)
+  {
+    var olda = a;
+    var oldb = b;
+    var oldc = c;
+    var oldd = d;
+    var olde = e;
+
+    for(var j = 0; j < 80; j++)
+    {
+      if(j < 16) w[j] = x[i + j];
+      else w[j] = bit_rol(w[j-3] ^ w[j-8] ^ w[j-14] ^ w[j-16], 1);
+      var t = safe_add(safe_add(bit_rol(a, 5), sha1_ft(j, b, c, d)),
+                       safe_add(safe_add(e, w[j]), sha1_kt(j)));
+      e = d;
+      d = c;
+      c = bit_rol(b, 30);
+      b = a;
+      a = t;
+    }
+
+    a = safe_add(a, olda);
+    b = safe_add(b, oldb);
+    c = safe_add(c, oldc);
+    d = safe_add(d, oldd);
+    e = safe_add(e, olde);
+  }
+  return Array(a, b, c, d, e);
+
+}
+
+/*
+ * Perform the appropriate triplet combination function for the current
+ * iteration
+ */
+function sha1_ft(t, b, c, d)
+{
+  if(t < 20) return (b & c) | ((~b) & d);
+  if(t < 40) return b ^ c ^ d;
+  if(t < 60) return (b & c) | (b & d) | (c & d);
+  return b ^ c ^ d;
+}
+
+/*
+ * Determine the appropriate additive constant for the current iteration
+ */
+function sha1_kt(t)
+{
+  return (t < 20) ?  1518500249 : (t < 40) ?  1859775393 :
+         (t < 60) ? -1894007588 : -899497514;
+}
+
+/*
+ * Add integers, wrapping at 2^32. This uses 16-bit operations internally
+ * to work around bugs in some JS interpreters.
+ */
+function safe_add(x, y)
+{
+  var lsw = (x & 0xFFFF) + (y & 0xFFFF);
+  var msw = (x >> 16) + (y >> 16) + (lsw >> 16);
+  return (msw << 16) | (lsw & 0xFFFF);
+}
+
+/*
+ * Bitwise rotate a 32-bit number to the left.
+ */
+function bit_rol(num, cnt)
+{
+  return (num << cnt) | (num >>> (32 - cnt));
+}
+/**
+ * OAuth JavaScript library
+ * Taken from http://oauth.googlecode.com/
+ *
+ * Copyright 2008 Netflix, Inc.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+/* Here's some JavaScript software for implementing OAuth.
+
+   This isn't as useful as you might hope.  OAuth is based around
+   allowing tools and websites to talk to each other.  However,
+   JavaScript running in web browsers is hampered by security
+   restrictions that prevent code running on one website from
+   accessing data stored or served on another.
+
+   Before you start hacking, make sure you understand the limitations
+   posed by cross-domain XMLHttpRequest.
+
+   On the bright side, some platforms use JavaScript as their
+   language, but enable the programmer to access other web sites.
+   Examples include Google Gadgets, and Microsoft Vista Sidebar.
+   For those platforms, this library should come in handy.
+*/
+
+// The HMAC-SHA1 signature method calls b64_hmac_sha1, defined by
+// http://pajhome.org.uk/crypt/md5/sha1.js
+
+/* An OAuth message is represented as an object like this:
+   {method: "GET", action: "http://server.com/path", parameters: ...}
+
+   The parameters may be either a map {name: value, name2: value2}
+   or an Array of name-value pairs [[name, value], [name2, value2]].
+   The latter representation is more powerful: it supports parameters
+   in a specific sequence, or several parameters with the same name;
+   for example [["a", 1], ["b", 2], ["a", 3]].
+
+   Parameter names and values are NOT percent-encoded in an object.
+   They must be encoded before transmission and decoded after reception.
+   For example, this message object:
+   {method: "GET", action: "http://server/path", parameters: {p: "x y"}}
+   ... can be transmitted as an HTTP request that begins:
+   GET /path?p=x%20y HTTP/1.0
+   (This isn't a valid OAuth request, since it lacks a signature etc.)
+   Note that the object "x y" is transmitted as x%20y.  To encode
+   parameters, you can call OAuth.addToURL, OAuth.formEncode or
+   OAuth.getAuthorization.
+
+   This message object model harmonizes with the browser object model for
+   input elements of an form, whose value property isn't percent encoded.
+   The browser encodes each value before transmitting it. For example,
+   see consumer.setInputs in example/consumer.js.
+ */
+
+/* This script needs to know what time it is. By default, it uses the local
+   clock (new Date), which is apt to be inaccurate in browsers. To do
+   better, you can load this script from a URL whose query string contains
+   an oauth_timestamp parameter, whose value is a current Unix timestamp.
+   For example, when generating the enclosing document using PHP:
+
+   <script src="oauth.js?oauth_timestamp=<?=time()?>" ...
+
+   Another option is to call OAuth.correctTimestamp with a Unix timestamp.
+ */
+
+var OAuth; if (OAuth == null) OAuth = {};
+
+OAuth.setProperties = function setProperties(into, from) {
+    if (into != null && from != null) {
+        for (var key in from) {
+            into[key] = from[key];
+        }
+    }
+    return into;
+}
+
+OAuth.setProperties(OAuth, // utility functions
+{
+    percentEncode: function percentEncode(s) {
+        if (s == null) {
+            return "";
+        }
+        if (s instanceof Array) {
+            var e = "";
+            for (var i = 0; i < s.length; ++s) {
+                if (e != "") e += '&';
+                e += OAuth.percentEncode(s[i]);
+            }
+            return e;
+        }
+        s = encodeURIComponent(s);
+        // Now replace the values which encodeURIComponent doesn't do
+        // encodeURIComponent ignores: - _ . ! ~ * ' ( )
+        // OAuth dictates the only ones you can ignore are: - _ . ~
+        // Source: http://developer.mozilla.org/en/docs/Core_JavaScript_1.5_Reference:Global_Functions:encodeURIComponent
+        s = s.replace(/\!/g, "%21");
+        s = s.replace(/\*/g, "%2A");
+        s = s.replace(/\'/g, "%27");
+        s = s.replace(/\(/g, "%28");
+        s = s.replace(/\)/g, "%29");
+        return s;
+    }
+,
+    decodePercent: function decodePercent(s) {
+        if (s != null) {
+            // Handle application/x-www-form-urlencoded, which is defined by
+            // http://www.w3.org/TR/html4/interact/forms.html#h-17.13.4.1
+            s = s.replace(/\+/g, " ");
+        }
+        return decodeURIComponent(s);
+    }
+,
+    /** Convert the given parameters to an Array of name-value pairs. */
+    getParameterList: function getParameterList(parameters) {
+        if (parameters == null) {
+            return [];
+        }
+        if (typeof parameters != "object") {
+            return OAuth.decodeForm(parameters + "");
+        }
+        if (parameters instanceof Array) {
+            return parameters;
+        }
+        var list = [];
+        for (var p in parameters) {
+            list.push([p, parameters[p]]);
+        }
+        return list;
+    }
+,
+    /** Convert the given parameters to a map from name to value. */
+    getParameterMap: function getParameterMap(parameters) {
+        if (parameters == null) {
+            return {};
+        }
+        if (typeof parameters != "object") {
+            return OAuth.getParameterMap(OAuth.decodeForm(parameters + ""));
+        }
+        if (parameters instanceof Array) {
+            var map = {};
+            for (var p = 0; p < parameters.length; ++p) {
+                var key = parameters[p][0];
+                if (map[key] === undefined) { // first value wins
+                    map[key] = parameters[p][1];
+                }
+            }
+            return map;
+        }
+        return parameters;
+    }
+,
+    getParameter: function getParameter(parameters, name) {
+        if (parameters instanceof Array) {
+            for (var p = 0; p < parameters.length; ++p) {
+                if (parameters[p][0] == name) {
+                    return parameters[p][1]; // first value wins
+                }
+            }
+        } else {
+            return OAuth.getParameterMap(parameters)[name];
+        }
+        return null;
+    }
+,
+    formEncode: function formEncode(parameters) {
+        var form = "";
+        var list = OAuth.getParameterList(parameters);
+        for (var p = 0; p < list.length; ++p) {
+            var value = list[p][1];
+            if (value == null) value = "";
+            if (form != "") form += '&';
+            form += OAuth.percentEncode(list[p][0])
+              +'='+ OAuth.percentEncode(value);
+        }
+        return form;
+    }
+,
+    decodeForm: function decodeForm(form) {
+        var list = [];
+        var nvps = form.split('&');
+        for (var n = 0; n < nvps.length; ++n) {
+            var nvp = nvps[n];
+            if (nvp == "") {
+                continue;
+            }
+            var equals = nvp.indexOf('=');
+            var name;
+            var value;
+            if (equals < 0) {
+                name = OAuth.decodePercent(nvp);
+                value = null;
+            } else {
+                name = OAuth.decodePercent(nvp.substring(0, equals));
+                value = OAuth.decodePercent(nvp.substring(equals + 1));
+            }
+            list.push([name, value]);
+        }
+        return list;
+    }
+,
+    setParameter: function setParameter(message, name, value) {
+        var parameters = message.parameters;
+        if (parameters instanceof Array) {
+            for (var p = 0; p < parameters.length; ++p) {
+                if (parameters[p][0] == name) {
+                    if (value === undefined) {
+                        parameters.splice(p, 1);
+                    } else {
+                        parameters[p][1] = value;
+                        value = undefined;
+                    }
+                }
+            }
+            if (value !== undefined) {
+                parameters.push([name, value]);
+            }
+        } else {
+            parameters = OAuth.getParameterMap(parameters);
+            parameters[name] = value;
+            message.parameters = parameters;
+        }
+    }
+,
+    setParameters: function setParameters(message, parameters) {
+        var list = OAuth.getParameterList(parameters);
+        for (var i = 0; i < list.length; ++i) {
+            OAuth.setParameter(message, list[i][0], list[i][1]);
+        }
+    }
+,
+    /** Fill in parameters to help construct a request message.
+        This function doesn't fill in every parameter.
+        The accessor object should be like:
+        {consumerKey:'foo', consumerSecret:'bar', accessorSecret:'nurn', token:'krelm', tokenSecret:'blah'}
+        The accessorSecret property is optional.
+     */
+    completeRequest: function completeRequest(message, accessor) {
+        if (message.method == null) {
+            message.method = "GET";
+        }
+        var map = OAuth.getParameterMap(message.parameters);
+        if (map.oauth_consumer_key == null) {
+            OAuth.setParameter(message, "oauth_consumer_key", accessor.consumerKey || "");
+        }
+        if (map.oauth_token == null && accessor.token != null) {
+            OAuth.setParameter(message, "oauth_token", accessor.token);
+        }
+        if (map.oauth_version == null) {
+            OAuth.setParameter(message, "oauth_version", "1.0");
+        }
+        if (map.oauth_timestamp == null) {
+            OAuth.setParameter(message, "oauth_timestamp", OAuth.timestamp());
+        }
+        if (map.oauth_nonce == null) {
+            OAuth.setParameter(message, "oauth_nonce", OAuth.nonce(6));
+        }
+        OAuth.SignatureMethod.sign(message, accessor);
+    }
+,
+    setTimestampAndNonce: function setTimestampAndNonce(message) {
+        OAuth.setParameter(message, "oauth_timestamp", OAuth.timestamp());
+        OAuth.setParameter(message, "oauth_nonce", OAuth.nonce(6));
+    }
+,
+    addToURL: function addToURL(url, parameters) {
+        newURL = url;
+        if (parameters != null) {
+            var toAdd = OAuth.formEncode(parameters);
+            if (toAdd.length > 0) {
+                var q = url.indexOf('?');
+                if (q < 0) newURL += '?';
+                else       newURL += '&';
+                newURL += toAdd;
+            }
+        }
+        return newURL;
+    }
+,
+    /** Construct the value of the Authorization header for an HTTP request. */
+    getAuthorizationHeader: function getAuthorizationHeader(realm, parameters) {
+        var header = 'OAuth realm="' + OAuth.percentEncode(realm) + '"';
+        var list = OAuth.getParameterList(parameters);
+        for (var p = 0; p < list.length; ++p) {
+            var parameter = list[p];
+            var name = parameter[0];
+            if (name.indexOf("oauth_") == 0) {
+                header += ',' + OAuth.percentEncode(name) + '="' + OAuth.percentEncode(parameter[1]) + '"';
+            }
+        }
+        return header;
+    }
+,
+    /** Correct the time using a parameter from the URL from which the last script was loaded. */
+    correctTimestampFromSrc: function correctTimestampFromSrc(parameterName) {
+        parameterName = parameterName || "oauth_timestamp";
+        var scripts = document.getElementsByTagName('script');
+        if (scripts == null || !scripts.length) return;
+        var src = scripts[scripts.length-1].src;
+        if (!src) return;
+        var q = src.indexOf("?");
+        if (q < 0) return;
+        parameters = OAuth.getParameterMap(OAuth.decodeForm(src.substring(q+1)));
+        var t = parameters[parameterName];
+        if (t == null) return;
+        OAuth.correctTimestamp(t);
+    }
+,
+    /** Generate timestamps starting with the given value. */
+    correctTimestamp: function correctTimestamp(timestamp) {
+        OAuth.timeCorrectionMsec = (timestamp * 1000) - (new Date()).getTime();
+    }
+,
+    /** The difference between the correct time and my clock. */
+    timeCorrectionMsec: 0
+,
+    timestamp: function timestamp() {
+        var t = (new Date()).getTime() + OAuth.timeCorrectionMsec;
+        return Math.floor(t / 1000);
+    }
+,
+    nonce: function nonce(length) {
+        var chars = OAuth.nonce.CHARS;
+        var result = "";
+        for (var i = 0; i < length; ++i) {
+            var rnum = Math.floor(Math.random() * chars.length);
+            result += chars.substring(rnum, rnum+1);
+        }
+        return result;
+    }
+});
+
+OAuth.nonce.CHARS = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXTZabcdefghiklmnopqrstuvwxyz";
+
+/** Define a constructor function,
+    without causing trouble to anyone who was using it as a namespace.
+    That is, if parent[name] already existed and had properties,
+    copy those properties into the new constructor.
+ */
+OAuth.declareClass = function declareClass(parent, name, newConstructor) {
+    var previous = parent[name];
+    parent[name] = newConstructor;
+    if (newConstructor != null && previous != null) {
+        for (var key in previous) {
+            if (key != "prototype") {
+                newConstructor[key] = previous[key];
+            }
+        }
+    }
+    return newConstructor;
+}
+
+/** An abstract algorithm for signing messages. */
+OAuth.declareClass(OAuth, "SignatureMethod", function OAuthSignatureMethod(){});
+
+OAuth.setProperties(OAuth.SignatureMethod.prototype, // instance members
+{
+    /** Add a signature to the message. */
+    sign: function sign(message) {
+        var baseString = OAuth.SignatureMethod.getBaseString(message);
+        var signature = this.getSignature(baseString);
+        OAuth.setParameter(message, "oauth_signature", signature);
+        return signature; // just in case someone's interested
+    }
+,
+    /** Set the key string for signing. */
+    initialize: function initialize(name, accessor) {
+        var consumerSecret;
+        if (accessor.accessorSecret != null
+            && name.length > 9
+            && name.substring(name.length-9) == "-Accessor")
+        {
+            consumerSecret = accessor.accessorSecret;
+        } else {
+            consumerSecret = accessor.consumerSecret;
+        }
+        this.key = OAuth.percentEncode(consumerSecret)
+             +"&"+ OAuth.percentEncode(accessor.tokenSecret);
+    }
+});
+
+/* SignatureMethod expects an accessor object to be like this:
+   {tokenSecret: "lakjsdflkj...", consumerSecret: "QOUEWRI..", accessorSecret: "xcmvzc..."}
+   The accessorSecret property is optional.
+ */
+// Class members:
+OAuth.setProperties(OAuth.SignatureMethod, // class members
+{
+    sign: function sign(message, accessor) {
+        var name = OAuth.getParameterMap(message.parameters).oauth_signature_method;
+        if (name == null || name == "") {
+            name = "HMAC-SHA1";
+            OAuth.setParameter(message, "oauth_signature_method", name);
+        }
+        OAuth.SignatureMethod.newMethod(name, accessor).sign(message);
+    }
+,
+    /** Instantiate a SignatureMethod for the given method name. */
+    newMethod: function newMethod(name, accessor) {
+        var impl = OAuth.SignatureMethod.REGISTERED[name];
+        if (impl != null) {
+            var method = new impl();
+            method.initialize(name, accessor);
+            return method;
+        }
+        var err = new Error("signature_method_rejected");
+        var acceptable = "";
+        for (var r in OAuth.SignatureMethod.REGISTERED) {
+            if (acceptable != "") acceptable += '&';
+            acceptable += OAuth.percentEncode(r);
+        }
+        err.oauth_acceptable_signature_methods = acceptable;
+        throw err;
+    }
+,
+    /** A map from signature method name to constructor. */
+    REGISTERED : {}
+,
+    /** Subsequently, the given constructor will be used for the named methods.
+        The constructor will be called with no parameters.
+        The resulting object should usually implement getSignature(baseString).
+        You can easily define such a constructor by calling makeSubclass, below.
+     */
+    registerMethodClass: function registerMethodClass(names, classConstructor) {
+        for (var n = 0; n < names.length; ++n) {
+            OAuth.SignatureMethod.REGISTERED[names[n]] = classConstructor;
+        }
+    }
+,
+    /** Create a subclass of OAuth.SignatureMethod, with the given getSignature function. */
+    makeSubclass: function makeSubclass(getSignatureFunction) {
+        var superClass = OAuth.SignatureMethod;
+        var subClass = function() {
+            superClass.call(this);
+        };
+        subClass.prototype = new superClass();
+        // Delete instance variables from prototype:
+        // delete subclass.prototype... There aren't any.
+        subClass.prototype.getSignature = getSignatureFunction;
+        subClass.prototype.constructor = subClass;
+        return subClass;
+    }
+,
+    getBaseString: function getBaseString(message) {
+        var URL = message.action;
+        var q = URL.indexOf('?');
+        var parameters;
+        if (q < 0) {
+            parameters = message.parameters;
+        } else {
+            // Combine the URL query string with the other parameters:
+            parameters = OAuth.decodeForm(URL.substring(q + 1));
+            var toAdd = OAuth.getParameterList(message.parameters);
+            for (var a = 0; a < toAdd.length; ++a) {
+                parameters.push(toAdd[a]);
+            }
+        }
+        return OAuth.percentEncode(message.method.toUpperCase())
+         +'&'+ OAuth.percentEncode(OAuth.SignatureMethod.normalizeUrl(URL))
+         +'&'+ OAuth.percentEncode(OAuth.SignatureMethod.normalizeParameters(parameters));
+    }
+,
+    normalizeUrl: function normalizeUrl(url) {
+        var uri = OAuth.SignatureMethod.parseUri(url);
+        var scheme = uri.protocol.toLowerCase();
+        var authority = uri.authority.toLowerCase();
+        var dropPort = (scheme == "http" && uri.port == 80)
+                    || (scheme == "https" && uri.port == 443);
+        if (dropPort) {
+            // find the last : in the authority
+            var index = authority.lastIndexOf(":");
+            if (index >= 0) {
+                authority = authority.substring(0, index);
+            }
+        }
+        var path = uri.path;
+        if (!path) {
+            path = "/"; // conforms to RFC 2616 section 3.2.2
+        }
+        // we know that there is no query and no fragment here.
+        return scheme + "://" + authority + path;
+    }
+,
+    parseUri: function parseUri (str) {
+        /* This function was adapted from parseUri 1.2.1
+           http://stevenlevithan.com/demo/parseuri/js/assets/parseuri.js
+         */
+        var o = {key: ["source","protocol","authority","userInfo","user","password","host","port","relative","path","directory","file","query","anchor"],
+                 parser: {strict: /^(?:([^:\/?#]+):)?(?:\/\/((?:(([^:@\/]*):?([^:@\/]*))?@)?([^:\/?#]*)(?::(\d*))?))?((((?:[^?#\/]*\/)*)([^?#]*))(?:\?([^#]*))?(?:#(.*))?)/ }};
+        var m = o.parser.strict.exec(str);
+        var uri = {};
+        var i = 14;
+        while (i--) uri[o.key[i]] = m[i] || "";
+        return uri;
+    }
+,
+    normalizeParameters: function normalizeParameters(parameters) {
+        if (parameters == null) {
+            return "";
+        }
+        var list = OAuth.getParameterList(parameters);
+        var sortable = [];
+        for (var p = 0; p < list.length; ++p) {
+            var nvp = list[p];
+            if (nvp[0] != "oauth_signature") {
+                sortable.push([ OAuth.percentEncode(nvp[0])
+                              + " " // because it comes before any character that can appear in a percentEncoded string.
+                              + OAuth.percentEncode(nvp[1])
+                              , nvp]);
+            }
+        }
+        sortable.sort(function(a,b) {
+                          if (a[0] < b[0]) return  -1;
+                          if (a[0] > b[0]) return 1;
+                          return 0;
+                      });
+        var sorted = [];
+        for (var s = 0; s < sortable.length; ++s) {
+            sorted.push(sortable[s][1]);
+        }
+        return OAuth.formEncode(sorted);
+    }
+});
+
+OAuth.SignatureMethod.registerMethodClass(["PLAINTEXT", "PLAINTEXT-Accessor"],
+    OAuth.SignatureMethod.makeSubclass(
+        function getSignature(baseString) {
+            return this.key;
+        }
+    ));
+
+OAuth.SignatureMethod.registerMethodClass(["HMAC-SHA1", "HMAC-SHA1-Accessor"],
+    OAuth.SignatureMethod.makeSubclass(
+        function getSignature(baseString) {
+            b64pad = '=';
+            var signature = b64_hmac_sha1(this.key, baseString);
+            return signature;
+        }
+    ));
+
+OAuth.correctTimestampFromSrc();
 /*jslint 
 browser: true,
 nomen: false,
@@ -5574,7 +5405,8 @@ sc.helpers.isNumber = function(chk) {
 	http://www.breakingpar.com/bkp/home.nsf/0/87256B280015193F87256C720080D723
 */
 sc.helpers.isArray = function(obj) {
-	if (obj.constructor.toString().indexOf("Array") === -1) {
+	
+	if (!obj || !obj.constructor || obj.constructor.toString().indexOf("Array") === -1) {
 		return false;
 	} else {
 		return true;
@@ -5903,8 +5735,8 @@ sc.helpers.containsScreenName = function(str, sn) {
 	
 };
 
-sc.helpers.extractScreenNames = function(str) {
-	var re_uname = /(^|\s|\(\[?|,|\.|)?@([a-zA-Z0-9_]+)([^a-zA-Z0-9_]|$)/gi;
+sc.helpers.extractScreenNames = function(str, tpl) {
+	var re_uname = /(^|\s|\(\[|,|\.|\()@([a-zA-Z0-9_]+)([^a-zA-Z0-9_]|$)/gi;
 	var usernames = [];
 	var ms = [];
 	while (ms = re_uname.exec(str))
@@ -6599,8 +6431,7 @@ sc.helpers.nl2br = function(str, breaktag) {
 	
 	str = str.replace(/(\r\n|\n\r|\r|\n)/g, breaktag+'$1');
 	return str;
-};
-/*jslint 
+};/*jslint 
 browser: true,
 nomen: false,
 debug: true,
@@ -7147,32 +6978,30 @@ SpazAccounts.prototype.initAccounts	= function() {
 
 /**
  * add a new account
- * @param {string} username the username
- * @param {string} password the password
- * @param {type} type the type of account
+ * @param {string} username the username of the account
+ * @param {string} auth serialized authentication key, generated by SpazAuth.save()
+ * @param {string} type the type of account
  * @returns {object} the account object just added
  */
-SpazAccounts.prototype.add = function(username, password, type) {
+SpazAccounts.prototype.add = function(username, auth, type) {
 	
 	if (!type) {
 		sch.error("Type must be set");
 		return false;
 	}
-	
-	var username = username.toLowerCase();
-	var id = this.generateID();
-	this._accounts.push({
-		'id':id,
-		'username':username,
-		'password':password,
-		'type':type,
-		'meta':{}
-	});
+
+	var account = {
+		id: this.generateID(),
+		type: type,
+		auth: auth,
+		username: username,
+		meta: {}
+	};
+
+    this._accounts.push(account);
 	this.save();
-	
-	sch.debug("Added new user:"+id);
-	
-	return this.get(id);
+
+	return account;
 };
 
 
@@ -7302,8 +7131,8 @@ SpazAccounts.prototype.generateID = function() {
  */
 SpazAccounts.prototype.getMeta = function(id, key) {
 	
-	if ( user = this.get(id) ) {
-		if (user.meta && user.meta[key] !== null) {
+	if ( (user = this.get(id)) ) {
+		if (user.meta && user.meta[key] !== null ) {
 			return user.meta[key];
 		}
 	}
@@ -7336,6 +7165,250 @@ SpazAccounts.prototype.setMeta = function(id, key, value) {
 	return null;
 	
 };/**
+ * A library for performing authentication.
+ * Currently supports both Basic and oAuth.
+ */
+
+var SPAZCORE_AUTHTYPE_BASIC  = 'basic';
+var SPAZCORE_AUTHTYPE_OAUTH  = 'oauth';
+
+var SPAZAUTH_SERVICES = {};
+
+SPAZAUTH_SERVICES[SPAZCORE_ACCOUNT_STATUSNET] = {
+	'authType': SPAZCORE_AUTHTYPE_BASIC
+};
+SPAZAUTH_SERVICES[SPAZCORE_ACCOUNT_IDENTICA] = {
+	'authType': SPAZCORE_AUTHTYPE_BASIC
+};
+SPAZAUTH_SERVICES['default'] = {
+	'authType': SPAZCORE_AUTHTYPE_BASIC
+};
+
+/**
+ * Construct a new authentication object.
+ *
+ * @param {string} service name of the service to authenticate (ex: twitter, identica)
+ * @class SpazAuth
+ */
+function SpazAuth(service) {
+    var serviceInfo = SPAZAUTH_SERVICES[service];
+    if (serviceInfo == undefined) {
+        sch.error("Invalid authentication service: " + service);
+        return null;
+    }
+
+    switch (serviceInfo.authType) {
+        case SPAZCORE_AUTHTYPE_OAUTH:
+            return new SpazOAuth(service, serviceInfo);
+        case SPAZCORE_AUTHTYPE_BASIC:
+            return new SpazBasicAuth();
+        default:
+            return new SpazBasicAuth();
+    }
+};
+
+/**
+ * use this to add services that aren't in by default (like, say, stuff with secrets)
+ */
+SpazAuth.addService = function(label, opts) {
+    SPAZAUTH_SERVICES[label] = opts;
+};
+
+
+
+/**
+ * Construct a new basic authentication object.
+ *
+ * @class SpazBasicAuth
+ */
+function SpazBasicAuth() {
+};
+
+/**
+ * Set username and password of account to access service.
+ *
+ * @param {string} username
+ * @param {string} password
+ * @class SpazBasicAuth
+ * @return {Boolean} true. ALWAYS returns true!
+ */
+SpazBasicAuth.prototype.authorize = function(username, password) {
+    this.username = username;
+    this.password = password;
+    this.authHeader = "Basic " + sc.helpers.Base64.encode(username + ":" + password);
+	return true;
+};
+
+/**
+ * Returns the authentication header
+ * @returns {string} Authentication header value
+ * @class SpazBasicAuth
+ */
+SpazBasicAuth.prototype.signRequest = function() {
+    return this.authHeader;
+};
+
+/**
+  * Load basic auth credentials from a serialized string
+  *
+  * @param {string} pickle the serialized data string returned by save()
+  * @returns {boolean} true if successfully loaded
+  * @class SpazBasicAuth
+  */
+SpazBasicAuth.prototype.load = function(pickle) {
+    var credentials = pickle.split(':', 2);
+    if (credentials.length != 2) {
+        sch.error("Invalid basic auth pickle: " + pickle);
+        return false;
+    }
+
+    this.authorize(credentials[0], credentials[1]);
+    return true;
+};
+
+/**
+  * Save basic auth credentials into a serialized string
+  *
+  * @returns {string} serialized string
+  * @class SpazBasicAuth
+  */
+SpazBasicAuth.prototype.save = function() {
+    return this.username + ":" + this.password;
+};
+
+
+/**
+ * Construct a new OAuth authentication object.
+ *
+ * @param {string} realm
+ * @param {object} options
+ * @class SpazOAuth
+ */
+function SpazOAuth(realm, options) {
+    this.realm = realm;
+    this.opts = options;
+};
+
+/**
+ * Authorize access to the service by fetching an OAuth access token.
+ *
+ * @param {string} username
+ * @param {string} password
+ * @returns {boolean} true if authorization successful, otherwise false
+ * @class SpazOAuth
+ */
+SpazOAuth.prototype.authorize = function(username, password) {
+    this.username = username;
+
+    // Fill in xAuth parameters
+    var parameters = {
+        'x_auth_username': username,
+        'x_auth_password': password,
+        'x_auth_mode': 'client_auth'
+    };
+
+    // Sign the request
+    OAuth.completeRequest({
+        method: 'post',
+        action: this.opts.accessURL,
+        parameters: parameters
+    }, this.opts);
+
+    // Perform request to fetch access token
+    var accessToken = null;
+    jQuery.ajax({
+        async: false,
+        type: 'post',
+        url: this.opts.accessURL,
+        data: parameters,
+        success: function(data, textStatus) {
+            var results = OAuth.decodeForm(data);
+            accessToken = {};
+            accessToken.key = OAuth.getParameter(results, 'oauth_token');
+            accessToken.secret = OAuth.getParameter(results, 'oauth_token_secret');
+        },
+        error: function(req, textStatus, error) {
+            sch.error("Failed to fetch oAuth access token: " + req.responseText);
+        }
+    });
+
+    if (accessToken != null) {
+        this.setAccessToken(accessToken.key, accessToken.secret);
+        return true;
+    } else {
+        return false;
+    }
+};
+
+/**
+  * Set the access token
+  *
+  * @param {string} key
+  * @param {string} secret
+  * @class SpazOAuth
+  */
+SpazOAuth.prototype.setAccessToken = function(key, secret) {
+    this.accessToken = {key: key, secret: secret};
+    this.signingCredentials = {
+        consumerKey: this.opts.consumerKey,
+        consumerSecret: this.opts.consumerSecret,
+        token: key,
+        tokenSecret: secret
+    };
+};
+
+/**
+ * Sign a HTTP request and return oAuth header
+ *
+ * @param {string} method HTTP method of the request
+ * @param {string} url the URL of the request
+ * @param {object} parameters map of all parameters in the request
+ * @returns {string} Authorization header value
+ * @class SpazOAuth
+ */
+SpazOAuth.prototype.signRequest = function(method, url, parameters) {
+    // We need to copy parameters because OAuth.js modifies it.
+    var param = jQuery.extend({}, parameters);
+
+    OAuth.completeRequest({
+        method: method,
+        action: url,
+        parameters: param
+    }, this.signingCredentials);
+
+    return OAuth.getAuthorizationHeader(this.realm, param);
+};
+
+/**
+  * Load OAuth credentials from a serialized string
+  *
+  * @param {string} pickle the serialized string returned by save()
+  * @returns {boolean} true if successfully loaded
+  * @class SpazOAuth
+  */
+SpazOAuth.prototype.load = function(pickle) {
+    var credentials = pickle.split(':', 3);
+    if (credentials.length != 3) {
+        sch.error("Invalid oauth pickle: " + pickle);
+        return false;
+    }
+
+    this.username = credentials[0];
+    this.setAccessToken(credentials[1], credentials[2]);
+    return true;
+};
+
+/**
+  * Save OAuth credentials to a serialized string
+  *
+  * @returns {string} serialized string
+  * @class SpazOAuth
+  */
+SpazOAuth.prototype.save = function() {
+    return this.username + ":" + this.accessToken.key + ":" + this.accessToken.secret;
+};
+
+/**
  * a library to get direct image urls for various image hosting servces 
  */
 function SpazImageURL(args) {
@@ -7679,6 +7752,7 @@ function SpazFileUploader(opts) {
 	this.successEvent = opts.successEvent || sc.events.fileUploadSuccess;
 	this.failureEvent = opts.failureEvent || sc.events.fileUploadFailure;
 	this.eventTarget  = opts.eventTarget  || document;
+	this.auth         = opts.auth         || null;
 	
 	this.apis = this.getAPIs();
 
@@ -7917,6 +7991,7 @@ SpazFileUploader.prototype.getAPIKey = function() {
 		return this.api.api_key;
 	} else {
 		sch.error('Must set the API before getting API key');
+		return null;
 	}
 };
 
@@ -8003,7 +8078,8 @@ SpazFileUploader.prototype.uploadFile = function(post_url, file_url, opts) {
 			'extra'   : extraParams,
 			'url'     : post_url,
 			'file_url': file_url,
-			'platform': platformOpts
+			'platform': platformOpts,
+			'auth'    : this.auth
 		},
 		function(event) {
 			sch.debug('UPLOAD SUCCESS, PROCESSING');
@@ -10430,22 +10506,33 @@ var SPAZCORE_SERVICEURL_WORDPRESS_TWITTER = 'https://twitter-api.wordpress.com/'
  * 'follow_failed'
  * 'unfollow_succeeded'
  * 'unfollow_failed'
+ * 'ratelimit_status_succeeded'
+ * 'ratelimit_status_failed'
+ * 'destroy_status_succeeded'
+ * 'destroy_status_failed'
+ * 'destroy_dm_succeeded'
+ * 'destroy_dm_failed'
  * 
  * 
- * @param username string
- * @param password string
+ * @param {Object} opts various options
+ * @param {Object} [opts.auth] SpazAuth object
+ * @param {String} [opts.event_mode] The event mode to use ('jquery' or 'DOM'). Defaults to 'DOM'
+ * @param {Object} [opts.event_target] the DOM element to target the event on. Defaults to document
+ * @param {Number} [opts.timeout] length of time, in seconds, to timeout
  * @class SpazTwit
 */
-function SpazTwit(username, password, opts) {
+function SpazTwit(opts) {
 	
-	this.username = username;
-	this.password = password;
+	this.opts = sch.defaults({
+		auth:         null,
+		username:     null,
+		event_mode:   'DOM',
+		event_target: document,
+		timeout:      this.DEFAULT_TIMEOUT
+	}, opts);
 	
-	this.opts                = opts || {};
-	this.opts.event_mode     = this.opts.event_mode || 'DOM';
-	this.opts.event_target   = this.opts.event_target || document;
-	this.opts.timeout        = this.opts.timeout || this.DEFAULT_TIMEOUT; // 60 seconds default
-	this.opts.oauth_consumer = this.opts.oauth_consumer || null;
+	
+	this.auth                = this.opts.auth;
 	
 	this.setSource('SpazCore');
 	
@@ -10478,16 +10565,12 @@ function SpazTwit(username, password, opts) {
 	}
 }
 
-
+/**
+ * the default timeout value (60 seconds) 
+ */
 SpazTwit.prototype.DEFAULT_TIMEOUT = 1000*60;
 
 
-SpazTwit.prototype.getUsername = function() {
-	return this.username;
-};
-SpazTwit.prototype.getPassword = function() {
-	return this.password;
-};
 
 /**
  * retrieves the last status id retrieved for a given section
@@ -10708,20 +10791,9 @@ SpazTwit.prototype.setBaseURLByService= function(service) {
 };
 
 
-
-/*
- * sets the username and password
- * @param username string
- * @param password string
-*/
-SpazTwit.prototype.setCredentials= function(username, password) {
-	this.username = username;
-	this.password = password;	
-};
-
-
-SpazTwit.prototype.setOAuthConsumer = function(consumer) {
-	this.opts.oauth_consumer = consumer;
+SpazTwit.prototype.setCredentials = function(auth_obj) {
+	this.auth = auth_obj;
+	this.username = this.auth.username;
 };
 
 
@@ -10765,6 +10837,8 @@ SpazTwit.prototype.getAPIURL = function(key, urldata) {
 	// Action URLs
 	urls.update           	= "statuses/update.json";
 	urls.destroy_status   	= "statuses/destroy/{{ID}}.json";
+	urls.dm_new             = "direct_messages/new.json";
+	urls.dm_destroy         = "direct_messages/destroy/{{ID}}.json";
 	urls.friendship_create  = "friendships/create/{{ID}}.json";
 	urls.friendship_destroy	= "friendships/destroy/{{ID}}.json";
 	urls.block_create		= "blocks/create/{{ID}}.json";
@@ -10799,11 +10873,11 @@ SpazTwit.prototype.getAPIURL = function(key, urldata) {
 	urls.trends_weekly		= "trends/weekly.json";
 	
 	//retweet
-	urls.retweet			= "statuses/retweet/{{ID}}.json"
-	urls.retweets			= "statuses/retweets/{{ID}}.json"
-	urls.retweeted_by_me	= "statuses/retweeted_by_me.json"
-	urls.retweeted_to_me	= "statuses/retweeted_to_me.json"
-	urls.retweets_of_me		= "statuses/retweets_of_me.json"
+	urls.retweet			= "statuses/retweet/{{ID}}.json";
+	urls.retweets			= "statuses/retweets/{{ID}}.json";
+	urls.retweeted_by_me	= "statuses/retweeted_by_me.json";
+	urls.retweeted_to_me	= "statuses/retweeted_to_me.json";
+	urls.retweets_of_me		= "statuses/retweets_of_me.json";
 
 	// search
 	if (this.baseurl === SPAZCORE_SERVICEURL_TWITTER) {
@@ -10857,33 +10931,114 @@ SpazTwit.prototype.getAPIURL = function(key, urldata) {
         return false;
     }
 
+	// Action URLs
+	urls.update				= "statuses/update.json";
+	urls.destroy_status		= "statuses/destroy/{{ID}}.json";
+	urls.friendship_create	= "friendships/create/{{ID}}.json";
+	urls.friendship_destroy = "friendships/destroy/{{ID}}.json";
+	urls.block_create		= "blocks/create/{{ID}}.json";
+	urls.block_destroy		= "blocks/destroy/{{ID}}.json";
+	urls.follow				= "notifications/follow/{{ID}}.json";
+	urls.unfollow			= "notifications/leave/{{ID}}.json";
+	urls.favorites_create	= "favorites/create/{{ID}}.json";
+	urls.favorites_destroy	= "favorites/destroy/{{ID}}.json";
+	urls.saved_searches_create	= "saved_searches/create.json";
+	urls.saved_searches_destroy = "saved_searches/destroy/{{ID}}.json";
+	urls.verify_credentials = "account/verify_credentials.json";
+	urls.ratelimit_status	= "account/rate_limit_status.json";
+	urls.update_profile		= "account/update_profile.json";
+	urls.saved_searches		= "saved_searches.json";
+	urls.report_spam		= "report_spam.json";
+
+	// User lists URLs
+	urls.lists				= "{{USER}}/lists.json";
+	urls.lists_list			= "{{USER}}/lists/{{SLUG}}.json";
+	urls.lists_memberships	= "{{USER}}/lists/memberships.json";
+	urls.lists_timeline		= "{{USER}}/lists/{{SLUG}}/statuses.json";
+	urls.lists_members		= "{{USER}}/{{SLUG}}/members.json";
+	urls.lists_check_member = "{{USER}}/{{SLUG}}/members/{{ID}}.json";
+	urls.lists_subscribers	= "{{USER}}/{{SLUG}}/subscribers.json";
+	urls.lists_check_subscriber = "{{USER}}/{{SLUG}}/subscribers/{{ID}}.json";
+	urls.lists_subscriptions = "{{USER}}/lists/subscriptions.json";
+
+	//trends
+	urls.trends				= "trends.json";
+	urls.trends_current		= "trends/current.json";
+	urls.trends_daily		= "trends/daily.json";
+	urls.trends_weekly		= "trends/weekly.json";
+	
+	//retweet
+	urls.retweet			= "statuses/retweet/{{ID}}.json";
+	urls.retweets			= "statuses/retweets/{{ID}}.json";
+	urls.retweeted_by_me	= "statuses/retweeted_by_me.json";
+	urls.retweeted_to_me	= "statuses/retweeted_to_me.json";
+	urls.retweets_of_me		= "statuses/retweets_of_me.json";
+
+	// search
+	if (this.baseurl === SPAZCORE_SERVICEURL_TWITTER) {
+		urls.search				= "http://search.twitter.com/search.json";
+	} else {
+		urls.search				= "search.json";
+	}
+
+	// misc
+	urls.test				= "help/test.json";
+	urls.downtime_schedule	= "help/downtime_schedule.json";
+
+	
+	if (urls[key].indexOf('{{ID}}') > -1) {
+		if (typeof(urldata) === 'string') {
+			urls[key] = urls[key].replace('{{ID}}', urldata);
+		} else if (urldata && typeof(urldata) === 'object') {
+			urls[key] = urls[key].replace('{{ID}}', urldata.id);
+		}
+		
+	}
+
+	// Token replacement for user lists
+	if (urls[key].indexOf('{{USER}}') > - 1) {
+		if (urldata && typeof(urldata) === 'object') {
+			urls[key] = urls[key].replace('{{USER}}', urldata.user);
+		}
+	}
+
+	if (urls[key].indexOf('{{SLUG}}') > -1) {
+		if (urldata && typeof(urldata) === 'object') {
+			urls[key] = urls[key].replace('{{SLUG}}', urldata.slug);
+		}
+	}
+
+	if (urls[key]) {
+	
+		if (urldata && typeof urldata !== "string") {
+			urldata = '?'+jQuery.param(urldata);
+		} else {
+			urldata = '';
+		}
+		
+		if (this.baseurl === SPAZCORE_SERVICEURL_TWITTER && (key === 'search' || key === 'trends')) {
+			return this._postProcessURL(urls[key] + urldata);
+		} else {
+			return this._postProcessURL(this.baseurl + urls[key] + urldata);
+		}
+		
+	} else {
+		return false;
+	}
+
 };
 
 
 
 
 /*
- * checks the currently set username and password against the API. Can take
- * a username and password; will use this.username and this.password otherwise.
- * Calls this._processAuthenticatedUser() if successful
- * 
- * @param {string} username optional
- * @param {string} password optional
+ * Verify authentication credentials. 
 */
-SpazTwit.prototype.verifyCredentials = function(username, password, onSuccess, onFailure) {
+SpazTwit.prototype.verifyCredentials = function(onSuccess, onFailure) {
 	var url = this.getAPIURL('verify_credentials');
-	
-	if (!username) {
-		username = this.username;
-	}
-	if (!password) {
-		password = this.password;
-	}
 	
 	var opts = {
 		'url':url,
-		'username':username,
-		'password':password,
 		'process_callback': this._processAuthenticatedUser,
 		'success_event_type':'verify_credentials_succeeded',
 		'failure_event_type':'verify_credentials_failed',
@@ -10976,8 +11131,6 @@ SpazTwit.prototype.getHomeTimeline = function(since_id, count, page, processing_
 	var url = this.getAPIURL('home_timeline', data);
 	this._getTimeline({
 		'url':url,
-		'username':this.username,
-		'password':this.password,
 		'process_callback'	: this._processHomeTimeline,
 		'success_callback':onSuccess,
 		'failure_callback':onFailure,
@@ -11035,8 +11188,6 @@ SpazTwit.prototype.getFriendsTimeline = function(since_id, count, page, processi
 	var url = this.getAPIURL('friends_timeline', data);
 	this._getTimeline({
 		'url':url,
-		'username':this.username,
-		'password':this.password,
 		'process_callback'	: this._processFriendsTimeline,
 		'success_callback':onSuccess,
 		'failure_callback':onFailure,
@@ -11094,8 +11245,6 @@ SpazTwit.prototype.getReplies = function(since_id, count, page, processing_opts,
 	var url = this.getAPIURL('replies_timeline', data);
 	this._getTimeline({
 		'url':url,
-		'username':this.username,
-		'password':this.password,
 		'process_callback'	: this._processRepliesTimeline,
 		'success_callback':onSuccess,
 		'failure_callback':onFailure,
@@ -11153,8 +11302,6 @@ SpazTwit.prototype.getDirectMessages = function(since_id, count, page, processin
 	var url = this.getAPIURL('dm_timeline', data);
 	this._getTimeline({
 		'url':url,
-		'username':this.username,
-		'password':this.password,
 		'process_callback'	: this._processDMTimeline,
 		'success_callback':onSuccess,
 		'failure_callback':onFailure,
@@ -11191,8 +11338,6 @@ SpazTwit.prototype.getFavorites = function(page, processing_opts, onSuccess, onF
 
 	this._getTimeline({
 		'url':url,
-		'username':this.username,
-		'password':this.password,
 		'process_callback'	: this._processFavoritesTimeline,
 		'success_callback':onSuccess,
 		'failure_callback':onFailure,
@@ -11248,8 +11393,6 @@ SpazTwit.prototype.getUserTimeline = function(id, count, page, onSuccess, onFail
 	
 	this._getTimeline({
 		'url':url,
-		'username':this.username,
-		'password':this.password,
 		'process_callback'	: this._processUserTimeline,
 		'success_callback':opts.onSuccess,
 		'failure_callback':opts.onFailure,
@@ -11568,8 +11711,6 @@ SpazTwit.prototype._getTimeline = function(opts) {
 		'timeout':this.DEFAULT_TIMEOUT,
 		'url':null,
 		'data':null,
-		'username':null,
-		'password':null,
 		'process_callback':null,
 		'processing_opts':null,
 		'success_event_type':null,
@@ -11672,16 +11813,7 @@ SpazTwit.prototype._getTimeline = function(opts) {
         },
         'beforeSend':function(xhr){
 			sc.helpers.dump("beforesend");
-			if (stwit.opts.oauth_consumer) {
-				var authHeader = consumer.getAuthHeader({
-					'method'    : opts.method,
-					'url'       : opts.url,
-					'parameters': stwit._convertParamsForOAuth(opts.data)
-				});
-				xhr.setRequestHeader('Authorization', authHeader);
-			} else if (opts.username && opts.password) {
-				xhr.setRequestHeader("Authorization", "Basic " + sc.helpers.Base64.encode(opts.username + ":" + opts.password));
-			}
+            xhr.setRequestHeader('Authorization', stwit.auth.signRequest(opts.method, opts.url, opts.data));
         },
         'type': 	opts.method,
         'url': 		opts.url,
@@ -11692,18 +11824,6 @@ SpazTwit.prototype._getTimeline = function(opts) {
 	return xhr;
 };
 
-/**
- * converts jq_style ajax params into the format used by the oAuth lib
- * @param {object} jq_style key/val params
- * @returns {array} array based params 
- */
-SpazTwit.prototype._convertParamsForOAuth = function(jq_style) {
-	var params = [];
-	for (var key in jq_style) {
-		params.push([ key, jq_style[key] ]);
-	}
-	return params;
-};
 
 
 /**
@@ -12013,6 +12133,23 @@ SpazTwit.prototype._processUser = function(item, section_name) {
 };
 
 
+/**
+ * returns the header string for oAuth Echo usage
+ */
+SpazTwit.prototype.getEchoHeader = function(opts) {
+	var url;
+	if (opts && opts.verify_url) {
+		url = opts.verify_url;
+	} else {
+		url = this.getAPIURL('verify_credentials');
+	}
+	
+	var method = 'GET';
+
+	var auth_header = this.auth.signRequest(method, url, null);
+
+	return auth_header;
+};
 
 
 /**
@@ -12039,8 +12176,6 @@ SpazTwit.prototype._callMethod = function(opts) {
 		'timeout':this.DEFAULT_TIMEOUT,
 		'url':null,
 		'data':null,
-		'username':null,
-		'password':null,
 		'process_callback':null,
 		'success_event_type':null,
 		'failure_event_type':null,
@@ -12123,16 +12258,7 @@ SpazTwit.prototype._callMethod = function(opts) {
 	    },
 	    'beforeSend':function(xhr){
 			sc.helpers.dump(opts.url + ' beforesend');
-			if (stwit.opts.oauth_consumer) {
-				var authHeader = consumer.getAuthHeader({
-					'method'    : opts.method,
-					'url'       : opts.url,
-					'parameters': this._convertParamsForOAuth(opts.data)
-				});
-				xhr.setRequestHeader('Authorization', authHeader);
-			} else if (opts.username && opts.password) {
-				xhr.setRequestHeader("Authorization", "Basic " + sc.helpers.Base64.encode(opts.username + ":" + opts.password));
-			}
+            xhr.setRequestHeader('Authorization', stwit.auth.signRequest(method, opts.url, opts.data));
 	    },
 	    'type': method,
 	    'url' : opts.url,
@@ -12152,8 +12278,6 @@ SpazTwit.prototype.getUser = function(user_id, onSuccess, onFailure) {
 	
 	var opts = {
 		'url':url,
-		'username':this.username,
-		'password':this.password,
 		// 'process_callback': this._processUserData,
 		'success_event_type':'get_user_succeeded',
 		'failure_event_type':'get_user_failed',
@@ -12176,8 +12300,6 @@ SpazTwit.prototype.getFriendsList = function() {
 	
 	var opts = {
 		'url':url,
-		'username':this.username,
-		'password':this.password,
 		'process_callback': this._processFriendsList,
 		'success_event_type':'get_friendslist_succeeded',
 		'failure_event_type':'get_friendslist_failed',
@@ -12203,8 +12325,6 @@ SpazTwit.prototype.getFollowersList = function() {
 	
 	var opts = {
 		'url':url,
-		'username':this.username,
-		'password':this.password,
 		'process_callback': this._processFollowersList,
 		'success_event_type':'get_followerslist_succeeded',
 		'failure_event_type':'get_followerslist_failed',
@@ -12278,8 +12398,6 @@ SpazTwit.prototype.addFriend = function(user_id, onSuccess, onFailure) {
 	
 	var opts = {
 		'url':url,
-		'username':this.username,
-		'password':this.password,
 		'success_event_type':'create_friendship_succeeded',
 		'failure_event_type':'create_friendship_failed',
 		'success_callback':onSuccess,
@@ -12300,8 +12418,6 @@ SpazTwit.prototype.removeFriend = function(user_id, onSuccess, onFailure) {
 	
 	var opts = {
 		'url':url,
-		'username':this.username,
-		'password':this.password,
 		'success_event_type':'destroy_friendship_succeeded',
 		'failure_event_type':'destroy_friendship_failed',
 		'success_callback':onSuccess,
@@ -12324,8 +12440,6 @@ SpazTwit.prototype.block = function(user_id, onSuccess, onFailure) {
 	
 	var opts = {
 		'url':url,
-		'username':this.username,
-		'password':this.password,
 		'success_event_type':'create_block_succeeded',
 		'failure_event_type':'create_block_failed',
 		'success_callback':onSuccess,
@@ -12346,8 +12460,6 @@ SpazTwit.prototype.unblock = function(user_id, onSuccess, onFailure) {
 	
 	var opts = {
 		'url':url,
-		'username':this.username,
-		'password':this.password,
 		'success_event_type':'destroy_block_succeeded',
 		'failure_event_type':'destroy_block_failed',
 		'success_callback':onSuccess,
@@ -12426,13 +12538,8 @@ SpazTwit.prototype.update = function(status, source, in_reply_to_status_id, onSu
 	}
 	data.status = status;
 	
-	var username = this.username;
-	var password = this.password;
-	
 	var opts = {
 		'url':url,
-		'username':username,
-		'password':password,
 		'data':data,
 		'process_callback': this._processUpdateReturn,
 		'success_callback':onSuccess,
@@ -12458,8 +12565,55 @@ SpazTwit.prototype._processUpdateReturn = function(data, opts) {
 	this._processTimeline(SPAZCORE_SECTION_HOME, [data], opts);
 };
 
-SpazTwit.prototype.destroy = function(id) {};
-SpazTwit.prototype.destroyDirectMessage = function(id) {};
+/**
+ * destroy/delete a status
+ * @param {Number|String} id the id of the status 
+ */
+SpazTwit.prototype.destroy = function(id, onSuccess, onFailure) {
+	var data = {};
+	data['id'] = id;
+	
+	var url = this.getAPIURL('destroy_status', data);
+	
+	var opts = {
+		'url':url,
+		'data':data,
+		'success_event_type':'destroy_status_succeeded',
+		'success_callback':onSuccess,
+		'failure_callback':onFailure,
+		'failure_event_type':'destroy_status_failed'
+	};
+
+	/*
+		Perform a request and get true or false back
+	*/
+	var xhr = this._callMethod(opts);
+};
+
+/**
+ * destroy/delete a direct message
+ * @param {Number|String} id the id of the status 
+ */
+SpazTwit.prototype.destroyDirectMessage = function(id, onSuccess, onFailure) {
+	var data = {};
+	data['id'] = id;
+	
+	var url = this.getAPIURL('dm_destroy', data);
+	
+	var opts = {
+		'url':url,
+		'data':data,
+		'success_event_type':'destroy_dm_succeeded',
+		'success_callback':onSuccess,
+		'failure_callback':onFailure,
+		'failure_event_type':'destroy_dm_failed'
+	};
+
+	/*
+		Perform a request and get true or false back
+	*/
+	var xhr = this._callMethod(opts);
+};
 
 
 SpazTwit.prototype.getOne = function(id, onSuccess, onFailure) {
@@ -12470,8 +12624,6 @@ SpazTwit.prototype.getOne = function(id, onSuccess, onFailure) {
 	
 	var opts = {
 		'url':url,
-		'username':this.username,
-		'password':this.password,
 		'process_callback': this._processOneItem,
 		'success_event_type':'get_one_status_succeeded',
 		'success_callback':onSuccess,
@@ -12526,7 +12678,7 @@ SpazTwit.prototype.retweet = function(id, onSuccess, onFailure) {
 	};
 	
 	var xhr = this._callMethod(opts);
-}
+};
 
 /*
  * Gets up to 100 of the latest retweets of a tweet.
@@ -12550,7 +12702,7 @@ SpazTwit.prototype.getRetweets = function(id, count) {
 	};
 	
 	var xhr = this._getTimeline(opts);
-}
+};
 
 /*
  * Returns up to 200 of the most recent retweets by the user
@@ -12561,7 +12713,7 @@ SpazTwit.prototype.getRetweets = function(id, count) {
  */
  
 SpazTwit.prototype.retweetedByMe = function(since, max, count, page){
-	var params = {}
+	var params = {};
 	if(since != null){
 		params['since_id'] = since;
 	}
@@ -12588,7 +12740,7 @@ SpazTwit.prototype.retweetedByMe = function(since, max, count, page){
 	};
 	
 	var xhr = this._getTimeline(opts);
-}
+};
 
 /*
  * Returns up to 200 of the most recent retweets by the user's friends
@@ -12599,7 +12751,7 @@ SpazTwit.prototype.retweetedByMe = function(since, max, count, page){
  */
  
 SpazTwit.prototype.retweetedToMe = function(since, max, count, page){
-	var params = {}
+	var params = {};
 	if(since != null){
 		params['since_id'] = since;
 	}
@@ -12626,7 +12778,7 @@ SpazTwit.prototype.retweetedToMe = function(since, max, count, page){
 	};
 	
 	var xhr = this._getTimeline(opts);
-}
+};
 
 /*
  * Returns up to 200 of the most recent retweets of the user's tweets
@@ -12637,7 +12789,7 @@ SpazTwit.prototype.retweetedToMe = function(since, max, count, page){
  */
  
 SpazTwit.prototype.retweetsOfMe = function(since, max, count, page){
-	var params = {}
+	var params = {};
 	if(since != null){
 		params['since_id'] = since;
 	}
@@ -12664,7 +12816,7 @@ SpazTwit.prototype.retweetsOfMe = function(since, max, count, page){
 	};
 	
 	var xhr = this._getTimeline(opts);
-}
+};
 
 SpazTwit.prototype.favorite = function(id, onSuccess, onFailure) {
 	var data = {};
@@ -12674,8 +12826,6 @@ SpazTwit.prototype.favorite = function(id, onSuccess, onFailure) {
 	
 	var opts = {
 		'url':url,
-		'username':this.username,
-		'password':this.password,
 		'success_event_type':'create_favorite_succeeded',
 		'failure_event_type':'create_favorite_failed',
 		'success_callback':onSuccess,
@@ -12697,8 +12847,6 @@ SpazTwit.prototype.unfavorite = function(id, onSuccess, onFailure) {
 	
 	var opts = {
 		'url':url,
-		'username':this.username,
-		'password':this.password,
 		'success_event_type':'destroy_favorite_succeeded',
 		'failure_event_type':'destroy_favorite_failed',
 		'success_callback':onSuccess,
@@ -12725,8 +12873,6 @@ SpazTwit.prototype.updateLocation = function(location_str, onSuccess, onFailure)
 	
 	var opts = {
 		'url':url,
-		'username':this.username,
-		'password':this.password,
 		'success_event_type':'update_location_succeeded',
 		'failure_event_type':'update_location_failed',
 		'success_callback':onSuccess,
@@ -12746,8 +12892,30 @@ SpazTwit.prototype.updateProfile = function(name, email, url, location, descript
 
 
 
+/**
+ * get the current rate limit status
+ * @param {Function} onSuccess callback for success 
+ * @param {Function} onFailure callback for failure 
+ */
+SpazTwit.prototype.getRateLimitStatus = function(onSuccess, onFailure) {
+	
+	var url = this.getAPIURL('ratelimit_status');
+	
+	var opts = {
+		'method':'GET',
+		'url':url,
+		'success_event_type':'ratelimit_status_succeeded',
+		'failure_event_type':'ratelimit_status_failed',
+		'success_callback':onSuccess,
+		'failure_callback':onFailure
+	};
 
-SpazTwit.prototype.getRateLimitStatus = function() {};
+	/*
+		Perform a request and get true or false back
+	*/
+	var xhr = this._callMethod(opts);
+	
+};
 
 SpazTwit.prototype.test = function() {};
 
@@ -12907,8 +13075,6 @@ SpazTwit.prototype.getSavedSearches = function(onSuccess, onFailure) {
 	
 	var opts = {
 		'url':url,
-		'username':this.username,
-		'password':this.password,
 		'success_event_type':'new_saved_searches_data',
 		'failure_event_type':'error_saved_searches_data',
 		'success_callback':onSuccess,
@@ -12932,8 +13098,6 @@ SpazTwit.prototype.addSavedSearch = function(search_query, onSuccess, onFailure)
 	
 	var opts = {
 		'url':url,
-		'username':this.username,
-		'password':this.password,
 		'success_event_type':'create_saved_search_succeeded',
 		'failure_event_type':'create_saved_search_failed',
 		'success_callback':onSuccess,
@@ -12959,8 +13123,6 @@ SpazTwit.prototype.removeSavedSearch = function(search_id, onSuccess, onFailure)
 	
 	var opts = {
 		'url':url,
-		'username':this.username,
-		'password':this.password,
 		'success_event_type':'destroy_saved_search_succeeded',
 		'failure_event_type':'destroy_saved_search_failed',
 		'success_callback':onSuccess,
@@ -12998,8 +13160,6 @@ SpazTwit.prototype.getLists = function(user, onSuccess, onFailure) {
 	
 	var opts = {
 		'url':url,
-		'username':this.username,
-		'password':this.password,
 		'success_event_type':'get_lists_succeeded',
 		'failure_event_type':'get_lists_failed',
 		'success_callback':onSuccess,
@@ -13096,8 +13256,6 @@ SpazTwit.prototype.getListInfo = function(list, user, onSuccess, onFailure) {
 	
 	var opts = {
 		'url':url,
-		'username':this.username,
-		'password':this.password,
 		'success_event_type':'get_list_succeeded',
 		'failure_event_type':'get_list_failed',
 		'success_callback':onSuccess,
@@ -13131,8 +13289,6 @@ SpazTwit.prototype.getListTimeline = function(list, user, onSuccess, onFailure) 
 	
 	var opts = {
 		'url':url,
-		'username':this.username,
-		'password':this.password,
 		'success_event_type':'get_list_timeline_succeeded',
 		'failure_event_type':'get_list_timeline_failed',
 		'success_callback':onSuccess,
@@ -13191,8 +13347,6 @@ SpazTwit.prototype.getListMembers = function(list, user) {
 	
 	var opts = {
 		'url':url,
-		'username':this.username,
-		'password':this.password,
 		'success_event_type':'get_list_members_succeeded',
 		'failure_event_type':'get_list_members_failed',
 		'method':'GET',
@@ -13224,8 +13378,6 @@ SpazTwit.prototype.addList = function(list, visibility, description) {
 	
 	var opts = {
 		'url':url,
-		'username':this.username,
-		'password':this.password,
 		'success_event_type':'create_list_succeeded',
 		'failure_event_type':'create_list_failed',
 		'success_callback':null,
@@ -13257,7 +13409,7 @@ SpazTwit.prototype.updateList = function(list, name, visibility, description){
 	};
 	
 	var xhr = this._callMethod(opts);
-}
+};
 
 /**
  * delete a list
@@ -13279,8 +13431,6 @@ SpazTwit.prototype.removeList = function(list, user) {
 	
 	var opts = {
 		'url':url,
-		'username':this.username,
-		'password':this.password,
 		'success_event_type':'remove_list_succeeded',
 		'failure_event_type':'remove_list_failed',
 		'method':'DELETE'
@@ -13312,8 +13462,8 @@ SpazTwit.prototype.addUserToList = function(user, list, list_user) {
 	
 	var opts = {
 		'url':url,
-		'username':this.username,
-		'password':this.password,
+		'success_event_type':'create_list_succeeded',
+		'failure_event_type':'create_list_failed',
 		'success_event_type':'add_list_user_succeeded',
 		'failure_event_type':'add_list_user_failed',
 		'data':data
@@ -13345,8 +13495,8 @@ SpazTwit.prototype.removeUserFromList = function(user, list, list_user) {
 	
 	var opts = {
 		'url':url,
-		'username':this.username,
-		'password':this.password,
+		'success_event_type':'create_list_succeeded',
+		'failure_event_type':'create_list_failed',
 		'success_event_type':'remove_list_user_succeeded',
 		'failure_event_type':'remove_list_user_failed',
 		'data':data,
@@ -13378,7 +13528,7 @@ SpazTwit.prototype.listsSubscribedTo = function(user) {
 	};
 	
 	var xhr = this._callMethod(opts);
-}
+};
 
 SpazTwit.prototype.listMemberships = function(user) {
 	if(!user && !this.username) {
@@ -13401,7 +13551,7 @@ SpazTwit.prototype.listMemberships = function(user) {
 	};
 	
 	var xhr = this._callMethod(opts);
-}
+};
 
 SpazTwit.prototype.getListSubscribers = function(list, user){
 	if(!user && !this.username) {
@@ -13426,7 +13576,7 @@ SpazTwit.prototype.getListSubscribers = function(list, user){
 	};
 	
 	var xhr = this._callMethod(opts);
-}
+};
 
 SpazTwit.prototype.isSubscribed = function(list, list_user, user){
 	if(!user && !this.username) {
@@ -13452,7 +13602,7 @@ SpazTwit.prototype.isSubscribed = function(list, list_user, user){
 	};
 	
 	var xhr = this._callMethod(opts);
-}
+};
 
 SpazTwit.prototype.subscribe = function(list, user){
 	if(!user && !this.username) {
@@ -13477,7 +13627,7 @@ SpazTwit.prototype.subscribe = function(list, user){
 	};
 	
 	var xhr = this._callMethod(opts);
-}
+};
 
 SpazTwit.prototype.unsubscribe = function(list, user){
 	if(!user && !this.username) {
@@ -13503,7 +13653,7 @@ SpazTwit.prototype.unsubscribe = function(list, user){
 	};
 	
 	var xhr = this._callMethod(opts);
-}
+};
 
 SpazTwit.prototype.isMember = function(list, list_user, user){
 	if(!user && !this.username) {
@@ -13529,7 +13679,7 @@ SpazTwit.prototype.isMember = function(list, list_user, user){
 	};
 	
 	var xhr = this._callMethod(opts);
-}
+};
 
 /*
  * Marks a user as a spammer and blocks them
@@ -13552,7 +13702,7 @@ SpazTwit.prototype.reportSpam = function(user) {
 	};
 	
 	var xhr = this._callMethod(opts);
-}
+};
 /**
  *  
  */
@@ -13579,132 +13729,6 @@ if (sc) {
 	var scTwit = SpazTwit;
 }
 
-
-/*
-* EXAMPLES OF JS OBJECTS RETURNED BY TWITTER
-* /statuses/public_timeline.json
-	{
-        "user": {
-            "followers_count": 1144,
-            "description": "フツーですよ。",
-            "url": "http:\/\/camellia.jottit.com\/",
-            "profile_image_url": "http:\/\/s3.amazonaws.com\/twitter_production\/profile_images\/66954592\/20081210071932_normal.jpg",
-            "protected": false,
-            "location": "あかし",
-            "screen_name": "camellia",
-            "name": "かめ",
-            "id": "6519832"
-        },
-        "text": "@sugatch おはよう、すがっち！ *Tw*",
-        "truncated": false,
-        "favorited": false,
-        "in_reply_to_user_id": 10116882,
-        "created_at": "Sat Jan 17 00:53:27 +0000 2009",
-        "source": "<a href=\"http:\/\/cheebow.info\/chemt\/archives\/2007\/04\/twitterwindowst.html\">Twit<\/a>",
-        "in_reply_to_status_id": 1125158879,
-        "id": "1125159824"
-    }
-* 
-* 
-* From authenticated /statuses/friends_timeline.json
-* {
-    "text": "@elazar I don't know about the pony - but a lot of that is in CSS3 - only browsers are crap ;)",
-    "user": {
-        "description": "PHP Windows Geek (not Oxymoron)",
-        "profile_image_url": "http:\/\/s3.amazonaws.com\/twitter_production\/profile_images\/25760052\/headshot_normal.jpg",
-        "url": "http:\/\/elizabethmariesmith.com",
-        "name": "auroraeosrose",
-        "protected": false,
-        "screen_name": "auroraeosrose",
-        "followers_count": 242,
-        "location": "",
-        "id": 8854222 
-    },
-    "in_reply_to_screen_name": "elazar",
-    "in_reply_to_user_id": 9105122,
-    "truncated": false,
-    "favorited": false,
-    "in_reply_to_status_id": 1125164128,
-    "created_at": "Sat Jan 17 00:59:04 +0000 2009",
-    "id": 1125170241,
-    "source": "<a href=\"http:\/\/twitterfox.net\/\">TwitterFox<\/a>"
- }
-* 
-* 
-* From authenticated /direct_messages.json
-* 
-* {
-    "recipient_screen_name": "funkatron",
-    "created_at": "Fri Jan 16 13:43:16 +0000 2009",
-    "recipient_id": 65583,
-    "sender_id": 808824,
-    "sender": {
-        "description": "Impoverished Ph.D. student at the Indiana University School of Informatics",
-        "screen_name": "kmakice",
-        "followers_count": 671,
-        "url": "http:\/\/www.blogschmog.net",
-        "name": "Kevin Makice",
-        "protected": false,
-        "location": "Bloomington, Indiana",
-        "id": 808824,
-        "profile_image_url": "http:\/\/s3.amazonaws.com\/twitter_production\/profile_images\/69221803\/2009avatar_normal.jpg"
-    },
-    "sender_screen_name": "kmakice",
-    "id": 51212447,
-    "recipient": {
-        "description": "Supernerd, Dad, Webapp security dude, Spaz developer, webmonkey, designer, musician, ego-ho. See also: @funkalinks",
-        "screen_name": "funkatron",
-        "followers_count": 1143,
-        "url": "http:\/\/funkatron.com",
-        "name": "Ed Finkler",
-        "protected": false,
-        "location": "iPhone: 40.423752,-86.907547",
-        "id": 65583,
-        "profile_image_url": "http:\/\/s3.amazonaws.com\/twitter_production\/profile_images\/67512037\/cat_with_hat_and_monocle_normal.jpg"
-    },
-    "text": "[REDACTED]"
-}
-* 
-* 
-* 
-* From http://search.twitter.com/search.json?q=javascript
-* 
-* {
-    "results": [
-        {
-            "text": "Updated the Wiki page on JavaScript development to reflect latest changes in Orbeon Forms. http:\/\/tinyurl.com\/axtu5u",
-            "to_user_id": null,
-            "from_user": "orbeon",
-            "id": 1125204181,
-            "from_user_id": 279624,
-            "iso_language_code": "en",
-            "profile_image_url": "http:\/\/s3.amazonaws.com\/twitter_production\/profile_images\/53169511\/Picture_1_normal.png",
-            "created_at": "Sat, 17 Jan 2009 01:14:11 +0000"
-        },
-        {
-            "text": "when I close my eyes I dream in javascript",
-            "to_user_id": null,
-            "from_user": "apuritz",
-            "id": 1125196059,
-            "from_user_id": 95155,
-            "iso_language_code": "en",
-            "profile_image_url": "http:\/\/s3.amazonaws.com\/twitter_production\/profile_images\/55159511\/images_normal.jpeg",
-            "created_at": "Sat, 17 Jan 2009 01:10:11 +0000"
-        }
-        // more results deleted
-    ],
-    "since_id": 0,
-    "max_id": 1125204181,
-    "refresh_url": "?since_id=1125204181&q=javascript",
-    "results_per_page": 15,
-    "next_page": "?page=2&max_id=1125204181&q=javascript",
-    "completed_in": 0.015077,
-    "page": 1,
-    "query": "javascript"
-}
-* 
-* 
-*/
 /**
  * THIS IS NOT FINISHED
  * 
