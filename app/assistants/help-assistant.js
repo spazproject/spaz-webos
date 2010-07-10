@@ -13,7 +13,7 @@ HelpAssistant.prototype.setup = function(){
 		{ label: $L('New Search Card'),	command: 'new-search-card' },
 		{ label: $L('Accounts...'), command:'accounts' },
 		{ label: $L('Preferences...'),	command:Mojo.Menu.prefsCmd },
-		{ label: $L('About Spaz'),		command: 'appmenu-about' },
+		{ label: $L('About Spaz'),		command: 'appmenu-about' }
 	]});
 	
 	this.setupCommonMenus({

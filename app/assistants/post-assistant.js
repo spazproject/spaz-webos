@@ -213,14 +213,14 @@ PostAssistant.prototype.activate = function(args) {
 			*/
 			switch(this.args.type) {
 				case 'quote':
-					this.postTextField.mojo.setCursorPosition(0,0)
+					this.postTextField.mojo.setCursorPosition(0,0);
 					break;
 					if (sc.app.prefs.get('post-rt-cursor-position') == 'beginning') {
-						this.postTextField.mojo.setCursorPosition(0,0)
+						this.postTextField.mojo.setCursorPosition(0,0);
 					}					
 				case 'rt':
 					if (sc.app.prefs.get('post-rt-cursor-position') == 'beginning') {
-						this.postTextField.mojo.setCursorPosition(0,0)
+						this.postTextField.mojo.setCursorPosition(0,0);
 					}
 					break;
 				default:
@@ -505,7 +505,7 @@ PostAssistant.prototype.sendPost = function(event) {
 
 			if (this.model.attachment) { // we have an attachment; post through service
 
-				var source = 'spaz'
+				var source = 'spaz';
 
 				this.SFU.setAPI(this.imageUploaderModel['image-uploader']);
 
@@ -653,7 +653,7 @@ PostAssistant.prototype.emailImageMessage = function(post_add_obj, message, file
     });
     // next line should close new post "dialog"
     this.controller.stageController.popScene();
-}
+};
 
 /**
  * opens the file picker for images, and passes a callback to change the post scene state to reflect
@@ -835,14 +835,14 @@ PostAssistant.prototype.onUploadSuccess = function(e) {
 		*/
 		if (rspAttr.getNamedItem("stat") && rspAttr.getNamedItem("stat").nodeValue === 'ok') {
 			returnobj['mediaurl'] = jQuery(xmldoc).find('mediaurl').text();
-			returnobj['statusid'] = parseInt(jQuery(xmldoc).find('statusid').text());
+			returnobj['statusid'] = parseInt(jQuery(xmldoc).find('statusid').text(), 10);
 
 		/*
 			because Twitgoo has to be different
 		*/
 		} else if (rspAttr.getNamedItem("status") && rspAttr.getNamedItem("status").nodeValue === 'ok') {
 			returnobj['mediaurl'] = jQuery(xmldoc).find('mediaurl').text();
-			returnobj['statusid'] = parseInt(jQuery(xmldoc).find('statusid').text());
+			returnobj['statusid'] = parseInt(jQuery(xmldoc).find('statusid').text(), 10);
 			
 		} else {
 			returnobj['errAttributes'] = xmldoc.getElementsByTagName("err")[0].attributes;

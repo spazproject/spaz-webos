@@ -202,7 +202,7 @@ StartsearchAssistant.prototype.activate = function(event) {
 	*/
 	jQuery('.trend-item, .search-item').live(Mojo.Event.tap, function() {
 		var term = jQuery(this).attr('data-searchterm');
-		var saved_id = parseInt(jQuery(this).attr('data-savedsearch-id'));
+		var saved_id = parseInt(jQuery(this).attr('data-savedsearch-id'), 10);
 		thisA.searchFor(term, 'lightweight', saved_id);
 	});
 	

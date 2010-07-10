@@ -21,7 +21,7 @@ sc.app.tpl.addTemplateMethod('message-detail', function(d) {
 	+ '		<div class="user-image rounded-user-image" style="background-image:url('+d.user.profile_image_url+')" data-screen_name="'+d.user.screen_name+'" data-user-id="'+d.user.id+'" title="View user\'s profile"></div>'
 	+ '		<div class="screen_name" data-screen_name="'+d.user.screen_name+'">'
 	+ 			d.user.screen_name;
-	if (d.user.protected) {
+	if (d.user["protected"]) {
 		html += '			<div class="protected-icon">&nbsp;</div>';
 	}
 	html += '	</div>';
@@ -37,8 +37,8 @@ sc.app.tpl.addTemplateMethod('message-detail', function(d) {
 	if (d.in_reply_to_status_id) {
 		html += '			<div class="in-reply-to"><strong>In-reply-to</strong>: <span class="in-reply-to-link clickable" data-irt-status-id="'+d.in_reply_to_status_id+'">@'+d.in_reply_to_screen_name+'</span></div>';
 	}
-	html += '		</div>';
-	html += '	</div>';
+	html += '		</div>'
+	+ '	</div>';
 	if (sc.app.username && sc.app.password) {
 		
 		html += '	<div id="message-detail-actions">'
@@ -53,7 +53,7 @@ sc.app.tpl.addTemplateMethod('message-detail', function(d) {
 		// + '				</div>'
 		+ '				<div class="palm-row single">'
 		+ '					<button class="palm-button" id="message-detail-action-share" data-status-id="'+d.id+'">Share this message</button>'
-		+ '				</div>'
+		+ '				</div>';
 		if (d.favorited) {
 			html += '   			<div class="palm-row single">'
 			 + '					<button class="palm-button" id="message-detail-action-favorite" data-status-id="'+d.id+'" data-screen_name="'+d.user.screen_name+'" data-favorited="true">Remove as favorite</button>'
@@ -84,14 +84,14 @@ sc.app.tpl.addTemplateMethod('message-detail-dm', function(d) {
 	+ '		<div class="user-image rounded-user-image" style="background-image:url('+d.sender.profile_image_url+')" data-screen_name="'+d.sender.screen_name+'" title="View user\'s profile"></div>'
 	+ '		<div class="screen_name" data-screen_name="'+d.sender.screen_name+'">'
 	+ 			d.sender.screen_name;
-	if (d.sender.protected) {
+	if (d.sender["protected"]) {
 		html += '			<div class="protected-icon">&nbsp;</div>';
 	}
 	html += '	</div>';
 	if (d.sender.name && d.sender.name !== d.sender.screen_name) {
 		html += '		<div class="real_name" data-screen_name="'+d.sender.screen_name+'">'+d.sender.name+'</div>';
 	}
-	html +='	</div>'
+	html +='	</div>';
 	
 	html += '	<div class="status">'
 	+ '		<div class="text">'+d.text+'</div>'
@@ -141,7 +141,7 @@ sc.app.tpl.addTemplateMethod('user-detail', function(d) {
 	+ '		<div class="user-image rounded-user-image" style="background-image:url('+d.profile_image_url+')" data-screen_name="'+d.screen_name+'" title="View user\'s profile"></div>'
 	+ '		<div class="screen_name" data-screen_name="'+d.screen_name+'">'
 	+ 			d.screen_name;
-	if (d.protected) {
+	if (d["protected"]) {
 		html += '			<div class="protected-icon">&nbsp;</div>';
 	}
 	html += '		</div>';
@@ -149,9 +149,8 @@ sc.app.tpl.addTemplateMethod('user-detail', function(d) {
 		html += '		<div class="real_name" data-screen_name="'+d.screen_name+'">'+d.name+'</div>';
 	}
 	html +='	</div>'
-	
-	html += '	<div class="user-info">'
-	html += '		<div class="user-description">'+d.description+'</div>';
+	+ '	<div class="user-info">'
+	+ '		<div class="user-description">'+d.description+'</div>';
 	if (d.location) {
 		html += '   	 <div><a class="user-location" href="http://maps.google.com/?q=' +encodeURIComponent(d.location)+ '" title="View this location on a map">'+d.location+'</a></div>';
 	}
@@ -238,7 +237,7 @@ sc.app.tpl.addTemplateMethod('tweet', function(d) {
 		html += ' new';
 	}
 	if (d.SC_is_reply) {
-		html += ' reply'
+		html += ' reply';
 	}
 	html += '" data-status-id="'+d.id+'" data-user-id="'+d.user.id+'" data-user-screen_name="'+d.user.screen_name+'" data-timestamp="'+d.SC_created_at_unixtime+'">'
 	+ '	<div class="user" data-user-id="'+d.user.id+'" data-user-screen_name="'+d.user.screen_name+'">'
@@ -247,7 +246,7 @@ sc.app.tpl.addTemplateMethod('tweet', function(d) {
 	+ '	<div class="status">'
 	+ '		<div class="meta-wrapper">'
 	+ '			<div class="screen-name">'+d.user.screen_name;
-	if (d.user.protected) {
+	if (d.user["protected"]) {
 		html += '			<div class="protected-icon"></div>';
 	}
 	html += '			</div>'
@@ -329,7 +328,7 @@ sc.app.tpl.addTemplateMethod('error_info', function(d) {
 	
 	html += '<div class="error_info">';
 	
-	html += ' <div class="human_msg">'+d.human_msg+'</div>'
+	html += ' <div class="human_msg">'+d.human_msg+'</div>';
 	if (d.twitter_msg) {
 		html += ' <div class="row"><div class="label">'+$L('Twitter error')+'</div> <div class="value twitter_msg">'+d.twitter_msg+'</div></div>'
 		+ ' <div class="row"><div class="label">'+$L('Twitter request')+'</div> <div class="value twitter_request">'+d.twitter_request+'</div></div>';

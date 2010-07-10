@@ -16,12 +16,12 @@ var Tweets = function(replace) {
 			for (var i = 0; i < l; i++) {
 				cb(results[i], i);
 			}
-			onfin(l)
+			onfin(l);
 		});
 	};
 	
 	this.user_bucket.match = function(condition, callback) {
-		var is = (typeof condition == 'string') ? function(r){return eval(condition)} : condition;
+		var is = (typeof condition == 'string') ? function(r){return eval(condition);} : condition;
 		var cb = this.adaptor.terseToVerboseCallback(callback);
 		var matches = [];
 		this.each(function(record, index) {
@@ -33,7 +33,7 @@ var Tweets = function(replace) {
 			sch.error('Firing callback on array of matches('+count+')');
 			cb(matches);
 		});
-	},
+	};
 	
 	this._init(replace);
 };
@@ -110,7 +110,7 @@ Tweets.prototype.save   = function(object, onSuccess, onFailure) {
 			sch.error("Saving user "+object.user.id);
 			this.saveUser(object.user);			
 		} else {
-			sch.error('Tweet '+objid+' did not have a user object')
+			sch.error('Tweet '+objid+' did not have a user object');
 		}
 	} else {
 		sch.error("Saving DM "+objid);
@@ -119,13 +119,13 @@ Tweets.prototype.save   = function(object, onSuccess, onFailure) {
 			sch.error("Saving user "+object.sender.id);
 			this.saveUser(object.sender);
 		} else {
-			sch.error('Tweet '+objid+' did not have a sender object')
+			sch.error('Tweet '+objid+' did not have a sender object');
 		}
 		if (object.recipient) {
 			sch.error("Saving user "+object.recipient.id);
 			this.saveUser(object.recipient);
 		} else {
-			sch.error('Tweet '+objid+' did not have a recipient object')
+			sch.error('Tweet '+objid+' did not have a recipient object');
 		}
 	}
 };
