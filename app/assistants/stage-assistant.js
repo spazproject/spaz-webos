@@ -44,6 +44,8 @@ StageAssistant.prototype.initialize = function() {
 	sc.app.password = null;
 
 	sc.app.prefs = null;
+	
+	sc.app.accounts = null;
 
 
 	/*
@@ -101,10 +103,16 @@ StageAssistant.prototype.initialize = function() {
 		}
 	});
 	sc.app.prefs.load(); // this is sync on webOS, b/c loading from Mojo.Model.Cookie
+	
+	/*
+		load app accounts
+	*/
+	sc.app.accounts = new SpazAccounts(sc.app.prefs);
+	
 	sc.app.twit = new SpazTwit(null, null, {
 		'event_mode':'jquery'
 	});
-
+	
 	sc.app.bgnotifier = new BackgroundNotifier();
 
 };

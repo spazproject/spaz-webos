@@ -308,17 +308,23 @@ Tweets.prototype.getRemoteUser = function(id, onSuccess, onFailure) {
 Tweets.prototype.initSpazTwit = function() {
 	var event_mode = 'jquery'; // default this to jquery because we have so much using it
 	
-	var users = new Users(sc.app.prefs);
+	var users = new SpazAccounts(sc.app.prefs);
 	
-	this.twit = new SpazTwit(null, null, {
+	this.twit = new SpazTwit({
 		'event_mode':event_mode,
 		'timeout':1000*60
 	});
+	
+	this.twit.setCredentials(Spaz.Prefs.getAuthObject());
+	sch.error('this.twit.username:'+this.twit.username);
+	sch.error('this.twit.auth:'+sch.enJSON(this.twit.auth));
+	this.twit.setBaseURLByService(Spaz.Prefs.getAccountType());
+	
 
 	if (sc.app.userid) {
 		// alert('setting credentials for '+sc.app.username);
 		
-		var userobj = users.getUser(sc.app.userid);
+		var userobj = users.get(sc.app.userid);
 		
 		if (userobj.type === SPAZCORE_SERVICE_CUSTOM) {
 			var api_url = users.getMeta(sc.app.userid, 'api-url');

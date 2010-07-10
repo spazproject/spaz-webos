@@ -271,6 +271,104 @@ Spaz.closeDashboard = function(name) {
 
 
 /*
+	Namespace for prefs helpers
+*/
+Spaz.Prefs = {};
+
+
+/**
+ * retrieves the username for the current account 
+ */
+Spaz.Prefs.getUsername = function() {
+	var currentAccountId = Spaz.Prefs.getCurrentAccountId();
+	if (currentAccountId) {
+		var accobj = sc.app.accounts.get(currentAccountId);
+		return !!accobj ? accobj.username : null;
+	} else {
+		return null;
+	}
+
+};
+
+/**
+ * DEPRECATED; calls Spaz.getAuthKey
+ */
+Spaz.Prefs.getPassword = function() {
+	sch.error('Spaz.Prefs.getPassword is deprecated; use Spaz.Prefs.getAuthKey');
+	return Spaz.Prefs.getAuthKey();
+};
+
+/**
+ * Returns the current account's auth key 
+ */
+Spaz.Prefs.getAuthKey = function() {
+	var currentAccountId = Spaz.Prefs.getCurrentAccountId();
+	sch.error('getAuthKey currentAccountId:'+currentAccountId);
+	if (currentAccountId) {
+		var accobj = sc.app.accounts.get(currentAccountId);
+		return !!accobj ? accobj.auth : null;
+	} else {
+		return null;
+	}	
+};
+
+/**
+ * Returns a SpazAuth object based on the current user's type and auth key 
+ */
+Spaz.Prefs.getAuthObject = function() {
+	var authkey = Spaz.Prefs.getAuthKey();
+	sch.error('getAuthObject authkey:'+authkey);
+	if (authkey) {
+		var auth = new SpazAuth(Spaz.Prefs.getAccountType());
+		auth.load(authkey);
+		return auth;
+	} else {
+		return null;
+	}
+};
+
+/**
+ * Returns the current account's type 
+ */
+Spaz.Prefs.getAccountType = function() {
+	var currentAccountId = Spaz.Prefs.getCurrentAccountId();
+	if (currentAccountId) {
+		var accobj = sc.app.accounts.get(currentAccountId);
+		return !!accobj ? accobj.type : null;
+	} else {
+		return null;
+	}
+
+};
+
+/**
+ * Returns the current account object
+ */
+Spaz.Prefs.getCurrentAccount = function() {
+	var currentAccountId = Spaz.Prefs.getCurrentAccountId();
+	if (currentAccountId) {
+		return sc.app.accounts.get(currentAccountId);
+	} else {
+		return null;
+	}
+
+};
+
+
+Spaz.Prefs.getCurrentAccountId = function() {
+	if (sc.app.userid) {
+		return sc.app.userid;
+	} else {
+		return sc.app.prefs.get('last_userid');
+	}
+	
+};
+
+
+
+
+
+/*
 	We don't namespace these because they're just so darn simple
 */
 
