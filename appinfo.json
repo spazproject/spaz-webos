@@ -4,10 +4,10 @@
 	"type": "web",
 	"main": "index.html",
 	"id": "com.funkatron.app.spaz",
-	"icon": "icon.png",
+	"splashicon": "splashicon.png",
+	"splashBackground":null,
 	"miniicon": "images/miniicon.png",
 	"vendor": "Funkatron Productions",
 	"vendorurl": "http://funkatron.com",
-	"theme":"dark",	
 	"noWindow":false
 }
