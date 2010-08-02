@@ -25,7 +25,6 @@ function StartAssistant(argFromPusher) {
 			if (last_user_obj !== false) {
 				dump(last_user_obj);
 				sc.app.username = last_user_obj.username;
-				sc.app.password = last_user_obj.password;
 				sc.app.type     = last_user_obj.type;
 				sc.app.userid   = last_user_obj.id;
 				Mojo.Controller.stageController.pushScene('my-timeline');

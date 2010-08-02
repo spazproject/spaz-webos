@@ -1,12 +1,20 @@
 function StageAssistant () {
 	Mojo.Log.info("Logging from StageAssistant Constructor");
-	// sc.setDumpLevel(5);
+	sc.setDumpLevel(5);
 	
 }
 
 StageAssistant.prototype.initialize = function() {
 	
 	sch.error('INITIALIZING EVERYTHING');
+	
+	SpazAuth.addService(SPAZCORE_ACCOUNT_TWITTER, {
+        authType: SPAZCORE_AUTHTYPE_OAUTH,
+        consumerKey: SPAZCORE_CONSUMERKEY_TWITTER,
+        consumerSecret: SPAZCORE_CONSUMERSECRET_TWITTER,
+        accessURL: 'http://twitter.com/oauth/access_token'
+    });
+	
 	
 	/*
 		Remap JSON parser because JSON2.js one was causing probs with unicode
@@ -41,8 +49,6 @@ StageAssistant.prototype.initialize = function() {
 	sc.app.search_card_prefix = "searchcard_";
 
 	sc.app.username = null;
-	sc.app.password = null;
-
 	sc.app.prefs = null;
 	
 	sc.app.accounts = null;
@@ -136,8 +142,8 @@ StageAssistant.prototype.cleanup = function() {
 	/*
 		try to clean up ALL jQuery listeners everywhere
 	*/
-	jQuery().unbind();
-	jQuery().die();
+	jQuery(document).unbind();
+	jQuery(document).die();
 };
 
 
@@ -205,7 +211,6 @@ StageAssistant.prototype.gotoMyTimeline = function(stageController) {
 			if (last_user_obj !== false) {
 				sch.error(last_user_obj);
 				sc.app.username = last_user_obj.username;
-				sc.app.password = last_user_obj.password;
 				sc.app.type     = last_user_obj.type;
 				sc.app.userid   = last_user_obj.id;
 				this.controller.pushScene('my-timeline');

@@ -27,7 +27,7 @@ MessageDetailAssistant.prototype.setup = function() {
 	
 	this.scroller = this.controller.getSceneScroller();
 	
-	if (sc.app.username && sc.app.password) {
+	if (sc.app.username) {
 		this.setupCommonMenus({
 			viewMenuItems: [
 				{
@@ -46,7 +46,7 @@ MessageDetailAssistant.prototype.setup = function() {
 			]
 		});
 		
-		this.initAppMenu({ 'items':loggedin_appmenu_items });
+		this.initAppMenu({ 'items':LOGGEDIN_APPMENU_ITEMS });
 		
 	} else {
 		this.setupCommonMenus({
@@ -65,9 +65,9 @@ MessageDetailAssistant.prototype.setup = function() {
 		
 	};	
 	
-	jQuery().bind('get_one_status_succeeded', { thisAssistant:this }, this.processStatusReturn);
+	jQuery(document).bind('get_one_status_succeeded', { thisAssistant:this }, this.processStatusReturn);
 
-	jQuery().bind('get_one_status_failed', { thisAssistant:this }, function(e, error_obj) {
+	jQuery(document).bind('get_one_status_failed', { thisAssistant:this }, function(e, error_obj) {
 		var err_msg = $L("There was an error retrieving this status");
 		thisA.displayErrorInfo(err_msg, error_obj);		
 	});
@@ -75,12 +75,12 @@ MessageDetailAssistant.prototype.setup = function() {
 	
 
 
-	jQuery().bind('create_favorite_succeeded',  { thisAssistant:this }, function(e, statusobj) {
+	jQuery(document).bind('create_favorite_succeeded',  { thisAssistant:this }, function(e, statusobj) {
 		jQuery('#message-detail-action-favorite[data-status-id="'+statusobj.id+'"]')
 			.attr('data-favorited', 'true')
 			.html('Remove as favorite');
 	});
-	jQuery().bind('destroy_favorite_succeeded', { thisAssistant:this }, function(e, statusobj) {
+	jQuery(document).bind('destroy_favorite_succeeded', { thisAssistant:this }, function(e, statusobj) {
 		jQuery('#message-detail-action-favorite[data-status-id="'+statusobj.id+'"]')
 			.attr('data-favorited', 'false')
 			.html('Add as favorite');		
@@ -106,13 +106,13 @@ MessageDetailAssistant.prototype.activate = function(event) {
 	
 	if (this.isdm) {
 		if (this.status_obj){
-			jQuery().trigger('get_one_status_succeeded', [this.status_obj]);
+			jQuery(document).trigger('get_one_status_succeeded', [this.status_obj]);
 		} else {
 			sc.app.Tweets.get(this.status_id, this.isdm,
 				function(data) {
 					if (data !== null) {
 						sch.error('Message '+thisA.status_id+' pulled from DB');
-						jQuery().trigger('get_one_status_succeeded', [data]);
+						jQuery(document).trigger('get_one_status_succeeded', [data]);
 					} else { // if nothing is returned, get it from Twitter
 						sch.error('DM was not in sc.app.Tweets cache');
 						thisA.showAlert($L('There was an error retrieving this direct message from cache'));
@@ -130,20 +130,20 @@ MessageDetailAssistant.prototype.activate = function(event) {
 			this.status_id,
 			this.isdm,
 			function(data) {
-				jQuery().trigger('get_one_status_succeeded', [data]);
+				jQuery(document).trigger('get_one_status_succeeded', [data]);
 			},
 			function(message) {
 				thisA.showAlert($L('There was an error retrieving the message data'));
 			}
 		);
 		// if (this.status_obj){
-		// 			jQuery().trigger('get_one_status_succeeded', [this.status_obj]);
+		// 			jQuery(document).trigger('get_one_status_succeeded', [this.status_obj]);
 		// 		} else {
 		// 			sc.app.Tweets.get(this.status_id, this.isdm,
 		// 				function(data) {
 		// 					if (data !== null) {
 		// 						sch.error('Message '+data.id+' pulled from DB');
-		// 						jQuery().trigger('get_one_status_succeeded', [data]);
+		// 						jQuery(document).trigger('get_one_status_succeeded', [data]);
 		// 					} else { // if nothing is returned, get it from Twitter
 		// 						sch.error('Message '+this.status_id+' missing from DB; retrieving from Twitter');
 		// 						thisA.twit.getOne(thisA.status_id);
@@ -258,10 +258,10 @@ MessageDetailAssistant.prototype.deactivate = function(event) {
 };
 
 MessageDetailAssistant.prototype.cleanup = function(event) {
-	jQuery().unbind('get_one_status_succeeded');
-	jQuery().unbind('get_one_status_failed');
-	jQuery().unbind('uncreate_favorite_succeeded');
-	jQuery().unbind('destroy_favorite_succeeded');
+	jQuery(document).unbind('get_one_status_succeeded');
+	jQuery(document).unbind('get_one_status_failed');
+	jQuery(document).unbind('uncreate_favorite_succeeded');
+	jQuery(document).unbind('destroy_favorite_succeeded');
 };
 
 

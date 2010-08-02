@@ -26,7 +26,7 @@ UserDetailAssistant.prototype.setup = function() {
 	
 	this.initTwit();
 
-	if (sc.app.username && sc.app.password) {
+	if (sc.app.username) {
 		this.setupCommonMenus({
 			viewMenuItems: [
 				{
@@ -46,7 +46,7 @@ UserDetailAssistant.prototype.setup = function() {
 
 			]
 		});
-		this.initAppMenu({ 'items':loggedin_appmenu_items });
+		this.initAppMenu({ 'items':LOGGEDIN_APPMENU_ITEMS });
 			
 	} else {
 		this.setupCommonMenus({});	
@@ -66,7 +66,7 @@ UserDetailAssistant.prototype.setup = function() {
 	
 	/* add event handlers to listen to events from widgets */
 	
-	jQuery().bind('new_user_timeline_data', { thisAssistant:this }, function(e, tweets) {
+	jQuery(document).bind('new_user_timeline_data', { thisAssistant:this }, function(e, tweets) {
 		
 		var rendertweets = tweets;
 		// they come in oldest-first, so reverse it since we're rendering as a collection
@@ -98,7 +98,7 @@ UserDetailAssistant.prototype.setup = function() {
 	});
 	
 	
-	jQuery().bind('get_user_succeeded', function(e, userobj) {
+	jQuery(document).bind('get_user_succeeded', function(e, userobj) {
 		thisA.userRetrieved = true;
 		thisA.userobj = userobj;
 		
@@ -115,7 +115,7 @@ UserDetailAssistant.prototype.setup = function() {
 	
 	
 	
-	jQuery().bind('get_user_failed', function(e, error_obj) {
+	jQuery(document).bind('get_user_failed', function(e, error_obj) {
 		// error_obj.url
 		// error_obj.xhr
 		// error_obj.msg
@@ -126,23 +126,23 @@ UserDetailAssistant.prototype.setup = function() {
 	
 
 
-	jQuery().bind('create_friendship_succeeded',  { thisAssistant:this }, function(e, userobj) {
+	jQuery(document).bind('create_friendship_succeeded',  { thisAssistant:this }, function(e, userobj) {
 		jQuery('#follow-user[data-screen_name="'+userobj.screen_name+'"]')
 			.attr('data-following', 'true')
 			.html($L('Stop following user'));
 	});
-	jQuery().bind('destroy_friendship_succeeded', { thisAssistant:this }, function(e, userobj) {
+	jQuery(document).bind('destroy_friendship_succeeded', { thisAssistant:this }, function(e, userobj) {
 		jQuery('#follow-user[data-screen_name="'+userobj.screen_name+'"]')
 			.attr('data-following', 'false')
 			.html($L('Follow user'));		
 	});
 
-	jQuery().bind('create_block_succeeded', { thisAssistant:this }, function(e, userobj) {
+	jQuery(document).bind('create_block_succeeded', { thisAssistant:this }, function(e, userobj) {
 		jQuery('#block-user[data-screen_name="'+userobj.screen_name+'"]')
 			.attr('data-blocked', 'true')
 			.html($L('Unblock user'));
 	});
-	jQuery().bind('destroy_block_succeeded', { thisAssistant:this }, function(e, userobj) {
+	jQuery(document).bind('destroy_block_succeeded', { thisAssistant:this }, function(e, userobj) {
 		jQuery('#block-user[data-screen_name="'+userobj.screen_name+'"]')
 			.attr('data-blocked', 'false')
 			.html($L('Block user'));
@@ -343,12 +343,12 @@ UserDetailAssistant.prototype.cleanup = function(event) {
 	/* this function should do any cleanup needed before the scene is destroyed as 
 	   a result of being popped off the scene stack */
 	
-	jQuery().unbind('new_user_timeline_data');
-	jQuery().unbind('get_user_succeeded');
-	jQuery().unbind('get_user_failed');
-	jQuery().unbind('create_friendship_succeeded');
-	jQuery().unbind('destroy_friendship_succeeded');
-	jQuery().unbind('create_block_succeeded');
-	jQuery().unbind('destroy_block_succeeded');
+	jQuery(document).unbind('new_user_timeline_data');
+	jQuery(document).unbind('get_user_succeeded');
+	jQuery(document).unbind('get_user_failed');
+	jQuery(document).unbind('create_friendship_succeeded');
+	jQuery(document).unbind('destroy_friendship_succeeded');
+	jQuery(document).unbind('create_block_succeeded');
+	jQuery(document).unbind('destroy_block_succeeded');
 	
 };

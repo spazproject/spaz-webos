@@ -17,7 +17,7 @@ StartsearchAssistant.prototype.setup = function() {
 
 	var thisA = this;
 
-	if (sc.app.username && sc.app.password) {
+	if (sc.app.username) {
 		this.setupCommonMenus({
 			viewMenuItems: [
 				{
@@ -41,7 +41,7 @@ StartsearchAssistant.prototype.setup = function() {
 			]
 		});
 		
-		this.initAppMenu({ 'items':loggedin_appmenu_items });
+		this.initAppMenu({ 'items':LOGGEDIN_APPMENU_ITEMS });
 		
 	} else {
 		this.setupCommonMenus({
@@ -112,7 +112,7 @@ StartsearchAssistant.prototype.setup = function() {
 	/*
 		Setup reload saved searches button
 	*/
-	if (sc.app.username && sc.app.password) {
+	if (sc.app.username) {
 		this.reloadSearchesButtonAttributes = {
 			type: Mojo.Widget.activityButton
 		};
@@ -140,7 +140,7 @@ StartsearchAssistant.prototype.setup = function() {
 	/*
 		listen for trends data updates
 	*/
-	jQuery().bind('new_trends_data', {thisAssistant:this}, function(e, trends) {
+	jQuery(document).bind('new_trends_data', {thisAssistant:this}, function(e, trends) {
 		thisA.deactivateTrendsSpinner();
 		
 		/*
@@ -161,7 +161,7 @@ StartsearchAssistant.prototype.setup = function() {
 	/*
 		listen for saved searches data updates
 	*/
-	jQuery().bind('new_saved_searches_data', {thisAssistant:this}, function(e, searches) {
+	jQuery(document).bind('new_saved_searches_data', {thisAssistant:this}, function(e, searches) {
 		thisA.deactivateSavedSearchesSpinner();
 		
 		/*
@@ -313,8 +313,8 @@ StartsearchAssistant.prototype.cleanup = function(event) {
 		thisA.refreshTrends();
 	});
 	Mojo.Event.stopListening(jQuery('#search-button')[0], Mojo.Event.tap, this.handleSearch);
-	jQuery().unbind('new_trends_data');
-	jQuery().unbind('new_saved_searches_data');
+	jQuery(document).unbind('new_trends_data');
+	jQuery(document).unbind('new_saved_searches_data');
 };
 
 

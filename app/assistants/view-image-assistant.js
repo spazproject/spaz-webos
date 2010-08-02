@@ -40,7 +40,7 @@ ViewImageAssistant.prototype.setup = function() {
 		cmdMenuItems: []
 	});
 	
-	this.initAppMenu({ 'items':loggedin_appmenu_items });	
+	this.initAppMenu({ 'items':LOGGEDIN_APPMENU_ITEMS });	
 	
 	
 	/* this function is for setup tasks that have to happen when the scene is first created */

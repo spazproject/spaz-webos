@@ -52,8 +52,6 @@ function MyTimelineAssistant(argFromPusher) {
 
 MyTimelineAssistant.prototype.setup = function() {
 	
-	sch.debug('SETUP');
-	
 	var thisA = this;
 	
 	// this.tweetsModel = [];
@@ -62,7 +60,7 @@ MyTimelineAssistant.prototype.setup = function() {
 	
 	/* this function is for setup tasks that have to happen when the scene is first created */
 
-	this.initAppMenu({ 'items':loggedin_appmenu_items });
+	this.initAppMenu({ 'items':LOGGEDIN_APPMENU_ITEMS });
 
 	this.initTwit('DOM');
 	
@@ -70,10 +68,6 @@ MyTimelineAssistant.prototype.setup = function() {
 		this will set the state for this.isFullScreen
 	*/
 	this.trackStageActiveState();
-
-
-
-	
 
 	this.setupCommonMenus({
 		viewMenuItems: [
@@ -118,20 +112,15 @@ MyTimelineAssistant.prototype.setup = function() {
 	// Set up submenu widget that was wired into the viewMenu above
 	this.controller.setupWidget("filter-menu", undefined, this.timelineFilterMenuModel);
 	
-	
-
-
-	
 	this.setupInlineSpinner('activity-spinner-my-timeline');
 	
-	
+
 	this.refreshOnActivate = true;
 	
 	
 	sch.listen(document, 'temp_cache_cleared', this.resetTwitState);
 	
 	this.loadTimelineCache();
-	
 	
 	this.initTimeline();
 	
@@ -200,7 +189,7 @@ MyTimelineAssistant.prototype.cleanup = function(event) {
 	/* this function should do any cleanup needed before the scene is destroyed as 
 	   a result of being popped off the scene stack */
 	
-	// jQuery().unbind('load_from_mytimeline_cache_done');
+	// jQuery(document).unbind('load_from_mytimeline_cache_done');
 
 	this.cleanupTimeline();
 
@@ -544,7 +533,7 @@ MyTimelineAssistant.prototype.startRefresher = function() {
 	
 	if (time > 0) {
 		this.refresher = setInterval(function() {
-				jQuery().trigger('my_timeline_refresh');
+				jQuery(document).trigger('my_timeline_refresh');
 			}, time
 		);
 	} else {

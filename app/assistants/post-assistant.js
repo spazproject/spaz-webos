@@ -20,7 +20,7 @@ PostAssistant.prototype.setup = function() {
 	
 	this.initTwit();
 	
-	this.initAppMenu({ 'items':loggedin_appmenu_items });
+	this.initAppMenu({ 'items':LOGGEDIN_APPMENU_ITEMS });
 	
 	this.postMode = 'normal'; // 'normal' or 'email'
 	
@@ -155,14 +155,14 @@ PostAssistant.prototype.setup = function() {
 	/*
 		if update succeeds
 	*/
-	jQuery().bind('update_succeeded', { thisAssistant:this }, function(e, data) {
+	jQuery(document).bind('update_succeeded', { thisAssistant:this }, function(e, data) {
 		e.data.thisAssistant.renderSuccessfulPost(e, data);
 	});
 
 	/*
 		if update fails
 	*/
-	jQuery().bind('update_failed', { thisAssistant:this }, function(e, error_obj) {
+	jQuery(document).bind('update_failed', { thisAssistant:this }, function(e, error_obj) {
 		e.data.thisAssistant.reportFailedPost(error_obj);
 	});
 
@@ -282,8 +282,8 @@ PostAssistant.prototype.cleanup = function(event) {
 	jQuery('#post-image-lookup-email').unbind(Mojo.Event.tap);
 	jQuery('#post-image-choose').unbind(Mojo.Event.tap);
 	
-	jQuery().unbind('update_succeeded');
-	jQuery().unbind('update_failed');
+	jQuery(document).unbind('update_succeeded');
+	jQuery(document).unbind('update_failed');
 	
 	/*
 		Listen for file upload events
