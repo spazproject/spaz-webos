@@ -7,7 +7,7 @@ const SPAZ_DONATION_URL = 'http://getspaz.com/donate';
 
 
 
-var loggedin_appmenu_items = [
+var LOGGEDIN_APPMENU_ITEMS = [
 	Mojo.Menu.editItem,
 	{ label: $L('Update Location...'),	command: 'update-location' },
 	{ label: $L('New Search Card'),	command: 'new-search-card' },
