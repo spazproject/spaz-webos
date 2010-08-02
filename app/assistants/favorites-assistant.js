@@ -9,7 +9,7 @@ function FavoritesAssistant() {
 FavoritesAssistant.prototype.setup = function() {
 
 	this.scroller = this.controller.getSceneScroller();
-	this.initAppMenu({ 'items':loggedin_appmenu_items });
+	this.initAppMenu({ 'items':LOGGEDIN_APPMENU_ITEMS });
 	this.initTwit('DOM');
 
 	this.setupCommonMenus({
@@ -48,6 +48,23 @@ FavoritesAssistant.prototype.setup = function() {
 	this.setupInlineSpinner('activity-spinner-favorites');
 	
 	this.refreshOnActivate = true;
+	
+	
+	this.controller.setupWidget("favorites-timeline",
+        this.timeline_attributes = {
+            itemTemplate: 'timeline-entry',
+            listTemplate: 'timeline-container',
+            swipeToDelete: false,
+            reorderable: false,
+            hasNoWidgets: true
+        },
+        this.timeline_model = {
+            items : [
+                {id:0, html:'some html'}
+            ]
+        }
+    );
+
 };
 
 FavoritesAssistant.prototype.activate = function(event) {
@@ -63,80 +80,19 @@ FavoritesAssistant.prototype.activate = function(event) {
 	this.setTimelineTextSize('#favorites-timeline', tts);
 	
 	
-
-	
 	/*
 		Prepare for timeline entry taps
 	*/
 	this.bindTimelineEntryTaps('#favorites-timeline');
+	// maps list taps to item taps
+	this.handleTimelineTap = this.handleTimelineTap.bindAsEventListener(this);
+	this.controller.listen('favorites-timeline', Mojo.Event.listTap, this.handleTimelineTap);
 
-	/*
-		set up the public timeline
-	*/
-	this.favtl   = new SpazTimeline({
-		'timeline_container_selector' :'#favorites-timeline',
-		'entry_relative_time_selector':'span.date',
-		
-		'success_event':'new_favorites_timeline_data',
-		'failure_event':'error_favorites_timeline_data',
-		'event_target' :document,
-		
-		'refresh_time':1000*3600,
-		'max_items':50,
-
-		'request_data': function() {
-			sc.helpers.markAllAsRead('#favorites-timeline div.timeline-entry');
-			thisA.showInlineSpinner('activity-spinner-favorites', 'Loading favorite tweets…');
-			thisA.twit.getFavorites();
-		},
-		'data_success': function(e, data) {
-			var data = data.reverse();
-			var no_dupes = [];
-			
-			for (var i=0; i < data.length; i++) {
-				
-				/*
-					only add if it doesn't already exist
-				*/
-				if (jQuery('#favorites-timeline div.timeline-entry[data-status-id='+data[i].id+']').length<1) {
-					
-					sc.app.Tweets.save(data[i]);
-					data[i].text = Spaz.makeItemsClickable(data[i].text);
-					no_dupes.push(data[i]);
-				}
-				
-			};
-			
-			thisA.favtl.addItems(no_dupes);
-			sc.helpers.markAllAsRead('#favorites-timeline div.timeline-entry'); // favs are never "new"
-			sc.helpers.updateRelativeTimes('#favorites-timeline div.timeline-entry span.date', 'data-created_at');
-			thisA.hideInlineSpinner('activity-spinner-favorites');
-		},
-		'data_failure': function(e, error_obj) {
-			// error_obj.url
-			// error_obj.xhr
-			// error_obj.msg
-
-			var err_msg = $L("There was an error retrieving your favorites");
-			thisA.displayErrorInfo(err_msg, error_obj);
-
-			/*
-				Update relative dates
-			*/
-			sch.updateRelativeTimes('#favorites-timeline>div.timeline-entry .meta>.date', 'data-created_at');
-			thisA.hideInlineSpinner('activity-spinner-favorites');
-		},
-		'renderer': function(obj) {
-			return sc.app.tpl.parseTemplate('tweet', obj);
-			
-		}
-	});
-	
 	/*
 		start the favs timeline 
 	*/
 	if (this.refreshOnActivate) {
-		this.favtl.start();
+		this.refresh();
 		this.refreshOnActivate = false;
 	}
 	
@@ -146,17 +102,12 @@ FavoritesAssistant.prototype.activate = function(event) {
 
 
 FavoritesAssistant.prototype.deactivate = function(event) {
-	
 	/*
 		stop listening for timeline entry taps
 	*/
 	this.unbindTimelineEntryTaps('#favorites-timeline');
 	
-	/*
-		unbind and stop refresher for public timeline
-	*/
-	this.favtl.cleanup();
-	
+	this.controller.stopListening('favorites-timeline', Mojo.Event.listTap, this.handleTimelineTap);
 	
 };
 
@@ -165,6 +116,12 @@ FavoritesAssistant.prototype.cleanup = function(event) {
 	   a result of being popped off the scene stack */
 };
 
+
+FavoritesAssistant.prototype.handleTimelineTap = function(e) {
+	jQuery('#favorites-timeline [data-status-id="'+e.item.id+'"]').trigger(Mojo.Event.tap);
+};
+
+
 FavoritesAssistant.prototype.getEntryElementByStatusId = function(id) {
 	var el = jQuery('#favorites-timeline div.timeline-entry[data-status-id='+id+']', this.scroller).get(0);
 	return el;
@@ -172,7 +129,77 @@ FavoritesAssistant.prototype.getEntryElementByStatusId = function(id) {
 
 
 FavoritesAssistant.prototype.refresh = function(event) {
-	this.favtl.refresh();
+	var thisA = this;
+	
+	sc.helpers.markAllAsRead('#favorites-timeline div.timeline-entry');
+	this.showInlineSpinner('activity-spinner-favorites', 'Loading favorite tweets…');
+	this.twit.getFavorites(
+		null,
+		null,
+		function(data) {
+			data = data.reverse();
+			var no_dupes = [];
+			
+			for (var i=0; i < data.length; i++) {
+				
+				/*
+					only add if it doesn't already exist
+				*/
+				if (!thisA.itemExistsInModel(data[i])) {
+					
+					sc.app.Tweets.save(data[i]);
+					data[i].text = Spaz.makeItemsClickable(data[i].text);
+					no_dupes.push(data[i]);
+				}
+				
+			};
+			
+			thisA.addItems(no_dupes);
+			sc.helpers.markAllAsRead('#favorites-timeline div.timeline-entry'); // favs are never "new"
+			sc.helpers.updateRelativeTimes('#favorites-timeline div.timeline-entry span.date', 'data-created_at');
+			thisA.hideInlineSpinner('activity-spinner-favorites');
+		},
+		function(xhr, msg, exc) {
+			var err_msg = $L("There was an error retrieving your favorites");
+			thisA.displayErrorInfo(err_msg, null);
+
+			/*
+				Update relative dates
+			*/
+			sch.updateRelativeTimes('#favorites-timeline>div.timeline-entry .meta>.date', 'data-created_at');
+			thisA.hideInlineSpinner('activity-spinner-favorites');
+		}
+	);
+	
+};
+
+
+/*
+	redefine addItems to work with list model
+*/
+FavoritesAssistant.prototype.addItems = function(new_items) {
+	var model_item, model_items = [];
+	for (var i=0; i < new_items.length; i++) {
+		model_item = {
+			'id':new_items[i].id,
+			'html':sc.app.tpl.parseTemplate('tweet', new_items[i])
+		};
+		model_items.push(model_item);
+	}
+	this.favorites_list = this.controller.get('favorites-timeline');
+	this.favorites_list.mojo.noticeAddedItems(0, model_items);
+};
+
+FavoritesAssistant.prototype.itemExistsInModel = function(obj) {
+	
+	for (var i=0; i < this.timeline_model.items.length; i++) {
+		if (this.timeline_model.items[i].id == obj.id) {
+			sch.error(obj.id +' exists in model');
+			return true;
+		}
+	}
+	sch.error(obj.id +' does not exist in model');
+	return false;
 };
 
 // FavoritesAssistant.prototype.getData = function() {
