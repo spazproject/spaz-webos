@@ -291,7 +291,7 @@ Spaz.Prefs.getUsername = function() {
 };
 
 /**
- * DEPRECATED; calls Spaz.getAuthKey
+ * DEPRECATED; calls Spaz.Prefs.getAuthKey
  */
 Spaz.Prefs.getPassword = function() {
 	sch.error('Spaz.Prefs.getPassword is deprecated; use Spaz.Prefs.getAuthKey');
@@ -303,7 +303,7 @@ Spaz.Prefs.getPassword = function() {
  */
 Spaz.Prefs.getAuthKey = function() {
 	var currentAccountId = Spaz.Prefs.getCurrentAccountId();
-	sch.error('getAuthKey currentAccountId:'+currentAccountId);
+	sch.debug('getAuthKey currentAccountId:'+currentAccountId);
 	if (currentAccountId) {
 		var accobj = sc.app.accounts.get(currentAccountId);
 		return !!accobj ? accobj.auth : null;
@@ -317,7 +317,7 @@ Spaz.Prefs.getAuthKey = function() {
  */
 Spaz.Prefs.getAuthObject = function() {
 	var authkey = Spaz.Prefs.getAuthKey();
-	sch.error('getAuthObject authkey:'+authkey);
+	sch.debug('getAuthObject authkey:'+authkey);
 	if (authkey) {
 		var auth = new SpazAuth(Spaz.Prefs.getAccountType());
 		auth.load(authkey);
