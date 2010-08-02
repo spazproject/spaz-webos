@@ -305,8 +305,8 @@ Tweets.prototype.getRemoteUser = function(id, onSuccess, onFailure) {
 
 
 
-Tweets.prototype.initSpazTwit = function() {
-	var event_mode = 'jquery'; // default this to jquery because we have so much using it
+Tweets.prototype.initSpazTwit = function(event_mode) {
+	event_mode = event_mode || 'jquery'; // default this to jquery because we have so much using it
 	
 	var users = new SpazAccounts(sc.app.prefs);
 	
@@ -314,27 +314,17 @@ Tweets.prototype.initSpazTwit = function() {
 		'event_mode':event_mode,
 		'timeout':1000*60
 	});
+	this.twit.setSource(sc.app.prefs.get('twitter-source'));
 	
-	this.twit.setCredentials(Spaz.Prefs.getAuthObject());
-	sch.error('this.twit.username:'+this.twit.username);
-	sch.error('this.twit.auth:'+sch.enJSON(this.twit.auth));
-	this.twit.setBaseURLByService(Spaz.Prefs.getAccountType());
 	
+	var auth;
+	if ( (auth = Spaz.Prefs.getAuthObject()) ) {
+		this.twit.setCredentials(auth);
+		this.twit.setBaseURLByService(Spaz.Prefs.getAccountType());
+	} else {
+		// alert('NOT seetting credentials for!');
+	}	
 
-	if (sc.app.userid) {
-		// alert('setting credentials for '+sc.app.username);
-		
-		var userobj = users.get(sc.app.userid);
-		
-		if (userobj.type === SPAZCORE_SERVICE_CUSTOM) {
-			var api_url = users.getMeta(sc.app.userid, 'api-url');
-			this.twit.setBaseURL(api_url);
-		} else {
-			this.twit.setBaseURLByService(userobj.type);				
-		}
-		this.twit.setCredentials(userobj.username, userobj.password);
-		
-	}
 };
 
 
