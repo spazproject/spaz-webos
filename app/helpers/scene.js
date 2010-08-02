@@ -307,7 +307,7 @@ scene_helpers.addCommonSceneMethods = function(assistant) {
 		// var username = sc.app.prefs.get('username');
 		// var password = sc.app.prefs.get('password');
 		
-		var event_mode = event_mode || 'jquery'; // default this to jquery because we have so much using it
+		event_mode = event_mode || 'jquery'; // default this to jquery because we have so much using it
 		
 		var users = new SpazAccounts(sc.app.prefs);
 		
@@ -316,14 +316,12 @@ scene_helpers.addCommonSceneMethods = function(assistant) {
 			'timeout':1000*60
 		});
 		this.twit.setSource(sc.app.prefs.get('twitter-source'));
-
-		if (sc.app.userid) {
-
-			this.twit.setCredentials(Spaz.Prefs.getAuthObject());
-			sch.error('this.twit.username:'+this.twit.username);
-			sch.error('this.twit.auth:'+sch.enJSON(this.twit.auth));
+		
+		
+		var auth;
+		if ( (auth = Spaz.Prefs.getAuthObject()) ) {
+			this.twit.setCredentials(auth);
 			this.twit.setBaseURLByService(Spaz.Prefs.getAccountType());
-			
 		} else {
 			// alert('NOT seetting credentials for!');
 		}
@@ -551,7 +549,7 @@ scene_helpers.addCommonSceneMethods = function(assistant) {
 		/*
 			if username and pass aren't set, use lightweight version
 		*/
-		if (!(sc.app.username && sc.app.password)) {
+		if (!(sc.app.username)) {
 			lightweight = true;
 		}
 			
@@ -978,7 +976,12 @@ scene_helpers.addCommonSceneMethods = function(assistant) {
 	assistant.bindTimelineEntryTaps = function(tl_selector) {
 		var thisA = this;
 		
-		jQuery(tl_selector+' div.timeline-entry', this.scroller).live(Mojo.Event.hold, function(e) {
+		sch.error('BINDING');
+				
+		jQuery(tl_selector+' div.timeline-entry').live(Mojo.Event.hold, function(e) {
+			
+			sch.error('HOLD');
+			
 			/*
 				Set this so we don't fire a tap after firing the hold
 			*/
@@ -1040,7 +1043,14 @@ scene_helpers.addCommonSceneMethods = function(assistant) {
 			
 		});
 		
-		jQuery(tl_selector+' div.timeline-entry', this.scroller).live(Mojo.Event.tap, function(e) {
+		jQuery(tl_selector+' div.timeline-entry').live(Mojo.Event.listTap, function(e) {
+			sch.error('LISTTAP');
+			jQuery(this).trigger(Mojo.Event.tap);
+		});
+		
+		jQuery(tl_selector+' div.timeline-entry').live(Mojo.Event.tap, function(e) {
+			
+			sch.error('TAP');
 			
 			/*
 				Check to see if a hold already fired. If so, don't do *anything*
@@ -1110,8 +1120,9 @@ scene_helpers.addCommonSceneMethods = function(assistant) {
 	 * Unbinds jQuery listeners for timeline entry taps contained in the passed selector. Uses .die()
 	 */
 	assistant.unbindTimelineEntryTaps = function(tl_selector) {
-		jQuery(tl_selector+' div.timeline-entry', this.scroller).die(Mojo.Event.hold);
-		jQuery(tl_selector+' div.timeline-entry', this.scroller).die(Mojo.Event.tap);
+		sch.error('UNBINDING');
+		jQuery(tl_selector+' div.timeline-entry').die(Mojo.Event.hold);
+		jQuery(tl_selector+' div.timeline-entry').die(Mojo.Event.tap);
 	};
 	
 	
