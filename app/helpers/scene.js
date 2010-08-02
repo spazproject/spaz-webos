@@ -9,7 +9,30 @@ var scene_helpers = {};
  * @param {object} assistant a scene assistant
  */
 scene_helpers.addCommonSceneMethods = function(assistant) {
-	
+	assistant.formatters = {
+    created_at: sch.getRelativeTime,
+    retweeted_status: function(retweet, obj) {
+      if (obj.retweeted_status) {
+				obj.text = obj.retweeted_status.text;	
+				return "<span class='retweet'>" +
+						obj.retweeted_status.user.screen_name + "</span>";
+			}
+    },
+    user_status: function(variable, obj) {
+      var user = obj.user || obj.sender || null;
+			return user && user.protected ? "protected-icon" : "";
+		},
+		classes: function(variable, obj) {
+			var res ="";
+			if (!obj.not_new)
+        res +=" new";
+			if (obj.SC_is_reply)
+				res +=" reply";
+			if (obj.SC_is_dm)
+				res +=" dm";
+			return res;
+		}
+  };
 	
 	assistant.initAppMenu = function(opts) {
 
@@ -236,34 +259,86 @@ scene_helpers.addCommonSceneMethods = function(assistant) {
 	/**
 	 *  
 	 */
-	assistant.filterTimeline = function(command) {
-		
-		if (!command) {
-			command = this.filterState;
-		}
-		
-		switch (command) {
-			case 'filter-timeline-all':
-				jQuery('#my-timeline div.timeline-entry').show();
-				break;
-			case 'filter-timeline-replies-dm':
-				jQuery('#my-timeline div.timeline-entry').hide();
-				jQuery('#my-timeline div.timeline-entry.reply, #my-timeline div.timeline-entry.dm').show();
-				break;
-			case 'filter-timeline-replies':
-				jQuery('#my-timeline div.timeline-entry').hide();
-				jQuery('#my-timeline div.timeline-entry.reply').show();
-				break;
-			case 'filter-timeline-dms':
-				jQuery('#my-timeline div.timeline-entry').hide();
-				jQuery('#my-timeline div.timeline-entry.dm').show();
-				break;
-			default:
-				jQuery('#my-timeline div.timeline-entry').show();
-		}
-		
-		this.filterState = command;	
-	};
+ 	assistant.filterTimeline = function(command) {
+ 		if (!command) {
+ 			command = this.filterState || "filter-timeline-all";
+ 		}
+ 		this.filterState = command;
+
+ 		var thisA = this;
+ 		var testFunction;
+
+ 		switch (command) {
+ 			case 'filter-timeline-all':
+ 			  testFunction = function(tweet) {return true;};
+ 				break;
+ 			case 'filter-timeline-replies-dm':
+ 		    testFunction = function(tweet) {return (tweet.SC_is_reply || tweet.SC_is_dm);};
+ 				break;
+ 			case 'filter-timeline-replies':
+ 			  testFunction = function(tweet) {return tweet.SC_is_reply;};
+ 				break;
+ 			case 'filter-timeline-dms':
+ 			  testFunction = function(tweet) {return tweet.SC_is_dm;};
+ 				break;
+ 			case "favorites":
+ 			  testFunction = function(tweet) {return tweet.favorited;};
+ 			  break;
+ 		}
+
+ 		this.renderTimeline(function() {
+ 		  this.timelineModel.items = this.timelineModel.items.filter(testFunction);
+ 		  this.prefilteredItems = this.timelineModel.items.clone();
+ 		});
+ 	};
+
+ 	assistant.renderTimeline = function(callback) {
+ 	  var thisA = this;
+
+     // TODO: Branch depending on scene, use different buckets (main/dm, favorites, search)
+     // TODO: Either clear buckets or add another set of buckets for every individual account
+
+     // load all tweets from main bucket
+ 	  sc.app.Tweets.bucket.all(function(tweets) {
+       // load all tweets from dm_bucket
+       sc.app.Tweets.dm_bucket.all(function(dm_tweets) {
+         tweets = tweets.concat(dm_tweets);
+
+         thisA.timelineModel.items = tweets.select(function(tweet) {
+           if(tweet.id)
+             return true;
+           else
+             return false;
+         }).
+         sort(function(a, b) {
+           return b.SC_created_at_unixtime - a.SC_created_at_unixtime;
+         });
+
+         thisA.prefilteredItems = thisA.timelineModel.items.clone();
+
+         if(callback)
+           callback.call(thisA);
+
+         thisA.controller.modelChanged(thisA.timelineModel);
+
+         thisA.scrollToTop();
+       });
+     });
+ 	};
+
+ 	assistant.handleFilterField = function(event) {
+     if(event.filterString) {
+       var latestPrefilterItems = this.prefilteredItems.clone();
+   	  this.renderTimeline(function() {
+   	    this.timelineModel.items = latestPrefilterItems.filter(function(tweet) {
+   	      return (tweet.user.screen_name.toLowerCase().include(event.filterString.toLowerCase()) || tweet.text.toLowerCase().include(event.filterString.toLowerCase()));
+   	    });
+         this.filterField.mojo.setCount(this.timelineModel.items.length);
+   	  });
+ 	  }
+   	else
+   	  this.filterTimeline();
+ 	};
 	
 	
 	
@@ -986,7 +1061,7 @@ scene_helpers.addCommonSceneMethods = function(assistant) {
 				Set this so we don't fire a tap after firing the hold
 			*/
 			e.target.holdFired = true;
-			
+      Event.stop(e);			
 			
 			
 			thisA.controller.popupSubmenu({
@@ -1265,6 +1340,10 @@ scene_helpers.addCommonSceneMethods = function(assistant) {
 		Spaz.closeDashboard();
 	};
 	
+  assistant.handleTimelineTap = function(e) {
+    if(!e.holdFired)
+		  Mojo.Controller.stageController.pushScene('message-detail', {'status_id':e.item.id, 'isdm':e.item.SC_is_dm, 'status_obj':e.item});
+	};
 	
 };
 

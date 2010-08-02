@@ -80,16 +80,16 @@ sc.app.tpl.addTemplateMethod('message-detail-dm', function(d) {
 	
 	
 	html += ''
-	+ '	<div class="user" data-user-screen_name="'+d.sender.screen_name+'" data-user-id="'+d.sender.id+'" data-status-id="'+d.id+'">'
-	+ '		<div class="user-image rounded-user-image" style="background-image:url('+d.sender.profile_image_url+')" data-screen_name="'+d.sender.screen_name+'" title="View user\'s profile"></div>'
-	+ '		<div class="screen_name" data-screen_name="'+d.sender.screen_name+'">'
-	+ 			d.sender.screen_name;
-	if (d.sender["protected"]) {
+	+ '	<div class="user" data-user-screen_name="'+d.user.screen_name+'" data-user-id="'+d.user.id+'" data-status-id="'+d.id+'">'
+	+ '		<div class="user-image rounded-user-image" style="background-image:url('+d.user.profile_image_url+')" data-screen_name="'+d.user.screen_name+'" title="View user\'s profile"></div>'
+	+ '		<div class="screen_name" data-screen_name="'+d.user.screen_name+'">'
+	+ 			d.user.screen_name;
+	if (d.user["protected"]) {
 		html += '			<div class="protected-icon">&nbsp;</div>';
 	}
 	html += '	</div>';
-	if (d.sender.name && d.sender.name !== d.sender.screen_name) {
-		html += '		<div class="real_name" data-screen_name="'+d.sender.screen_name+'">'+d.sender.name+'</div>';
+	if (d.user.name && d.user.name !== d.user.screen_name) {
+		html += '		<div class="real_name" data-screen_name="'+d.user.screen_name+'">'+d.user.name+'</div>';
 	}
 	html +='	</div>';
 	
@@ -106,7 +106,7 @@ sc.app.tpl.addTemplateMethod('message-detail-dm', function(d) {
 		+ '				<div class="palm-group-title" id="search-toggle" x-mojo-loc="">Actions</div>'
 		+ '				<div class="palm-list">'
 		+ '					<div class="palm-row single">'
-		+ '						<button class="palm-button" id="message-detail-action-dm" data-screen_name="'+d.sender.screen_name+'">Direct message this user</button>'
+		+ '						<button class="palm-button" id="message-detail-action-dm" data-screen_name="'+d.user.screen_name+'">Direct message this user</button>'
 		+ '					</div>'
 		+ '				</div>'
 		+ '			</div>'
@@ -150,7 +150,7 @@ sc.app.tpl.addTemplateMethod('user-detail', function(d) {
 	}
 	html +='	</div>'
 	+ '	<div class="user-info">'
-	+ '		<div class="user-description">'+d.description+'</div>';
+	+ '		<div class="user-description">'+(d.description || "")+'</div>';
 	if (d.location) {
 		html += '   	 <div><a class="user-location" href="http://maps.google.com/?q=' +encodeURIComponent(d.location)+ '" title="View this location on a map">'+d.location+'</a></div>';
 	}

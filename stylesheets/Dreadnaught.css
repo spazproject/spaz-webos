@@ -2,21 +2,21 @@
 
 BODY, BODY>div[x-mojo-element=Scroller] {
     background-color:#111111;
-	color:#EEEEEE;
+		color:#EEEEEE;
 }
 
 body.palm-default {
 	background-image: url('../images/dreadnaught/page-bg-darkgreen.png')  top left no-repeat;
-    z-index: -1;
-    position: fixed;
-    top: 0px;
-    left: 0px;
-    width: 320px;
-    height: 480px;
+	    z-index: -1;
+	    position: fixed;
+	    top: 0px;
+	    left: 0px;
+	    width: 320px;
+	    height: 480px;
 }
- 
+	 
 #mojo-scene-splash-scene-scroller {
-    background: url('../images/splash.jpeg') top left no-repeat;
+  background: url('../images/splash.jpeg') top left no-repeat;
 }
 
 BODY {
@@ -170,8 +170,10 @@ div.timeline-entry {
 		}
 	
 	div.timeline-entry .text-status {
-		margin-left:64px;
-		margin-top:0px;
+		margin: 0 0 0 64px;
+		float: none;
+		height: auto;
+		width: auto;
 	}
 	
 		div.timeline-entry .text-status .meta-wrapper {

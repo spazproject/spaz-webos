@@ -1,13 +1,20 @@
-<div class="timeline-entry new" data-status-id="#{id}" data-user-id="#{user.id}" data-user-screen_name="#{user.screen_name}" data-timestamp="#{created_at_unixtime}">
-	<div class="user" data-user-id="#{user.id}" data-user-screen_name="#{user.screen_name}">
-		<img src="#{user.profile_image_url}" title="#{user.screen_name}" />
-	</div>
-	<div class="status">
-		<div class="screen-name">#{user.screen_name}</div>
-	 	<div class="text">
-			#{text}
-		</div>
-		<div class="meta" data-status-id="#{id}"><span class="date" data-created_at="#{created_at}">#{relative_time}</span></div>  
-	</div>
+<!-- status should be "new" or "reply" -->
+<div class="timeline-entry #{user_statusFormatted} #{classesFormatted}" data-status-id="#{id}" data-user-id="#{user.id}" data-user-screen_name="#{user.screen_name}" data-timestamp="#{SC_created_at_unixtime}" x-mojo-tap-highlight="momentary">
+  <div class="user" data-user-id="#{user.id}" data-user-screen_name="#{user.screen_name}">
+    <div class="user-img rounded-user-image" style="background-image:url('#{user.profile_image_url}')"></div>
+  </div>
+  <div class="text-status">
+    <div class="meta-wrapper">
+      <div class="screen-name">#{user.screen_name}
+      <!-- protected should be "protected-icon" or "" -->
+        <div class="#{user_statusFormatted}"></div>
+      </div>
+      <div class="meta" data-status-id="#{id}">
+        <span class="date">#{created_atFormatted}</span>
+      </div>
+    </div>
+    <div class="text">
+      #{-retweeted_statusFormatted} #{-text}
+    </div>
+  </div>
 </div>
-

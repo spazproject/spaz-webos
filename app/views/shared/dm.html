@@ -1,13 +1,18 @@
-<div class="timeline-entry new" data-status-id="#{id}" data-user-id="#{sender.id}" data-user-screen_name="#{sender.screen_name}" data-timestamp="#{created_at_unixtime}">
-	<div class="user" data-user-id="#{sender.id}" data-user-screen_name="#{sender.screen_name}">
-		<img src="#{sender.profile_image_url}" title="#{sender.screen_name}" />
-	</div>
-	<div class="status">
-		<div class="screen-name">#{sender.screen_name}</div>
-	 	<div class="text">
-			#{text}
-		</div>
-		<div class="meta" data-status-id="#{id}"><span class="date" data-created_at="#{created_at}">#{relative_time}</span> &#x2192;</div>  
-	</div>
+<!-- status should be "new" or "" -->
+<div class="timeline-entry dm #{status}" data-isdm="true" data-status-id="#{id}" data-user-id="#{sender.id}" data-user-screen_name="#{sender.screen_name}" data-timestamp="#{SC_created_at_unixtime}">
+  <div class="user" data-user-id="#{sender.id}" data-user-screen_name="#{sender.screen_name}">
+    <div class="user-img rounded-user-image" style="background-image:url('#{sender.profile_image_url})"></div>
+  </div>
+  <div class="text-status">
+    <div class="meta-wrapper">
+      <div class="screen-name">#{sender.screen_name}</div>
+      <!-- relative_time should be sch.getRelativeTime(d.created_at) -->
+      <div class="meta" data-status-id="#{id}">
+        <span class="date" data-created_at="#{created_at}">#{relative_time}</span>
+      </div>
+    </div>
+    <div class="text">
+      #{text}
+    </div>
+  </div>
 </div>
-

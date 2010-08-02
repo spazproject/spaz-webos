@@ -111,6 +111,7 @@ MyTimelineAssistant.prototype.setup = function() {
 
 	// Set up submenu widget that was wired into the viewMenu above
 	this.controller.setupWidget("filter-menu", undefined, this.timelineFilterMenuModel);
+  this.controller.setupWidget("timeline-filter", {delay: 500}, {});
 	
 	this.setupInlineSpinner('activity-spinner-my-timeline');
 	
@@ -144,6 +145,9 @@ MyTimelineAssistant.prototype.activate = function(params) {
 		Prepare for timeline entry taps
 	*/
 	this.bindTimelineEntryTaps('#my-timeline');
+	this.controller.listen("my-timeline", Mojo.Event.listTap, this.handleTimelineTap);
+	this.controller.listen("timeline-filter", Mojo.Event.filter, this.handleFilterField.bind(this));
+  this.filterField = this.controller.get("timeline-filter");
 
 	/*
 		start the mytimeline 
@@ -210,7 +214,14 @@ MyTimelineAssistant.prototype.initTimeline = function() {
 	sch.debug('initializing Timeline in assistant');
   // TODO: Timeline list widget
 	this.timelineModel = {items: []};
-  // this.controller.setupWidget("list-id", {}, this.timelineModel);
+	this.controller.setupWidget("my-timeline", {
+    itemTemplate: "shared/tweet", 
+    hasNoWidgets: true, 
+    lookahead: 20, 
+    renderLimit: 20,
+    formatters: this.formatters }, this.timelineModel);
+    
+
 	
 	var thisA = this;
 	/*
@@ -228,96 +239,49 @@ MyTimelineAssistant.prototype.initTimeline = function() {
 		'max_items':100, // this isn't actually used atm
 
 		'request_data': function() {
-			if (thisA.isTopmostScene()) {
-				// sc.helpers.markAllAsRead('#my-timeline div.timeline-entry.new');
-				jQuery('#my-timeline div.timeline-entry.new').removeClass('new');
-			}
 			thisA.getData();
 		},
 		'data_success': function(e, data) {
-			data = data.reverse();
-			var no_dupes = [];
-			
-			var previous_count = jQuery('#my-timeline div.timeline-entry').length;
-			
-			var $oldFirst = jQuery('#my-timeline div.timeline-entry:first');
-			
-			for (var i=0; i < data.length; i++) {
-				
-				/*
-					only add if it doesn't already exist
-				*/
-				if (jQuery('#my-timeline div.timeline-entry[data-status-id='+data[i].id+']').length<1) {
-					
-					sc.app.Tweets.save(data[i]);
-					data[i].text = Spaz.makeItemsClickable(data[i].text);
-					no_dupes.push(data[i]);
-				}
-				
+			var previous_count = thisA.timelineModel.items.length;
+		  // set last since_id for setting new class on entries
+			if(thisA.timelineModel.items.length > 0)
+        thisA.last_created_at_unixtime = thisA.timelineModel.items[0].SC_created_at_unixtime;
+      else
+        thisA.last_created_at_unixtime = -1;
+        
+			var tweet;
+			for (var i=0, j = data.length; i < j; i++) {
+			  tweet = data[i];
+			  tweet.text = Spaz.makeItemsClickable(tweet.text);
+			  if(tweet.sender) {
+			    tweet.user = tweet.sender;
+			    tweet.sender = null;
+			  }
+				sc.app.Tweets.save(tweet);
 			};
 			
-			thisA.mytl.addItems(no_dupes);
+			Mojo.Log.error("About to render timeline");
+      thisA.filterTimeline();
 
-      // TODO: Timeline list widget
-      sc.app.Tweets.bucket.all(function(tweets) {
-        thisA.timelineModel.items = tweets;
-        sc.info("Finished loading tweets. There are now " + tweets.length);
-      //   thisA.controller.modelChanged(thisA.timelineModel);
-      });
-			
-			/*
-				sort timeline
-			*/
-			var before = new Date();
-			
-			// don't sort if we don't have anything new!
-			if (no_dupes.length > 0) {
-				// get first of new times
-				var new_first_time = no_dupes[0].SC_created_at_unixtime;
-				// get last of new times
-				var new_last_time  = no_dupes[no_dupes.length-1].SC_created_at_unixtime;
-				// get first of OLD times
-				var old_first_time = parseInt($oldFirst.attr('data-timestamp'), 10);
-				
-				sch.debug('new_first_time:'+new_first_time);
-				sch.debug('new_last_time:'+new_last_time);
-				sch.debug('old_first_time:'+old_first_time);
-				
-				// sort if either first new or last new is OLDER than the first old
-				if (new_first_time < old_first_time || new_last_time < old_first_time) {
-					jQuery('#my-timeline div.timeline-entry').tsort({attr:'data-timestamp', place:'orig', order:'desc'});					
-				} else {
-					sch.debug('Didn\'t resort…');
-				}
-
-			}
-			var after = new Date();
-			var total = new Date();
-			total.setTime(after.getTime() - before.getTime());
-			sch.debug('Sorting took ' + total.getMilliseconds() + 'ms');
-			
-			sc.helpers.updateRelativeTimes('#my-timeline div.timeline-entry span.date', 'data-created_at');
-			
-			/*
-				re-apply filtering
-			*/
-			thisA.filterTimeline();
-			
 			/*
 				Get new counts
 			*/
-			var new_count         = jQuery('#my-timeline div.timeline-entry.new:visible').length;
-			var new_mention_count = jQuery('#my-timeline div.timeline-entry.new.reply:visible').length;
-			var new_dm_count      = jQuery('#my-timeline div.timeline-entry.new.dm:visible').length;
+			var new_count         = data.select(function(tweet) {
+			  return !tweet.not_new;
+			}).length;
+			var new_mention_count = data.select(function(tweet) {
+			  return (!tweet.not_new && tweet.SC_is_reply);
+			}).length;
+			var new_dm_count      = data.select(function(tweet) {
+			  return (!tweet.not_new && tweet.SC_is_dm);
+			}).length;
 			
 			/*
 				Scroll to the first new if there are new messages
 				and there were already some items in the timeline
 			*/
 			if (new_count > 0) {
-
 				// thisA.playAudioCue('newmsg');
-				
 				if (previous_count > 0) {
 					if (sc.app.prefs.get('timeline-scrollonupdate')) {
 						if (thisA.isTopmostScene()) {
@@ -348,8 +312,6 @@ MyTimelineAssistant.prototype.initTimeline = function() {
 			}
 			
 			thisA.hideInlineSpinner('activity-spinner-my-timeline');
-			
-			thisA.saveTimelineCache();
 		},
 		'data_failure': function(e, error_array) {
 			dump('error_combined_timeline_data - response:');
@@ -358,21 +320,7 @@ MyTimelineAssistant.prototype.initTimeline = function() {
 			var err_msg = $L("There were errors retrieving your combined timeline");
 			thisA.displayErrorInfo(err_msg, error_array);
 		},
-		'renderer': function(obj) {
-			try {
-				if (obj.SC_is_dm) {
-					return sc.app.tpl.parseTemplate('dm', obj);
-				} else {
-					return sc.app.tpl.parseTemplate('tweet', obj);
-				}				
-			} catch(err) {
-				sch.error("There was an error rendering the object: "+sch.enJSON(obj));
-				sch.error("Error:"+sch.enJSON(err));
-				return '';
-			}
-			
-			
-		}
+		'renderer': function() {}
 	});
 	
 	/*
