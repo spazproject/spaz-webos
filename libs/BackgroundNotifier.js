@@ -96,7 +96,6 @@ BackgroundNotifier.prototype.init = function() {
 	if (last_user_obj) {
 		sch.debug(last_user_obj);
 		sc.app.username = last_user_obj.username;
-		sc.app.password = last_user_obj.password;
 		sc.app.type     = last_user_obj.type;
 		sc.app.userid   = last_user_obj.id;
 
