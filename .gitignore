@@ -4,3 +4,4 @@ mockups
 *.ipk
 *.pem
 *.graffle
+app/auth_config.js
