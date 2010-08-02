@@ -1,9 +1,22 @@
 /* Put Application specific CSS here. */
 
-BODY, BODY>div[x-mojo-element=Scroller] {	
-	background-image: url('../images/dreadnaught/page-bg-darkgreen.png');
-	background-color:#111111;
+BODY, BODY>div[x-mojo-element=Scroller] {
+    background-color:#111111;
 	color:#EEEEEE;
+}
+
+body.palm-default {
+	background-image: url('../images/dreadnaught/page-bg-darkgreen.png')  top left no-repeat;
+    z-index: -1;
+    position: fixed;
+    top: 0px;
+    left: 0px;
+    width: 320px;
+    height: 480px;
+}
+ 
+#mojo-scene-splash-scene-scroller {
+    background: url('../images/splash.jpeg') top left no-repeat;
 }
 
 BODY {
@@ -156,17 +169,17 @@ div.timeline-entry {
 			height:48px;
 		}
 	
-	div.timeline-entry .status {
+	div.timeline-entry .text-status {
 		margin-left:64px;
 		margin-top:0px;
 	}
 	
-		div.timeline-entry .status .meta-wrapper {
+		div.timeline-entry .text-status .meta-wrapper {
 			overflow:hidden;
 			margin-top:5px;
 			height:15pt;
 		}
-		div.timeline-entry .status .screen-name {
+		div.timeline-entry .text-status .screen-name {
 			float:left;
 			font-size:11pt;
 /*			font-weight:bold;*/
@@ -176,23 +189,23 @@ div.timeline-entry {
 			position:relative;
 			text-shadow: 0px 1px 4px #000;
 		}
-		div.timeline-entry .status .text {
+		div.timeline-entry .text-status .text {
 			font-size:11pt;
 			line-height:15pt;
 		}
-		.status .text a:link,
-		.status .text a:visited,
-		.status .text a:active,
-		.status .text .clickable {
+		.text-status .text a:link,
+		.text-status .text a:visited,
+		.text-status .text a:active,
+		.text-status .text .clickable {
 /*			color:#3333CC;
 			text-decoration:underline;
 */		}
-			.status .text a:active,
-			.status .text .clickable:active {
+			.text-status .text a:active,
+			.text-status .text .clickable:active {
 /*				-webkit-border-image: url(../images/dreadnaught/text-link-bg-active.png) 0 7 0 7;*/
 			}
 
-	div.timeline-entry .status .meta {
+	div.timeline-entry .text-status .meta {
 		float:right;
 		position:relative;
 		height:20px;
@@ -208,8 +221,8 @@ div.timeline-entry {
 /*		-webkit-border-image: url(../images/dreadnaught/meta-link-bg.png) 0 7 0 7;*/
 	}
 
-			div.timeline-entry:active .status .meta,
-			div.timeline-entry .status .meta:active {
+			div.timeline-entry:active .text-status .meta,
+			div.timeline-entry .text-status .meta:active {
 				color:#FFFFCC;
 			}
 	
@@ -225,45 +238,45 @@ div.timeline-entry {
 /*
 	timeline entry font sizes
 */	
-.timeline.tall div.timeline-entry .status .screen-name {
+.timeline.tall div.timeline-entry .text-status .screen-name {
 	font-size:12pt;
 }
-.timeline.tall div.timeline-entry .status .meta-wrapper {
+.timeline.tall div.timeline-entry .text-status .meta-wrapper {
 	height:15pt;
 }
-.timeline.tall div.timeline-entry .status .text {
+.timeline.tall div.timeline-entry .text-status .text {
 	font-size:11pt;
 	line-height:15pt;
 }
-.timeline.tall div.timeline-entry .status .meta {
+.timeline.tall div.timeline-entry .text-status .meta {
 	font-size:	10pt;
 }
 
-.timeline.grande div.timeline-entry .status .screen-name {
+.timeline.grande div.timeline-entry .text-status .screen-name {
 	font-size:14pt;
 }
-.timeline.venti div.timeline-entry .status .meta-wrapper {
+.timeline.venti div.timeline-entry .text-status .meta-wrapper {
 	height:17pt;
 }
-.timeline.grande div.timeline-entry .status .text {
+.timeline.grande div.timeline-entry .text-status .text {
 	font-size:14pt;
 	line-height:19pt;
 }
-.timeline.grande div.timeline-entry .status .meta {
+.timeline.grande div.timeline-entry .text-status .meta {
 	font-size:	12pt;
 }
 
-.timeline.venti div.timeline-entry .status .screen-name {
+.timeline.venti div.timeline-entry .text-status .screen-name {
 	font-size:17pt;
 }
-.timeline.venti div.timeline-entry .status .meta-wrapper {
+.timeline.venti div.timeline-entry .text-status .meta-wrapper {
 	height:22pt;
 }
-.timeline.venti div.timeline-entry .status .text {
+.timeline.venti div.timeline-entry .text-status .text {
 	font-size:17pt;
 	line-height:22pt;
 }
-.timeline.venti div.timeline-entry .status .meta {
+.timeline.venti div.timeline-entry .text-status .meta {
 	font-size:	14pt;
 }
 
@@ -473,30 +486,30 @@ div.spaz-drawer {
 	
 	
 	
-	#message-detail .status {
+	#message-detail .text-status {
 		margin-left: 8px;
 		margin-right:8px;
 		clear:both;
 	}
-		#message-detail .status .thumbnails {
+		#message-detail .text-status .thumbnails {
 			margin:5px 0 0;
 /*			padding:7px;*/
 /*			background-color:#222;*/
 /*			-khtml-border-radius:10px;*/
 /*			text-align:center;*/
 		}
-			#message-detail .status .thumbnail {
+			#message-detail .text-status .thumbnail {
 				border:1px solid #999999;
 				position:relative;
 				max-width:98%;
 			}
-		#message-detail .status .text {
+		#message-detail .text-status .text {
 			margin-top:.3em;
 			line-height:140%;
 			font-size:13pt;
 		}
 
-		#message-detail .status .meta {
+		#message-detail .text-status .meta {
 /*			background-color:rgba(0,0,0,.5);*/
 /*			padding:3px 0px;*/
 /*			-khtml-border-radius: 1em;*/
@@ -507,20 +520,20 @@ div.spaz-drawer {
 		}
 		
 			
-			#message-detail .status .meta .date {
+			#message-detail .text-status .meta .date {
 			}
 		
-			#message-detail .status .meta .in-reply-to {
+			#message-detail .text-status .meta .in-reply-to {
 			}
 
-	        #message-detail .status .meta .clickable,
-			#message-detail .status .meta a:link,
-			#message-detail .status .meta a:visited {
+	        #message-detail .text-status .meta .clickable,
+			#message-detail .text-status .meta a:link,
+			#message-detail .text-status .meta a:visited {
 /*				color:#3333CC;
 				text-decoration:underline;
 */			}
-				#message-detail .status .meta .clickable:active,
-				#message-detail .status .meta a:active, {
+				#message-detail .text-status .meta .clickable:active,
+				#message-detail .text-status .meta a:active, {
 /*					-webkit-border-image: url(../images/dreadnaught/text-link-bg-active.png) 0 7 0 7;*/
 				}
 
@@ -678,13 +691,13 @@ div.spaz-drawer {
 			#user-timeline div.user {
 				display:none !important;
 			}
-			#user-timeline .status {
+			#user-timeline .text-status {
 				margin-left:0px;
 			}
-			#user-timeline .status .screen-name {
+			#user-timeline .text-status .screen-name {
 				display:none;
 			}
-			#user-timeline div.timeline-entry .status .meta {
+			#user-timeline div.timeline-entry .text-status .meta {
 				color:#FFFFCC;
 /*				-webkit-border-top-right-radius:6pt;
 				-webkit-border-bottom-right-radius:6pt;
@@ -692,7 +705,7 @@ div.spaz-drawer {
 /*				background-color: rgba(34,34,0,.5);*/
 				
 			}
-					#user-timeline div.timeline-entry .status .meta:active {
+					#user-timeline div.timeline-entry .text-status .meta:active {
 						color:#444444;
 /*						background-color: rgba(153,153,102,.5);*/
 					}
