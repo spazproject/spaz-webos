@@ -85,12 +85,19 @@ StartloginAssistant.prototype.setup = function() {
 		Tap on list
 	*/
     Mojo.Event.listen(jQuery('#accountList')[0], Mojo.Event.listTap, function(e) {
+	
+		sch.debug('CLICKED ON ITEM');
+		sch.debug(sch.enJSON(e.item));
+	
 		sc.app.username = e.item.username;
-		sc.app.password = e.item.password;
+		sc.app.auth		= e.item.auth;
 		sc.app.type     = e.item.type;
 		sc.app.userid	= e.item.id;
 		
-		
+		sch.debug('sc.app.username:' + sc.app.username);
+		sch.debug('sc.app.auth:'     + sc.app.auth);  
+		sch.debug('sc.app.type:'     + sc.app.type);   
+		sch.debug('sc.app.userid:'	 + sc.app.userid);
 		
 		sc.app.prefs.set('last_userid', sc.app.userid);
 				
@@ -338,7 +345,7 @@ var NewAccountDialogAssistant = Class.create({
 			What to do if we succeed
 			Note that we pass the assistant object as data into the closure
 		*/
-		jQuery().bind('verify_credentials_succeeded', function(e) {
+		jQuery(document).bind('verify_credentials_succeeded', function(e) {
 			jQuery('#new-account-errormsg').html('');
 			thisA.deactivateSpinner();
 			
@@ -360,7 +367,7 @@ var NewAccountDialogAssistant = Class.create({
 		/*
 			What to do if we fail
 		*/
-		jQuery().bind('verify_credentials_failed', function(e) {
+		jQuery(document).bind('verify_credentials_failed', function(e) {
 			/*
 				If we return to this scene from another
 				and fail the login, e.data.thisAssistant will not have
@@ -389,8 +396,8 @@ var NewAccountDialogAssistant = Class.create({
 	
 	
 	deactivate: function() {
-		jQuery().unbind('verify_credentials_succeeded');
-		jQuery().unbind('verify_credentials_failed');
+		jQuery(document).unbind('verify_credentials_succeeded');
+		jQuery(document).unbind('verify_credentials_failed');
 		jQuery('#new-account-errormsg').html('');
 		Mojo.Event.stopListening(this.controller.get('new-password'),
 			Mojo.Event.propertyChange,
@@ -445,11 +452,17 @@ var NewAccountDialogAssistant = Class.create({
 	},
 	
 	handleVerifyPassword: function() {
+		
+		var that = this;
+		
 		jQuery('#new-account-errormsg').html('');
 		/*
 			Turn on the spinner and set the message
 		*/
 		// this.sceneAssistant.showInlineSpinner('#new-account-spinner-container', 'Verifying credentials');
+		
+		sch.error("new account:");
+		sch.error(this.newAccountModel);
 		
 		/*
 			now verify credentials against the Twitter API
@@ -461,11 +474,56 @@ var NewAccountDialogAssistant = Class.create({
 				sc.app.twit.setBaseURL(this.newAccountModel['api-url']);
 			}
 			
-			sc.app.twit.verifyCredentials(this.newAccountModel.username.toLowerCase(), this.newAccountModel.password);
-		} else {
-			this.deactivateSpinner();
+			
+			
+			
+			var auth  = new SpazAuth(this.newAccountModel.type);
+			
+			auth.authorize(
+				this.newAccountModel.username,
+				this.newAccountModel.password,
+				function(result, accessToken) {
+					if (result) {
+
+						sch.error('auth.signingCredentials');
+						sch.error(sch.enJSON(auth.signingCredentials));
+
+						sch.error('result:');
+						sch.error(result);
+
+						var auth_pickle = auth.save();
+
+						sch.error('auth_pickle:');
+						sch.error(auth_pickle);
+
+						jQuery('#new-account-errormsg').html('');
+						that.deactivateSpinner();
+
+						var newaccid = that.sceneAssistant.Users.generateID(that.newAccountModel.username, that.newAccountModel.type);
+
+						var newItem = {
+							id:newaccid,
+							username:that.newAccountModel.username.toLowerCase(),
+							auth:auth_pickle,
+							type:that.newAccountModel.type
+						};
+						// the list model
+						that.sceneAssistant.accountsModel.items.push(newItem);
+						
+						// the accounts model
+						sc.app.accounts.setAll(that.sceneAssistant.accountsModel.items);
+						sc.app.accounts.setMeta(newaccid, 'api-url', that.newAccountModel['api-url']);
+
+						jQuery('#accountList')[0].mojo.noticeAddedItems(that.sceneAssistant.accountsModel.items.length, [newItem]);
+						that.widget.mojo.close();
+
+					} else {					
+						jQuery('#new-account-errormsg').text($L('Verification failed!'));
+						that.deactivateSpinner();
+					}
+				}
+			);
 		}
-		
 	},
 	
 	activateSpinner: function() {
