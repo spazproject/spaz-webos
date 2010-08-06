@@ -462,7 +462,7 @@ var NewAccountDialogAssistant = Class.create({
 		// this.sceneAssistant.showInlineSpinner('#new-account-spinner-container', 'Verifying credentials');
 		
 		sch.error("new account:");
-		sch.error(this.newAccountModel);
+		sch.error(this.newAccountModel.username);
 		
 		/*
 			now verify credentials against the Twitter API
@@ -479,17 +479,13 @@ var NewAccountDialogAssistant = Class.create({
 			
 			var auth  = new SpazAuth(this.newAccountModel.type);
 			
+			sch.error('authorizing…');
+			
 			auth.authorize(
 				this.newAccountModel.username,
 				this.newAccountModel.password,
-				function(result, accessToken) {
+				function(result) {
 					if (result) {
-
-						sch.error('auth.signingCredentials');
-						sch.error(sch.enJSON(auth.signingCredentials));
-
-						sch.error('result:');
-						sch.error(result);
 
 						var auth_pickle = auth.save();
 

@@ -7232,10 +7232,14 @@ function SpazBasicAuth() {
  * @class SpazBasicAuth
  * @return {Boolean} true. ALWAYS returns true!
  */
-SpazBasicAuth.prototype.authorize = function(username, password) {
+SpazBasicAuth.prototype.authorize = function(username, password, onComplete) {
     this.username = username;
     this.password = password;
     this.authHeader = "Basic " + sc.helpers.Base64.encode(username + ":" + password);
+    
+    if (onComplete) {
+        onComplete.call(this, true);
+    }
 	return true;
 };
 
