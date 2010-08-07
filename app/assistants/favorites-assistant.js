@@ -183,16 +183,31 @@ FavoritesAssistant.prototype.refresh = function(event) {
 	redefine addItems to work with list model
 */
 FavoritesAssistant.prototype.addItems = function(new_items) {
-	var model_item, model_items = [];
+	
+	// now we have all the existing items from the model
+	var model_items = this.timeline_model.items.clone();
+	
+	var model_item;
 	for (var i=0; i < new_items.length; i++) {
 		model_item = {
 			'id':new_items[i].id,
 			'html':sc.app.tpl.parseTemplate('tweet', new_items[i])
 		};
+		// add each item to the model
 		model_items.push(model_item);
+		
 	}
-	this.favorites_list = this.controller.get('favorites-timeline');
-	this.favorites_list.mojo.noticeAddedItems(0, model_items);
+	
+	// sort, in reverse
+	model_items.sort(function(a,b){
+		return b.id - a.id; // newest first
+	});
+	
+	// re-assign the cloned items back to the model object
+	this.timeline_model.items = model_items;
+	
+	// tell the controller it's changed to update list widget
+	this.controller.modelChanged(this.timeline_model);
 };
 
 FavoritesAssistant.prototype.itemExistsInModel = function(obj) {
@@ -207,9 +222,15 @@ FavoritesAssistant.prototype.itemExistsInModel = function(obj) {
 	return false;
 };
 
-// FavoritesAssistant.prototype.getData = function() {
-// 	sc.helpers.markAllAsRead('#favorites-timeline>div.timeline-entry');
-// 	this.showInlineSpinner('activity-spinner-favorites', 'Loading favorite tweets…');
-// 	
-// 	this.twit.getFavorites();
-// };
+/**
+ * oh my god this is probably deadly for performance 
+ */
+FavoritesAssistant.prototype.markAllAsRead = function() {
+	for (var i=0; i < this.timeline_model.items.length; i++) {
+		var new_element = jQuery(this.timeline_model.items[i].html).removeClass('new').get(0);
+		if (new_element) {
+			this.timeline_model.items[i].html = new_element.outerHTML;
+		}
+	}
+	this.controller.modelChanged(this.timeline_model);
+}
