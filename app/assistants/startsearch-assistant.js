@@ -33,15 +33,18 @@ StartsearchAssistant.prototype.setup = function() {
 			],
 			cmdMenuItems: [
 				{label:$L('Compose'),  icon:'compose', command:'compose', shortcut:'N'},
+				{},
 				{
-					toggleCmd:'IGNORE',
+					toggleCmd:'refresh',
 					items: [
 						{label:$L('My Timeline'), icon:'conversation', command:'my-timeline', shortcut:'T'},
 						{label:$L('Favorites'), iconPath:'images/theme/menu-icon-favorite.png', command:'favorites', shortcut:'F'},
-						{label:$L('Search'),      icon:'search', command:'IGNORE', shortcut:'S', 'class':"palm-depressed selected"}
+						{label:$L('Search'),      icon:'search', command:'refresh', shortcut:'S', 'class':"palm-depressed selected"}
 					]
 				},
-				{label:$L('Refresh'),   icon:'sync', command:'refresh', shortcut:'R'}					
+				{},
+				{},
+				{}
 			]
 		});
 		
