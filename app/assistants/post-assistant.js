@@ -57,8 +57,8 @@ PostAssistant.prototype.setup = function() {
 		disabled:false
 	};
 	
-	this.controller.setupWidget('post-send-button',         this.buttonAttributes, this.postButtonModel);
-	this.controller.setupWidget('attach-image-button',      {}, this.attachImageButtonModel);
+	this.controller.setupWidget('post-send-button',			this.buttonAttributes, this.postButtonModel);
+	this.controller.setupWidget('attach-image-button',		{}, this.attachImageButtonModel);
 	this.controller.setupWidget('post-shorten-text-button', this.buttonAttributes, this.shortenTextButtonModel);
 	this.controller.setupWidget('post-shorten-urls-button', this.buttonAttributes, this.shortenURLsButtonModel);
 	this.controller.setupWidget('post-textfield', {
@@ -79,7 +79,7 @@ PostAssistant.prototype.setup = function() {
 		'image-uploader-email':''
 	};
 	this.controller.setupWidget('image-uploader-email',
-	    {
+		{
 			// hintText: $L('posting email'),
 			enterSubmits: false,
 			requiresEnterKey: false,
@@ -109,11 +109,30 @@ PostAssistant.prototype.setup = function() {
 	var uploaders = this.SFU.getAPILabels();
 	this.validImageUploaders = [];
 	for (var i=0; i < uploaders.length; i++) {
-		this.validImageUploaders.push({label:$L(uploaders[i]),  value:uploaders[i]});
+		this.validImageUploaders.push({label:$L(uploaders[i]),	value:uploaders[i]});
 	};
 	
+	/*
+		check if we have a valid image uploader
+	*/
+	var iupl = sc.app.prefs.get('image-uploader');
+	var valid_iupl = false;
+	var image_uploader = new SpazImageUploader();
+	for (var key in image_uploader.services) {
+		if (key == iupl) {
+			valid_iupl = true;
+		}
+	}
+	if (!valid_iupl) {
+		iupl = default_preferences['image-uploader']; // set this as default
+		sc.app.prefs.set('image-uploader', iupl);
+	}
+	
+	/*
+		set the image uploader in the model
+	*/
 	this.imageUploaderModel = {
-		'image-uploader':sc.app.prefs.get('image-uploader')
+		'image-uploader':iupl
 	};
 	
 	this.controller.setupWidget('image-uploader',
@@ -147,8 +166,8 @@ PostAssistant.prototype.setup = function() {
 			this.sendPost();
 		}
 	});
-	Mojo.Event.listen(jQuery('#image-uploader')[0], Mojo.Event.propertyChange, this.changeImageUploader.bindAsEventListener(this));	
-	Mojo.Event.listen(jQuery('#image-uploader-email')[0], Mojo.Event.propertyChange, this.setImageUploaderEmail.bindAsEventListener(this));	
+	Mojo.Event.listen(jQuery('#image-uploader')[0], Mojo.Event.propertyChange, this.changeImageUploader.bindAsEventListener(this)); 
+	Mojo.Event.listen(jQuery('#image-uploader-email')[0], Mojo.Event.propertyChange, this.setImageUploaderEmail.bindAsEventListener(this)); 
 
 
 
@@ -276,7 +295,7 @@ PostAssistant.prototype.cleanup = function(event) {
 	
 	this.stopListeningForEnter('post-textfield');
 	
-	Mojo.Event.stopListening(jQuery('#post-textfield')[0], Mojo.Event.propertyChange, this._updateCharCount.bindAsEventListener(this));	
+	Mojo.Event.stopListening(jQuery('#post-textfield')[0], Mojo.Event.propertyChange, this._updateCharCount.bindAsEventListener(this)); 
 	
 	jQuery('#post-panel-irt-dismiss').unbind(Mojo.Event.tap);
 	jQuery('#post-image-lookup-email').unbind(Mojo.Event.tap);
@@ -485,6 +504,8 @@ PostAssistant.prototype.setImageUploaderEmail = function(api_label, email) {
  * Sends a post, either by email or normal AJAX posting to Twitter, per this.postMode
  */
 PostAssistant.prototype.sendPost = function(event) {
+	var that = this;
+	
 	var status = this.postTextFieldModel.value;
 	
 	if (this.postMode === 'email') {
@@ -504,27 +525,77 @@ PostAssistant.prototype.sendPost = function(event) {
 			var in_reply_to = parseInt(jQuery('#post-panel-irt-message', this.controller.getSceneScroller()).attr('data-status-id'), 10);
 
 			if (this.model.attachment) { // we have an attachment; post through service
+				var auth = Spaz.Prefs.getAuthObject();
+				/*
+					FIRST, UPLOAD THE IMAGE
+					THEN, POST MSG TO TWITTER IF UPLOAD SUCCESSFUL
+				*/
+				var image_uploader = new SpazImageUploader();
+				image_uploader.setOpts({
+					'auth_obj': auth,
+					'service' : this.imageUploaderModel['image-uploader'],
+					'file_url': this.model.attachment,
+					'extra': {
+						'message':status
+					},
+					'onSuccess':function(event_data) { // onSuccess
+						var img_url = event_data.url;
+						status = img_url + ' ' + status;
 
-				var source = 'spaz';
-
-				this.SFU.setAPI(this.imageUploaderModel['image-uploader']);
-
-				if (this.imageUploaderModel['image-uploader'] === 'pikchur') {
-					this.SFU.setAPIKey(sc.app.prefs.get('services-pikchur-apikey'));
-					source = sc.app.prefs.get('services-pikchur-source');
-				}
-
-				
-				this.SFU.uploadAndPost(this.model.attachment, {
-					'username' : sc.app.username,
-					'password' : sc.app.password,
-					'source'   : source,
-					'message'  : status,
-					'platform' : {
+						if (status.length > 140) {
+							status = status.slice(0,138)+'…';
+						}
+						
+						sch.debug('Posting message…');
+						that.setPostButtonLabel('Posting message…');
+						
+						if (in_reply_to > 0) {
+							that.twit.update(status, null, in_reply_to);
+						} else {
+							that.twit.update(status, null, null);
+						}
+					},
+					'onFailure':function(response_data) { // onFailure
+						sch.error('Posting image FAILED');
+						ech.error("Error!");
+						ech.error(response_data);
+						that.deactivateSpinner();
+					},
+					'platform' : { // need this for webOS to upload
 						'sceneAssistant' : this
 					}
 				});
 				
+				sch.debug('Uploding image…');
+				this.setPostButtonLabel('Uploading image…');
+				image_uploader.upload();
+
+				
+				
+				
+
+				// var source = 'spaz';
+				// 
+				// this.SFU.setAPI(this.imageUploaderModel['image-uploader']);
+				// 
+				// if (this.imageUploaderModel['image-uploader'] === 'pikchur') {
+				//	this.SFU.setAPIKey(sc.app.prefs.get('services-pikchur-apikey'));
+				//	source = sc.app.prefs.get('services-pikchur-source');
+				// }
+				// 
+				// 
+				// this.SFU.uploadAndPost(this.model.attachment, {
+				//	'username' : sc.app.username,
+				//	'password' : sc.app.password,
+				//	'source'   : source,
+				//	'message'  : status,
+				//	'platform' : {
+				//		'sceneAssistant' : this
+				//	}
+				// });
+				// 
+				
+
 				
 				
 			} else { // normal post without attachment
@@ -541,7 +612,7 @@ PostAssistant.prototype.sendPost = function(event) {
 			this.controller.modelChanged(this.postTextFieldModel);
 
 		} else { // don't post if length < 0 or > 140
-		
+			
 			this.deactivateSpinner();
 			
 		}
@@ -645,14 +716,14 @@ PostAssistant.prototype.postImageMessage = function(post_add_obj, message, file_
 
 PostAssistant.prototype.emailImageMessage = function(post_add_obj, message, file_path) {
 	Spaz.sendEmail({
-      to: [post_add_obj],
-      msg: message,
-      subject: message,
-      attachments: [file_obj],
-      controller: this.controller
-    });
-    // next line should close new post "dialog"
-    this.controller.stageController.popScene();
+	  to: [post_add_obj],
+	  msg: message,
+	  subject: message,
+	  attachments: [file_obj],
+	  controller: this.controller
+	});
+	// next line should close new post "dialog"
+	this.controller.stageController.popScene();
 };
 
 /**
@@ -664,26 +735,26 @@ PostAssistant.prototype.chooseImage = function(posting_address, message, filepat
 	var thisA = this;
 	
 	// function fakeIt(file) {
-	// 	jQuery('#post-attachment').show().html(file);
-	// 	thisA.model.attachment = file;
-	// 	thisA.postMode = 'email';
-	// 	thisA.cancelAttachImage();
-	// 	jQuery('#post-panel-attachment').show();
-	// 	jQuery('#post-panel-attachment-dismiss').one('click', function() {
-	// 		thisA.postMode = 'normal';
-	// 		jQuery('#post-panel-attachment').hide();
-	// 		thisA.model.attachment = null;
-	// 		thisA.cancelAttachImage();
-	// 	});
-	//     }
+	//	jQuery('#post-attachment').show().html(file);
+	//	thisA.model.attachment = file;
+	//	thisA.postMode = 'email';
+	//	thisA.cancelAttachImage();
+	//	jQuery('#post-panel-attachment').show();
+	//	jQuery('#post-panel-attachment-dismiss').one('click', function() {
+	//		thisA.postMode = 'normal';
+	//		jQuery('#post-panel-attachment').hide();
+	//		thisA.model.attachment = null;
+	//		thisA.cancelAttachImage();
+	//	});
+	//	   }
 	// 
 	// fakeIt('file:///media/internal/wallpapers/01.jpg');
 	// return;
 	
 	
 	var params = {
-	    kinds: ['image'],
-	    onSelect: function(file) {
+		kinds: ['image'],
+		onSelect: function(file) {
 			dump(file);
 
 			thisA.model.attachment = file.fullPath;
@@ -696,7 +767,7 @@ PostAssistant.prototype.chooseImage = function(posting_address, message, filepat
 			thisA.returningFromFilePicker = true;
 			
 			dump(thisA.postMode);	
-	    }
+		}
 	};
 	Mojo.FilePicker.pickFile(params, this.controller.stageController);
 };
@@ -724,6 +795,8 @@ PostAssistant.prototype.onReturnFromFilePicker = function() {
  * 
  */
 PostAssistant.prototype.renderSuccessfulPost = function(event, data) {
+	this.setPostButtonLabel('Posted!');
+	
 	if (sch.isArray(data)) {
 		data = data[0];
 	}
@@ -781,7 +854,7 @@ PostAssistant.prototype.renderSuccessfulPost = function(event, data) {
 
 
 /**
- *  
+ *	
  */
 PostAssistant.prototype.reportFailedPost = function(error_obj) {
 	this.deactivateSpinner();

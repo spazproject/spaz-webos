@@ -1,4 +1,4 @@
-/*********** Built 2010-07-10 13:33:04 EDT ***********/
+/*********** Built 2010-08-07 14:08:28 EDT ***********/
 /*jslint 
 browser: true,
 nomen: false,
@@ -5405,8 +5405,7 @@ sc.helpers.isNumber = function(chk) {
 	http://www.breakingpar.com/bkp/home.nsf/0/87256B280015193F87256C720080D723
 */
 sc.helpers.isArray = function(obj) {
-	
-	if (!obj || !obj.constructor || obj.constructor.toString().indexOf("Array") === -1) {
+	if (obj.constructor.toString().indexOf("Array") === -1) {
 		return false;
 	} else {
 		return true;
@@ -7229,6 +7228,7 @@ function SpazBasicAuth() {
  *
  * @param {string} username
  * @param {string} password
+ * @param {function} [onComplete] a callback to fire when complete. Currently just passed TRUE all the time; for compatibility with oAuth need for callbacks
  * @class SpazBasicAuth
  * @return {Boolean} true. ALWAYS returns true!
  */
@@ -7242,6 +7242,7 @@ SpazBasicAuth.prototype.authorize = function(username, password, onComplete) {
     }
 	return true;
 };
+
 
 /**
  * Returns the authentication header
@@ -7295,9 +7296,10 @@ function SpazOAuth(realm, options) {
 
 /**
  * Authorize access to the service by fetching an OAuth access token.
- *
+ * 
  * @param {string} username
  * @param {string} password
+ * @param {function} [onComplete] a callback to fire on complete. If this is set, the request is asynchronous
  * @returns {boolean} true if authorization successful, otherwise false
  * @class SpazOAuth
  */
@@ -7433,6 +7435,7 @@ SpazOAuth.prototype.authorize = function(username, password, onComplete) {
 	// 	}
 	// });
 };
+
 
 /**
   * Set the access token
@@ -8242,6 +8245,307 @@ SpazFileUploader.prototype.upload = function(file_url, opts) {
 };
 
 /*jslint 
+browser: true,
+nomen: false,
+debug: true,
+forin: true,
+undef: true,
+white: false,
+onevar: false 
+ */
+var sc, DOMParser, jQuery;
+
+
+/**
+ * An image uploader library for SpazCore. Probably this will supercede spazfileuploader.js
+ * @param {object} [opts] options hash
+ * @param {object} [opts.auth_obj] A SpazAuth object that's filled with proper authentication info
+ * @param {string} [opts.username] a username, in case we're doing that kind of thing
+ * @param {string} [opts.password] a password, in case we're doing that kind of thing
+ * @param {string} [opts.auth_method] the method of authentication: 'echo' or 'basic'. Default is 'echo'
+ * @param {object} [opts.extra] Extra params to pass in the upload request
+ */
+var SpazImageUploader = function(opts) {
+    if (opts) {
+        this.setOpts(opts);
+    }
+};
+
+
+/**
+ * this lets us set options after instantiation 
+ * @param {object} opts options hash
+ * @param {object} [opts.auth_obj] A SpazAuth object that's filled with proper authentication info
+ * @param {string} [opts.username] a username, in case we're doing that kind of thing
+ * @param {string} [opts.password] a password, in case we're doing that kind of thing
+ * @param {string} [opts.auth_method] the method of authentication: 'echo' or 'basic'. Default is 'echo'
+ * @param {object} [opts.extra] Extra params to pass in the upload request
+ */
+SpazImageUploader.prototype.setOpts = function(opts) {
+    this.opts = sch.defaults({
+        'extra':{},
+        'auth_obj':null,
+        'username':null,
+        'password':null,
+        'auth_method':'echo' // 'echo' or 'basic'
+    }, opts);
+};
+
+/**
+ * a hash of service objects. Each object has a URL endpoint, a parseResponse callback, and an optional "extra" set of params to pass on upload
+ *	parseResponse should return one of these key/val pairs:
+ *	- {'url':'http://foo.bar/XXXX'}
+ *	- {'error':'Error message'}
+ */
+SpazImageUploader.prototype.services = {
+	'drippic' : {
+		'url' : 'http://drippic.com/drippic2/upload',
+		'parseResponse': function(data) {
+			
+			var parser=new DOMParser();
+			xmldoc = parser.parseFromString(data,"text/xml");
+
+			var status;
+			var rspAttr = xmldoc.getElementsByTagName("rsp")[0].attributes;
+			status = rspAttr.getNamedItem("stat").nodeValue;
+			
+			if (status == 'ok') {
+				var mediaurl = $(xmldoc).find('mediaurl').text();
+				return {'url':mediaurl};
+			} else {
+				var errAttributes;
+				if (xmldoc.getElementsByTagName("err")[0]) {
+					errAttributes = xmldoc.getElementsByTagName("err")[0].attributes;
+				} else {
+					errAttributes = xmldoc.getElementsByTagName("error")[0].attributes;
+				}
+				
+				sch.error(errAttributes);
+				errMsg = errAttributes.getNamedItem("msg").nodeValue;
+				sch.error(errMsg);
+				return {'error':errMsg};
+			}
+		}
+	},
+	'pikchur' : {
+		'url'  : 'http://api.pikchur.com/simple/upload',
+		'extra': {
+			'api_key':'MzTrvEd/uPNjGDabr539FA',
+			'source':'NjMw'
+		},
+		'parseResponse': function(data) {
+			var parser=new DOMParser();
+			xmldoc = parser.parseFromString(data,"text/xml");
+	
+			var status;
+			var rspAttr = xmldoc.getElementsByTagName("rsp")[0].attributes;
+			status = rspAttr.getNamedItem("status").nodeValue;
+			
+			if (status == 'ok') {
+				var mediaurl = $(xmldoc).find('mediaurl').text();
+				return {'url':mediaurl};
+			} else {
+				var errAttributes;
+				if (xmldoc.getElementsByTagName("err")[0]) {
+					errAttributes = xmldoc.getElementsByTagName("err")[0].attributes;
+				} else {
+					errAttributes = xmldoc.getElementsByTagName("error")[0].attributes;
+				}
+				
+				sch.error(errAttributes);
+				errMsg = errAttributes.getNamedItem("msg").nodeValue;
+				sch.error(errMsg);
+				return {'error':errMsg};
+			}
+		}
+	},
+	/*
+		Removed yfrog for now because their oAuth Echo stuff never seems to work.
+		Not sure if it's my code or theirs
+	*/
+    // 'yfrog' : {
+    //     'url' : 'http://yfrog.com/api/xauth_upload',
+    //     'extra': {
+    //         'key':'579HINUYe8d826dd61808f2580cbda7f13433310'
+    //     },
+    //     'parseResponse': function(data) {
+    //         
+    //         var parser=new DOMParser();
+    //         xmldoc = parser.parseFromString(data,"text/xml");
+    // 
+    //         var status;
+    //         var rspAttr = xmldoc.getElementsByTagName("rsp")[0].attributes;
+    //         status = rspAttr.getNamedItem("stat").nodeValue;
+    //         
+    //         if (status == 'ok') {
+    //             var mediaurl = $(xmldoc).find('mediaurl').text();
+    //             return {'url':mediaurl};
+    //         } else {
+    //             var errAttributes;
+    //             if (xmldoc.getElementsByTagName("err")[0]) {
+    //                 errAttributes = xmldoc.getElementsByTagName("err")[0].attributes;
+    //             } else {
+    //                 errAttributes = xmldoc.getElementsByTagName("error")[0].attributes;
+    //             }
+    //             
+    //             sch.error(errAttributes);
+    //             errMsg = errAttributes.getNamedItem("msg").nodeValue;
+    //             sch.error(errMsg);
+    //             return {'error':errMsg};
+    //         }
+    //         
+    //     }
+    // },
+	'twitpic' : {
+		'url' : 'http://api.twitpic.com/2/upload.json',
+		'extra': {
+			'key':'3d8f511397248dc913193a6195c4a018'
+		},
+		'parseResponse': function(data) {
+			
+			if (sch.isString(data)) {
+				data = sch.deJSON(data);
+			}
+			
+			if (data.url) {
+				return {'url':data.url};
+			} else {
+				return {'error':'unknown error'};
+			}
+			
+		}
+	},
+	'twitgoo' : {
+		'url'  : 'http://twitgoo.com/api/upload',
+		'extra': {
+			'format':'xml',
+			'source':'Spaz',
+			'source_url':'http://getspaz.com'
+		},
+		'parseResponse': function(data) {
+			
+			var parser=new DOMParser();
+			xmldoc = parser.parseFromString(data,"text/xml");
+
+			var status;
+			var rspAttr = xmldoc.getElementsByTagName("rsp")[0].attributes;
+			status = rspAttr.getNamedItem("status").nodeValue;
+
+			if (status == 'ok') {
+				var mediaurl = $(xmldoc).find('mediaurl').text();
+				return {'url':mediaurl};
+			} else {
+				var errAttributes;
+				if (xmldoc.getElementsByTagName("err")[0]) {
+					errAttributes = xmldoc.getElementsByTagName("err")[0].attributes;
+				} else {
+					errAttributes = xmldoc.getElementsByTagName("error")[0].attributes;
+				}
+
+				sch.error(errAttributes);
+				errMsg = errAttributes.getNamedItem("msg").nodeValue;
+				sch.error(errMsg);
+				return {'error':errMsg};
+			}
+			
+		}
+	}
+};
+
+/**
+ * Retrieves the auth_header 
+ */
+SpazImageUploader.prototype.getAuthHeader = function() {
+	
+	var opts = sch.defaults({
+		'getEchoHeaderOpts':{}
+	}, this.opts);
+	
+	var auth_header;
+	var user = opts.username;
+	var pass = opts.password;
+	
+	if (opts.auth_method === 'echo') { // this is Twitter. hopefully
+
+		var twit	= new SpazTwit({'auth':opts.auth_obj});
+		auth_header = twit.getEchoHeader(opts.getEchoHeaderOpts);
+
+	} else {
+		auth_header = "Basic " + Base64.encode(user + ":" + pass);
+	}
+	
+	sch.error(auth_header);
+	return auth_header;
+
+};
+
+
+/**
+ * this actually does the upload. Well, really it preps the data and uses sc.helpers.HTTPFileUpload 
+ */
+SpazImageUploader.prototype.upload = function() {
+
+	var opts = sch.defaults({
+		extra:{}
+	}, this.opts);
+
+	var srvc = this.services[opts.service];
+
+	/*
+		file url
+	*/
+	opts.url      = srvc.url;
+	if (srvc.extra) {
+		opts.extra = jQuery.extend(opts.extra, srvc.extra);
+	}
+	
+	var onSuccess;
+	if (srvc.parseResponse) {
+		onSuccess = function(data) {
+			if (sch.isString(data)) {
+				var rs = srvc.parseResponse.call(srvc, data);
+				return opts.onSuccess(rs);
+			} else if (data && data.responseString) { // webOS will return an object, not just the response string
+				var rs = srvc.parseResponse.call(srvc, data.responseString);
+				return opts.onSuccess(rs);
+			} else { // I dunno what it is; just pass it to the callback
+				return opts.onSuccess(data);
+			}
+		};
+	} else {
+		onSuccess = opts.onSuccess;
+	}
+	
+	/*
+		get auth stuff
+	*/
+	var auth_header;
+    if (opts.service === 'yfrog') {
+		verify_url  = 'https://api.twitter.com/1/account/verify_credentials.xml';
+		auth_header = this.getAuthHeader({
+			'getEchoHeaderOpts': {
+				'verify_url':verify_url
+			}
+		});
+	} else {
+		verify_url  = 'https://api.twitter.com/1/account/verify_credentials.json';
+		auth_header = this.getAuthHeader();
+	}
+	
+	if (auth_header.indexOf('Basic ') === 0) {
+		opts.username = this.opts.username;
+		opts.password = this.opts.password;
+	} else {
+		opts.headers = {
+			'X-Auth-Service-Provider': verify_url,
+			'X-Verify-Credentials-Authorization':auth_header
+		};
+		
+	}
+	
+	sc.helpers.HTTPUploadFile(opts, onSuccess, opts.onFailure);
+	
+};/*jslint 
 browser: true,
 nomen: false,
 debug: true,
@@ -11563,11 +11867,6 @@ SpazTwit.prototype.getCombinedTimeline = function(com_opts, onSuccess, onFailure
 
 
 SpazTwit.prototype.search = function(query, since_id, results_per_page, page, lang, geocode, onSuccess, onFailure) {
-	
-	sch.error('SpazTwit.search');
-	sch.error(onSuccess);
-	sch.error(onFailure);
-	
 	if (!page) { page = 1;}
 	// if (!since_id) {
 	// 	if (this.data[SPAZCORE_SECTION_SEARCH].lastid && this.data[SPAZCORE_SECTION_SEARCH].lastid > 1) {
@@ -11608,11 +11907,7 @@ SpazTwit.prototype.search = function(query, since_id, results_per_page, page, la
 /**
  * @private
  */
-SpazTwit.prototype._processSearchTimeline = function(search_result, opts, processing_opts) {
-	
-	sch.error('_processSearchTimeline opts');
-	sch.error(sch.enJSON(opts));
-		
+SpazTwit.prototype._processSearchTimeline = function(search_result, opts, processing_opts) {	
 	/*
 		Search is different enough that we need to break it out and 
 		write a custom alternative to _processTimeline
@@ -11681,7 +11976,6 @@ SpazTwit.prototype._processSearchTimeline = function(search_result, opts, proces
 		};
 		
 		if (opts.success_callback) {
-			sch.error('CALLING SUCCESS CALLBACK');
 			opts.success_callback(this.data[SPAZCORE_SECTION_SEARCH].newitems, search_info);
 		}
 		this.triggerEvent(opts.success_event_type, [this.data[SPAZCORE_SECTION_SEARCH].newitems, search_info]);
@@ -11691,7 +11985,6 @@ SpazTwit.prototype._processSearchTimeline = function(search_result, opts, proces
 	} else { // no new items, but we should fire off success anyway
 		
 		if (opts.success_callback) {
-			sch.error('CALLING EMPTY SUCCESS CALLBACK');
 			opts.success_callback(null, []);
 		}
 		this.triggerEvent(opts.success_event_type, []);
@@ -11811,9 +12104,6 @@ SpazTwit.prototype._processTrends = function(trends_result, opts, processing_opt
  */
 SpazTwit.prototype._getTimeline = function(opts) {
 	
-	sch.error('_getTimeline opts');
-	sch.error(sch.enJSON(opts));
-	
 	opts = sch.defaults({
 		'method':'GET',
 		'timeout':this.DEFAULT_TIMEOUT,
@@ -11888,8 +12178,6 @@ SpazTwit.prototype._getTimeline = function(opts) {
 				sc.helpers.dump(stwit.combined_errors);
 				sc.helpers.dump(stwit.combined_finished);
 				if (opts.process_callback) {
-					sch.error('opts.process_callback');
-					sch.error(sch.enJSON(opts));
 					opts.process_callback.call(stwit, [], opts, opts.processing_opts);
 				}
 			}
@@ -11911,8 +12199,6 @@ SpazTwit.prototype._getTimeline = function(opts) {
 					ensures that "this" inside the callback refers to our
 					SpazTwit object, and not the jQuery.Ajax object
 				*/
-				sch.error('opts.process_callback');
-				sch.error(sch.enJSON(opts));
 				opts.process_callback.call(stwit, data, opts, opts.processing_opts);
 			} else {
 				if (opts.success_callback) {
@@ -13918,7 +14204,19 @@ sc.helpers.HTTPUploadFile = function(opts, onSuccess, onFailure) {
 	
 	sch.debug('in HTTPUploadFile ================!!!!!!!!!!!!!!');
 	
-	var key, val, postparams = [];
+	opts = sch.defaults({
+        'method':'POST',
+        'content_type':'img',
+        'field_name':'media',
+        'file_url':null,
+        'url':null,
+        'extra':null,
+        'headers':null,
+        'username':null,
+        'password':null
+    }, opts);
+	
+	var key, val, postparams = [], customHttpHeaders = [];
 	var file_url   = opts.file_url || null;
 	var url        = opts.url      || null;
 	var field_name = opts.field_name || 'media';
@@ -13938,6 +14236,13 @@ sc.helpers.HTTPUploadFile = function(opts, onSuccess, onFailure) {
 		return;
 	}
 	
+	var headers = [];
+	if (opts.headers) {
+		for(key in opts.headers) {
+			customHttpHeaders.push( key + ': ' + opts.headers[key] );
+		}
+	}
+	
 	sch.debug('OPTS =============');
 	sch.debug(opts);
 	sch.debug('OPTS.EXTRA =============');
@@ -13951,6 +14256,15 @@ sc.helpers.HTTPUploadFile = function(opts, onSuccess, onFailure) {
 	sch.debug('sceneAssistant =============');
 	sch.debug(sceneAssistant);
 
+	var onSuccessCheck = function(resp) {
+		if (resp.completed) { // we're actually done
+			onSuccess(resp); 
+		} else { // fire a progress event
+			jQuery(document).trigger('spazcore_upload_progress', [resp]);
+		}
+	};
+
+
 	
 	sceneAssistant.controller.serviceRequest('palm://com.palm.downloadmanager/', {
 		method: 'upload', 
@@ -13961,10 +14275,10 @@ sc.helpers.HTTPUploadFile = function(opts, onSuccess, onFailure) {
 			'fileName'   : file_url,
 			'postParameters': postparams,
 			cookies      : {}, // optional
-			customHttpHeaders: [], // optional
+			customHttpHeaders: customHttpHeaders, // optional
 			subscribe    : true 
 		},
-		'onSuccess' : onSuccess,
+		'onSuccess' : onSuccessCheck,
 		'onFailure' : onFailure
 	 });
 };/*jslint 

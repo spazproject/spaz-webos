@@ -309,12 +309,12 @@ PreferencesAssistant.prototype.setupChoices = function(){
 		{label:$L('End'),value:'end'}
 	];
 	
-	var sfu = new SpazFileUploader();
-	var uploaders = sfu.getAPILabels();
+	var image_uploader = new SpazImageUploader();
 	this.validImageUploaders = [];
-	for (var i=0; i < uploaders.length; i++) {
-		this.validImageUploaders.push({label:$L(uploaders[i]),  value:uploaders[i]});
-	};
+	for (var key in image_uploader.services) {
+        var val = image_uploader.services[key];
+		this.validImageUploaders.push({label:$L(key),  value:key});
+    }
 };
 
 
