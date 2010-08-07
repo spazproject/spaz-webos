@@ -36,9 +36,9 @@ Spaz.findAndSwapScene = function(targetScene, returnValue) {
 	}
 	
 	if (scene_exists) {
-		Mojo.Controller.stageController.popScenesTo(targetScene, returnValue);
+		Mojo.Controller.stageController.popScenesTo({name: targetScene, transition: Mojo.Transition.crossFade}, returnValue);
 	} else {
-		Mojo.Controller.stageController.swapScene(targetScene, returnValue);
+		Mojo.Controller.stageController.swapScene({name: targetScene, transition: Mojo.Transition.crossFade}, returnValue);
 	}
 };
 

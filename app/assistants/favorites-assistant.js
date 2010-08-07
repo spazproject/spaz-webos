@@ -5,7 +5,9 @@ function FavoritesAssistant() {
 	   that needs the scene controller should be done in the setup function below. */
 	scene_helpers.addCommonSceneMethods(this);
 }
-
+FavoritesAssistant.prototype.aboutToActivate = function(callback){
+	callback.defer();
+}
 FavoritesAssistant.prototype.setup = function() {
 
 	this.scroller = this.controller.getSceneScroller();
