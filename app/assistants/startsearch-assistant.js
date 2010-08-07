@@ -6,6 +6,10 @@ function StartsearchAssistant() {
 	scene_helpers.addCommonSceneMethods(this);
 }
 
+StartsearchAssistant.prototype.aboutToActivate = function(callback){
+	callback.defer(); //delays displaying scene, looks better
+}
+
 StartsearchAssistant.prototype.setup = function() {
 
 	this.scroller = this.controller.getSceneScroller();

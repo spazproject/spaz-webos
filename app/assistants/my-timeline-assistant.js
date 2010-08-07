@@ -3,6 +3,10 @@
  * 'my_timeline_refresh' 
  */
 
+ 
+MyTimelineAssistant.prototype.aboutToActivate = function(callback){
+	callback.defer(); //delays displaying scene, looks better
+}
 
 function MyTimelineAssistant(argFromPusher) {
 	
@@ -19,9 +23,6 @@ function MyTimelineAssistant(argFromPusher) {
 		// console.debug();
 		// this.clearTimelineCache();
 	}
-	
-	
-
 
 	this.cacheVersion = 3;  // we increment this when we change how the cache works
 	
@@ -48,8 +49,6 @@ function MyTimelineAssistant(argFromPusher) {
 
 }
 
-
-
 MyTimelineAssistant.prototype.setup = function() {
 	
 	var thisA = this;
@@ -73,7 +72,8 @@ MyTimelineAssistant.prototype.setup = function() {
 		viewMenuItems: [
 			{
 				items: [
-					{label: sc.app.username, command:'scroll-top', width:260},
+					{label: $L('Refresh'),  icon:'sync', command:'refresh', shortcut:'R'},
+					{label: sc.app.username, command:'scroll-top', width:200},
 					{label: $L('Filter timeline'), iconPath:'images/theme/menu-icon-triangle-down.png', submenu:'filter-menu'}
 				
 				]
@@ -82,6 +82,7 @@ MyTimelineAssistant.prototype.setup = function() {
 		],
 		cmdMenuItems: [
 			{label:$L('Compose'),  icon:'compose', command:'compose', shortcut:'N'},
+			{},
 			{
 				/*
 					So we don't get the hard-to-see disabled look on the selected button,
@@ -91,11 +92,12 @@ MyTimelineAssistant.prototype.setup = function() {
 				items: [
 					{label:$L('My Timeline'), icon:'conversation', command:'IGNORE', shortcut:'T', 'class':"palm-header left"},
 					{label:$L('Favorites'), iconPath:'images/theme/menu-icon-favorite.png', command:'favorites', shortcut:'F'},
-					{label:$L('Search'),      icon:'search', command:'search', shortcut:'S'}
+					{label:$L('Search'),    icon:'search', command:'search', shortcut:'S'}
 				]
 			},
-			{label: $L('Refresh'),   icon:'sync', command:'refresh', shortcut:'R'}
-			
+			{},
+			{},
+			{}
 		]
 	});
 

@@ -7,6 +7,10 @@ function PreferencesAssistant() {
 	scene_helpers.addCommonSceneMethods(this);
 };
 
+PreferencesAssistant.prototype.aboutToActivate = function(callback){
+	callback.defer(); //delays displaying scene, looks better
+}
+
 PreferencesAssistant.prototype.setup = function() {
 	
 	var thisA = this;
