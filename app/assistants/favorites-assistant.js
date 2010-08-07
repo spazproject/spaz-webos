@@ -25,15 +25,18 @@ FavoritesAssistant.prototype.setup = function() {
 		],
 		cmdMenuItems: [
 			{label:$L('Compose'),  icon:'compose', command:'compose', shortcut:'N'},
+			{},
 			{
-				toggleCmd:'IGNORE',
+				toggleCmd:'refresh',
 				items: [
 					{label:$L('My Timeline'), icon:'conversation', command:'my-timeline', shortcut:'T'},
-					{label:$L('Favorites'), iconPath:'images/theme/menu-icon-favorite.png', command:'IGNORE', shortcut:'F', 'class':"palm-header left"},
+					{label:$L('Favorites'), iconPath:'images/theme/menu-icon-favorite.png', command:'refresh', shortcut:'F', 'class':"palm-header left"},
 					{label:$L('Search'),      icon:'search', command:'search', shortcut:'S'}
 				]
 			},
-			{label:$L('Refresh'),   icon:'sync', command:'refresh', shortcut:'R'}					
+			{},
+			{},
+			{}
 		]
 	});
 	
