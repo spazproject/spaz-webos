@@ -530,8 +530,10 @@ PostAssistant.prototype.sendPost = function(event) {
 					FIRST, UPLOAD THE IMAGE
 					THEN, POST MSG TO TWITTER IF UPLOAD SUCCESSFUL
 				*/
+				
 				var image_uploader = new SpazImageUploader();
-				image_uploader.setOpts({
+				
+				image_uploader_opts = {
 					'auth_obj': auth,
 					'service' : this.imageUploaderModel['image-uploader'],
 					'file_url': this.model.attachment,
@@ -539,62 +541,56 @@ PostAssistant.prototype.sendPost = function(event) {
 						'message':status
 					},
 					'onSuccess':function(event_data) { // onSuccess
-						var img_url = event_data.url;
-						status = img_url + ' ' + status;
+						if (event_data.url) {
+							var img_url = event_data.url;
+							status = img_url + ' ' + status;
 
-						if (status.length > 140) {
-							status = status.slice(0,138)+'…';
-						}
-						
-						sch.debug('Posting message…');
-						that.setPostButtonLabel('Posting message…');
-						
-						if (in_reply_to > 0) {
-							that.twit.update(status, null, in_reply_to);
+							if (status.length > 140) {
+								status = status.slice(0,138)+'…';
+							}
+
+							sch.debug('Posting message…');
+							that.setPostButtonLabel('Posting message…');
+
+							if (in_reply_to > 0) {
+								that.twit.update(status, null, in_reply_to);
+							} else {
+								that.twit.update(status, null, null);
+							}
+						} else if (event_data.error) {
+							Mojo.Controller.errorDialog($L("Posting image failed:") + " " + event_data.error);
+							that.deactivateSpinner();
+							that.setPostButtonLabel($L('Retry post'));
 						} else {
-							that.twit.update(status, null, null);
+							Mojo.Controller.errorDialog($L("Posting image failed"));
+							that.deactivateSpinner();
+							that.setPostButtonLabel($L('Retry post'));
 						}
 					},
 					'onFailure':function(response_data) { // onFailure
 						sch.error('Posting image FAILED');
 						ech.error("Error!");
 						ech.error(response_data);
+						Mojo.Controller.errorDialog($L("Posting image failed"));
 						that.deactivateSpinner();
 					},
 					'platform' : { // need this for webOS to upload
 						'sceneAssistant' : this
 					}
-				});
+				};
 				
-				sch.debug('Uploding image…');
+				// force pikchur uploading if using identi.ca
+				if (Spaz.Prefs.getAccountType() == SPAZCORE_ACCOUNT_IDENTICA) {
+					image_uploader_opts['service'] = 'pikchur';
+					image_uploader_opts['extra']['service'] = 'identi.ca';
+				}
+				
+				image_uploader.setOpts(image_uploader_opts);
+				
+				sch.debug('Uploading image…');
 				this.setPostButtonLabel('Uploading image…');
 				image_uploader.upload();
 
-				
-				
-				
-
-				// var source = 'spaz';
-				// 
-				// this.SFU.setAPI(this.imageUploaderModel['image-uploader']);
-				// 
-				// if (this.imageUploaderModel['image-uploader'] === 'pikchur') {
-				//	this.SFU.setAPIKey(sc.app.prefs.get('services-pikchur-apikey'));
-				//	source = sc.app.prefs.get('services-pikchur-source');
-				// }
-				// 
-				// 
-				// this.SFU.uploadAndPost(this.model.attachment, {
-				//	'username' : sc.app.username,
-				//	'password' : sc.app.password,
-				//	'source'   : source,
-				//	'message'  : status,
-				//	'platform' : {
-				//		'sceneAssistant' : this
-				//	}
-				// });
-				// 
-				
 
 				
 				
