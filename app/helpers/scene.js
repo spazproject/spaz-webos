@@ -934,9 +934,11 @@ scene_helpers.addCommonSceneMethods = function(assistant) {
 		var error_info;
 		var error_html = '';
 		
+		errors = errors || null;
+		
 		dump(errors);
 		
-		if (!sch.isArray(errors)) {
+		if (errors && !sch.isArray(errors)) {
 			var err = errors;
 			errors = [errors];
 		}
