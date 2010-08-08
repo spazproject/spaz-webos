@@ -9,7 +9,7 @@ function PreferencesAssistant() {
 
 PreferencesAssistant.prototype.aboutToActivate = function(callback){
 	callback.defer(); //delays displaying scene, looks better
-}
+};
 
 PreferencesAssistant.prototype.setup = function() {
 	

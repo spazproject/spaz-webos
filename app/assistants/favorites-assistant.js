@@ -7,7 +7,7 @@ function FavoritesAssistant() {
 }
 FavoritesAssistant.prototype.aboutToActivate = function(callback){
 	callback.defer();
-}
+};
 FavoritesAssistant.prototype.setup = function() {
 
 	this.scroller = this.controller.getSceneScroller();

@@ -6,7 +6,7 @@
  
 MyTimelineAssistant.prototype.aboutToActivate = function(callback){
 	callback.defer(); //delays displaying scene, looks better
-}
+};
 
 function MyTimelineAssistant(argFromPusher) {
 	
