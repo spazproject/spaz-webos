@@ -1385,12 +1385,12 @@ var LocationDialogAssistant = Class.create({
 	updateLocation: function() {
 		var thisA = this;
 		
-		jQuery().bind('update_location_succeeded', function() {
+		jQuery(document).bind('update_location_succeeded', function() {
 			thisA.controller.get('update-location-button').mojo.deactivate();
 			jQuery('#location-popup-message').html($L('Location updated on Twitter'));
 			thisA.widget.mojo.close();
 		});
-		jQuery().bind('update_location_failed', function() {
+		jQuery(document).bind('update_location_failed', function() {
 			thisA.controller.get('update-location-button').mojo.deactivate();
 			jQuery('#location-popup-error').html($L('Updating location on Twitter failed or timed-out'));
 		});

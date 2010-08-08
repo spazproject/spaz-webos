@@ -176,7 +176,7 @@ SearchTwitterAssistant.prototype.activate = function(event) {
 	this.setTimelineTextSize('#search-timeline', tts);
 	
 	
-	jQuery().bind('error_search_timeline_data', { thisAssistant:this }, function(e, error_obj) {
+	jQuery(document).bind('error_search_timeline_data', { thisAssistant:this }, function(e, error_obj) {
 		
 		var error_msg = $L("There was an error retrieving search results");
 		thisA.displayErrorInfo(error_msg, error_obj);
@@ -189,7 +189,7 @@ SearchTwitterAssistant.prototype.activate = function(event) {
 		e.data.thisAssistant.startRefresher();
 	});
 	
-	jQuery().bind('new_search_timeline_data', { thisAssistant:this }, function(e, data) {
+	jQuery(document).bind('new_search_timeline_data', { thisAssistant:this }, function(e, data) {
 		
 		/*
 			Check to see if the returned query matches what we are using. If not, ignore.
@@ -261,7 +261,7 @@ SearchTwitterAssistant.prototype.activate = function(event) {
 	});
 	
 	
-	jQuery().bind('search_timeline_refresh', { thisAssistant:this }, function(e) {
+	jQuery(document).bind('search_timeline_refresh', { thisAssistant:this }, function(e) {
 		sch.markAllAsRead('#search-timeline>div.timeline-entry');
 		e.data.thisAssistant.refresh();
 	});
@@ -329,9 +329,9 @@ SearchTwitterAssistant.prototype.deactivate = function(event) {
 	/* remove any event handlers you added in activate and do any other cleanup that should happen before
 	   this scene is popped or another scene is pushed on top */
 	
-	jQuery().unbind('new_search_timeline_data');
-	jQuery().unbind('error_search_timeline_data');
-	jQuery().unbind('search_timeline_refresh');	
+	jQuery(document).unbind('new_search_timeline_data');
+	jQuery(document).unbind('error_search_timeline_data');
+	jQuery(document).unbind('search_timeline_refresh');	
 	jQuery('#search-timeline div.timeline-entry', this.scroller).die(Mojo.Event.tap);
 };
 
@@ -420,7 +420,7 @@ SearchTwitterAssistant.prototype.startRefresher = function() {
 	if (time > 0) {
 		this.refresher = setInterval(
 			function() {
-				jQuery().trigger('search_timeline_refresh');
+				jQuery(document).trigger('search_timeline_refresh');
 			},
 			time
 		);
@@ -456,13 +456,13 @@ SearchTwitterAssistant.prototype.saveSearch = function(searchstr) {
 	
 	var thisA = this;
 
-	jQuery().bind('create_saved_search_succeeded', {thisAssistant:this}, function(e, resp) {
+	jQuery(document).bind('create_saved_search_succeeded', {thisAssistant:this}, function(e, resp) {
 		thisA.isSavedSearch = true;
 		thisA.saved_id = resp.id;
 		thisA.showBanner('Saved search '+searchstr, 'saved_search');
 		thisA.fillStar(true);
 		thisA.twit.getSavedSearches(); // this will force a refresh on any listeners
-		jQuery().unbind('create_saved_search_succeeded');
+		jQuery(document).unbind('create_saved_search_succeeded');
 	});
 	
 	this.twit.addSavedSearch(searchstr);
@@ -474,13 +474,13 @@ SearchTwitterAssistant.prototype.removeSearch = function(searchstr) {
 	
 	var thisA = this;
 
-	jQuery().bind('destroy_saved_search_succeeded', {thisAssistant:this}, function(e, resp) {
+	jQuery(document).bind('destroy_saved_search_succeeded', {thisAssistant:this}, function(e, resp) {
 		thisA.isSavedSearch = false;
 		thisA.saved_id = null;
 		thisA.showBanner('Removed saved search '+searchstr, 'saved_search');
 		thisA.fillStar(false);
 		thisA.twit.getSavedSearches(); // this will force a refresh on any listeners
-		jQuery().unbind('destroy_saved_search_succeeded');
+		jQuery(document).unbind('destroy_saved_search_succeeded');
 	});
 
 	// alert(thisA.saved_id);
