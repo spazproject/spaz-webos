@@ -21,6 +21,10 @@ function UserDetailAssistant(argFromPusher) {
 	
 }
 
+UserDetailAssistant.prototype.aboutToActivate = function(callback){
+	callback.defer(); //delays displaying scene, looks better
+};
+
 UserDetailAssistant.prototype.setup = function() {
 	var thisA = this;
 	

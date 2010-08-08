@@ -51,7 +51,9 @@ function StartAssistant(argFromPusher) {
 	
 
 }
-
+StartAssistant.prototype.aboutToActivate = function(callback){
+	callback.defer(); //delays displaying scene, looks better
+};
 StartAssistant.prototype.setup = function() {
 	
 	Mojo.Log.info("Logging from StartAssistant Setup");

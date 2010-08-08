@@ -13,7 +13,9 @@ function PostAssistant(args) {
 	
 	scene_helpers.addCommonSceneMethods(this);
 }
-
+PostAssistant.prototype.aboutToActivate = function(callback){
+	callback.defer(); //delays displaying scene, looks better
+};
 PostAssistant.prototype.setup = function() {
 	
 	var thisA = this;

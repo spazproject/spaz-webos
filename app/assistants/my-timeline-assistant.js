@@ -3,11 +3,6 @@
  * 'my_timeline_refresh' 
  */
 
- 
-MyTimelineAssistant.prototype.aboutToActivate = function(callback){
-	callback.defer(); //delays displaying scene, looks better
-};
-
 function MyTimelineAssistant(argFromPusher) {
 	
 	/* this is the creator function for your scene assistant object. It will be passed all the 
@@ -48,6 +43,10 @@ function MyTimelineAssistant(argFromPusher) {
 	
 
 }
+
+MyTimelineAssistant.prototype.aboutToActivate = function(callback){
+	callback.defer(); //delays displaying scene, looks better
+};
 
 MyTimelineAssistant.prototype.setup = function() {
 	

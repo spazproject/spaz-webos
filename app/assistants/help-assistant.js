@@ -5,7 +5,9 @@ function HelpAssistant() {
 	   that needs the scene controller should be done in the setup function below. */
 	scene_helpers.addCommonSceneMethods(this);
 }
-
+HelpAssistant.prototype.aboutToActivate = function(callback){
+	callback.defer(); //delays displaying scene, looks better
+};
 HelpAssistant.prototype.setup = function(){
 	
 	this.initAppMenu({ 'items':[

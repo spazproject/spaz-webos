@@ -17,6 +17,10 @@ function ViewImageAssistant(params) {
 	sch.dump(params);
 }
 
+ViewImageAssistant.prototype.aboutToActivate = function(callback){
+	callback.defer(); //delays displaying scene, looks better
+};
+
 ViewImageAssistant.prototype.setup = function() {
 	
 	var thisA = this;

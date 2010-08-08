@@ -6,6 +6,10 @@ function StartloginAssistant() {
 	scene_helpers.addCommonSceneMethods(this);
 }
 
+StartloginAssistant.prototype.aboutToActivate = function(callback){
+	callback.defer(); //delays displaying scene, looks better
+};
+
 StartloginAssistant.prototype.setup = function() {
 
 	var thisA = this;

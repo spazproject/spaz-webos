@@ -6,6 +6,10 @@ function AboutAssistant() {
 	scene_helpers.addCommonSceneMethods(this);
 };
 
+AboutAssistant.prototype.aboutToActivate = function(callback){
+	callback.defer(); //delays displaying scene, looks better
+};
+
 AboutAssistant.prototype.setup = function() {
 	this.scroller = this.controller.getSceneScroller();
 

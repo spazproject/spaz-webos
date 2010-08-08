@@ -38,7 +38,9 @@ function SearchTwitterAssistant(args) {
 	this.lastQuery = '';
 }
 
-
+SearchTwitterAssistant.prototype.aboutToActivate = function(callback){
+	callback.defer(); //delays displaying scene, looks better
+};
 
 SearchTwitterAssistant.prototype.setup = function() {
 	/* this function is for setup tasks that have to happen when the scene is first created */

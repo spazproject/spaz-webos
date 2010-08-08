@@ -18,7 +18,9 @@ function MessageDetailAssistant(argFromPusher) {
 		this.isdm  = argFromPusher.isdm;
 	}
 }
-
+MessageDetailAssistant.prototype.aboutToActivate = function(callback){
+	callback.defer(); //delays displaying scene, looks better
+};
 MessageDetailAssistant.prototype.setup = function() {
 
 	var thisA = this;
