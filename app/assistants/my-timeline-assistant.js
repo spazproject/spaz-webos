@@ -62,6 +62,10 @@ MyTimelineAssistant.prototype.setup = function() {
 
 	this.initTwit('DOM');
 	
+	//Sets up meta-tap + scroll handler
+	
+	this.listenForMetaTapScroll();
+	
 	/*
 		this will set the state for this.isFullScreen
 	*/
@@ -72,7 +76,7 @@ MyTimelineAssistant.prototype.setup = function() {
 			{
 				items: [
 					{label: $L('Refresh'),  icon:'sync', command:'refresh', shortcut:'R'},
-					{label: sc.app.username, command:'scroll-top', width:200},
+					{label: sc.app.username, command:'toggle-accounts-panel', width:200},
 					{label: $L('Filter timeline'), iconPath:'images/theme/menu-icon-triangle-down.png', submenu:'filter-menu'}
 				
 				]
@@ -112,6 +116,48 @@ MyTimelineAssistant.prototype.setup = function() {
 
 	// Set up submenu widget that was wired into the viewMenu above
 	this.controller.setupWidget("filter-menu", undefined, this.timelineFilterMenuModel);
+	
+	/*
+	 * Accounts list
+	 */
+	this.Users = new SpazAccounts(sc.app.prefs);
+	this.Users.load();
+	
+	sch.error(this.Users);
+	
+	this.controller.setupWidget("accountList",
+		this.accountsAtts = {
+			itemTemplate: 'startlogin/user-list-entry',
+			listTemplate: 'startlogin/user-list-container',
+			dividerTemplate:'startlogin/user-list-separator',
+			swipeToDelete: false,
+			autoconfirmDelete: false,
+			reorderable: false
+		},
+		this.accountsModel = {
+			listTitle: $L('Accounts'),
+			items : this.Users.getAll()
+		}
+	);
+	Mojo.Event.listen(jQuery('#accountList')[0], Mojo.Event.listTap, function(e) {
+	
+		sch.debug('CLICKED ON ITEM');
+		sch.debug(sch.enJSON(e.item));
+	
+		sc.app.username = e.item.username;
+		sc.app.auth		= e.item.auth;
+		sc.app.type     = e.item.type;
+		sc.app.userid	= e.item.id;
+		
+		sch.debug('sc.app.username:' + sc.app.username);
+		sch.debug('sc.app.auth:'     + sc.app.auth);  
+		sch.debug('sc.app.type:'     + sc.app.type);   
+		sch.debug('sc.app.userid:'	 + sc.app.userid);
+		
+		sc.app.prefs.set('last_userid', sc.app.userid);
+				
+		Spaz.popAllAndPushScene("my-timeline");
+	});
 	
 	this.setupInlineSpinner('activity-spinner-my-timeline');
 	
@@ -628,5 +674,3 @@ MyTimelineAssistant.prototype.filterTimeline = function(command) {
 	
 	this._filterState = command;	
 };
-
-

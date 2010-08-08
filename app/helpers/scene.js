@@ -16,10 +16,10 @@ scene_helpers.addCommonSceneMethods = function(assistant) {
 		var default_items = [
 			Mojo.Menu.editItem,
 			{ label: $L('New Search Card'),	command: 'new-search-card' },
-			{ label: $L('Preferences...'),	command:Mojo.Menu.prefsCmd },
+			{ label: $L('Preferences'),	command:Mojo.Menu.prefsCmd },
 			{ label: $L('About Spaz'),		command: 'appmenu-about' },
-			{ label: $L('Help...'),			command:Mojo.Menu.helpCmd },
-			{ label: $L('Donate...'),		command:'donate' }
+			{ label: $L('Donate'),		command:'donate' },
+			{ label: $L('Help'),			command:Mojo.Menu.helpCmd }
 		];
 
 		if (!opts) {
@@ -144,6 +144,14 @@ scene_helpers.addCommonSceneMethods = function(assistant) {
 				/*
 					Scroll to top
 				*/
+				case 'toggle-accounts-panel':
+					if(this.controller.get('panel').hasClassName("sliding")){
+						this.controller.get('panel').removeClassName('sliding');
+						break;
+					}
+					this.controller.get('panel').addClassName('sliding');
+					
+				break;
 				case 'scroll-top':
 					dump("Scroll to top");
 					this.scrollToTop();
@@ -1267,6 +1275,24 @@ scene_helpers.addCommonSceneMethods = function(assistant) {
 		Spaz.closeDashboard();
 	};
 	
+	assistant.listenForMetaTapScroll = function() {
+		this.controller.listen(this.controller.sceneElement, "mousedown", handleMeta.bindAsEventListener(this));
+		this.controller.listen(this.controller.sceneElement, "mouseup", handleMeta.bindAsEventListener(this));
+		this.controller.listen(this.controller.sceneElement, Mojo.Event.flick, handleScroll.bindAsEventListener(this));      
+		function handleMeta(event){
+			this.metaKey = event.metaKey;
+		}
+		function handleScroll(event){
+			if(this.metaKey == true){
+				if(event.velocity.y > 0){
+					this.scrollToTop();
+				}
+				else if(event.velocity.y < 0){
+					this.scrollToBottom();
+				}
+			}
+		}
+	};
 	
 };
 
