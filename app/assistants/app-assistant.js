@@ -9,13 +9,13 @@ const SPAZ_DONATION_URL = 'http://getspaz.com/donate';
 
 var LOGGEDIN_APPMENU_ITEMS = [
 	Mojo.Menu.editItem,
-	{ label: $L('Update Location...'),	command: 'update-location' },
-	{ label: $L('New Search Card'),	command: 'new-search-card' },
-	{ label: $L('Accounts...'), 	command:'accounts' },
-	{ label: $L('Preferences...'),	command:Mojo.Menu.prefsCmd },
+	{ label: $L('Update Location'),	command: 'update-location' },
+	//{ label: $L('New Search Card'),	command: 'new-search-card' },
+	{ label: $L('Accounts'), 	command:'accounts' },
+	{ label: $L('Preferences'),	command:Mojo.Menu.prefsCmd },
 	{ label: $L('About Spaz'),		command: 'appmenu-about' },
-	{ label: $L('Help...'),			command:Mojo.Menu.helpCmd },
-	{ label: $L('Donate...'),		command:'donate' }
+	{ label: $L('Donate'),		command:'donate' },
+	{ label: $L('Help'),			command:Mojo.Menu.helpCmd }
 	
 ];
 

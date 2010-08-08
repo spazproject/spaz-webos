@@ -22,9 +22,21 @@ body.palm-default {
 BODY {
 }
 
+/* 
+	The Accounts Panel
+*/
+
+.palm-menu-panel{
+    -webkit-transition: all 175ms ease-in;
+}
+.palm-menu-panel.sliding {
+    -webkit-transform: translate(0px,-220px);
+}
+
 /*
 	This is so we can have the view menu floating over the palm-page-header
 */
+
 /*.palm-hasheader>.palm-menu-spacer {
 	height:0px !important;
 }
