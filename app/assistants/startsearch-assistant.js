@@ -8,7 +8,7 @@ function StartsearchAssistant() {
 
 StartsearchAssistant.prototype.aboutToActivate = function(callback){
 	callback.defer(); //delays displaying scene, looks better
-}
+};
 
 StartsearchAssistant.prototype.setup = function() {
 
@@ -143,26 +143,6 @@ StartsearchAssistant.prototype.setup = function() {
 	*/	
 	Mojo.Event.listen(jQuery('#search-button')[0], Mojo.Event.tap, this.handleSearch.bind(this));
 	
-	
-	/*
-		listen for trends data updates
-	*/
-	jQuery(document).bind('new_trends_data', {thisAssistant:this}, function(e, trends) {
-		thisA.deactivateTrendsSpinner();
-		
-		/*
-			some trends are wrapped in double-quotes, so we need to turn then into entities
-		*/
-		for (var k=0; k<trends.length; k++) {
-			trends[k].searchterm = trends[k].searchterm.replace(/"/gi, '&quot;');
-		}
-		
-		var trendshtml = Mojo.View.render({'collection':trends, template:'startsearch/trend-item'});
-		
-		jQuery('#trends-list .trend-item').remove();
-		jQuery('#trends-list').append(trendshtml);
-		jQuery('#trends-list .trend-item').fadeIn(500);
-	});
 	
 	
 	/*
@@ -326,8 +306,34 @@ StartsearchAssistant.prototype.cleanup = function(event) {
 
 
 StartsearchAssistant.prototype.refreshTrends = function() {
-	// this.showInlineSpinner('#trends-spinner-container', 'Loading…');
-	sc.app.twit.getTrends();
+	var thisA = this;
+	
+	sc.app.twit.getTrends(
+		function(data) {
+			thisA.deactivateTrendsSpinner();
+			
+			sch.error(data);
+			
+			var trends = data;
+			
+			/*
+				some trends are wrapped in double-quotes, so we need to turn then into entities
+			*/
+			for (var k=0; k<trends.length; k++) {
+				trends[k].searchterm = trends[k].searchterm.replace(/"/gi, '&quot;');
+			}
+
+			var trendshtml = Mojo.View.render({'collection':trends, template:'startsearch/trend-item'});
+
+			jQuery('#trends-list .trend-item').remove();
+			jQuery('#trends-list').append(trendshtml);
+			jQuery('#trends-list .trend-item').fadeIn(500);
+			
+		},
+		function(xhr, msg, exc) {
+			sch.debug('getTrends failed');
+		}
+	);
 };
 
 StartsearchAssistant.prototype.refreshSearches = function() {
