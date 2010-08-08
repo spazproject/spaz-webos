@@ -25,13 +25,20 @@ BODY {
 /* 
 	The Accounts Panel
 */
+.palm-menu-panel {
+    -webkit-border-image: url('../images/dreadnaught/palm-menu-panel.png') 24 24 24 24 repeat stretch;
+}
 
 .palm-menu-panel{
     -webkit-transition: all 175ms ease-in;
+    opacity:1;
 }
+
 .palm-menu-panel.sliding {
-    -webkit-transform: translate(0px,-220px);
+    -webkit-transform: translate(0px,-2220px);
+    opacity: 0;
 }
+
 
 /*
 	This is so we can have the view menu floating over the palm-page-header
