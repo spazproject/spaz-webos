@@ -976,6 +976,7 @@ scene_helpers.addCommonSceneMethods = function(assistant) {
 	assistant.clearTimelineCache = function(callback) {
 		this.cacheDepot = TempCache.clear();
 		sc.app.Tweets.reset();
+		this.showAlert('Message cache cleared', 'Cache Cleared');
 	};
 	
 	
