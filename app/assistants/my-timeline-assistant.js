@@ -41,6 +41,11 @@ function MyTimelineAssistant(argFromPusher) {
 
 	};
 	
+	/*
+		we might need to NOT save the cache on deactivate, if we switch users from here
+	*/
+	this.doNotSaveCacheOnDeactivate = false;
+	
 
 }
 
@@ -140,10 +145,19 @@ MyTimelineAssistant.prototype.setup = function() {
 		}
 	);
 	Mojo.Event.listen(jQuery('#accountList')[0], Mojo.Event.listTap, function(e) {
-	
+		
+		/*
+			save current user's cache and don't save on deactivate
+		*/
+		thisA.saveTimelineCache();
+		thisA.doNotSaveCacheOnDeactivate = true;
+		
 		sch.debug('CLICKED ON ITEM');
 		sch.debug(sch.enJSON(e.item));
-	
+		
+		/*
+			set properties for new user
+		*/
 		sc.app.username = e.item.username;
 		sc.app.auth		= e.item.auth;
 		sc.app.type     = e.item.type;
@@ -155,7 +169,7 @@ MyTimelineAssistant.prototype.setup = function() {
 		sch.debug('sc.app.userid:'	 + sc.app.userid);
 		
 		sc.app.prefs.set('last_userid', sc.app.userid);
-				
+		
 		Spaz.popAllAndPushScene("my-timeline");
 	});
 	
@@ -216,14 +230,15 @@ MyTimelineAssistant.prototype.deactivate = function(event) {
 	this.unbindTimelineEntryTaps('#my-timeline');
 	
 	
-
-	
-	
 	/*
 		save timeline cache
 	*/
 	sch.debug('saving timeline cache…');
-	this.saveTimelineCache();
+
+	if (!this.doNotSaveCacheOnDeactivate) {
+		this.saveTimelineCache();
+	}
+	
 	
 };
 
@@ -332,7 +347,7 @@ MyTimelineAssistant.prototype.initTimeline = function() {
 				
 				// sort if either first new or last new is OLDER than the first old
 				if (new_first_time < old_first_time || new_last_time < old_first_time) {
-					jQuery('#my-timeline div.timeline-entry').tsort({attr:'data-timestamp', place:'orig', order:'desc'});					
+					jQuery('#my-timeline div.timeline-entry').tsort({attr:'data-timestamp', place:'orig', order:'desc'});
 				} else {
 					sch.debug('Didn\'t resort…');
 				}
@@ -467,10 +482,6 @@ MyTimelineAssistant.prototype.loadTimelineCache = function() {
 		
 	};
 
-	
-	
-	
-	
 	if (!TempCache.exists()) {
 		sch.dump('CACHE DOES NOT EXIST');
 		sch.listen(document, 'temp_cache_load_db_success', this._loadTimelineCache);
