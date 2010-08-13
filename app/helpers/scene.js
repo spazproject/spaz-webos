@@ -102,7 +102,9 @@ scene_helpers.addCommonSceneMethods = function(assistant) {
 		
 		sch.error(event);
 		sch.error(event.command);
-		
+		if (event.type == Mojo.Event.forward) {
+			this.prepMessage()
+		}
 		if (event.type == Mojo.Event.command) {
 			switch (event.command) {
 

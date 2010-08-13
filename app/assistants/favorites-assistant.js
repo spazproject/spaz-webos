@@ -18,24 +18,29 @@ FavoritesAssistant.prototype.setup = function() {
 		viewMenuItems: [
 			{
 				items:[
-					{label: $L("Favorites"), command:'scroll-top', 'class':"palm-header left", width:320}				
+					{label: $L("Favorites"), command:'scroll-top', 'class':"palm-header left", width:260},
+					{label: $L('Compose'),  icon:'compose', command:'compose', shortcut:'N'}
+					
 				]
 			}
 
 		],
 		cmdMenuItems: [
-			{label:$L('Compose'),  icon:'compose', command:'compose', shortcut:'N'},
 			{},
 			{
-				toggleCmd:'refresh',
+				/*
+					So we don't get the hard-to-see disabled look on the selected button,
+					we make the current toggle command "IGNORE", which will not trigger an action
+				*/
+				toggleCmd:'favorites',
 				items: [
-					{label:$L('My Timeline'), icon:'conversation', command:'my-timeline', shortcut:'T'},
-					{label:$L('Favorites'), iconPath:'images/theme/menu-icon-favorite.png', command:'refresh', shortcut:'F', 'class':"palm-header left"},
-					{label:$L('Search'),      icon:'search', command:'search', shortcut:'S'}
+					{label:$L('My Timeline'), icon:'conversation', command:'my-timeline', shortcut:'T', 'class':"palm-header left"},
+					{label:'@',	icon:'at', command:'filter-timeline-replies'}, 
+					{label:$L('DM'), icon: 'dms', secondaryIconPath:'', command:'filter-timeline-dms'},
+					{label:$L('Favorites'), iconPath:'images/theme/menu-icon-favorite.png', command:'favorites', shortcut:'F'},
+					{label:$L('Search'),    icon:'search', command:'search', shortcut:'S'}
 				]
 			},
-			{},
-			{},
 			{}
 		]
 	});
