@@ -102,7 +102,9 @@ scene_helpers.addCommonSceneMethods = function(assistant) {
 		
 		sch.error(event);
 		sch.error(event.command);
-		
+		if (event.type == Mojo.Event.forward) {
+			this.prepMessage()
+		}
 		if (event.type == Mojo.Event.command) {
 			switch (event.command) {
 
@@ -329,7 +331,11 @@ scene_helpers.addCommonSceneMethods = function(assistant) {
 		var auth;
 		if ( (auth = Spaz.Prefs.getAuthObject()) ) {
 			this.twit.setCredentials(auth);
-			this.twit.setBaseURLByService(Spaz.Prefs.getAccountType());
+			if (Spaz.Prefs.getAccountType() === SPAZCORE_ACCOUNT_CUSTOM) {
+			    this.twit.setBaseURL(Spaz.Prefs.getCustomAPIUrl());
+			} else {
+			    this.twit.setBaseURLByService(Spaz.Prefs.getAccountType());
+			}
 		} else {
 			// alert('NOT seetting credentials for!');
 		}

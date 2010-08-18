@@ -100,7 +100,7 @@ BackgroundNotifier.prototype.init = function() {
 		sc.app.userid   = last_user_obj.id;
 
 		if (sc.app.type === SPAZCORE_SERVICE_CUSTOM) {
-			var api_url = users.getMeta(sc.app.userid, 'api-url');
+			var api_url = this.Users.getMeta(sc.app.userid, 'twitter-api-base-url');
 			this.twit.setBaseURL(api_url);
 		} else {
 			this.twit.setBaseURLByService(sc.app.type);				

@@ -39,6 +39,10 @@ BODY {
     opacity: 0;
 }
 
+/*DM's and @ Menu Icon*/
+.palm-menu-icon.dms 			{ background-image: url(../images/menu-icon-dms.png); }
+.palm-menu-icon.at 			{ background-image: url(../images/menu-icon-at.png); }
+
 
 /*
 	This is so we can have the view menu floating over the palm-page-header

@@ -49,24 +49,20 @@ function MyTimelineAssistant(argFromPusher) {
 
 }
 
-MyTimelineAssistant.prototype.aboutToActivate = function(callback){
-	callback.defer(); //delays displaying scene, looks better
-};
-
 MyTimelineAssistant.prototype.setup = function() {
-	
+
+
 	var thisA = this;
 	
-	// this.tweetsModel = [];
 
 	this.scroller = this.controller.getSceneScroller();
-	
+
+
 	/* this function is for setup tasks that have to happen when the scene is first created */
 
 	this.initAppMenu({ 'items':LOGGEDIN_APPMENU_ITEMS });
 
 	this.initTwit('DOM');
-	
 	//Sets up meta-tap + scroll handler
 	
 	this.listenForMetaTapScroll();
@@ -82,45 +78,33 @@ MyTimelineAssistant.prototype.setup = function() {
 				items: [
 					{label: $L('Refresh'),  icon:'sync', command:'refresh', shortcut:'R'},
 					{label: sc.app.username, command:'toggle-accounts-panel', width:200},
-					{label: $L('Filter timeline'), iconPath:'images/theme/menu-icon-triangle-down.png', submenu:'filter-menu'}
+					{label: $L('Compose'),  icon:'compose', command:'compose', shortcut:'N'},
+
+					//{label: $L('Filter timeline'), iconPath:'images/theme/menu-icon-triangle-down.png', submenu:'filter-menu'}
 				
 				]
 			}
 			
 		],
 		cmdMenuItems: [
-			{label:$L('Compose'),  icon:'compose', command:'compose', shortcut:'N'},
 			{},
 			{
 				/*
 					So we don't get the hard-to-see disabled look on the selected button,
 					we make the current toggle command "IGNORE", which will not trigger an action
 				*/
-				toggleCmd:'IGNORE',
+				toggleCmd:'filter-timeline-all',
 				items: [
-					{label:$L('My Timeline'), icon:'conversation', command:'IGNORE', shortcut:'T', 'class':"palm-header left"},
+					{label:$L('My Timeline'), icon:'conversation', command:'filter-timeline-all', shortcut:'T', 'class':"palm-header left"},
+					{label:'@',	icon:'at', command:'filter-timeline-replies'}, 
+					{label:$L('DM'), icon: 'dms', secondaryIconPath:'', command:'filter-timeline-dms'},
 					{label:$L('Favorites'), iconPath:'images/theme/menu-icon-favorite.png', command:'favorites', shortcut:'F'},
 					{label:$L('Search'),    icon:'search', command:'search', shortcut:'S'}
 				]
 			},
-			{},
-			{},
 			{}
 		]
 	});
-
-
-	this.timelineFilterMenuModel = {
-		items: [
-				{label:$L('Show All Messages'),				secondaryIconPath:'', command:'filter-timeline-all'}, 
-				{label:$L('Replies and Direct Messages'),	secondaryIconPath:'', command:'filter-timeline-replies-dm'}, 
-				{label:$L('Just Replies'),					secondaryIconPath:'', command:'filter-timeline-replies'}, 
-				{label:$L('Just Direct Messages'),			secondaryIconPath:'', command:'filter-timeline-dms'}
-		]
-	};
-
-	// Set up submenu widget that was wired into the viewMenu above
-	this.controller.setupWidget("filter-menu", undefined, this.timelineFilterMenuModel);
 	
 	/*
 	 * Accounts list

@@ -251,7 +251,7 @@ var NewAccountDialogAssistant = Class.create({
 			'username':false,
 			'password':false,
 			'type':SPAZCORE_SERVICE_TWITTER,
-			'api-url':'http://'
+			'twitter-api-base-url':'http://'
 		};
 
 
@@ -318,11 +318,11 @@ var NewAccountDialogAssistant = Class.create({
 		/*
 			API URL
 		*/
-		this.controller.setupWidget('api-url',
+		this.controller.setupWidget('twitter-api-base-url',
 			this.atts = {
 				// hintText: 'enter username',
 				enterSubmits: true,
-				modelProperty:'api-url', 
+				modelProperty:'twitter-api-base-url', 
 				changeOnKeyPress: true,
 				focusMode:	Mojo.Widget.focusSelectMode,
 				multiline:		false,
@@ -343,7 +343,7 @@ var NewAccountDialogAssistant = Class.create({
 		var thisA = this;
 
 
-		jQuery('#api-url-row').hide();
+		jQuery('#twitter-api-base-url-row').hide();
 
 		/*
 			What to do if we succeed
@@ -360,9 +360,8 @@ var NewAccountDialogAssistant = Class.create({
 				type:thisA.newAccountModel.type.toLowerCase()
 			};
 			thisA.sceneAssistant.accountsModel.items.push(newItem);
-			thisA.sceneAssistant.Users.setAll(thisA.sceneAssistant.accountsModel.items);
-			
-			thisA.sceneAssistant.Users.setMeta(newItem.username, newItem.type, 'api-url', thisA.newAccountModel['api-url']);
+			thisA.sceneAssistant.Users.setAll(thisA.sceneAssistant.accountsModel.items);			
+			thisA.sceneAssistant.Users.setMeta(newItem.id, 'twitter-api-base-url', thisA.newAccountModel['twitter-api-base-url']);
 			
 			jQuery('#accountList')[0].mojo.noticeAddedItems(thisA.sceneAssistant.accountsModel.items.length, [newItem]);
 			thisA.widget.mojo.close();
@@ -442,10 +441,10 @@ var NewAccountDialogAssistant = Class.create({
 	
 	typePropertyChangeListener : function(event) {
 		if (this.newAccountModel.type === SPAZCORE_SERVICE_CUSTOM) {
-			jQuery('#api-url-row').show();
+			jQuery('#twitter-api-base-url-row').show();
 			jQuery('#type-row').removeClass('last');
 		} else {
-			jQuery('#api-url-row').hide();
+			jQuery('#twitter-api-base-url-row').hide();
 			jQuery('#type-row').addClass('last');
 		}
 	},
@@ -464,7 +463,6 @@ var NewAccountDialogAssistant = Class.create({
 			Turn on the spinner and set the message
 		*/
 		// this.sceneAssistant.showInlineSpinner('#new-account-spinner-container', 'Verifying credentials');
-		
 		sch.error("new account:");
 		sch.error(this.newAccountModel.username);
 		
@@ -475,11 +473,11 @@ var NewAccountDialogAssistant = Class.create({
 			if (this.newAccountModel.type !== SPAZCORE_SERVICE_CUSTOM) {
 				sc.app.twit.setBaseURLByService(this.newAccountModel.type);
 			} else {
-				sc.app.twit.setBaseURL(this.newAccountModel['api-url']);
+				sc.app.twit.setBaseURL(this.newAccountModel['twitter-api-base-url']);
 			}
 			
 			
-			
+			Mojo.Log.error(this.newAccountModel.type);
 			
 			var auth  = new SpazAuth(this.newAccountModel.type);
 			
@@ -512,7 +510,7 @@ var NewAccountDialogAssistant = Class.create({
 						
 						// the accounts model
 						sc.app.accounts.setAll(that.sceneAssistant.accountsModel.items);
-						sc.app.accounts.setMeta(newaccid, 'api-url', that.newAccountModel['api-url']);
+						sc.app.accounts.setMeta(newaccid, 'twitter-api-base-url', that.newAccountModel['twitter-api-base-url']);
 
 						jQuery('#accountList')[0].mojo.noticeAddedItems(that.sceneAssistant.accountsModel.items.length, [newItem]);
 						that.widget.mojo.close();

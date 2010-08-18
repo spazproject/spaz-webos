@@ -1,4 +1,4 @@
-/*********** Built 2010-08-07 20:35:47 EDT ***********/
+/*********** Built 2010-08-18 09:22:33 EDT ***********/
 /*jslint 
 browser: true,
 nomen: false,
@@ -6859,6 +6859,7 @@ var SPAZCORE_ACCOUNT_WORDPRESS	= 'wordpress.com';
 var SPAZCORE_ACCOUNT_TUMBLR		= 'tumblr';
 var SPAZCORE_ACCOUNT_FACEBOOK	= 'facebook';
 var SPAZCORE_ACCOUNT_FRIENDFEED	= 'friendfeed';
+var SPAZCORE_ACCOUNT_CUSTOM 	= 'custom';
 
 /**
  * This creates a new SpazAccounts object, and optionally associates it with an existing preferences object
@@ -7181,7 +7182,10 @@ SPAZAUTH_SERVICES[SPAZCORE_ACCOUNT_STATUSNET] = {
 	'authType': SPAZCORE_AUTHTYPE_BASIC
 };
 SPAZAUTH_SERVICES[SPAZCORE_ACCOUNT_IDENTICA] = {
-	'authType': SPAZCORE_AUTHTYPE_BASIC
+    'authType': SPAZCORE_AUTHTYPE_BASIC
+};
+SPAZAUTH_SERVICES[SPAZCORE_ACCOUNT_CUSTOM] = {
+    'authType': SPAZCORE_AUTHTYPE_BASIC
 };
 SPAZAUTH_SERVICES['default'] = {
 	'authType': SPAZCORE_AUTHTYPE_BASIC
@@ -7288,11 +7292,11 @@ SpazBasicAuth.prototype.save = function() {
 
 SpazBasicAuth.prototype.getUsername = function() {
 	return this.username;
-}
+};
 
 SpazBasicAuth.prototype.getPassword = function() {
 	return this.password;
-}
+};
 
 
 /**
@@ -8292,6 +8296,7 @@ var SpazImageUploader = function(opts) {
  * @param {string} [opts.username] a username, in case we're doing that kind of thing
  * @param {string} [opts.password] a password, in case we're doing that kind of thing
  * @param {string} [opts.auth_method] the method of authentication: 'echo' or 'basic'. Default is 'echo'
+ * @param {string} [opts.statusnet_api_base] the api base URL for statusnet, if that service is used
  * @param {object} [opts.extra] Extra params to pass in the upload request
  */
 SpazImageUploader.prototype.setOpts = function(opts) {
@@ -8300,7 +8305,8 @@ SpazImageUploader.prototype.setOpts = function(opts) {
         'auth_obj':null,
         'username':null,
         'password':null,
-        'auth_method':'echo' // 'echo' or 'basic'
+        'auth_method':'echo', // 'echo' or 'basic'
+		'statusnet_api_base':null // only used by statusnet
     }, opts);
 };
 
@@ -8466,6 +8472,67 @@ SpazImageUploader.prototype.services = {
 			}
 			
 		}
+	},
+	'identi.ca' : {
+		'url'  : 'http://identi.ca/api/statusnet/media/upload',
+		'parseResponse': function(data) {
+			
+			var parser=new DOMParser();
+			xmldoc = parser.parseFromString(data,"text/xml");
+
+			var status;
+			var rspAttr = xmldoc.getElementsByTagName("rsp")[0].attributes;
+			status = rspAttr.getNamedItem("stat").nodeValue;
+			
+			if (status == 'ok') {
+				var mediaurl = $(xmldoc).find('mediaurl').text();
+				return {'url':mediaurl};
+			} else {
+				var errMsg;
+				if (xmldoc.getElementsByTagName("err")[0]) {
+					errMsg = xmldoc.getElementsByTagName("err")[0].childNodes[0].nodeValue;
+				} else {
+					errMsg = xmldoc.getElementsByTagName("error")[0].childNodes[0].nodeValue;
+				}
+				
+				sch.error(errMsg);
+				return {'error':errMsg};
+			}
+		}
+	},
+	'statusnet' : {
+		'url'  : '/statusnet/media/upload',
+		'prepForUpload':function() {
+			if (this.opts.statusnet_api_base) {
+				this.services.statusnet.url = this.opts.statusnet_api_base + this.services.statusnet.url;
+			} else {
+				sch.error('opts.statusnet_api_base must be set to use statusnet uploader service');
+			}
+		},
+		'parseResponse':function(data) {
+			var parser=new DOMParser();
+			xmldoc = parser.parseFromString(data,"text/xml");
+
+			var status;
+			var rspAttr = xmldoc.getElementsByTagName("rsp")[0].attributes;
+			status = rspAttr.getNamedItem("stat").nodeValue;
+			
+			if (status == 'ok') {
+				var mediaurl = $(xmldoc).find('mediaurl').text();
+				return {'url':mediaurl};
+			} else {
+				var errMsg;
+				if (xmldoc.getElementsByTagName("err")[0]) {
+					errMsg = xmldoc.getElementsByTagName("err")[0].childNodes[0].nodeValue;
+				} else {
+					errMsg = xmldoc.getElementsByTagName("error")[0].childNodes[0].nodeValue;
+				}
+				
+				sch.error(errMsg);
+				return {'error':errMsg};
+			}
+			
+		}
 	}
 };
 
@@ -8505,8 +8572,12 @@ SpazImageUploader.prototype.upload = function() {
 	var opts = sch.defaults({
 		extra:{}
 	}, this.opts);
-
+	
 	var srvc = this.services[opts.service];
+
+	if (srvc.prepForUpload) {
+		srvc.prepForUpload.call(this);
+	}
 
 	/*
 		file url
@@ -8516,14 +8587,14 @@ SpazImageUploader.prototype.upload = function() {
 		opts.extra = jQuery.extend(opts.extra, srvc.extra);
 	}
 	
-	var onSuccess;
+	var onSuccess, rs;
 	if (srvc.parseResponse) {
 		onSuccess = function(data) {
 			if (sch.isString(data)) {
-				var rs = srvc.parseResponse.call(srvc, data);
+				rs = srvc.parseResponse.call(srvc, data);
 				return opts.onSuccess(rs);
 			} else if (data && data.responseString) { // webOS will return an object, not just the response string
-				var rs = srvc.parseResponse.call(srvc, data.responseString);
+				rs = srvc.parseResponse.call(srvc, data.responseString);
 				return opts.onSuccess(rs);
 			} else { // I dunno what it is; just pass it to the callback
 				return opts.onSuccess(data);
@@ -13796,8 +13867,6 @@ SpazTwit.prototype.addUserToList = function(user, list, list_user) {
 	
 	var opts = {
 		'url':url,
-		'success_event_type':'create_list_succeeded',
-		'failure_event_type':'create_list_failed',
 		'success_event_type':'add_list_user_succeeded',
 		'failure_event_type':'add_list_user_failed',
 		'data':data
@@ -14018,8 +14087,7 @@ SpazTwit.prototype.isMember = function(list, list_user, user){
 /*
  * Marks a user as a spammer and blocks them
  */
- 
-SpazTwit.prototype.reportSpam = function(user) {
+SpazTwit.prototype.reportSpam = function(user, onSuccess, onFailure) {
 	var url = this.getAPIURL('report_spam');
 	
 	var data = {};
@@ -14029,6 +14097,8 @@ SpazTwit.prototype.reportSpam = function(user) {
 		'url':url,
 		'username': this.username,
 		'password': this.password,
+		'success_callback': onSuccess,
+		'failure_callback': onFailure,
 		'success_event_type':'report_spam_succeeded',
 		'failure_event_type':'report_spam_failed',
 		'method':'POST',
