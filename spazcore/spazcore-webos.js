@@ -1,4 +1,4 @@
-/*********** Built 2010-08-18 09:22:33 EDT ***********/
+/*********** Built 2010-08-24 09:41:15 EDT ***********/
 /*jslint 
 browser: true,
 nomen: false,
@@ -8311,6 +8311,18 @@ SpazImageUploader.prototype.setOpts = function(opts) {
 };
 
 /**
+ * returns an array of labels for the services 
+ * @return array
+ */
+SpazImageUploader.prototype.getServiceLabels = function() {
+	var labels = [];
+	for(var key in this.services) {
+		labels.push(key);
+	}
+	return labels;
+};
+
+/**
  * a hash of service objects. Each object has a URL endpoint, a parseResponse callback, and an optional "extra" set of params to pass on upload
  *	parseResponse should return one of these key/val pairs:
  *	- {'url':'http://foo.bar/XXXX'}
@@ -12247,13 +12259,18 @@ SpazTwit.prototype._processTimeline = function(section_name, ret_items, opts, pr
 
 	if (ret_items.length > 0){
 		
+		var proc_items = [];
 		
 		/*
 			we process each item, adding some attributes and generally making it cool
 		*/
 		for (var k=0; k<ret_items.length; k++) {
-			ret_items[k] = this._processItem(ret_items[k], section_name);
+			if (ret_items[k]) {
+				proc_items.push(this._processItem(ret_items[k], section_name));
+			}
 		}
+		ret_items = proc_items;
+		proc_items = null;
 
 
 		/*
