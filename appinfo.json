@@ -9,5 +9,22 @@
 	"miniicon": "images/miniicon.png",
 	"vendor": "Funkatron Productions",
 	"vendorurl": "http://funkatron.com",
-	"noWindow":false
+	"copyright": "© Copyright 2010 Funkatron Productions",
+	"theme": "dark",
+	"noWindow":false,
+	"keywords":["Spaz", "spz", "Twitter", "Tweet", "Chat"],
+	"support": {
+		"url": "http://help.getspaz.com",
+		"email": {
+			"address": "spaz-webos@funkatron.com",
+			"subject": "Spaz Support"
+		},
+		"resources": [
+			{
+				"type": "web",
+				"label": "Spaz Homepage",
+				"url": "http://getspaz.com/"
+			}
+		]
+	}
 }
