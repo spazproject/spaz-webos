@@ -101,6 +101,9 @@ BackgroundNotifier.prototype.init = function() {
 
 		if (sc.app.type === SPAZCORE_SERVICE_CUSTOM) {
 			var api_url = this.Users.getMeta(sc.app.userid, 'twitter-api-base-url');
+			if (!api_url) { // if that wasn't set, try old key
+			    api_url = this.Users.getMeta(sc.app.userid, 'api-url');
+			}
 			this.twit.setBaseURL(api_url);
 		} else {
 			this.twit.setBaseURLByService(sc.app.type);				

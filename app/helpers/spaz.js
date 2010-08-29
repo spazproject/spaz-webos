@@ -346,7 +346,12 @@ Spaz.Prefs.getAccountType = function() {
  * Retrieves the custom API url for the current account
  */
 Spaz.Prefs.getCustomAPIUrl = function() {
-    return sc.app.accounts.getMeta(Spaz.Prefs.getCurrentAccountId(), 'twitter-api-base-url');
+    var custom_api_url = sc.app.accounts.getMeta(Spaz.Prefs.getCurrentAccountId(), 'twitter-api-base-url');
+    if (!custom_api_url) {
+        // used to be called api-url, so try that
+        custom_api_url = sc.app.accounts.getMeta(Spaz.Prefs.getCurrentAccountId(), 'api-url');
+    }
+    return custom_api_url;
 };
 
 
