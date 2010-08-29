@@ -60,7 +60,7 @@ SearchTwitterAssistant.prototype.setup = function() {
 	/*
 		view and command menus
 	*/
-	if (sc.app.username && sc.app.password) {
+	if (sc.app.username) {
 		this.setupCommonMenus({
 			viewMenuItems: [
 				{
@@ -81,7 +81,7 @@ SearchTwitterAssistant.prototype.setup = function() {
 			]
 		});
 		
-		this.initAppMenu({ 'items':loggedin_appmenu_items });	
+		this.initAppMenu({ 'items':LOGGEDIN_APPMENU_ITEMS });	
 	} else {
 		this.setupCommonMenus({
 			viewMenuItems: [
