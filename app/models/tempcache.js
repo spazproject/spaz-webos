@@ -45,9 +45,9 @@ TempCache.save = function(key, val, idkey) {
 		idkey = sc.app.userid;
 	}
 
-	sch.error("saving key:"+key);
-	sch.error("saving val:"+val);
-	sch.error("saving idkey:"+idkey);	
+	sch.debug("saving key:"+key);
+	sch.debug("saving val:"+val);
+	sch.debug("saving idkey:"+idkey);	
 	
 	if (!window.spaztmpcache) {
 		TempCache.init();
@@ -58,11 +58,6 @@ TempCache.save = function(key, val, idkey) {
 	}
 	
 	window.spaztmpcache[idkey][key] = val;
-
-	var jsonver = sch.enJSON(spaztmpcache);
-
-	sch.error("jsonver.length:"+jsonver.length);
-	sch.error(jsonver);
 
 };
 
@@ -84,8 +79,8 @@ TempCache.load = function(key, idkey) {
 		return null;
 	}
 	
-	sch.error("TempCache: loading key:"+key);
-	sch.error("TempCache: loading idkey:"+idkey);
+	sch.debug("TempCache: loading key:"+key);
+	sch.debug("TempCache: loading idkey:"+idkey);
 	
 	if (window.spaztmpcache[idkey][key]) {
 		return window.spaztmpcache[idkey][key];
@@ -109,7 +104,9 @@ TempCache.saveToDB = function() {
 	}
 	
 	var json_cache = JSON.stringify(window.spaztmpcache);
+	
 	sch.debug(json_cache);
+
 	var SpazTempCache = openDatabase("ext:SpazTempCache", "1", 'SpazTempCache', 10*1024*1024);
 	var sql_table = "CREATE TABLE IF NOT EXISTS tempcache (key, value)";
 	var sql_clean = "DELETE FROM tempcache";
