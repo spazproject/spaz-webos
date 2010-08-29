@@ -78,7 +78,7 @@ MyTimelineAssistant.prototype.setup = function() {
 				items: [
 					{label: $L('Refresh'),  icon:'sync', command:'refresh', shortcut:'R'},
 					{label: sc.app.username, command:'toggle-accounts-panel', width:200},
-					{label: $L('Compose'),  icon:'compose', command:'compose', shortcut:'N'},
+					{label: $L('Compose'),  icon:'compose', command:'compose', shortcut:'N'}
 
 					//{label: $L('Filter timeline'), iconPath:'images/theme/menu-icon-triangle-down.png', submenu:'filter-menu'}
 				
@@ -112,7 +112,7 @@ MyTimelineAssistant.prototype.setup = function() {
 	this.Users = new SpazAccounts(sc.app.prefs);
 	this.Users.load();
 	
-	sch.error(this.Users);
+	sch.debug(this.Users);
 	
 	this.controller.setupWidget("accountList",
 		this.accountsAtts = {
@@ -340,7 +340,7 @@ MyTimelineAssistant.prototype.initTimeline = function() {
 			var after = new Date();
 			var total = new Date();
 			total.setTime(after.getTime() - before.getTime());
-			sch.debug('Sorting took ' + total.getMilliseconds() + 'ms');
+			sch.error('Sorting took ' + total.getMilliseconds() + 'ms');
 			
 			sc.helpers.updateRelativeTimes('#my-timeline div.timeline-entry span.date', 'data-created_at');
 			
@@ -396,6 +396,7 @@ MyTimelineAssistant.prototype.initTimeline = function() {
 			thisA.hideInlineSpinner('activity-spinner-my-timeline');
 			
 			thisA.saveTimelineCache();
+			
 		},
 		'data_failure': function(e, error_array) {
 			dump('error_combined_timeline_data - response:');
@@ -481,7 +482,7 @@ MyTimelineAssistant.prototype.saveTimelineCache = function() {
 	
 	var tweetsModel_html = document.getElementById('my-timeline').innerHTML;
 	
-	sch.dump(tweetsModel_html);
+	sch.debug(tweetsModel_html);
 	
 	var twitdata = {};
 	twitdata['version']                            = this.cacheVersion || -1;
