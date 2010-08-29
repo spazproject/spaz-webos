@@ -401,6 +401,7 @@ PostAssistant.prototype.shortenURLs = function(event) {
 		if (longurls[i].length > 25) { // only shorten links longer than 25chars
 			reallylongurls.push(longurls[i]);
 		}
+		sch.error(reallylongurls.length+ ' Long URLs');
 	}
 	
 	/*
@@ -409,24 +410,26 @@ PostAssistant.prototype.shortenURLs = function(event) {
 	if (reallylongurls.length < 1) {
 		this.deactivateButtonSpinner('post-shorten-urls-button');
 		this._updateCharCount();
+		sch.error('No Long URLs');
 		return;
 	}
 	
-	function onShortURLSuccess(e) {
-		var data = sch.getEventData(e);
-		this.postTextFieldModel.value = sc.helpers.replaceMultiple(this.postTextFieldModel.value, data);
-		this.controller.modelChanged(this.postTextFieldModel);
-		this.deactivateButtonSpinner('post-shorten-urls-button');
-		this._updateCharCount();
-		sch.unlisten(event_target, sc.events.newShortURLSuccess, onShortURLSuccess, this);
-		sch.unlisten(event_target, sc.events.newShortURLFailure, onShortURLFailure, this);
+	
+	var that = this;
+	
+	function onShortURLSuccess(e, data) {
+		that.postTextFieldModel.value = sc.helpers.replaceMultiple(that.postTextFieldModel.value, data);
+		that.controller.modelChanged(that.postTextFieldModel);
+		that.deactivateButtonSpinner('post-shorten-urls-button');
+		that._updateCharCount();
+		sch.unlisten(event_target, sc.events.newShortURLSuccess, onShortURLSuccess, that);
+		sch.unlisten(event_target, sc.events.newShortURLFailure, onShortURLFailure, that);
 	}
-	function onShortURLFailure(e) {
-		var error_obj = sch.getEventData(e);
-		this.deactivateButtonSpinner('post-shorten-urls-button');
-		this._updateCharCount();
-		sch.unlisten(event_target, sc.events.newShortURLSuccess, onShortURLSuccess, this);
-		sch.unlisten(event_target, sc.events.newShortURLFailure, onShortURLFailure, this);
+	function onShortURLFailure(e, error_obj) {
+		that.deactivateButtonSpinner('post-shorten-urls-button');
+		that._updateCharCount();
+		sch.unlisten(event_target, sc.events.newShortURLSuccess, onShortURLSuccess, that);
+		sch.unlisten(event_target, sc.events.newShortURLFailure, onShortURLFailure, that);
 	}
 	
 	sch.listen(event_target, sc.events.newShortURLSuccess, onShortURLSuccess, this);
@@ -437,8 +440,8 @@ PostAssistant.prototype.shortenURLs = function(event) {
 		'apiopts': {
 			'version':'2.0.1',
 			'format':'json',
-			'login':'spazcore',
-			'apiKey':sc.app.prefs.get('services-bitly-apikey')
+			'login': sc.app.prefs.get('services-bitly-login') || 'spazcore',
+			'apiKey':sc.app.prefs.get('services-bitly-apikey') || 'R_f3b86681a63a6bbefc7d8949fd915f1d'
 		}
 	});
 	
