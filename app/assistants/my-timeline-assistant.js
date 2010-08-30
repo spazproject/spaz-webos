@@ -13,11 +13,20 @@ function MyTimelineAssistant(argFromPusher) {
 	
 	var thisA = this;
 	
-	
-	if (argFromPusher && argFromPusher.firstload === true) {
-		// console.debug();
-		// this.clearTimelineCache();
+	sch.error('argFromPusher:'+argFromPusher);
+	if (argFromPusher && argFromPusher.filter) {
+	    sch.error('argFromPusher.filter:'+argFromPusher.filter);
 	}
+	
+    if (argFromPusher && argFromPusher.firstload === true) {
+        // console.debug();
+        // this.clearTimelineCache();
+    }
+
+    if (argFromPusher && argFromPusher.filter) {
+        this.setFilterState(argFromPusher.filter);
+		this.toggleCmd = argFromPusher.filter;
+    }
 
 	this.cacheVersion = 3;  // we increment this when we change how the cache works
 	
@@ -48,6 +57,11 @@ function MyTimelineAssistant(argFromPusher) {
 	
 
 }
+
+MyTimelineAssistant.prototype.aboutToActivate = function(callback){
+	callback.defer(); //delays displaying scene, looks better
+};
+
 
 MyTimelineAssistant.prototype.setup = function() {
 
@@ -93,7 +107,7 @@ MyTimelineAssistant.prototype.setup = function() {
 					So we don't get the hard-to-see disabled look on the selected button,
 					we make the current toggle command "IGNORE", which will not trigger an action
 				*/
-				toggleCmd:'filter-timeline-all',
+				toggleCmd:this.toggleCmd||'filter-timeline-all',
 				items: [
 					{label:$L('My Timeline'), icon:'conversation', command:'filter-timeline-all', shortcut:'T', 'class':"palm-header left"},
 					{label:'@',	icon:'at', command:'filter-timeline-replies'}, 
@@ -230,7 +244,7 @@ MyTimelineAssistant.prototype.deactivate = function(event) {
 
 MyTimelineAssistant.prototype.cleanup = function(event) {
 	
-	sch.dump('CLEANUP');
+	sch.dump('CLEANUP');	
 	
 	/* this function should do any cleanup needed before the scene is destroyed as 
 	   a result of being popped off the scene stack */
@@ -304,12 +318,12 @@ MyTimelineAssistant.prototype.initTimeline = function() {
 			
 			thisA.mytl.addItems(no_dupes);
 
-      // TODO: Timeline list widget
-      sc.app.Tweets.bucket.all(function(tweets) {
-        thisA.timelineModel.items = tweets;
-        sc.info("Finished loading tweets. There are now " + tweets.length);
-      //   thisA.controller.modelChanged(thisA.timelineModel);
-      });
+			// TODO: Timeline list widget
+			// sc.app.Tweets.bucket.all(function(tweets) {
+			// 	thisA.timelineModel.items = tweets;
+			// 	sc.info("Finished loading tweets. There are now " + tweets.length);
+			// 	//   thisA.controller.modelChanged(thisA.timelineModel);
+			// });
 			
 			/*
 				sort timeline
@@ -500,8 +514,7 @@ MyTimelineAssistant.prototype.saveTimelineCache = function() {
 		
 	TempCache.save('mytimelinecache', twitdata);
 	
-	TempCache.saveToDB();
-	
+	TempCache.saveToDB();	
 	
 };
 
@@ -646,7 +659,6 @@ MyTimelineAssistant.prototype.filterTimeline = function(command) {
 	
 	if (!command) {
 		command = this._filterState;
-		return;
 	}
 	
 	
@@ -669,4 +681,12 @@ MyTimelineAssistant.prototype.filterTimeline = function(command) {
 	this.scrollToTop();
 	
 	this._filterState = command;	
+};
+
+/**
+ * set the filterstate directly to be applied next time around 
+ */
+MyTimelineAssistant.prototype.setFilterState = function(state) {
+    sch.error('NEW FILTER STATE:'+state);
+    this._filterState = state;
 };
