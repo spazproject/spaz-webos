@@ -26,6 +26,7 @@ function MyTimelineAssistant(argFromPusher) {
     if (argFromPusher && argFromPusher.filter) {
         this.setFilterState(argFromPusher.filter);
 		this.toggleCmd = argFromPusher.filter;
+		this.filterTimeline(null, true);
     }
 
 	this.cacheVersion = 3;  // we increment this when we change how the cache works
@@ -361,7 +362,7 @@ MyTimelineAssistant.prototype.initTimeline = function() {
 			/*
 				re-apply filtering
 			*/
-			thisA.filterTimeline();
+			thisA.filterTimeline(null, false);
 			
 			/*
 				Get new counts
@@ -655,8 +656,7 @@ MyTimelineAssistant.prototype.removeExtraItems = function() {
 /**
  *  
  */
-MyTimelineAssistant.prototype.filterTimeline = function(command) {
-	
+MyTimelineAssistant.prototype.filterTimeline = function(command, scroll_to_top) {
 	if (!command) {
 		command = this._filterState;
 	}
@@ -677,8 +677,10 @@ MyTimelineAssistant.prototype.filterTimeline = function(command) {
 		}
 	};
 	
-	sch.dump("Scrolling to top after applying filter");
-	this.scrollToTop();
+	if (scroll_to_top) {
+		sch.dump("Scrolling to top after applying filter");
+		this.scrollToTop();
+	}
 	
 	this._filterState = command;	
 };

@@ -125,7 +125,7 @@ scene_helpers.addCommonSceneMethods = function(assistant) {
 							This is actually only defined in MyTimeline
 						*/
 						this.controller.prepareTransition(Mojo.Transition.crossFade).run();
-						this.filterTimeline(event.command);
+						this.filterTimeline(event.command, true);
 					} else {
 						// push to my-timeline with a param to set a filter
 						Spaz.findAndSwapScene('my-timeline', {'filter': event.command});
