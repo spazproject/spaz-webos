@@ -41,7 +41,7 @@ StartsearchAssistant.prototype.setup = function() {
 					*/
 					toggleCmd:'search',
 					items: [
-						{label:$L('My Timeline'), icon:'conversation', command:'my-timeline', shortcut:'T', 'class':"palm-header left"},
+						{label:$L('My Timeline'), icon:'conversation', command:'filter-timeline-all', shortcut:'T', 'class':"palm-header left"},
 						{label:'@',	icon:'at', command:'filter-timeline-replies'}, 
 						{label:$L('DM'), icon: 'dms', secondaryIconPath:'', command:'filter-timeline-dms'},
 						{label:$L('Favorites'), iconPath:'images/theme/menu-icon-favorite.png', command:'favorites', shortcut:'F'},
