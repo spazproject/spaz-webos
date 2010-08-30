@@ -103,7 +103,7 @@ scene_helpers.addCommonSceneMethods = function(assistant) {
 		sch.error(event);
 		sch.error(event.command);
 		if (event.type == Mojo.Event.forward) {
-			this.prepMessage()
+			this.prepMessage();
 		}
 		if (event.type == Mojo.Event.command) {
 			switch (event.command) {
@@ -115,10 +115,22 @@ scene_helpers.addCommonSceneMethods = function(assistant) {
 				case 'filter-timeline-replies-dm':
 				case 'filter-timeline-replies':
 				case 'filter-timeline-dms':
-					/*
-						This is actually only defined in MyTimeline
-					*/
-					this.filterTimeline(event.command);
+					var sceneobject = this.controller.stageController.activeScene();
+					var scenename = sceneobject.sceneName;
+					
+					sch.error('scenename:'+scenename);
+					
+					if (scenename.indexOf('my-timeline') != -1) {
+						/*
+							This is actually only defined in MyTimeline
+						*/
+						this.controller.prepareTransition(Mojo.Transition.crossFade).run();
+						this.filterTimeline(event.command);
+					} else {
+						// push to my-timeline with a param to set a filter
+						Spaz.findAndSwapScene('my-timeline', {'filter': event.command});
+
+					}
 					break;
 				
 				case 'new-search-card':
@@ -246,34 +258,34 @@ scene_helpers.addCommonSceneMethods = function(assistant) {
 	/**
 	 *  
 	 */
-	assistant.filterTimeline = function(command) {
-		
-		if (!command) {
-			command = this.filterState;
-		}
-		
-		switch (command) {
-			case 'filter-timeline-all':
-				jQuery('#my-timeline div.timeline-entry').show();
-				break;
-			case 'filter-timeline-replies-dm':
-				jQuery('#my-timeline div.timeline-entry').hide();
-				jQuery('#my-timeline div.timeline-entry.reply, #my-timeline div.timeline-entry.dm').show();
-				break;
-			case 'filter-timeline-replies':
-				jQuery('#my-timeline div.timeline-entry').hide();
-				jQuery('#my-timeline div.timeline-entry.reply').show();
-				break;
-			case 'filter-timeline-dms':
-				jQuery('#my-timeline div.timeline-entry').hide();
-				jQuery('#my-timeline div.timeline-entry.dm').show();
-				break;
-			default:
-				jQuery('#my-timeline div.timeline-entry').show();
-		}
-		
-		this.filterState = command;	
-	};
+	//     assistant.filterTimeline = function(command) {
+	// 
+	// 	if (!command) {
+	// 		command = this.filterState;
+	// 	}
+	// 
+	// 	switch (command) {
+	// 	case 'filter-timeline-all':
+	// 		jQuery('#my-timeline div.timeline-entry').show();
+	// 		break;
+	// 	case 'filter-timeline-replies-dm':
+	// 		jQuery('#my-timeline div.timeline-entry').hide();
+	// 		jQuery('#my-timeline div.timeline-entry.reply, #my-timeline div.timeline-entry.dm').show();
+	// 		break;
+	// 	case 'filter-timeline-replies':
+	// 		jQuery('#my-timeline div.timeline-entry').hide();
+	// 		jQuery('#my-timeline div.timeline-entry.reply').show();
+	// 		break;
+	// 	case 'filter-timeline-dms':
+	// 		jQuery('#my-timeline div.timeline-entry').hide();
+	// 		jQuery('#my-timeline div.timeline-entry.dm').show();
+	// 		break;
+	// 	default:
+	// 		jQuery('#my-timeline div.timeline-entry').show();
+	// 	}
+	// 
+	// 	this.filterState = command; 
+	// };
 	
 	
 	
