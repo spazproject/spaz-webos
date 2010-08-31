@@ -214,6 +214,10 @@ scene_helpers.addCommonSceneMethods = function(assistant) {
 	 *  
 	 */
 	assistant.scrollToTop = function() {
+		if (!this.controller) {
+			return;
+		}
+		
 		if (!this.scroller) {
 			this.scroller = this.controller.getSceneScroller();
 		}
