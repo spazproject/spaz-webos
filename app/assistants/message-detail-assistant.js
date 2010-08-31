@@ -189,10 +189,12 @@ MessageDetailAssistant.prototype.activate = function(event) {
 			onChoose:  thisA.sharePopupmenuChoose,
 			placeNear: e.target,
 			items: [
-				{label: 'ReTweet', command: 'retweet'},
-				{label: 'Quote', command:   'quote'},
-				{label: 'Email', command:   'email'},
-				{label: 'SMS/IM', command:  'sms'}
+				{label: $L('ReTweet'), command: 'retweet'},
+				{label: $L('RT @…'), command:   'RT'},
+				{label: $L('Quote'), command:   'quote'},
+				{label: $L('Email'), command:   'email'},
+				{label: $L('SMS/IM'), command:  'sms'},
+				{label: $L('Facebook'), command:  'facebook'}
 			]
 		});
 	});
@@ -202,13 +204,19 @@ MessageDetailAssistant.prototype.activate = function(event) {
 	jQuery('#message-detail-action-favorite', this.scroller).live(Mojo.Event.tap, function(e) {
 		var status_id = parseInt(jQuery(this).attr('data-status-id'), 10);		
 		if (jQuery(this).attr('data-favorited') === 'true') {
-			sch.dump('UNFAVORITING');
+			sch.debug('UNFAVORITING');
 			thisA.twit.unfavorite(status_id);
 		} else {
-			sch.dump('FAVORITING');
+			sch.debug('FAVORITING');
 			thisA.twit.favorite(status_id);
 		}
 	});
+	jQuery('#message-detail-action-delete', this.scroller).live(Mojo.Event.tap, function(e) {
+		var status_id = parseInt(jQuery(this).attr('data-status-id'), 10);		
+		thisA.twit.unfavorite(status_id);
+	});
+	
+	
 	
 	
 	jQuery('#message-detail-container .user', this.scroller).live(Mojo.Event.tap, function(e) {
@@ -234,9 +242,9 @@ MessageDetailAssistant.prototype.activate = function(event) {
 	jQuery('#message-detail-container img.thumbnail', this.scroller).live(Mojo.Event.tap, function(e) {
 		var siu = new SpazImageURL();
 		var img_url = jQuery(this).attr('data-img-url');
-		sch.dump('MAIN URL:'+img_url);
+		sch.debug('MAIN URL:'+img_url);
 		img_url = siu.getImageForUrl(img_url);
-		sch.dump('IMAGE URL:'+img_url);
+		sch.debug('IMAGE URL:'+img_url);
 		Mojo.Controller.stageController.pushScene('view-image', {'imageURLs':[img_url]});
 	});
 	
@@ -311,6 +319,9 @@ MessageDetailAssistant.prototype.sharePopupmenuChoose = function(cmd) {
 	
 	switch (cmd) {
 		case 'retweet':
+			this.retweet(this.statusobj);
+			break;
+		case 'RT':
 			this.prepRetweet(this.statusobj);
 			break;
 		case 'quote':
@@ -321,6 +332,9 @@ MessageDetailAssistant.prototype.sharePopupmenuChoose = function(cmd) {
 			break;
 		case 'sms':
 			this.SMSTweet(this.statusobj);
+			break;
+		case 'facebook':
+			this.facebookTweet(this.statusobj);
 			break;
 		default:
 			return;

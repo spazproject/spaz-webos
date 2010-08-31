@@ -89,8 +89,15 @@ StartAssistant.prototype.activate = function(argFromPusher) {
 	/*
 		Get application news
 	*/
-	jQuery.get('http://funkatron.com/spaz-webos/appnews', function() {
-		// don't actually do anything with this yet
+	jQuery.ajax({
+		'url':'http://funkatron.com/spaz-webos/appnews?'+Mojo.Controller.appInfo.version,
+		'type':'GET',
+		beforeSend:function(xhr) {
+			var spaz_info = Mojo.Controller.appInfo.title.replace(/\s/, '-') + '/' + Mojo.Controller.appInfo.version;
+			sch.debug('spaz_info:' + spaz_info);
+			xhr.setRequestHeader('X-Spaz-Info', spaz_info);
+		},
+		complete:function(){}
 	});
 
 	

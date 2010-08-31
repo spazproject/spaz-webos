@@ -5,6 +5,8 @@
 sc.app.tpl = new SpazTemplate();
 
 sc.app.tpl.addTemplateMethod('message-detail', function(d) {
+	d.isSent = (d.user.screen_name.toLowerCase() === sc.app.username.toLowerCase());
+	
 	var html = '', thumbHTML = '';
 
 	if (d.SC_thumbnail_urls) {
@@ -48,9 +50,6 @@ sc.app.tpl.addTemplateMethod('message-detail', function(d) {
 		+ '				<div class="palm-row single">'
 		+ '					<button class="palm-button" id="message-detail-action-reply" data-status-id="'+d.id+'" data-screen_name="'+d.user.screen_name+'">@Reply to this message</button>'
 		+ '				</div>'
-		// + '				<div class="palm-row single">'
-		// + '					<button class="palm-button" id="message-detail-action-retweet" data-status-id="'+d.id+'">ReTweet this message</button>'
-		// + '				</div>'
 		+ '				<div class="palm-row single">'
 		+ '					<button class="palm-button" id="message-detail-action-share" data-status-id="'+d.id+'">Share this message</button>'
 		+ '				</div>';
@@ -65,8 +64,13 @@ sc.app.tpl.addTemplateMethod('message-detail', function(d) {
 		}
 		html += '   			<div class="palm-row single">'
 		+ '					<button class="palm-button" id="message-detail-action-dm" data-screen_name="'+d.user.screen_name+'">Direct message this user</button>'
-		+ '				</div>'
-		+ '			</div>'
+		+ '				</div>';
+		if (d.isSent) {
+			html += '   			<div class="palm-row single">'
+			 + '					<button class="palm-button" id="message-detail-action-delete" data-status-id="'+d.id+'" data-screen_name="'+d.user.screen_name+'" data-favorited="true">Delete</button>'
+			 + '				</div>';		
+		}
+		html += '			</div>'
 		+ '		</div>'
     + '	</div>';
 	}
