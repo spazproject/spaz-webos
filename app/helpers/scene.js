@@ -120,10 +120,10 @@ scene_helpers.addCommonSceneMethods = function(assistant) {
 					
 					sch.error('scenename:'+scenename);
 					
+					/*
+						if we're in my-timeline, we do things differently
+					*/
 					if (scenename.indexOf('my-timeline') != -1) {
-						/*
-							This is actually only defined in MyTimeline
-						*/
 						this.controller.prepareTransition(Mojo.Transition.crossFade).run();
 						this.filterTimeline(event.command, true);
 					} else {
@@ -411,6 +411,24 @@ scene_helpers.addCommonSceneMethods = function(assistant) {
 		});
 	};
 
+
+	/**
+	 *  
+	 */
+	assistant.retweet = function(entryobj) {
+		var that = this;
+		this.twit.retweet(
+			entryobj.id,
+			function(data){
+				that.showBanner($L('Retweet succeeded'));
+			},
+			function(xhr, msg, exc){
+				that.showBanner($L('Retweet failed!'));
+			}
+		);
+	};
+
+
 	
 	/**
 	 *  
@@ -446,6 +464,22 @@ scene_helpers.addCommonSceneMethods = function(assistant) {
 		});
 	};
 
+
+	/**
+	 *  
+	 */
+	assistant.facebookTweet = function(tweetobj) {
+		
+		var message = "From @"+tweetobj.user.screen_name + ": "+tweetobj.SC_text_raw;
+		
+			this.controller.serviceRequest("palm://com.palm.applicationManager", {
+				method:      'launch',
+				parameters:  {
+					id: 'com.palm.app.facebook',
+					params: { status: message }
+				}
+			});
+	};
 
 	/**
 	 *  
@@ -994,7 +1028,7 @@ scene_helpers.addCommonSceneMethods = function(assistant) {
 	assistant.clearTimelineCache = function(callback) {
 		this.cacheDepot = TempCache.clear();
 		sc.app.Tweets.reset();
-		this.showAlert('Message cache cleared', 'Cache Cleared');
+		this.showAlert($L('Message cache cleared', 'Cache Cleared'));
 	};
 	
 	
@@ -1005,11 +1039,11 @@ scene_helpers.addCommonSceneMethods = function(assistant) {
 	assistant.bindTimelineEntryTaps = function(tl_selector) {
 		var thisA = this;
 		
-		sch.error('BINDING');
+		sch.debug('BINDING');
 				
 		jQuery(tl_selector+' div.timeline-entry').live(Mojo.Event.hold, function(e) {
 			
-			sch.error('HOLD');
+			sch.debug('HOLD');
 			
 			/*
 				Set this so we don't fire a tap after firing the hold
@@ -1051,11 +1085,24 @@ scene_helpers.addCommonSceneMethods = function(assistant) {
 								thisA.prepReply(username, status_id, status_obj);
 								break;
 							case 'retweet':
+								thisA.retweet(status_obj);
+								break;
+							case 'RT':
 								thisA.prepRetweet(status_obj);
 								break;
 							case 'quote':
 								thisA.prepQuote(status_obj);
 								break;
+							case 'email':
+								thisA.emailTweet(status_obj);
+								break;
+							case 'sms':
+								thisA.SMSTweet(status_obj);
+								break;								
+							case 'facebook':
+								thisA.facebookTweet(status_obj);
+								break;
+								
 							default:
 								return;
 						};						
@@ -1064,9 +1111,13 @@ scene_helpers.addCommonSceneMethods = function(assistant) {
 				},
 				placeNear: e.target,
 				items: [
-					{label: '@reply', command: 'reply'},
-					{label: 'ReTweet', command: 'retweet'},
-					{label: 'Quote', command:   'quote'}
+					{label: $L('@reply'), command: 'reply'},
+					{label: $L('ReTweet'), command: 'retweet'},
+					{label: $L('RT @…'), command: 'RT'},
+					{label: $L('Quote'), command:   'quote'},
+					{label: $L('Email'), command:   'email'},
+					{label: $L('SMS/IM'), command:  'sms'},
+					{label: $L('Facebook'), command:  'facebook'}
 				]
 			});
 			
