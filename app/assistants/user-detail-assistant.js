@@ -275,6 +275,10 @@ UserDetailAssistant.prototype.activate = function(event) {
 		}
 	});
 
+	jQuery('#user-detail div.user-image', this.scroller).live(Mojo.Event.tap, function(e) {
+		var avatar_url = thisA.userobj.profile_image_url.replace('_normal', '');
+		Mojo.Controller.stageController.pushScene('view-image', {'imageURLs':[avatar_url]});
+	});
 
 	// jQuery('#user-detail-container .username.clickable', this.scroller).live(Mojo.Event.tap, function(e) {
 	// 	var userid = jQuery(this).attr('data-user-screen_name');
@@ -341,6 +345,7 @@ UserDetailAssistant.prototype.deactivate = function(event) {
 	// jQuery('#user-detail-container div.timeline-entry>.status>.meta', this.scroller).die(Mojo.Event.tap);
 	jQuery('#user-timeline-trigger', this.scroller).die(Mojo.Event.tap);
 	jQuery('#user-detail-container div.timeline-entry', this.scroller).die(Mojo.Event.tap);
+	jQuery('#user-detail div.user-image', this.scroller).die(Mojo.Event.tap);
 };
 
 UserDetailAssistant.prototype.cleanup = function(event) {
