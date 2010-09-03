@@ -214,9 +214,9 @@ MessageDetailAssistant.prototype.activate = function(event) {
 	jQuery('#message-detail-action-delete', this.scroller).live(Mojo.Event.tap, function(e) {
 		var status_id = parseInt(jQuery(this).attr('data-status-id'), 10);
 		if (thisA.isdm) {
-			thisA.deleteStatus(status_id);
-		} else {
 			thisA.deleteDirectMessage(status_id);
+		} else {
+			thisA.deleteStatus(status_id);
 		}
 		
 		Mojo.Controller.stageController.popScene();
