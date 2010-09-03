@@ -67,7 +67,7 @@ sc.app.tpl.addTemplateMethod('message-detail', function(d) {
 		+ '				</div>';
 		if (d.isSent) {
 			html += '   			<div class="palm-row single">'
-			 + '					<button class="palm-button" id="message-detail-action-delete" data-status-id="'+d.id+'" data-screen_name="'+d.user.screen_name+'" data-favorited="true">Delete</button>'
+			 + '					<button class="palm-button" id="message-detail-action-delete" data-status-id="'+d.id+'">Delete</button>'
 			 + '				</div>';		
 		}
 		html += '			</div>'
@@ -111,6 +111,9 @@ sc.app.tpl.addTemplateMethod('message-detail-dm', function(d) {
 		+ '				<div class="palm-list">'
 		+ '					<div class="palm-row single">'
 		+ '						<button class="palm-button" id="message-detail-action-dm" data-screen_name="'+d.sender.screen_name+'">Direct message this user</button>'
+		+ '					</div>'
+		+ '					<div class="palm-row single">'
+		+ '						<button class="palm-button" id="message-detail-action-delete" data-status-id="'+d.id+'">Delete</button>'
 		+ '					</div>'
 		+ '				</div>'
 		+ '			</div>'
