@@ -592,6 +592,43 @@ scene_helpers.addCommonSceneMethods = function(assistant) {
 	
 	};
 
+	/**
+	 *  
+	 */
+	assistant.deleteStatus = function(id) {
+		var that = this;
+		this.twit.destroy(
+			id,
+			function(data){
+				that.showBanner($L('Deleted status'));
+				sc.app.Tweets.remove(id);
+				jQuery('div.timeline-entry[data-status-id="'+id+'"]').remove();
+			},
+			function(xhr, msg, exc){
+				that.showBanner($L('Deleting status failed!'));
+			}
+		);
+		
+	};
+	
+	/**
+	 *  
+	 */
+	assistant.deleteDirectMessage = function(id) {
+		var that = this;
+		this.twit.destroyDirectMessage(
+			id,
+			function(data){
+				that.showBanner($L('Deleted direct message'));
+				sc.app.Tweets.remove(id, true);
+				jQuery('div.timeline-entry.dm[data-status-id="'+id+'"]').remove();
+			},
+			function(xhr, msg, exc){
+				that.showBanner($L('Deleting direct message failed!'));
+			}
+		);
+		
+	};
 
 
 	/**
