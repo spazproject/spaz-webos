@@ -181,9 +181,6 @@ MessageDetailAssistant.prototype.activate = function(event) {
 		var in_reply_to = jQuery(this).attr('data-status-id');
 		thisA.prepReply(screen_name, in_reply_to, thisA.statusobj);
 	});
-	// jQuery('#message-detail-action-retweet', this.scroller).live(Mojo.Event.tap, function(e) {
-	// 	thisA.prepRetweet(thisA.statusobj);
-	// });
 	jQuery('#message-detail-action-share', this.scroller).live(Mojo.Event.tap, function(e) {
 		thisA.controller.popupSubmenu({
 			onChoose:  thisA.sharePopupmenuChoose,
@@ -262,10 +259,10 @@ MessageDetailAssistant.prototype.deactivate = function(event) {
 	jQuery('#message-detail-container .in-reply-to-link', this.scroller).die(Mojo.Event.tap);
 	jQuery('#message-detail-image', this.scroller).die(Mojo.Event.tap);
 	jQuery('#message-detail-action-reply', this.scroller).die(Mojo.Event.tap);
-	// jQuery('#message-detail-action-retweet', this.scroller).die(Mojo.Event.tap);
 	jQuery('#message-detail-action-share', this.scroller).die(Mojo.Event.tap);
 	jQuery('#message-detail-action-dm', this.scroller).die(Mojo.Event.tap);
 	jQuery('#message-detail-action-favorite', this.scroller).die(Mojo.Event.tap);
+	jQuery('#message-detail-action-delete', this.scroller).die(Mojo.Event.tap);
 	
 	jQuery('#message-detail-container .user', this.scroller).die(Mojo.Event.tap);
 	jQuery('#message-detail-container .username.clickable', this.scroller).die(Mojo.Event.tap);
