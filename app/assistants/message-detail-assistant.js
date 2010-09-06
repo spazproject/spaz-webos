@@ -19,6 +19,10 @@ function MessageDetailAssistant(argFromPusher) {
 	}
 }
 
+MessageDetailAssistant.prototype.aboutToActivate = function(callback){
+	callback.defer(); //delays displaying scene, looks better
+};
+
 MessageDetailAssistant.prototype.setup = function() {
 
 	var thisA = this;
@@ -26,23 +30,34 @@ MessageDetailAssistant.prototype.setup = function() {
 	this.initTwit();
 	
 	this.scroller = this.controller.getSceneScroller();
-	
+	this.controller.setupWidget("share-submenu", undefined, {
+			items: [
+				{label: $L('ReTweet'), command: 'retweet'},
+				{label: $L('RT @…'), command:   'RT'},
+				{label: $L('Quote'), command:   'quote'},
+				{label: $L('Email'), command:   'email'},
+				{label: $L('SMS/IM'), command:  'sms'},
+				{label: $L('Facebook'), command:  'facebook'}
+			]
+		});
 	if (sc.app.username) {
 		this.setupCommonMenus({
 			viewMenuItems: [
 				{
-					items:[
-						{label: $L("Message Details"), command:'scroll-top', 'class':"palm-header left", width:320}		
+					items: [
+						{label: $L('Refresh'),  icon:'sync', command:'refresh', shortcut:'R'},
+						{label: $L("Message Details"), command:'scroll-top', width:200},
+						{label: $L('Compose'),  icon:'compose', command:'compose', shortcut:'N'}
+
 					]
 				}
 
 			],
 			cmdMenuItems:[
-				{label:$L('Compose'),  icon:'compose', command:'compose', shortcut:'N'}
-				// {},
-				// {label:$L('Reply'),  icon:'reply', command:'reply', shortcut:'R'},
-				// {label:$L('Forward'),  icon:'forward-email', command:'retweet', shortcut:'N'},
-				// {label:$L('Favorite'),  iconPath:'images/theme/menu-icon-favorite-outline.png', command:'compose', shortcut:'N'}
+				{label:$L('Reply'),  icon:'at', command:'reply', shortcut:'R'},
+				{label:$L('Share'),  icon:'forward-email', submenu:'share-submenu', shortcut:'S'},
+				{label:$L('DM'),  icon:'dms', command:'dm', shortcut:'d'},
+				{label:$L('Favorite'),  iconPath:'images/theme/menu-icon-favorite-outline.png', command:'favorite', shortcut:'F'}
 			]
 		});
 		
@@ -53,7 +68,7 @@ MessageDetailAssistant.prototype.setup = function() {
 			viewMenuItems: [
 				{
 					items:[
-						{label: $L("Message Details"), command:'scroll-top', 'class':"palm-header left", width:320}				
+						{label: $L("Message Details"), command:'scroll-top', width:200},
 					]
 				}
 
@@ -172,23 +187,25 @@ MessageDetailAssistant.prototype.activate = function(event) {
 		Mojo.Controller.stageController.pushScene('user-detail', userid);
 	});
 	
-	jQuery('#message-detail-action-reply', this.scroller).live(Mojo.Event.tap, function(e) {
+	/*jQuery('#message-detail-action-reply', this.scroller).live(Mojo.Event.tap, function(e) {
 		var screen_name = jQuery(this).attr('data-screen_name');
 		var in_reply_to = jQuery(this).attr('data-status-id');
 		thisA.prepReply(screen_name, in_reply_to, thisA.statusobj);
-	});
+	});*/
 	// jQuery('#message-detail-action-retweet', this.scroller).live(Mojo.Event.tap, function(e) {
 	// 	thisA.prepRetweet(thisA.statusobj);
 	// });
-	jQuery('#message-detail-action-share', this.scroller).live(Mojo.Event.tap, function(e) {
+	/*jQuery('#message-detail-action-share', this.scroller).live(Mojo.Event.tap, function(e) {
 		thisA.controller.popupSubmenu({
 			onChoose:  thisA.sharePopupmenuChoose,
 			placeNear: e.target,
 			items: [
-				{label: 'ReTweet', command: 'retweet'},
-				{label: 'Quote', command:   'quote'},
-				{label: 'Email', command:   'email'},
-				{label: 'SMS/IM', command:  'sms'}
+				{label: $L('ReTweet'), command: 'retweet'},
+				{label: $L('RT @…'), command:   'RT'},
+				{label: $L('Quote'), command:   'quote'},
+				{label: $L('Email'), command:   'email'},
+				{label: $L('SMS/IM'), command:  'sms'},
+				{label: $L('Facebook'), command:  'facebook'}
 			]
 		});
 	});
@@ -198,13 +215,25 @@ MessageDetailAssistant.prototype.activate = function(event) {
 	jQuery('#message-detail-action-favorite', this.scroller).live(Mojo.Event.tap, function(e) {
 		var status_id = parseInt(jQuery(this).attr('data-status-id'), 10);		
 		if (jQuery(this).attr('data-favorited') === 'true') {
-			sch.dump('UNFAVORITING');
+			sch.debug('UNFAVORITING');
 			thisA.twit.unfavorite(status_id);
 		} else {
-			sch.dump('FAVORITING');
+			sch.debug('FAVORITING');
 			thisA.twit.favorite(status_id);
 		}
 	});
+	jQuery('#message-detail-action-delete', this.scroller).live(Mojo.Event.tap, function(e) {
+		var status_id = parseInt(jQuery(this).attr('data-status-id'), 10);
+		if (thisA.isdm) {
+			thisA.deleteDirectMessage(status_id);
+		} else {
+			thisA.deleteStatus(status_id);
+		}
+		
+		Mojo.Controller.stageController.popScene();
+	});*/
+	
+	
 	
 	
 	jQuery('#message-detail-container .user', this.scroller).live(Mojo.Event.tap, function(e) {
@@ -230,9 +259,9 @@ MessageDetailAssistant.prototype.activate = function(event) {
 	jQuery('#message-detail-container img.thumbnail', this.scroller).live(Mojo.Event.tap, function(e) {
 		var siu = new SpazImageURL();
 		var img_url = jQuery(this).attr('data-img-url');
-		sch.dump('MAIN URL:'+img_url);
+		sch.debug('MAIN URL:'+img_url);
 		img_url = siu.getImageForUrl(img_url);
-		sch.dump('IMAGE URL:'+img_url);
+		sch.debug('IMAGE URL:'+img_url);
 		Mojo.Controller.stageController.pushScene('view-image', {'imageURLs':[img_url]});
 	});
 	
@@ -243,12 +272,12 @@ MessageDetailAssistant.prototype.activate = function(event) {
 MessageDetailAssistant.prototype.deactivate = function(event) {
 	jQuery('#message-detail-container .in-reply-to-link', this.scroller).die(Mojo.Event.tap);
 	jQuery('#message-detail-image', this.scroller).die(Mojo.Event.tap);
-	jQuery('#message-detail-action-reply', this.scroller).die(Mojo.Event.tap);
+	/*jQuery('#message-detail-action-reply', this.scroller).die(Mojo.Event.tap);
 	// jQuery('#message-detail-action-retweet', this.scroller).die(Mojo.Event.tap);
 	jQuery('#message-detail-action-share', this.scroller).die(Mojo.Event.tap);
 	jQuery('#message-detail-action-dm', this.scroller).die(Mojo.Event.tap);
 	jQuery('#message-detail-action-favorite', this.scroller).die(Mojo.Event.tap);
-	
+	*/
 	jQuery('#message-detail-container .user', this.scroller).die(Mojo.Event.tap);
 	jQuery('#message-detail-container .username.clickable', this.scroller).die(Mojo.Event.tap);
 	jQuery('#message-detail-container .hashtag.clickable', this.scroller).die(Mojo.Event.tap);
@@ -302,22 +331,36 @@ MessageDetailAssistant.prototype.processStatusReturn = function(e, statusobj) {
 	
 };
 
-
-MessageDetailAssistant.prototype.sharePopupmenuChoose = function(cmd) {
-	
+MessageDetailAssistant.prototype.handleCommandMenu = function(cmd) {
+	var thisA = this;
 	switch (cmd) {
-		case 'retweet':
-			this.prepRetweet(this.statusobj);
+		case 'reply':
+			var screen_name = jQuery(this).attr('data-screen_name');
+			var in_reply_to = jQuery(this).attr('data-status-id');
+			thisA.prepReply(screen_name, in_reply_to, thisA.statusobj);
 			break;
-		case 'quote':
-			this.prepQuote(this.statusobj);
+		case 'dm':
+			thisA.prepDirectMessage(jQuery(this).attr('data-screen_name'));
 			break;
-		case 'email':
-			this.emailTweet(this.statusobj);
+		case 'favorite':
+			var status_id = parseInt(jQuery(this).attr('data-status-id'), 10);		
+			if (jQuery(this).attr('data-favorited') === 'true') {
+				sch.debug('UNFAVORITING');
+				thisA.twit.unfavorite(status_id);
+			} else {
+				sch.debug('FAVORITING');
+				thisA.twit.favorite(status_id);
+			}
 			break;
-		case 'sms':
-			this.SMSTweet(this.statusobj);
-			break;
+		case 'delete':
+			var status_id = parseInt(jQuery(this).attr('data-status-id'), 10);
+			if (thisA.isdm) {
+				thisA.deleteDirectMessage(status_id);
+			} else {
+				thisA.deleteStatus(status_id);
+			}
+			
+			Mojo.Controller.stageController.popScene();
 		default:
 			return;
 	}

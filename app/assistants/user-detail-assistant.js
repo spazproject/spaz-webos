@@ -21,6 +21,10 @@ function UserDetailAssistant(argFromPusher) {
 	
 }
 
+UserDetailAssistant.prototype.aboutToActivate = function(callback){
+	callback.defer(); //delays displaying scene, looks better
+};
+
 UserDetailAssistant.prototype.setup = function() {
 	var thisA = this;
 	
@@ -30,20 +34,23 @@ UserDetailAssistant.prototype.setup = function() {
 		this.setupCommonMenus({
 			viewMenuItems: [
 				{
-					items:[
-						{label: $L("User Details"), command:'scroll-top', 'class':"palm-header left", width:320}				
+					items: [
+						{label: $L('Refresh'),  icon:'sync', command:'refresh', shortcut:'R'},
+						{label: $L("User Details"), command:'scroll-top', width:200},
+						{label: $L('Compose'),  icon:'compose', command:'compose', shortcut:'N'}
+
 					]
 				}
 
 			],
 			cmdMenuItems:[
-				{
-					items: [
-						{label:$L('Compose'),  icon:'compose', command:'compose', shortcut:'N'},
-						{}
-					]
-				}
-
+				
+				{label:$L('Search for User'),  iconPath: 'images/menu-icon-search-person.png', command:'search-for-user', shortcut:'R'},
+				{label:$L('Reply'),  icon:'at', command:'reply', shortcut:'R'},
+				{label:$L('DM'),  icon:'dms', command:'dm', shortcut:'D'},
+				{label:$L('F'), iconPath: 'images/menu-icon-start-following.png', command:'follow', shortcut:'F'},
+				{label:$L('B'), iconPath: 'images/theme/menu-icon-triangle-up.png', command:'more', shortcut:'B'}
+	
 			]
 		});
 		this.initAppMenu({ 'items':LOGGEDIN_APPMENU_ITEMS });
@@ -271,6 +278,10 @@ UserDetailAssistant.prototype.activate = function(event) {
 		}
 	});
 
+	jQuery('#user-detail div.user-image', this.scroller).live(Mojo.Event.tap, function(e) {
+		var avatar_url = thisA.userobj.profile_image_url.replace('_normal', '');
+		Mojo.Controller.stageController.pushScene('view-image', {'imageURLs':[avatar_url]});
+	});
 
 	// jQuery('#user-detail-container .username.clickable', this.scroller).live(Mojo.Event.tap, function(e) {
 	// 	var userid = jQuery(this).attr('data-user-screen_name');
@@ -337,6 +348,7 @@ UserDetailAssistant.prototype.deactivate = function(event) {
 	// jQuery('#user-detail-container div.timeline-entry>.status>.meta', this.scroller).die(Mojo.Event.tap);
 	jQuery('#user-timeline-trigger', this.scroller).die(Mojo.Event.tap);
 	jQuery('#user-detail-container div.timeline-entry', this.scroller).die(Mojo.Event.tap);
+	jQuery('#user-detail div.user-image', this.scroller).die(Mojo.Event.tap);
 };
 
 UserDetailAssistant.prototype.cleanup = function(event) {

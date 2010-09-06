@@ -25,17 +25,24 @@ BODY {
 /* 
 	The Accounts Panel
 */
+.palm-menu-panel {
+    -webkit-border-image: url('../images/dreadnaught/palm-menu-panel.png') 24 24 24 24 repeat stretch;
+}
 
 .palm-menu-panel{
     -webkit-transition: all 175ms ease-in;
+    opacity:1;
 }
+
 .palm-menu-panel.sliding {
-    -webkit-transform: translate(0px,-220px);
+    -webkit-transform: translate(0px,-2220px);
+    opacity: 0;
 }
 
 /*DM's and @ Menu Icon*/
 .palm-menu-icon.dms 			{ background-image: url(../images/menu-icon-dms.png); }
 .palm-menu-icon.at 			{ background-image: url(../images/menu-icon-at.png); }
+
 
 /*
 	This is so we can have the view menu floating over the palm-page-header
@@ -734,9 +741,11 @@ div.spaz-drawer {
 /*
 	Palm dialog text field stuff
 */
-#palm-dialog-content .textfield-group .truncating-text {
+#palm-dialog-content .textfield-group .truncating-text,
+#palm-dialog-content .title .list-selector-value {
 	color:#333;
 }
+
 #palm-dialog-content .textfield-group .hint-text {
 	color:#AAA;
 }
@@ -934,7 +943,7 @@ div.spaz-row {
 	color:  #FFECCD;
 	font-family:"Coconut-CondensedMedium";
 	font-size:16pt;
-	line-height:40pt;
+	line-height:35pt;
 	border-width: 0 21px 0 21px;
 	-webkit-border-image: url(../images/dreadnaught/spaz-button-large-bg.png) 0 21 0 21;
 	overflow:hidden;
