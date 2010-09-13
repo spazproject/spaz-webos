@@ -6,6 +6,11 @@ function ViewImageAssistant(params) {
 	
 	scene_helpers.addCommonSceneMethods(this);
 	
+	/*
+		this connects App to this property of the appAssistant
+	*/
+	App = Mojo.Controller.getAppController().assistant.App;
+	
 	var params = params || {};
 	
 	this.imageURLs = params.imageURLs || [];

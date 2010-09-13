@@ -10,6 +10,15 @@ if(typeof Spaz === "undefined") {
 }
 
 /**
+ * grabs the "App" container object and returns it 
+ */
+Spaz.getAppObj = function() {
+	var App = Mojo.Controller.getAppController().assistant.App;
+	return App;
+};
+
+
+/**
  * This helper looks through the array of scenes and looks for an existing instance of 
  * the given targetScene. If one exists, we pop all scenes before it to return to it. Otherwise
  * we swap to a new instance of the scene
@@ -230,11 +239,11 @@ Spaz.postToService = function(options) {
   
   var usernameObj = {};
   usernameObj.key = apis[options.api].usernameFieldName;
-  usernameObj.value = sc.app.username;
+  usernameObj.value = Spaz.getAppObj().username;
   
   var passwordObj = {};
   passwordObj.key = apis[options.api].passwordFieldName;
-  passwordObj.value = sc.app.password;
+  passwordObj.value = Spaz.getAppObj().password;
   
   var messageObj = {};
   messageObj.key = apis[options.api].messageFieldName;
@@ -282,7 +291,7 @@ Spaz.Prefs = {};
 Spaz.Prefs.getUsername = function() {
 	var currentAccountId = Spaz.Prefs.getCurrentAccountId();
 	if (currentAccountId) {
-		var accobj = sc.app.accounts.get(currentAccountId);
+		var accobj = Spaz.getAppObj().accounts.get(currentAccountId);
 		return !!accobj ? accobj.username : null;
 	} else {
 		return null;
@@ -305,7 +314,7 @@ Spaz.Prefs.getAuthKey = function() {
 	var currentAccountId = Spaz.Prefs.getCurrentAccountId();
 	sch.debug('getAuthKey currentAccountId:'+currentAccountId);
 	if (currentAccountId) {
-		var accobj = sc.app.accounts.get(currentAccountId);
+		var accobj = Spaz.getAppObj().accounts.get(currentAccountId);
 		return !!accobj ? accobj.auth : null;
 	} else {
 		return null;
@@ -318,6 +327,7 @@ Spaz.Prefs.getAuthKey = function() {
 Spaz.Prefs.getAuthObject = function() {
 	var authkey = Spaz.Prefs.getAuthKey();
 	sch.debug('getAuthObject authkey:'+authkey);
+	
 	if (authkey) {
 		var auth = new SpazAuth(Spaz.Prefs.getAccountType());
 		auth.load(authkey);
@@ -333,7 +343,7 @@ Spaz.Prefs.getAuthObject = function() {
 Spaz.Prefs.getAccountType = function() {
 	var currentAccountId = Spaz.Prefs.getCurrentAccountId();
 	if (currentAccountId) {
-		var accobj = sc.app.accounts.get(currentAccountId);
+		var accobj = Spaz.getAppObj().accounts.get(currentAccountId);
 		return !!accobj ? accobj.type : null;
 	} else {
 		return null;
@@ -346,10 +356,10 @@ Spaz.Prefs.getAccountType = function() {
  * Retrieves the custom API url for the current account
  */
 Spaz.Prefs.getCustomAPIUrl = function() {
-    var custom_api_url = sc.app.accounts.getMeta(Spaz.Prefs.getCurrentAccountId(), 'twitter-api-base-url');
+    var custom_api_url = Spaz.getAppObj().accounts.getMeta(Spaz.Prefs.getCurrentAccountId(), 'twitter-api-base-url');
     if (!custom_api_url) {
         // used to be called api-url, so try that
-        custom_api_url = sc.app.accounts.getMeta(Spaz.Prefs.getCurrentAccountId(), 'api-url');
+        custom_api_url = Spaz.getAppObj().accounts.getMeta(Spaz.Prefs.getCurrentAccountId(), 'api-url');
     }
     return custom_api_url;
 };
@@ -361,7 +371,7 @@ Spaz.Prefs.getCustomAPIUrl = function() {
 Spaz.Prefs.getCurrentAccount = function() {
 	var currentAccountId = Spaz.Prefs.getCurrentAccountId();
 	if (currentAccountId) {
-		return sc.app.accounts.get(currentAccountId);
+		return Spaz.getAppObj().accounts.get(currentAccountId);
 	} else {
 		return null;
 	}
@@ -370,10 +380,10 @@ Spaz.Prefs.getCurrentAccount = function() {
 
 
 Spaz.Prefs.getCurrentAccountId = function() {
-	if (sc.app.userid) {
-		return sc.app.userid;
+	if (Spaz.getAppObj().userid) {
+		return Spaz.getAppObj().userid;
 	} else {
-		return sc.app.prefs.get('last_userid');
+		return Spaz.getAppObj().prefs.get('last_userid');
 	}
 	
 };

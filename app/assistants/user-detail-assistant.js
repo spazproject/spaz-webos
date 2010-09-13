@@ -6,6 +6,11 @@ function UserDetailAssistant(argFromPusher) {
 	
 	scene_helpers.addCommonSceneMethods(this);	
 	
+	/*
+		this connects App to this property of the appAssistant
+	*/
+	App = Mojo.Controller.getAppController().assistant.App;
+	
 	sch.debug('argFromPusher:' + sch.enJSON(argFromPusher));
 	
 	if (sc.helpers.isString(argFromPusher) || sc.helpers.isNumber(argFromPusher)) {
@@ -30,7 +35,7 @@ UserDetailAssistant.prototype.setup = function() {
 	
 	this.initTwit();
 
-	if (sc.app.username) {
+	if (App.username) {
 		this.setupCommonMenus({
 			viewMenuItems: [
 				{
@@ -82,7 +87,7 @@ UserDetailAssistant.prototype.setup = function() {
 			/*
 				save this tweet to Depot
 			*/
-			sc.app.Tweets.save(this);
+			App.Tweets.save(this);
 			
 		});
 
@@ -90,7 +95,7 @@ UserDetailAssistant.prototype.setup = function() {
 			Render the new tweets as a collection (speed increase, I suspect)
 		*/
 		
-		var itemhtml = sc.app.tpl.parseArray('tweet', rendertweets);
+		var itemhtml = App.tpl.parseArray('tweet', rendertweets);
 
 		jQuery('#user-timeline').html(itemhtml);
 
@@ -110,7 +115,7 @@ UserDetailAssistant.prototype.setup = function() {
 		
 		thisA.userobj.description = Spaz.makeItemsClickable(thisA.userobj.description);
 		
-		var itemhtml = sc.app.tpl.parseTemplate('user-detail', thisA.userobj);
+		var itemhtml = App.tpl.parseTemplate('user-detail', thisA.userobj);
 		jQuery('#user-detail').html(itemhtml);
 		sch.debug(jQuery('#user-detail').get(0).outerHTML);
 		
@@ -301,7 +306,7 @@ UserDetailAssistant.prototype.activate = function(event) {
 	// });
 
 	if (!this.userRetrieved) {
-		sc.app.Tweets.getUser(
+		App.Tweets.getUser(
 			this.userid,
 			function(r) {
 				jQuery(document).trigger('get_user_succeeded', [r]);

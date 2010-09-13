@@ -1,5 +1,10 @@
 function NewMsgPopupAssistant(message) {
 	this.message = message;
+	
+	/*
+		this connects App to this property of the appAssistant
+	*/
+	App = Mojo.Controller.getAppController().assistant.App;
 }
 
 NewMsgPopupAssistant.prototype.setup = function() {

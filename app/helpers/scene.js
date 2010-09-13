@@ -135,11 +135,11 @@ scene_helpers.addCommonSceneMethods = function(assistant) {
 				
 				case 'new-search-card':
 
-					sc.app.new_search_card++;
+					App.new_search_card++;
 					this.createStage(
 						'search-twitter',
 						{'lightweight':'false'},
-						sc.app.search_card_prefix+sc.app.new_search_card
+						App.search_card_prefix+App.new_search_card
 					);
 
 					break;
@@ -330,18 +330,18 @@ scene_helpers.addCommonSceneMethods = function(assistant) {
 	
 	
 	assistant.initTwit = function(event_mode) {
-		// var username = sc.app.prefs.get('username');
-		// var password = sc.app.prefs.get('password');
+		// var username = App.prefs.get('username');
+		// var password = App.prefs.get('password');
 		
 		event_mode = event_mode || 'jquery'; // default this to jquery because we have so much using it
 		
-		var users = new SpazAccounts(sc.app.prefs);
+		var users = new SpazAccounts(App.prefs);
 		
 		this.twit = new SpazTwit({
 			'event_mode':event_mode,
 			'timeout':1000*60
 		});
-		this.twit.setSource(sc.app.prefs.get('twitter-source'));
+		this.twit.setSource(App.prefs.get('twitter-source'));
 		
 		
 		var auth;
@@ -601,7 +601,7 @@ scene_helpers.addCommonSceneMethods = function(assistant) {
 			id,
 			function(data){
 				that.showBanner($L('Deleted status'));
-				sc.app.Tweets.remove(id);
+				App.Tweets.remove(id);
 				jQuery('div.timeline-entry[data-status-id="'+id+'"]').remove();
 			},
 			function(xhr, msg, exc){
@@ -620,7 +620,7 @@ scene_helpers.addCommonSceneMethods = function(assistant) {
 			id,
 			function(data){
 				that.showBanner($L('Deleted direct message'));
-				sc.app.Tweets.remove(id, true);
+				App.Tweets.remove(id, true);
 				jQuery('div.timeline-entry.dm[data-status-id="'+id+'"]').remove();
 			},
 			function(xhr, msg, exc){
@@ -650,7 +650,7 @@ scene_helpers.addCommonSceneMethods = function(assistant) {
 		/*
 			if username and pass aren't set, use lightweight version
 		*/
-		if (!(sc.app.username)) {
+		if (!(App.username)) {
 			lightweight = true;
 		}
 			
@@ -742,7 +742,7 @@ scene_helpers.addCommonSceneMethods = function(assistant) {
 		var bannerArgs = {
 			'messageText':text
 		};
-		if (sc.app.prefs.get('sound-enabled')) {
+		if (App.prefs.get('sound-enabled')) {
 			bannerArgs.soundClass = 'alerts';
 		}
 
@@ -787,7 +787,7 @@ scene_helpers.addCommonSceneMethods = function(assistant) {
 			'messageText':msg
 		};
 		
-		if (sc.app.prefs.get('sound-enabled')) {
+		if (App.prefs.get('sound-enabled')) {
 			bannerArgs.soundClass = 'alerts';
 		}
 		
@@ -813,7 +813,7 @@ scene_helpers.addCommonSceneMethods = function(assistant) {
 		var bannerArgs = {
 			'messageText':count+" new result(s) for '"+query+"'"
 		};
-		if (sc.app.prefs.get('sound-enabled')) {
+		if (App.prefs.get('sound-enabled')) {
 			bannerArgs.soundClass = 'alerts';
 		}
 		
@@ -1057,7 +1057,7 @@ scene_helpers.addCommonSceneMethods = function(assistant) {
 				if (error_html.length>0) {
 					error_html += "-------------------\n";
 				}
-				error_html += sc.app.tpl.parseTemplate(template, error_info);
+				error_html += App.tpl.parseTemplate(template, error_info);
 			}
 		}
 
@@ -1068,7 +1068,7 @@ scene_helpers.addCommonSceneMethods = function(assistant) {
 	
 	assistant.clearTimelineCache = function(callback) {
 		this.cacheDepot = TempCache.clear();
-		sc.app.Tweets.reset();
+		App.Tweets.reset();
 		this.showAlert($L('Message cache cleared', 'Cache Cleared'));
 	};
 	
@@ -1117,7 +1117,7 @@ scene_helpers.addCommonSceneMethods = function(assistant) {
 					var is_dm      = !!jqthis.hasClass('dm');
 					sch.error(is_dm);
 					
-					sc.app.Tweets.get(status_id, is_dm, function(status_obj) {
+					App.Tweets.get(status_id, is_dm, function(status_obj) {
 						sch.error('status_obj:');
 						sch.error(status_obj);
 

@@ -4,6 +4,11 @@ function AboutAssistant() {
 	   to the scene controller (this.controller) has not be established yet, so any initialization
 	   that needs the scene controller should be done in the setup function below. */
 	scene_helpers.addCommonSceneMethods(this);
+	
+	/*
+		this connects App to this property of the appAssistant
+	*/
+	App = Mojo.Controller.getAppController().assistant.App;
 };
 
 AboutAssistant.prototype.aboutToActivate = function(callback){

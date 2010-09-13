@@ -4,6 +4,11 @@ function FavoritesAssistant() {
 	   to the scene controller (this.controller) has not be established yet, so any initialization
 	   that needs the scene controller should be done in the setup function below. */
 	scene_helpers.addCommonSceneMethods(this);
+	
+	/*
+		this connects App to this property of the appAssistant
+	*/
+	App = Mojo.Controller.getAppController().assistant.App;
 }
 FavoritesAssistant.prototype.aboutToActivate = function(callback){
 	callback.defer();
@@ -86,7 +91,7 @@ FavoritesAssistant.prototype.activate = function(event) {
 
 	var thisA = this; // for closures below
 	
-	var tts = sc.app.prefs.get('timeline-text-size');
+	var tts = App.prefs.get('timeline-text-size');
 	this.setTimelineTextSize('#favorites-timeline', tts);
 	
 	
@@ -157,7 +162,7 @@ FavoritesAssistant.prototype.refresh = function(event) {
 				*/
 				if (!thisA.itemExistsInModel(data[i])) {
 					
-					sc.app.Tweets.save(data[i]);
+					App.Tweets.save(data[i]);
 					data[i].text = Spaz.makeItemsClickable(data[i].text);
 					no_dupes.push(data[i]);
 				}
@@ -196,7 +201,7 @@ FavoritesAssistant.prototype.addItems = function(new_items) {
 	for (var i=0; i < new_items.length; i++) {
 		model_item = {
 			'id':new_items[i].id,
-			'html':sc.app.tpl.parseTemplate('tweet', new_items[i])
+			'html':App.tpl.parseTemplate('tweet', new_items[i])
 		};
 		// add each item to the model
 		model_items.push(model_item);

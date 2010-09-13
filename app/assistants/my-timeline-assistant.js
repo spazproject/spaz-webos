@@ -11,6 +11,11 @@ function MyTimelineAssistant(argFromPusher) {
 	   that needs the scene controller should be done in the setup function below. */
 	scene_helpers.addCommonSceneMethods(this);
 	
+	/*
+		this connects App to this property of the appAssistant
+	*/
+	App = Mojo.Controller.getAppController().assistant.App;
+	
 	var thisA = this;
 	
 	sch.error('argFromPusher:'+argFromPusher);
@@ -56,7 +61,6 @@ function MyTimelineAssistant(argFromPusher) {
 	*/
 	this.doNotSaveCacheOnDeactivate = false;
 	
-
 }
 
 MyTimelineAssistant.prototype.aboutToActivate = function(callback){
@@ -92,7 +96,7 @@ MyTimelineAssistant.prototype.setup = function() {
 			{
 				items: [
 					{label: $L('Refresh'),  icon:'sync', command:'refresh', shortcut:'R'},
-					{label: sc.app.username, command:'toggle-accounts-panel', width:200},
+					{label: App.username, command:'toggle-accounts-panel', width:200},
 					{label: $L('Compose'),  icon:'compose', command:'compose', shortcut:'N'}
 
 					//{label: $L('Filter timeline'), iconPath:'images/theme/menu-icon-triangle-down.png', submenu:'filter-menu'}
@@ -124,7 +128,7 @@ MyTimelineAssistant.prototype.setup = function() {
 	/*
 	 * Accounts list
 	 */
-	this.Users = new SpazAccounts(sc.app.prefs);
+	this.Users = new SpazAccounts(App.prefs);
 	this.Users.load();
 	
 	sch.debug(this.Users);
@@ -157,17 +161,17 @@ MyTimelineAssistant.prototype.setup = function() {
 		/*
 			set properties for new user
 		*/
-		sc.app.username = e.item.username;
-		sc.app.auth		= e.item.auth;
-		sc.app.type     = e.item.type;
-		sc.app.userid	= e.item.id;
+		App.username = e.item.username;
+		App.auth		= e.item.auth;
+		App.type     = e.item.type;
+		App.userid	= e.item.id;
 		
-		sch.debug('sc.app.username:' + sc.app.username);
-		sch.debug('sc.app.auth:'     + sc.app.auth);  
-		sch.debug('sc.app.type:'     + sc.app.type);   
-		sch.debug('sc.app.userid:'	 + sc.app.userid);
+		sch.debug('App.username:' + App.username);
+		sch.debug('App.auth:'     + App.auth);  
+		sch.debug('App.type:'     + App.type);   
+		sch.debug('App.userid:'	 + App.userid);
 		
-		sc.app.prefs.set('last_userid', sc.app.userid);
+		App.prefs.set('last_userid', App.userid);
 		
 		Spaz.popAllAndPushScene("my-timeline");
 	});
@@ -194,7 +198,7 @@ MyTimelineAssistant.prototype.activate = function(params) {
 	
 	var thisA = this; // for closures
 
-	var tts = sc.app.prefs.get('timeline-text-size');
+	var tts = App.prefs.get('timeline-text-size');
 	this.setTimelineTextSize('#my-timeline', tts);
 	
 	this.activateStarted = true;
@@ -285,7 +289,7 @@ MyTimelineAssistant.prototype.initTimeline = function() {
 		'failure_event':'error_combined_timeline_data',
 		'event_target' :document,
 		
-		'refresh_time':sc.app.prefs.get('network-refreshinterval'),
+		'refresh_time':App.prefs.get('network-refreshinterval'),
 		'max_items':100, // this isn't actually used atm
 
 		'request_data': function() {
@@ -310,7 +314,7 @@ MyTimelineAssistant.prototype.initTimeline = function() {
 				*/
 				if (jQuery('#my-timeline div.timeline-entry[data-status-id='+data[i].id+']').length<1) {
 					
-					sc.app.Tweets.save(data[i]);
+					App.Tweets.save(data[i]);
 					data[i].text = Spaz.makeItemsClickable(data[i].text);
 					no_dupes.push(data[i]);
 				}
@@ -320,7 +324,7 @@ MyTimelineAssistant.prototype.initTimeline = function() {
 			thisA.mytl.addItems(no_dupes);
 
 			// TODO: Timeline list widget
-			// sc.app.Tweets.bucket.all(function(tweets) {
+			// App.Tweets.bucket.all(function(tweets) {
 			// 	thisA.timelineModel.items = tweets;
 			// 	sc.info("Finished loading tweets. There are now " + tweets.length);
 			// 	//   thisA.controller.modelChanged(thisA.timelineModel);
@@ -380,7 +384,7 @@ MyTimelineAssistant.prototype.initTimeline = function() {
 				// thisA.playAudioCue('newmsg');
 				
 				if (previous_count > 0) {
-					if (sc.app.prefs.get('timeline-scrollonupdate')) {
+					if (App.prefs.get('timeline-scrollonupdate')) {
 						if (thisA.isTopmostScene()) {
 							sch.dump("Scrolling to New because previous_count > 0 (it wasn't empty before we added new stuff)");
 							thisA.scrollToNew();
@@ -394,13 +398,13 @@ MyTimelineAssistant.prototype.initTimeline = function() {
 			*/
 			if (!thisA.isFullScreen) {
 				
-				if (new_count > 0 && sc.app.prefs.get('notify-newmessages')) {
+				if (new_count > 0 && App.prefs.get('notify-newmessages')) {
 					thisA.newMsgBanner(new_count, 'newMessages');
 				}
-				if (new_mention_count > 0 && sc.app.prefs.get('notify-mentions')) {
+				if (new_mention_count > 0 && App.prefs.get('notify-mentions')) {
 					thisA.newMsgBanner(new_mention_count, 'newMentions');
 				}
-				if (new_dm_count > 0 && sc.app.prefs.get('notify-dms')) {
+				if (new_dm_count > 0 && App.prefs.get('notify-dms')) {
 					thisA.newMsgBanner(new_dm_count, 'newDirectMessages');
 				}
 				
@@ -423,9 +427,9 @@ MyTimelineAssistant.prototype.initTimeline = function() {
 		'renderer': function(obj) {
 			try {
 				if (obj.SC_is_dm) {
-					return sc.app.tpl.parseTemplate('dm', obj);
+					return App.tpl.parseTemplate('dm', obj);
 				} else {
-					return sc.app.tpl.parseTemplate('tweet', obj);
+					return App.tpl.parseTemplate('tweet', obj);
 				}				
 			} catch(err) {
 				sch.error("There was an error rendering the object: "+sch.enJSON(obj));
@@ -558,9 +562,9 @@ MyTimelineAssistant.prototype._getData = function() {
 		friends_count is the only one that gets used currently
 	*/
 	this.twit.getCombinedTimeline({
-		'friends_count':sc.app.prefs.get('timeline-friends-getcount'),
-		'replies_count':sc.app.prefs.get('timeline-replies-getcount'),
-		'dm_count':sc.app.prefs.get('timeline-dm-getcount')
+		'friends_count':App.prefs.get('timeline-friends-getcount'),
+		'replies_count':App.prefs.get('timeline-replies-getcount'),
+		'dm_count':App.prefs.get('timeline-dm-getcount')
 	});
 };
 
@@ -586,7 +590,7 @@ MyTimelineAssistant.prototype.startRefresher = function() {
 	*/
 	this.stopRefresher(); // in case one is already running
 	
-	var time = sc.app.prefs.get('network-refreshinterval');
+	var time = App.prefs.get('network-refreshinterval');
 	
 	if (time > 0) {
 		this.refresher = setInterval(function() {
@@ -637,10 +641,10 @@ MyTimelineAssistant.prototype.removeExtraItems = function() {
 	/*
 		from html timeline
 	*/
-	sch.debug('timeline-maxentries:'+sc.app.prefs.get('timeline-maxentries'));
-	sch.removeExtraElements('#my-timeline div.timeline-entry:not(.reply):not(.dm)', sc.app.prefs.get('timeline-maxentries'));
-	sch.removeExtraElements('#my-timeline div.timeline-entry.reply', sc.app.prefs.get('timeline-maxentries-reply'));
-	sch.removeExtraElements('#my-timeline div.timeline-entry.dm', sc.app.prefs.get('timeline-maxentries-dm'));
+	sch.debug('timeline-maxentries:'+App.prefs.get('timeline-maxentries'));
+	sch.removeExtraElements('#my-timeline div.timeline-entry:not(.reply):not(.dm)', App.prefs.get('timeline-maxentries'));
+	sch.removeExtraElements('#my-timeline div.timeline-entry.reply', App.prefs.get('timeline-maxentries-reply'));
+	sch.removeExtraElements('#my-timeline div.timeline-entry.dm', App.prefs.get('timeline-maxentries-dm'));
 
 	jQuery('#my-timeline>div:empty').remove(); // remove empty containers
 

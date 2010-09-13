@@ -2,7 +2,12 @@
  * A model for interfacing with the Tweets depot
  * 
  */
-var Tweets = function(replace) {
+var Tweets = function(opts) {
+	
+	this.opts = sch.defaults({
+		'replace':false,
+		'prefs_obj':null
+	}, opts);
 	
 	this.bucket = new Lawnchair({name:"ext:tweets"});
 	this.dm_bucket = new Lawnchair({name:"ext:dms"});
@@ -35,7 +40,7 @@ var Tweets = function(replace) {
 		});
 	};
 	
-	this._init(replace);
+	this._init(this.opts.replace);
 };
 
 /**
@@ -308,13 +313,13 @@ Tweets.prototype.getRemoteUser = function(id, onSuccess, onFailure) {
 Tweets.prototype.initSpazTwit = function(event_mode) {
 	event_mode = event_mode || 'jquery'; // default this to jquery because we have so much using it
 	
-	var users = new SpazAccounts(sc.app.prefs);
+	var users = new SpazAccounts(this.opts.prefs_obj);
 	
 	this.twit = new SpazTwit({
 		'event_mode':event_mode,
 		'timeout':1000*60
 	});
-	this.twit.setSource(sc.app.prefs.get('twitter-source'));
+	this.twit.setSource(this.opts.prefs_obj.get('twitter-source'));
 	
 	
 	var auth;

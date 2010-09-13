@@ -1,9 +1,8 @@
-
-
 /**
  * @class a background notifier 
  */
 var BackgroundNotifier = function() {
+	// App = Spaz.getAppObj();
 	this.init();
 };
 
@@ -95,20 +94,20 @@ BackgroundNotifier.prototype.init = function() {
 	var last_user_obj = this.Users.get(last_userid);
 	if (last_user_obj) {
 		sch.debug(last_user_obj);
-		sc.app.username = last_user_obj.username;
-		sc.app.type     = last_user_obj.type;
-		sc.app.userid   = last_user_obj.id;
+		Spaz.getAppObj().username = last_user_obj.username;
+		Spaz.getAppObj().type     = last_user_obj.type;
+		Spaz.getAppObj().userid   = last_user_obj.id;
 
-		if (sc.app.type === SPAZCORE_SERVICE_CUSTOM) {
-			var api_url = this.Users.getMeta(sc.app.userid, 'twitter-api-base-url');
+		if (Spaz.getAppObj().type === SPAZCORE_SERVICE_CUSTOM) {
+			var api_url = this.Users.getMeta(Spaz.getAppObj().userid, 'twitter-api-base-url');
 			if (!api_url) { // if that wasn't set, try old key
-			    api_url = this.Users.getMeta(sc.app.userid, 'api-url');
+			    api_url = this.Users.getMeta(Spaz.getAppObj().userid, 'api-url');
 			}
 			this.twit.setBaseURL(api_url);
 		} else {
-			this.twit.setBaseURLByService(sc.app.type);				
+			this.twit.setBaseURLByService(Spaz.getAppObj().type);				
 		}
-		this.twit.setCredentials(sc.app.username, sc.app.password);
+		this.twit.setCredentials(Spaz.getAppObj().username, Spaz.getAppObj().password);
 	} else {
 		sch.error("Tried to load last_user_obj, but failed.");
 	}
@@ -214,7 +213,7 @@ BackgroundNotifier.prototype.registerNextNotification = function() {
 	    parameters: {
 	        'key': 'com.funkatron.app.spaz.bgcheck',
 	        'in': this.interval,
-	        'wakeup': sc.app.prefs.get('bgnotify-wakeoncheck'),
+	        'wakeup': Spaz.getAppObj().prefs.get('bgnotify-wakeoncheck'),
 	        'uri': 'palm://com.palm.applicationManager/open',
 	        'params': {
 	            'id': 'com.funkatron.app.spaz',
@@ -334,7 +333,7 @@ BackgroundNotifier.prototype.getDMs = function() {
 	*/
 	var request = new Ajax.Request('https://api.twitter.com/1/direct_messages.json', {
 		requestHeaders:{
-			"Authorization": "Basic " + sch.Base64.encode(sc.app.username+":"+sc.app.password)
+			"Authorization": "Basic " + sch.Base64.encode(Spaz.getAppObj().username+":"+Spaz.getAppObj().password)
 		},
 		parameters: {since_id: this.lastids.dm||1},
 		method: 'get',
@@ -390,7 +389,7 @@ BackgroundNotifier.prototype.getMentions = function() {
 
 	var request = new Ajax.Request('https://api.twitter.com/1/statuses/mentions.json', {
 		requestHeaders:{
-			"Authorization": "Basic " + sch.Base64.encode(sc.app.username+":"+sc.app.password)
+			"Authorization": "Basic " + sch.Base64.encode(Spaz.getAppObj().username+":"+Spaz.getAppObj().password)
 		},
 		parameters: {since_id: this.lastids.mention||1},
 		method: 'get',
@@ -451,7 +450,7 @@ BackgroundNotifier.prototype.getHomeTimeline = function() {
 
 	var request = new Ajax.Request('https://api.twitter.com/1/statuses/home_timeline.json', {
 		requestHeaders:{
-			"Authorization": "Basic " + sch.Base64.encode(sc.app.username+":"+sc.app.password)
+			"Authorization": "Basic " + sch.Base64.encode(Spaz.getAppObj().username+":"+Spaz.getAppObj().password)
 		},
 		parameters: {since_id: this.lastids.home||1},
 		method: 'get',
@@ -509,7 +508,7 @@ BackgroundNotifier.prototype.showBanner = function(msg) {
 		'messageText':msg
 	};
 
-	if (sc.app.prefs.get('sound-enabled')) {
+	if (Spaz.getAppObj().prefs.get('sound-enabled')) {
 		bannerArgs.soundClass = 'alerts';
 	}
 

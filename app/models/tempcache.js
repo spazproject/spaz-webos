@@ -21,7 +21,7 @@ TempCache.exists = function() {
 TempCache.initUser = function(idkey) {
 	
 	if (!idkey) {
-		idkey = sc.app.userid;
+		idkey = App.userid;
 	}
 	
 	sch.debug('TempCache: idkey for user is '+idkey);
@@ -42,7 +42,7 @@ TempCache.initUser = function(idkey) {
 TempCache.save = function(key, val, idkey) {
 	
 	if (!idkey) {
-		idkey = sc.app.userid;
+		idkey = App.userid;
 	}
 
 	sch.debug("saving key:"+key);
@@ -67,7 +67,7 @@ TempCache.save = function(key, val, idkey) {
 TempCache.load = function(key, idkey) {
 	
 	if (!idkey) {
-		idkey = sc.app.userid;
+		idkey = App.userid;
 	}
 	
 	if (!window.spaztmpcache) {

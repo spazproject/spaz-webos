@@ -5,6 +5,11 @@ function PreferencesAssistant() {
 	   that needs the scene controller should be done in the setup function below. */
 	
 	scene_helpers.addCommonSceneMethods(this);
+	
+	/*
+		this connects App to this property of the appAssistant
+	*/
+	App = Mojo.Controller.getAppController().assistant.App;
 };
 
 PreferencesAssistant.prototype.aboutToActivate = function(callback){
@@ -43,23 +48,23 @@ PreferencesAssistant.prototype.setup = function() {
 		note that these property keys MUST match a preference key
 	*/
 	this.model = {
-		'sound-enabled': 			sc.app.prefs.get('sound-enabled'),
-		'vibration-enabled': 		sc.app.prefs.get('vibration-enabled'),
-		'timeline-scrollonupdate': 	sc.app.prefs.get('timeline-scrollonupdate'),
-		'twitter-api-base-url': 	sc.app.prefs.get('twitter-api-base-url'),
-		'network-refreshinterval': 	sc.app.prefs.get('network-refreshinterval'),
-		'network-searchrefreshinterval': 	sc.app.prefs.get('network-searchrefreshinterval'),
-		'timeline-friends-getcount':sc.app.prefs.get('timeline-friends-getcount'),
-		'timeline-replies-getcount':sc.app.prefs.get('timeline-replies-getcount'),
-		'timeline-dm-getcount':     sc.app.prefs.get('timeline-dm-getcount'),
-		'timeline-text-size':       sc.app.prefs.get('timeline-text-size'),
-		'image-uploader':           sc.app.prefs.get('image-uploader'),
-		'notify-newmessages':       sc.app.prefs.get('notify-newmessages'),
-		'notify-mentions':          sc.app.prefs.get('notify-mentions'),
-		'notify-dms':               sc.app.prefs.get('notify-dms'),
-		'notify-searchresults':     sc.app.prefs.get('notify-searchresults'),
-		'post-rt-cursor-position':  sc.app.prefs.get('post-rt-cursor-position'),
-		'post-send-on-enter':       sc.app.prefs.get('post-send-on-enter')
+		'sound-enabled': 			App.prefs.get('sound-enabled'),
+		'vibration-enabled': 		App.prefs.get('vibration-enabled'),
+		'timeline-scrollonupdate': 	App.prefs.get('timeline-scrollonupdate'),
+		'twitter-api-base-url': 	App.prefs.get('twitter-api-base-url'),
+		'network-refreshinterval': 	App.prefs.get('network-refreshinterval'),
+		'network-searchrefreshinterval': 	App.prefs.get('network-searchrefreshinterval'),
+		'timeline-friends-getcount':App.prefs.get('timeline-friends-getcount'),
+		'timeline-replies-getcount':App.prefs.get('timeline-replies-getcount'),
+		'timeline-dm-getcount':     App.prefs.get('timeline-dm-getcount'),
+		'timeline-text-size':       App.prefs.get('timeline-text-size'),
+		'image-uploader':           App.prefs.get('image-uploader'),
+		'notify-newmessages':       App.prefs.get('notify-newmessages'),
+		'notify-mentions':          App.prefs.get('notify-mentions'),
+		'notify-dms':               App.prefs.get('notify-dms'),
+		'notify-searchresults':     App.prefs.get('notify-searchresults'),
+		'post-rt-cursor-position':  App.prefs.get('post-rt-cursor-position'),
+		'post-send-on-enter':       App.prefs.get('post-send-on-enter')
 		
 	};
 	
@@ -262,7 +267,7 @@ PreferencesAssistant.prototype.setup = function() {
 PreferencesAssistant.prototype.saveSettings = function(event) {
 	
 	for (var key in this.model) {
-		sc.app.prefs.set(key, this.model[key]);
+		App.prefs.set(key, this.model[key]);
 	}
 	
 };

@@ -11,6 +11,11 @@ function SearchTwitterAssistant(args) {
 	
 	scene_helpers.addCommonSceneMethods(this);
 	
+	/*
+		this connects App to this property of the appAssistant
+	*/
+	App = Mojo.Controller.getAppController().assistant.App;
+	
 	if (args && args.searchterm) {
 		this.passedSearch = args.searchterm;
 	}
@@ -60,7 +65,7 @@ SearchTwitterAssistant.prototype.setup = function() {
 	/*
 		view and command menus
 	*/
-	if (sc.app.username) {
+	if (App.username) {
 		this.setupCommonMenus({
 			viewMenuItems: [
 				{
@@ -172,7 +177,7 @@ SearchTwitterAssistant.prototype.activate = function(event) {
 	
 	var thisA = this; // for closures below
 	
-	var tts = sc.app.prefs.get('timeline-text-size');
+	var tts = App.prefs.get('timeline-text-size');
 	this.setTimelineTextSize('#search-timeline', tts);
 	
 	
@@ -209,7 +214,7 @@ SearchTwitterAssistant.prototype.activate = function(event) {
 					this.text = Spaz.makeItemsClickable(this.text);
 
 					// var itemhtml = Mojo.View.render({object: this, template: 'search-twitter/search-item'});
-					var itemhtml = sc.app.tpl.parseTemplate('search-item', this);
+					var itemhtml = App.tpl.parseTemplate('search-item', this);
 
 					/*
 						make jQuery obj
@@ -224,7 +229,7 @@ SearchTwitterAssistant.prototype.activate = function(event) {
 					/*
 						save this tweet to Depot
 					*/
-					sc.app.Tweets.save(this);
+					App.Tweets.save(this);
 
 
 					/*
@@ -234,7 +239,7 @@ SearchTwitterAssistant.prototype.activate = function(event) {
 				}
 			});
 
-			sch.removeExtraElements('#search-timeline>div.timeline-entry', sc.app.prefs.get('timeline-maxentries'));
+			sch.removeExtraElements('#search-timeline>div.timeline-entry', App.prefs.get('timeline-maxentries'));
 			
 		}
 
@@ -250,8 +255,8 @@ SearchTwitterAssistant.prototype.activate = function(event) {
 		*/
 		// alert(new_count);
 		// alert(thisA.isFullScreen);
-		// alert(sc.app.prefs.get('notify-searchresults'));
-		if (new_count > 0 && !thisA.isFullScreen && sc.app.prefs.get('notify-searchresults')) {
+		// alert(App.prefs.get('notify-searchresults'));
+		if (new_count > 0 && !thisA.isFullScreen && App.prefs.get('notify-searchresults')) {
 			thisA.newSearchResultsBanner(new_count, e.data.thisAssistant.lastQuery);
 			// thisA.playAudioCue('newmsg');
 		} else if (thisA.isFullScreen) {
@@ -415,7 +420,7 @@ SearchTwitterAssistant.prototype.startRefresher = function() {
 	*/
 	this.stopRefresher(); // in case one is already running
 	
-	var time = sc.app.prefs.get('network-searchrefreshinterval');
+	var time = App.prefs.get('network-searchrefreshinterval');
 	
 	if (time > 0) {
 		this.refresher = setInterval(

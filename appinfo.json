@@ -1,6 +1,6 @@
 {
 	"title": "Spaz",
-	"version": "1.4.0",
+	"version": "1.5.0",
 	"type": "web",
 	"main": "index.html",
 	"id": "com.funkatron.app.spaz",
@@ -11,7 +11,7 @@
 	"vendorurl": "http://funkatron.com",
 	"copyright": "© Copyright 2010 Funkatron Productions",
 	"theme": "dark",
-	"noWindow":false,
+	"noWindow":true,
 	"keywords":["Spaz", "spz", "Twitter", "Tweet", "Chat"],
 	"support": {
 		"url": "http://help.getspaz.com",
