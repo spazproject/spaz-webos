@@ -618,7 +618,7 @@ div.spaz-drawer {
         #user-detail-location, #user-detail-homepage {
 			font-size:12pt;
 			font-weight:bold;
-			font-family:"Coconut-CondensedMedium";
+			font-family:"Prelude-CondensedMedium";
 			display:inline-block;
 			color:#CCCCFF;
 /*			-webkit-border-radius:6pt;*/
@@ -747,7 +747,7 @@ div.spaz-drawer {
 		overflow:auto;
 	}
 		#post-panel-counter {
-			font-family:"Coconut-CondensedMedium";
+			font-family:"Prelude-CondensedMedium";
 			font-size:14px;
 			margin:5px 10px;
 			float:left;
@@ -865,7 +865,7 @@ div.spaz-button-group {
 /*		background-color: rgba(51,51,51,.8);*/
 /*		padding: 8px 16px;*/
 		color:  #FFECCD;
-		font-family:"Coconut-CondensedMedium";
+		font-family:"Prelude-CondensedMedium";
 		font-size:12pt;
 		line-height:24pt;
 /*		-khtml-border-radius:16px;*/
@@ -887,7 +887,7 @@ div.spaz-row {
 	height: 48px;
 	margin: 2px 2px;
 	color:  #FFECCD;
-	font-family:"Coconut-CondensedMedium";
+	font-family:"Prelude-CondensedMedium";
 	font-size:16pt;
 	line-height:40pt;
 	border-width: 0 21px 0 21px;
@@ -949,7 +949,7 @@ div.inline-spinner {
 	div.inline-spinner span.inline-spinner-label {
 		margin-left:1em;
 		color:  #FFFFFF;
-		font-family:"Coconut-CondensedMedium";
+		font-family:"Prelude-CondensedMedium";
 		font-size:12pt;
 
 	}
