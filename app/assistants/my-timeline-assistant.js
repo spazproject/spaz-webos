@@ -227,6 +227,10 @@ MyTimelineAssistant.prototype.activate = function(params) {
 		Prepare for timeline entry taps
 	*/
 	this.bindTimelineEntryTaps('#my-timeline');
+	// maps list taps to item taps
+	this.handleTimelineTap = this.handleTimelineTap.bindAsEventListener(this);
+	this.controller.listen('my-timeline', Mojo.Event.listTap, this.handleTimelineTap);
+	
 
 	/*
 		start the mytimeline 
@@ -252,6 +256,7 @@ MyTimelineAssistant.prototype.deactivate = function(event) {
 		stop listening for timeline entry taps
 	*/
 	this.unbindTimelineEntryTaps('#my-timeline');
+	this.controller.stopListening('my-timeline', Mojo.Event.listTap, this.handleTimelineTap);
 	
 	
 	/*
