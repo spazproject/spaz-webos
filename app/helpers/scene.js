@@ -230,32 +230,14 @@ scene_helpers.addCommonSceneMethods = function(assistant) {
 	 *  
 	 */
 	assistant.scrollToBottom = function() {
-		if (!this.scroller) {
-			this.scroller = this.controller.getSceneScroller();
-		}
-		dump('Scrolling to bottom');
-		jQuery(this.scroller).scrollTo( jQuery(this.scroller).height(), { axis:'y', duration:0 } );
+		sch.error('scrollToBottom needs to be rewritten');
 	};
 	
 	/**
 	 *  
 	 */
 	assistant.scrollToNew = function() {
-		if (!this.scroller) {
-			this.scroller = this.controller.getSceneScroller();
-		}
-		var num_new   = jQuery('.timeline div.timeline-entry.new:visible', this.scroller).length;
-		var first_new = jQuery('.timeline div.timeline-entry.new:visible:last', this.scroller).get(0);
-		if (first_new) {
-			dump('Scrolling to first new item');
-			if (num_new == 1) { // if only one new, just scroll to the top
-				this.scrollToTop();
-			} else {
-				jQuery(this.scroller).scrollTo(first_new, { axis:'y', duration:0, offset:{top:-100} });				
-			}
-		} else {
-			dump('No new items to scroll to');
-		}
+		sch.error('scrollToNew needs to be rewritten');
 	};
 
 
