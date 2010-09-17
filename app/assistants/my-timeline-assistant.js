@@ -242,10 +242,7 @@ MyTimelineAssistant.prototype.activate = function(params) {
 	if (this.refreshOnActivate || (params && params.refresh === true)) {
 		this.refresh();
 		this.refreshOnActivate = false;
-	} else {
-		this.filterTimeline(null);
 	}
-
 };
 
 
