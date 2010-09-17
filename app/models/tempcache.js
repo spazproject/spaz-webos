@@ -99,7 +99,7 @@ TempCache.saveToDB = function() {
 		sch.triggerCustomEvent('temp_cache_save_db_success', document);
 		Mojo.Timing.pause("timing_TempCache.saveToDB");
 		
-		Mojo.Timing.reportTiming("timing_", "Cache op times");
+		Mojo.Log.error(Mojo.Timing.createTimingString("timing_", "Cache op times"));
 	}
 	function failure(tx, err) {
 		sch.error("ERROR SAVING TEMP CACHE");
@@ -107,7 +107,7 @@ TempCache.saveToDB = function() {
 		sch.triggerCustomEvent('temp_cache_save_db_failure', document);
 		Mojo.Timing.pause("timing_TempCache.saveToDB");
 		
-		Mojo.Timing.reportTiming("timing_", "Cache op times");
+		Mojo.Log.error(Mojo.Timing.createTimingString("timing_", "Cache op times"));
 	}
 	
 	var json_cache = JSON.stringify(window.spaztmpcache);
@@ -138,7 +138,7 @@ TempCache.loadFromDB = function() {
 		sch.triggerCustomEvent('temp_cache_load_db_success', document, window.spaztmpcache);
 		Mojo.Timing.pause("timing_TempCache.loadFromDB");
 		
-		Mojo.Timing.reportTiming("timing_", "Cache op times");
+		Mojo.Log.error(Mojo.Timing.createTimingString("timing_", "Cache op times"));
 	}
 	function failure(tx, err) {
 		sch.error("ERROR LOADING TEMP CACHE");
@@ -146,7 +146,7 @@ TempCache.loadFromDB = function() {
 		sch.triggerCustomEvent('temp_cache_load_db_failure', document, err);
 		Mojo.Timing.pause("timing_TempCache.loadFromDB");
 		
-		Mojo.Timing.reportTiming("timing_", "Cache op times");
+		Mojo.Log.error(Mojo.Timing.createTimingString("timing_", "Cache op times"));
 	}
 	
 	var SpazTempCache = openDatabase("ext:SpazTempCache", "1", 'SpazTempCache', 10*1024*1024);
@@ -166,6 +166,4 @@ TempCache.clear = function() {
 	TempCache.saveToDB();
 	sch.trigger('temp_cache_cleared', document);
 	Mojo.Timing.pause("timing_TempCache.clear");
-	
-	Mojo.Timing.reportTiming("timing_", "Cache op times");
 };
