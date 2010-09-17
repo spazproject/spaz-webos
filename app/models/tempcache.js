@@ -91,16 +91,23 @@ TempCache.load = function(key, idkey) {
 
 
 TempCache.saveToDB = function() {
+	Mojo.Timing.resume("timing_TempCache.saveToDB");
 	
 	function success(tx, rs) {
 		sch.debug("SUCCESS SAVING TEMP CACHE");
 		sch.debug(rs);
 		sch.triggerCustomEvent('temp_cache_save_db_success', document);
+		Mojo.Timing.pause("timing_TempCache.saveToDB");
+		
+		Mojo.Timing.reportTiming("timing_", "Cache op times");
 	}
 	function failure(tx, err) {
 		sch.error("ERROR SAVING TEMP CACHE");
 		sch.debug(err);
 		sch.triggerCustomEvent('temp_cache_save_db_failure', document);
+		Mojo.Timing.pause("timing_TempCache.saveToDB");
+		
+		Mojo.Timing.reportTiming("timing_", "Cache op times");
 	}
 	
 	var json_cache = JSON.stringify(window.spaztmpcache);
@@ -120,6 +127,7 @@ TempCache.saveToDB = function() {
 };
 
 TempCache.loadFromDB = function() {
+	Mojo.Timing.resume("timing_TempCache.loadFromDB");
 	
 	function success(tx, rs) {
 		sch.debug("SUCCESS LOADING TEMP CACHE");
@@ -128,11 +136,17 @@ TempCache.loadFromDB = function() {
 		window.spaztmpcache = sch.deJSON(json_cache);
 		sch.debug(window.spaztmpcache);
 		sch.triggerCustomEvent('temp_cache_load_db_success', document, window.spaztmpcache);
+		Mojo.Timing.pause("timing_TempCache.loadFromDB");
+		
+		Mojo.Timing.reportTiming("timing_", "Cache op times");
 	}
 	function failure(tx, err) {
 		sch.error("ERROR LOADING TEMP CACHE");
 		sch.debug(err);
 		sch.triggerCustomEvent('temp_cache_load_db_failure', document, err);
+		Mojo.Timing.pause("timing_TempCache.loadFromDB");
+		
+		Mojo.Timing.reportTiming("timing_", "Cache op times");
 	}
 	
 	var SpazTempCache = openDatabase("ext:SpazTempCache", "1", 'SpazTempCache', 10*1024*1024);
@@ -141,11 +155,17 @@ TempCache.loadFromDB = function() {
 	   tx.executeSql(sql_select, ['json_cache'], success, failure);
 	}));
 	
+	
+	
 };
 
 
 TempCache.clear = function() {
+    Mojo.Timing.resume("timing_TempCache.clear");
 	TempCache.init();
 	TempCache.saveToDB();
 	sch.trigger('temp_cache_cleared', document);
+	Mojo.Timing.pause("timing_TempCache.clear");
+	
+	Mojo.Timing.reportTiming("timing_", "Cache op times");
 };

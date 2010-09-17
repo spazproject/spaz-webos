@@ -1,6 +1,6 @@
 {
 "logLevel": 99,
-"timingEnabled": false,
+"timingEnabled": true,
 "useNativeJSONParser":true,
 "debuggingEnabled":false,
 "logEvents":false,
