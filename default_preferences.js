@@ -36,9 +36,9 @@ var default_preferences = {
     'timeline-maxentries-dm': 50, 
     'timeline-maxentries-reply': 50, 
 
-    'timeline-friends-getcount': 20,
-    'timeline-replies-getcount': 5,
-    'timeline-dm-getcount': 5,
+    'timeline-friends-getcount': 100,
+    'timeline-replies-getcount': 10,
+    'timeline-dm-getcount': 10,
 
     'url-shortener': 'bitly',
 
