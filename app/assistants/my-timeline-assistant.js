@@ -233,10 +233,7 @@ MyTimelineAssistant.prototype.activate = function(params) {
 	/*
 		Prepare for timeline entry taps
 	*/
-	this.bindTimelineEntryTaps('#my-timeline');
-	// maps list taps to item taps
-	this.handleTimelineTap = this.handleTimelineTap.bindAsEventListener(this);
-	this.controller.listen('my-timeline', Mojo.Event.listTap, this.handleTimelineTap);
+	this.bindTimelineEntryTaps('my-timeline');
 	
 
 	/*
@@ -262,8 +259,7 @@ MyTimelineAssistant.prototype.deactivate = function(event) {
 	/*
 		stop listening for timeline entry taps
 	*/
-	this.unbindTimelineEntryTaps('#my-timeline');
-	this.controller.stopListening('my-timeline', Mojo.Event.listTap, this.handleTimelineTap);
+	this.unbindTimelineEntryTaps('my-timeline');
 	
 	
 	/*
@@ -296,12 +292,6 @@ MyTimelineAssistant.prototype.cleanup = function(event) {
 	
 	// this.stopRefresher();
 };
-
-MyTimelineAssistant.prototype.handleTimelineTap = function(e) {
-	Mojo.Log.error('Triggering Mojo.Event.tap on '+e.item.id);
-	jQuery('#my-timeline [data-status-id="'+e.item.id+'"]').trigger(Mojo.Event.tap);
-};
-
 
 
 MyTimelineAssistant.prototype.getEntryElementByStatusId = function(id) {

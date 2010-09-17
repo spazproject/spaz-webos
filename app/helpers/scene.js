@@ -1063,85 +1063,138 @@ scene_helpers.addCommonSceneMethods = function(assistant) {
 	
 	
 	
-	/**
-	 * Binds jQuery listeners for timeline entry taps contained in the passed selector. Uses .live()
-	 */
-	assistant.bindTimelineEntryTaps = function(tl_selector) {
-		var thisA = this;
-		var userid;
+	assistant.handleTimelineListTap = function(e) {
+		var thisA = this;	
 		
-		sch.debug('BINDING');
-				
-		jQuery(tl_selector+' div.timeline-entry').live(Mojo.Event.hold, function(e) {
-			
-			sch.debug('HOLD');
-			
+		var listitem = e.item;
+		var userid, status_id, isdm, status_obj;
+		var event_target;
+
+		/*
+			remap if we have an originalEvent
+		*/
+		if (e.originalEvent) {
+			Mojo.Log.info('originalEvent target: %s', e.originalEvent.target.outerHTML);
+			event_target = e.originalEvent.target;
+		} else {
+			event_target = e.target;
+		}
+		
+		Mojo.Log.error('Mojo.Event.tap received from live listener');
+		Mojo.Log.info('Mojo.Event.tap target element: %s', event_target.outerHTML);
+		Mojo.Log.info('Mojo.Event.tap target item: %j', listitem);
+		
+		/*
+			Check to see if a hold already fired. If so, don't do *anything*
+		*/
+		if (event_target.holdFired) {
+			event_target.holdFired = false;
+			return;
+		}
+		
+		var jqtarget = jQuery(event_target);
+
+		status_obj = sch.clone(listitem.data);
+
+		if (jqtarget.is('div.timeline-entry>.user') || jqtarget.is('div.timeline-entry>.user img')) {
+			Mojo.Log.info('tap on .user or .user img, pushing user-detail');
+			userid = jQuery(this).attr('data-user-id');
+			Mojo.Controller.stageController.pushScene('user-detail', userid);
+			return;
+
+		} else if (jqtarget.is('.username.clickable')) {
+			Mojo.Log.info('tap on username.clickable, pushing user-detail');
+			userid = jqtarget.attr('data-user-screen_name');
+			Mojo.Controller.stageController.pushScene('user-detail', '@'+userid);
+			return;
+
+		} else if (jqtarget.is('.hashtag.clickable')) {
+			Mojo.Log.info('tap on hashtag, searching');
+			hashtag = jqtarget.attr('data-hashtag');
+			thisA.searchFor('#'+hashtag);
+			return;
+
+		} else if (jqtarget.is('div.timeline-entry a[href]')) {
+			Mojo.Log.info('tap on a[href], ignoring');
+		
 			/*
-				Set this so we don't fire a tap after firing the hold
+				this will cause a double tap, so ignore
+			*/			
+			return;
+
+             
+		} else if (jqtarget.is('div.timeline-entry .meta')) {
+			Mojo.Log.info('tap on .meta, ignoring');
+			/*
+				this will cause a double tap, so ignore
 			*/
-			e.target.holdFired = true;
+			return;
+
+		} else {
+			Mojo.Log.error('HOLD');
 			
-			
-			
-			thisA.controller.popupSubmenu({
+			Mojo.Log.error('status_obj: %j', status_obj);
+			this._lastClickedStatusObj = status_obj;
+
+
+			this.controller.popupSubmenu({
 				onChoose: function(cmd) {
-					var jqthis;
 					
-					Mojo.Log.info(e.target.outerHTML);
+					var username, status_id, is_dm;
+					var status_obj = thisA._lastClickedStatusObj;
 					
-					if (jQuery(e.target).is('div.timeline-entry')) {
-						Mojo.Log.info('we are on the entry');
-						jqthis = jQuery(e.target); // we're on the timeline element
+					Mojo.Log.info("onChoose cmd: %s", cmd);
+					
+					if (status_obj.SC_is_dm) {
+						username  = status_obj.sender.screen_name;
+						status_id = status_obj.id;
+						is_dm     = true;
 					} else {
-						Mojo.Log.info('we are below the entry');
-						jqthis = jQuery(e.target).parents('div.timeline-entry'); // get the containing timeline entry
+						username  = status_obj.user.screen_name;
+						status_id = status_obj.id;
+						is_dm     = false;							
 					}
-					
-					
-					var username   = jqthis.attr('data-user-screen_name');
-					Mojo.Log.info(username);
-					
-					var status_id  = jqthis.attr('data-status-id');
-					Mojo.Log.info(status_id);
+					Mojo.Log.info("Status Obj: %s", username);
+					Mojo.Log.info("Status Obj: %s", status_id);
+					Mojo.Log.info("Status Obj: %s", is_dm);
 
-					var is_dm      = !!jqthis.hasClass('dm');
-					Mojo.Log.info(is_dm);
-					
-					App.Tweets.get(status_id, is_dm, function(status_obj) {
-						Mojo.Log.info('status_obj:');
-						Mojo.Log.info(status_obj);
 
-						switch (cmd) {
-							case 'reply':
-								thisA.prepReply(username, status_id, status_obj);
-								break;
-							case 'retweet':
-								thisA.retweet(status_obj);
-								break;
-							case 'RT':
-								thisA.prepRetweet(status_obj);
-								break;
-							case 'quote':
-								thisA.prepQuote(status_obj);
-								break;
-							case 'email':
-								thisA.emailTweet(status_obj);
-								break;
-							case 'sms':
-								thisA.SMSTweet(status_obj);
-								break;								
-							case 'facebook':
-								thisA.facebookTweet(status_obj);
-								break;
-								
-							default:
-								return;
-						};						
-					});
-					
+					switch (cmd) {
+						case 'details':
+							Mojo.Log.info('Pushing message detail scene');
+							Mojo.Controller.stageController.pushScene('message-detail', {'status_id':status_id, 'isdm':is_dm});
+
+							break;
+						case 'reply':
+							thisA.prepReply(username, status_id, status_obj);
+							break;
+						case 'retweet':
+							thisA.retweet(status_obj);
+							break;
+						case 'RT':
+							thisA.prepRetweet(status_obj);
+							break;
+						case 'quote':
+							thisA.prepQuote(status_obj);
+							break;
+						case 'email':
+							thisA.emailTweet(status_obj);
+							break;
+						case 'sms':
+							thisA.SMSTweet(status_obj);
+							break;								
+						case 'facebook':
+							thisA.facebookTweet(status_obj);
+							break;
+
+						default:
+							return;
+					};
+
 				},
-				placeNear: e.target,
+				placeNear: event_target,
 				items: [
+					{label: $L('Details'), command: 'details'},
 					{label: $L('@reply'), command: 'reply'},
 					{label: $L('ReTweet'), command: 'retweet'},
 					{label: $L('RT @…'), command: 'RT'},
@@ -1151,69 +1204,23 @@ scene_helpers.addCommonSceneMethods = function(assistant) {
 					{label: $L('Facebook'), command:  'facebook'}
 				]
 			});
-			
-		});
+		}
+
+	};
+	
+	
+	/**
+	 * Binds jQuery listeners for timeline entry taps contained in the passed selector. Uses .live()
+	 */
+	assistant.bindTimelineEntryTaps = function(tl_id) {
+		var thisA = this;
+		var userid;
 		
-		jQuery(tl_selector+' div.timeline-entry').live(Mojo.Event.tap, function(e) {
-			
-			Mojo.Log.error('Mojo.Event.tap received from live listener');
-			Mojo.Log.info('Mojo.Event.tap target element: %s', e.target.outerHTML);
-			
-			/*
-				Check to see if a hold already fired. If so, don't do *anything*
-			*/
-			if (e.target.holdFired) {
-				e.target.holdFired = false;
-				return;
-			}
-			
-			var jqtarget = jQuery(e.target);
-
-			e.stopImmediatePropagation();
-            
-            var userid, status_id, isdm, status_obj;
-			if (jqtarget.is('div.timeline-entry>.user') || jqtarget.is('div.timeline-entry>.user img')) {
-				userid = jQuery(this).attr('data-user-id');
-				Mojo.Controller.stageController.pushScene('user-detail', userid);
-				return;
-
-			} else if (jqtarget.is('.username.clickable')) {
-				userid = jqtarget.attr('data-user-screen_name');
-				Mojo.Controller.stageController.pushScene('user-detail', '@'+userid);
-				return;
-
-			} else if (jqtarget.is('.hashtag.clickable')) {
-				hashtag = jqtarget.attr('data-hashtag');
-				thisA.searchFor('#'+hashtag);
-				return;
-
-			} else if (jqtarget.is('div.timeline-entry a[href]')) {
-				/*
-					this will cause a double tap, so ignore
-				*/			
-				return;
-
-              
-			} else if (jqtarget.is('div.timeline-entry .meta')) {
-				/*
-					this will cause a double tap, so ignore
-				*/
-				return;
-
-			} else {
-				status_id = jQuery(this).attr('data-status-id');
-				isdm = false;
-				status_obj = null;
-
-				if (jQuery(this).hasClass('dm')) {
-					isdm = true;
-				}
-				
-				Mojo.Log.info('Pushing message detail scene');
-				Mojo.Controller.stageController.pushScene('message-detail', {'status_id':status_id, 'isdm':isdm});
-				return;
-			}
-		});
+		sch.debug('BINDING');
+		
+		this._handleTimelineListTap = this.handleTimelineListTap.bindAsEventListener(this);
+		this.controller.listen(tl_id, Mojo.Event.listTap, this._handleTimelineListTap);
+		
 	};
 	
 	
@@ -1224,10 +1231,9 @@ scene_helpers.addCommonSceneMethods = function(assistant) {
 	/**
 	 * Unbinds jQuery listeners for timeline entry taps contained in the passed selector. Uses .die()
 	 */
-	assistant.unbindTimelineEntryTaps = function(tl_selector) {
+	assistant.unbindTimelineEntryTaps = function(tl_id) {
 		Mojo.Log.info('UNBINDING');
-		jQuery(tl_selector+' div.timeline-entry').die(Mojo.Event.hold);
-		jQuery(tl_selector+' div.timeline-entry').die(Mojo.Event.tap);
+		this.controller.stopListening(tl_id, Mojo.Event.listTap, this._handleTimelineListTap);
 	};
 	
 	

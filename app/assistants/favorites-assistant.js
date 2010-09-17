@@ -103,10 +103,7 @@ FavoritesAssistant.prototype.activate = function(event) {
 	/*
 		Prepare for timeline entry taps
 	*/
-	this.bindTimelineEntryTaps('#favorites-timeline');
-	// maps list taps to item taps
-	this.handleTimelineTap = this.handleTimelineTap.bindAsEventListener(this);
-	this.controller.listen('favorites-timeline', Mojo.Event.listTap, this.handleTimelineTap);
+	this.bindTimelineEntryTaps('favorites-timeline');
 
 	/*
 		start the favs timeline 
@@ -125,20 +122,13 @@ FavoritesAssistant.prototype.deactivate = function(event) {
 	/*
 		stop listening for timeline entry taps
 	*/
-	this.unbindTimelineEntryTaps('#favorites-timeline');
-	
-	this.controller.stopListening('favorites-timeline', Mojo.Event.listTap, this.handleTimelineTap);
-	
+	this.unbindTimelineEntryTaps('favorites-timeline');
+		
 };
 
 FavoritesAssistant.prototype.cleanup = function(event) {
 	/* this function should do any cleanup needed before the scene is destroyed as 
 	   a result of being popped off the scene stack */
-};
-
-
-FavoritesAssistant.prototype.handleTimelineTap = function(e) {
-	jQuery('#favorites-timeline [data-status-id="'+e.item.id+'"]').trigger(Mojo.Event.tap);
 };
 
 

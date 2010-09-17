@@ -1,5 +1,5 @@
 {
-"logLevel": 10,
+"logLevel": 20,
 "timingEnabled": true,
 "useNativeJSONParser":true,
 "debuggingEnabled":true,

@@ -232,7 +232,7 @@ StartsearchAssistant.prototype.activate = function(event) {
 	/*
 		Prepare for timeline entry taps
 	*/
-	this.bindTimelineEntryTaps('#public-timeline');
+	this.bindTimelineEntryTaps('public-timeline');
 
 	/*
 		set up the public timeline
@@ -290,7 +290,7 @@ StartsearchAssistant.prototype.deactivate = function(event) {
 	/*
 		stop listening for timeline entry taps
 	*/
-	this.unbindTimelineEntryTaps('#public-timeline');
+	this.unbindTimelineEntryTaps('public-timeline');
 	
 	/*
 		unbind and stop refresher for public timeline
