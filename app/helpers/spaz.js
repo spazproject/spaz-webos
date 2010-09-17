@@ -10,7 +10,8 @@ if(typeof Spaz === "undefined") {
 }
 
 /**
- * grabs the "App" container object and returns it 
+ * grabs the "App" container object and returns it. We use this container
+ * to store globally-used properties
  */
 Spaz.getAppObj = function() {
 	var App = Mojo.Controller.getAppController().assistant.App;
