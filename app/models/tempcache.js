@@ -110,7 +110,9 @@ TempCache.saveToDB = function() {
 		Mojo.Log.error(Mojo.Timing.createTimingString("timing_", "Cache op times"));
 	}
 	
+	Mojo.Timing.resume("timing_TempCache.JSON.stringify");
 	var json_cache = JSON.stringify(window.spaztmpcache);
+	Mojo.Timing.pause("timing_TempCache.JSON.stringify");
 	
 	sch.debug(json_cache);
 
@@ -133,7 +135,10 @@ TempCache.loadFromDB = function() {
 		sch.debug("SUCCESS LOADING TEMP CACHE");
 		var json_cache = rs.rows.item(0).value;
 		sch.debug('json_cache:'+json_cache);
+		Mojo.Timing.resume("timing_TempCache.sch.deJSON");
 		window.spaztmpcache = sch.deJSON(json_cache);
+		Mojo.Timing.pause("timing_TempCache.sch.deJSON");
+		
 		sch.debug(window.spaztmpcache);
 		sch.triggerCustomEvent('temp_cache_load_db_success', document, window.spaztmpcache);
 		Mojo.Timing.pause("timing_TempCache.loadFromDB");
