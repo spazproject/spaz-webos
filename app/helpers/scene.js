@@ -100,8 +100,7 @@ scene_helpers.addCommonSceneMethods = function(assistant) {
 	 */
 	assistant.handleCommand = function(event){
 		
-		sch.error(event);
-		sch.error(event.command);
+		sch.debug(event.command);
 		if (event.type == Mojo.Event.forward) {
 			this.prepMessage();
 		}
@@ -118,7 +117,7 @@ scene_helpers.addCommonSceneMethods = function(assistant) {
 					var sceneobject = this.controller.stageController.activeScene();
 					var scenename = sceneobject.sceneName;
 					
-					sch.error('scenename:'+scenename);
+					sch.debug('scenename:'+scenename);
 					
 					/*
 						if we're in my-timeline, we do things differently
@@ -230,14 +229,14 @@ scene_helpers.addCommonSceneMethods = function(assistant) {
 	 *  
 	 */
 	assistant.scrollToBottom = function() {
-		sch.error('scrollToBottom needs to be rewritten');
+		Mojo.Log.error('scrollToBottom needs to be rewritten');
 	};
 	
 	/**
 	 *  
 	 */
 	assistant.scrollToNew = function() {
-		sch.error('scrollToNew needs to be rewritten');
+		Mojo.Log.error('scrollToNew needs to be rewritten');
 	};
 
 
@@ -1088,29 +1087,29 @@ scene_helpers.addCommonSceneMethods = function(assistant) {
 				onChoose: function(cmd) {
 					var jqthis;
 					
-					sch.error(e.target.outerHTML);
+					Mojo.Log.info(e.target.outerHTML);
 					
 					if (jQuery(e.target).is('div.timeline-entry')) {
-						sch.error('we are on the entry');
+						Mojo.Log.info('we are on the entry');
 						jqthis = jQuery(e.target); // we're on the timeline element
 					} else {
-						sch.error('we are below the entry');
+						Mojo.Log.info('we are below the entry');
 						jqthis = jQuery(e.target).parents('div.timeline-entry'); // get the containing timeline entry
 					}
 					
 					
 					var username   = jqthis.attr('data-user-screen_name');
-					sch.error(username);
+					Mojo.Log.info(username);
 					
 					var status_id  = jqthis.attr('data-status-id');
-					sch.error(status_id);
+					Mojo.Log.info(status_id);
 
 					var is_dm      = !!jqthis.hasClass('dm');
-					sch.error(is_dm);
+					Mojo.Log.info(is_dm);
 					
 					App.Tweets.get(status_id, is_dm, function(status_obj) {
-						sch.error('status_obj:');
-						sch.error(status_obj);
+						Mojo.Log.info('status_obj:');
+						Mojo.Log.info(status_obj);
 
 						switch (cmd) {
 							case 'reply':
@@ -1155,14 +1154,10 @@ scene_helpers.addCommonSceneMethods = function(assistant) {
 			
 		});
 		
-		jQuery(tl_selector+' div.timeline-entry').live(Mojo.Event.listTap, function(e) {
-			sch.error('LISTTAP');
-			jQuery(this).trigger(Mojo.Event.tap);
-		});
-		
 		jQuery(tl_selector+' div.timeline-entry').live(Mojo.Event.tap, function(e) {
 			
-			sch.error('TAP');
+			Mojo.Log.error('Mojo.Event.tap received from live listener');
+			Mojo.Log.info('Mojo.Event.tap target element: %s', e.target.outerHTML);
 			
 			/*
 				Check to see if a hold already fired. If so, don't do *anything*
@@ -1192,21 +1187,17 @@ scene_helpers.addCommonSceneMethods = function(assistant) {
 				thisA.searchFor('#'+hashtag);
 				return;
 
-			} else if (jqtarget.is('div.timeline-entry .meta')) {
-				status_id = jqtarget.attr('data-status-id');
-				isdm = false;
-				status_obj = null;
-
-				status_obj = thisA.getTweetFromModel(parseInt(status_id, 10));
-
-				if (jqtarget.parent().parent().hasClass('dm')) {
-					isdm = true;
-				}
-
-				Mojo.Controller.stageController.pushScene('message-detail', {'status_id':status_id, 'isdm':isdm, 'status_obj':status_obj});
+			} else if (jqtarget.is('div.timeline-entry a[href]')) {
+				/*
+					this will cause a double tap, so ignore
+				*/			
 				return;
 
-			} else if (jqtarget.is('div.timeline-entry a[href]')) {
+              
+			} else if (jqtarget.is('div.timeline-entry .meta')) {
+				/*
+					this will cause a double tap, so ignore
+				*/
 				return;
 
 			} else {
@@ -1217,8 +1208,9 @@ scene_helpers.addCommonSceneMethods = function(assistant) {
 				if (jQuery(this).hasClass('dm')) {
 					isdm = true;
 				}
-
-				Mojo.Controller.stageController.pushScene('message-detail', {'status_id':status_id, 'isdm':isdm, 'status_obj':status_obj});
+				
+				Mojo.Log.info('Pushing message detail scene');
+				Mojo.Controller.stageController.pushScene('message-detail', {'status_id':status_id, 'isdm':isdm});
 				return;
 			}
 		});
@@ -1233,7 +1225,7 @@ scene_helpers.addCommonSceneMethods = function(assistant) {
 	 * Unbinds jQuery listeners for timeline entry taps contained in the passed selector. Uses .die()
 	 */
 	assistant.unbindTimelineEntryTaps = function(tl_selector) {
-		sch.error('UNBINDING');
+		Mojo.Log.info('UNBINDING');
 		jQuery(tl_selector+' div.timeline-entry').die(Mojo.Event.hold);
 		jQuery(tl_selector+' div.timeline-entry').die(Mojo.Event.tap);
 	};
@@ -1351,7 +1343,7 @@ scene_helpers.addCommonSceneMethods = function(assistant) {
 		
 		var is_topmost = (topmost === this.controller);
 		
-		sch.error('is_topmost:'+is_topmost);
+		sch.debug('is_topmost:'+is_topmost);
 		
 		return is_topmost;
 	};
