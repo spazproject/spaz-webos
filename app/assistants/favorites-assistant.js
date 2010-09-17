@@ -14,6 +14,7 @@ FavoritesAssistant.prototype.aboutToActivate = function(callback){
 	callback.defer();
 };
 FavoritesAssistant.prototype.setup = function() {
+	var thisA = this;
 
 	this.scroller = this.controller.getSceneScroller();
 	this.initAppMenu({ 'items':LOGGEDIN_APPMENU_ITEMS });
@@ -69,14 +70,18 @@ FavoritesAssistant.prototype.setup = function() {
         this.timeline_attributes = {
             itemTemplate: 'timeline-entry',
             listTemplate: 'timeline-container',
+			emptyTemplate: 'timeline-container-empty',
             swipeToDelete: false,
             reorderable: false,
-            hasNoWidgets: true
+            hasNoWidgets: true,
+			formatters: {
+				'data': function(value, model) {
+					return thisA.renderItem(value);
+				}
+			}
         },
         this.timeline_model = {
-            items : [
-                {id:0, html:'some html'}
-            ]
+            items : []
         }
     );
 
@@ -152,26 +157,29 @@ FavoritesAssistant.prototype.refresh = function(event) {
 		null,
 		null,
 		function(data) {
-			data = data.reverse();
-			var no_dupes = [];
+			if (sch.isArray(data)) {
 			
-			for (var i=0; i < data.length; i++) {
+				data = data.reverse();
+				var no_dupes = [];
+			
+				for (var i=0; i < data.length; i++) {
 				
-				/*
-					only add if it doesn't already exist
-				*/
-				if (!thisA.itemExistsInModel(data[i])) {
+					/*
+						only add if it doesn't already exist
+					*/
+					if (!thisA.itemExistsInModel(data[i])) {
 					
-					App.Tweets.save(data[i]);
-					data[i].text = Spaz.makeItemsClickable(data[i].text);
-					no_dupes.push(data[i]);
-				}
+						App.Tweets.save(data[i]);
+						data[i].text = Spaz.makeItemsClickable(data[i].text);
+						no_dupes.push(data[i]);
+					}
 				
-			};
+				};
 			
-			thisA.addItems(no_dupes);
-			sc.helpers.markAllAsRead('#favorites-timeline div.timeline-entry'); // favs are never "new"
-			sc.helpers.updateRelativeTimes('#favorites-timeline div.timeline-entry span.date', 'data-created_at');
+				thisA.addItems(no_dupes);
+			
+			}
+			
 			thisA.hideInlineSpinner('activity-spinner-favorites');
 		},
 		function(xhr, msg, exc) {
@@ -181,7 +189,6 @@ FavoritesAssistant.prototype.refresh = function(event) {
 			/*
 				Update relative dates
 			*/
-			sch.updateRelativeTimes('#favorites-timeline>div.timeline-entry .meta>.date', 'data-created_at');
 			thisA.hideInlineSpinner('activity-spinner-favorites');
 		}
 	);
@@ -201,7 +208,7 @@ FavoritesAssistant.prototype.addItems = function(new_items) {
 	for (var i=0; i < new_items.length; i++) {
 		model_item = {
 			'id':new_items[i].id,
-			'html':App.tpl.parseTemplate('tweet', new_items[i])
+			'data':sch.clone(new_items[i])
 		};
 		// add each item to the model
 		model_items.push(model_item);
@@ -219,6 +226,32 @@ FavoritesAssistant.prototype.addItems = function(new_items) {
 	// tell the controller it's changed to update list widget
 	this.controller.modelChanged(this.timeline_model);
 };
+
+
+FavoritesAssistant.prototype.renderItem = function(obj) {
+    
+    var html = '';
+
+    Mojo.Timing.resume("timing_favorites-timeline.renderer");
+	try {
+		if (obj.SC_is_dm) {
+			html = App.tpl.parseTemplate('dm', obj);
+		} else {
+			html = App.tpl.parseTemplate('tweet', obj);
+		}
+		Mojo.Timing.pause("timing_favorites-timeline.renderer");
+		return html;
+		
+	} catch(err) {
+		sch.error("There was an error rendering the object: "+sch.enJSON(obj));
+		sch.error("Error:"+sch.enJSON(err));
+		Mojo.Timing.pause("timing_favorites-timeline.renderer");
+    	
+		return '';
+	}
+    
+};
+
 
 FavoritesAssistant.prototype.itemExistsInModel = function(obj) {
 	
@@ -243,4 +276,4 @@ FavoritesAssistant.prototype.markAllAsRead = function() {
 		}
 	}
 	this.controller.modelChanged(this.timeline_model);
-}
+};
