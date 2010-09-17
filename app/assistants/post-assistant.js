@@ -16,7 +16,7 @@ function PostAssistant(args) {
 	/*
 		this connects App to this property of the appAssistant
 	*/
-	App = Mojo.Controller.getAppController().assistant.App;
+	App = Spaz.getAppObj();
 }
 PostAssistant.prototype.aboutToActivate = function(callback){
 	callback.defer(); //delays displaying scene, looks better

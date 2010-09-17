@@ -9,9 +9,9 @@ function UserDetailAssistant(argFromPusher) {
 	/*
 		this connects App to this property of the appAssistant
 	*/
-	App = Mojo.Controller.getAppController().assistant.App;
+	App = Spaz.getAppObj();
 	
-	sch.debug('argFromPusher:' + sch.enJSON(argFromPusher));
+	Mojo.Log.error('argFromPusher: %j', argFromPusher);
 	
 	if (sc.helpers.isString(argFromPusher) || sc.helpers.isNumber(argFromPusher)) {
 		/*

@@ -8,7 +8,7 @@ function AboutAssistant() {
 	/*
 		this connects App to this property of the appAssistant
 	*/
-	App = Mojo.Controller.getAppController().assistant.App;
+	App = Spaz.getAppObj();
 };
 
 AboutAssistant.prototype.aboutToActivate = function(callback){

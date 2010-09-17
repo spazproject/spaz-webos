@@ -15,7 +15,7 @@ function DashboardAssistant(args) {
 	/*
 		this connects App to this property of the appAssistant
 	*/
-	App = Mojo.Controller.getAppController().assistant.App;
+	App = Spaz.getAppObj();
 	
 };
 

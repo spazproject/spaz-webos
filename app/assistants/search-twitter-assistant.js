@@ -14,7 +14,7 @@ function SearchTwitterAssistant(args) {
 	/*
 		this connects App to this property of the appAssistant
 	*/
-	App = Mojo.Controller.getAppController().assistant.App;
+	App = Spaz.getAppObj();
 	
 	if (args && args.searchterm) {
 		this.passedSearch = args.searchterm;
@@ -227,10 +227,8 @@ SearchTwitterAssistant.prototype.activate = function(event) {
 					jqitem.data('item', this);
 
 					/*
-						save this tweet to Depot
+						Don't save search results to Depot!
 					*/
-					App.Tweets.save(this);
-
 
 					/*
 						put item on timeline
@@ -300,7 +298,7 @@ SearchTwitterAssistant.prototype.activate = function(event) {
 				isdm = true;
 			}
 
-			Mojo.Controller.stageController.pushScene('message-detail', {'status_id':status_id, 'isdm':isdm, 'status_obj':status_obj});
+			Mojo.Controller.stageController.pushScene('message-detail', {'status_id':status_id, 'isdm':isdm, 'force_retrieval':true});
 			return;
 			
 		} else if (jqtarget.is('div.timeline-entry a[href]')) {
@@ -315,7 +313,7 @@ SearchTwitterAssistant.prototype.activate = function(event) {
 				isdm = true;
 			}
 			
-			Mojo.Controller.stageController.pushScene('message-detail', {'status_id':status_id, 'isdm':isdm, 'status_obj':status_obj});
+			Mojo.Controller.stageController.pushScene('message-detail', {'status_id':status_id, 'isdm':isdm});
 			return;
 		}
 	});

@@ -8,7 +8,7 @@ function FavoritesAssistant() {
 	/*
 		this connects App to this property of the appAssistant
 	*/
-	App = Mojo.Controller.getAppController().assistant.App;
+	App = Spaz.getAppObj();
 }
 FavoritesAssistant.prototype.aboutToActivate = function(callback){
 	callback.defer();

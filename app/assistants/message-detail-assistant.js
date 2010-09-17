@@ -4,17 +4,19 @@ function MessageDetailAssistant(argFromPusher) {
 	   to the scene controller (this.controller) has not be established yet, so any initialization
 	   that needs the scene controller should be done in the setup function below. */
 	scene_helpers.addCommonSceneMethods(this);
+
+	sc.setDumpLevel(5);
 	
 	/*
 		this connects App to this property of the appAssistant
 	*/
-	App = Mojo.Controller.getAppController().assistant.App;
+	App = Spaz.getAppObj();
 	
-	sch.dump(argFromPusher);
+	Mojo.Log.error('argFromPusher: %j', argFromPusher);
 	
 	if (sc.helpers.isString(argFromPusher) || sc.helpers.isNumber(argFromPusher)) {
 		/*
-			we were passed a single arg, so we need to retrieve the user data
+			we were passed a single arg, so we need to retrieve the message data
 		*/
 		this.status_id  = argFromPusher;
 	} else {
@@ -22,6 +24,8 @@ function MessageDetailAssistant(argFromPusher) {
 		this.status_id  = argFromPusher.status_id;
 		this.isdm  = argFromPusher.isdm;
 	}
+	
+
 }
 
 MessageDetailAssistant.prototype.aboutToActivate = function(callback){
@@ -120,10 +124,10 @@ MessageDetailAssistant.prototype.activate = function(event) {
 			App.Tweets.get(this.status_id, this.isdm,
 				function(data) {
 					if (data !== null) {
-						sch.error('Message '+thisA.status_id+' pulled from DB');
+						Mojo.Log.error('Message '+thisA.status_id+' pulled from DB');
 						jQuery(document).trigger('get_one_status_succeeded', [data]);
 					} else { // if nothing is returned, get it from Twitter
-						sch.error('DM was not in App.Tweets cache');
+						Mojo.Log.error('DM was not in App.Tweets cache');
 						thisA.showAlert($L('There was an error retrieving this direct message from cache'));
 					}
 					
@@ -139,9 +143,11 @@ MessageDetailAssistant.prototype.activate = function(event) {
 			this.status_id,
 			this.isdm,
 			function(data) {
+				Mojo.Log.error('Status pulled from DB');
 				jQuery(document).trigger('get_one_status_succeeded', [data]);
 			},
-			function(message) {
+			function(xhr) {
+				Mojo.Log.error('Couldn\'t retrieve message from Depot: %j', xhr);
 				thisA.showAlert($L('There was an error retrieving the message data'));
 			}
 		);

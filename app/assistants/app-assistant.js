@@ -67,10 +67,10 @@ AppAssistant.prototype.initialize = function() {
 		return json;
 	};
 
-	sc.info = Mojo.Log.info;
-	sc.dump = Mojo.Log.info;
-	sc.warn = Mojo.Log.warn;
-	sc.error = Mojo.Log.error;
+	sch.info = Mojo.Log.info;
+	sch.dump = Mojo.Log.info;
+	sch.warn = Mojo.Log.warn;
+	sch.error = Mojo.Log.error;
 
 
 	this.App.search_cards = [];
@@ -174,24 +174,25 @@ AppAssistant.prototype.initialize = function() {
 
 
 AppAssistant.prototype.loadAccount = function(account_id) {
+	
+	if (!account_id) {
+		account_id = this.App.prefs.get('last_userid');
+	}
+	
 	/*
 		load users from prefs obj
 	*/
 	this.Users = new SpazAccounts(this.App.prefs);
 	this.Users.load();
 	
-	/*
-		get last user
-	*/
-	var last_userid = this.App.prefs.get('last_userid');
-	var last_user_obj = this.Users.get(last_userid);
-	if (last_user_obj !== false) {
-		dump(last_user_obj);
-		this.App.username = last_user_obj.username;
-		this.App.type     = last_user_obj.type;
-		this.App.userid   = last_user_obj.id;
+	var account = this.Users.get(account_id);
+	if (account !== false) {
+		dump(account);
+		this.App.username = account.username;
+		this.App.type     = account.type;
+		this.App.userid   = account.id;
 	} else {
-		dump("Tried to load last_user_object, but failed.");
+		dump("Tried to load account, but failed.");
 	}
 	
 };
@@ -256,7 +257,16 @@ AppAssistant.prototype.handleLaunch = function(launchParams) {
 	}
 	
 	if (launchParams) {
-		Mojo.Log.info("action:", launchParams.action);
+		Mojo.Log.info("launchParams: %j", launchParams);
+		
+		/*
+			for compatibility with Bad Kitty and Twee APIs
+		*/
+		if (launchParams.tweet) {
+			launchParams.action = 'prepPost';
+			launchParams.msg = launchParams.tweet;
+		}
+		
 		switch(launchParams.action) {
 			
 			case 'prepPost':
@@ -329,25 +339,103 @@ AppAssistant.prototype.handleLaunch = function(launchParams) {
 };
 
 
-
+/**
+ * @param {object} launchParams launch parameters passed to app
+ * @param {string} launchParams.action the action to take. (prepPost|user|search|status)
+ * @param {string} [launchParams.account] an account hash. If not passed, the last logged-in user account is used
+ * @param {string} [launchParams.msg] message to insert into the posting form for the "prepPost" action (action:prepPost)
+ * @param {string} [launchParams.userid] userid (integer or string) to pass to "user" action (action:user)
+ * @param {string} [launchParams.query] a valid search query for the twitter API (action:search)
+ * @param {string} [launchParams.statusid] a status id for a message (action:status)
+ * 
+ */
 AppAssistant.prototype.handleLaunch = function(launchParams) {
-	var phonebookStageController = Mojo.Controller.getAppController().getStageController(SPAZ_MAIN_STAGENAME);
+	var appAssistant = this;
+	
+	var mainStageController = Mojo.Controller.getAppController().getStageController(SPAZ_MAIN_STAGENAME);
 	
 	Mojo.Log.info("Launch Parameters: %j", launchParams);
-	
+
+	/*
+		for compatibility with Bad Kitty and Twee APIs
+	*/
+	if (launchParams.tweet) {
+		launchParams.action = 'prepPost';
+		launchParams.msg = launchParams.tweet;
+	}
+	if (launchParams.user) {
+		launchParams.action = 'user';
+		launchParams.userid = launchParams.user;
+	}
 	
 	var stageCallback = function(stageController) {
 		Mojo.Log.error('RUNNING stageCallback');
-		if(launchParams.newEntry)
-			stageController.pushScene('new', launchParams.newEntry);
-		else if(launchParams.phoneBookId)
-			stageController.pushScene('detail', launchParams.phoneBookId);
-		else 
-			stageController.pushScene('start', launchParams.query);
+		
+		switch(launchParams.action) {
+			
+			/**
+			 * {
+			 *   action:"prepPost",
+			 *   msg:"Some Text",
+			 *   account:"ACCOUNT_HASH" // optional
+			 * }
+			 */
+			case 'prepPost':
+			case 'post':
+				appAssistant.loadAccount(launchParams.account||null);
+				stageController.pushScene('post', {
+					'text':launchParams.msg
+				});
+				break;
+
+			/**
+			 * {
+			 *   action:"user",
+			 *   userid:"funkatron"
+			 * }
+			 */
+			case 'user':
+				// appAssistant.loadAccount(launchParams.account||null);
+				stageController.pushScene('user-detail', '@'+launchParams.userid);
+				break;
+			
+			/**
+			 * {
+			 *   action:"search",
+			 *   query:"spaz source:spaz"
+			 * }
+			 */			
+			case 'search':
+				stageController.pushScene('search-twitter', {
+					'searchterm':launchParams.query
+				});
+				break;
+
+			/**
+			 * {
+			 *   action:"status",
+			 *   userid:24426249322
+			 * }
+			 */
+			case 'status':
+				stageController.pushScene('message-detail', launchParams.statusid);
+				break;
+				
+			
+			default:
+				stageController.pushScene('start', launchParams.query);
+				break;
+			
+		}
 	};
-	if (phonebookStageController) {
-		if (phonebookStageController.topScene() && phonebookStageController.topScene().sceneName == "start")
-			stageCallback(phonebookStageController);
+	
+	
+	/*
+		we go ahead and re-activate the existing stage, or make a new main stage
+	*/
+	if (mainStageController) {
+		if (mainStageController.topScene() && mainStageController.topScene().sceneName == "start")
+			stageCallback(mainStageController);
 		else
 			phonebookStageController.window.focus(); 
 	} else {

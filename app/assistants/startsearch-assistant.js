@@ -8,7 +8,7 @@ function StartsearchAssistant() {
 	/*
 		this connects App to this property of the appAssistant
 	*/
-	App = Mojo.Controller.getAppController().assistant.App;
+	App = Spaz.getAppObj();
 }
 
 StartsearchAssistant.prototype.aboutToActivate = function(callback){

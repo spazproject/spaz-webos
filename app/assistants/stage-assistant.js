@@ -5,7 +5,7 @@ function StageAssistant () {
 	/*
 		this connects App to this property of the appAssistant
 	*/
-	window.App = Mojo.Controller.getAppController().assistant.App;
+	window.App = Spaz.getAppObj();
 	
 	/*
 		we init this here because SpazAuth is loaded in the stage's window object
@@ -137,7 +137,10 @@ StageAssistant.prototype.loadTemplates = function() {
 	App.tpl = new SpazTemplate();
 
 	App.tpl.addTemplateMethod('message-detail', function(d) {
-		d.isSent = (d.user.screen_name.toLowerCase() === App.username.toLowerCase());
+		
+		if (App.username) { // might not be logged-in
+			d.isSent = (d.user.screen_name.toLowerCase() === App.username.toLowerCase());
+		}		
 
 		var html = '', thumbHTML = '';
 

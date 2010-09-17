@@ -14,7 +14,7 @@ function MyTimelineAssistant(argFromPusher) {
 	/*
 		this connects App to this property of the appAssistant
 	*/
-	App = Mojo.Controller.getAppController().assistant.App;
+	App = Spaz.getAppObj();
 	
 	var thisA = this;
 	
@@ -468,7 +468,7 @@ MyTimelineAssistant.prototype.cleanupTimeline = function() {
 
 
 MyTimelineAssistant.prototype.loadTimelineCache = function() {
-	
+	Mojo.Timing.resume("timing_loadTimelineCache");
 	var thisA = this;
 
 	this._loadTimelineCache = function() {
@@ -494,11 +494,14 @@ MyTimelineAssistant.prototype.loadTimelineCache = function() {
 		this._loadTimelineCache();
 	}
 	
+	Mojo.Timing.pause("timing_loadTimelineCache");
 	
+	Mojo.Timing.reportTiming("timing_", "Cache op times");
 };
 
 MyTimelineAssistant.prototype.saveTimelineCache = function() {
 	
+	Mojo.Timing.resume("timing_saveTimelineCache");
 	var tweetsModel_html = document.getElementById('my-timeline').innerHTML;
 	
 	sch.debug(tweetsModel_html);
@@ -519,7 +522,10 @@ MyTimelineAssistant.prototype.saveTimelineCache = function() {
 		
 	TempCache.save('mytimelinecache', twitdata);
 	
-	TempCache.saveToDB();	
+	TempCache.saveToDB();
+	Mojo.Timing.pause('timing_saveTimelineCache');
+	
+	Mojo.Timing.reportTiming("timing_", "Cache op times");
 	
 };
 

@@ -9,7 +9,7 @@ function PreferencesAssistant() {
 	/*
 		this connects App to this property of the appAssistant
 	*/
-	App = Mojo.Controller.getAppController().assistant.App;
+	App = Spaz.getAppObj();
 };
 
 PreferencesAssistant.prototype.aboutToActivate = function(callback){
@@ -76,14 +76,14 @@ PreferencesAssistant.prototype.setup = function() {
 	/*
 		temporarily disabling sound and vibration prefs until we can sort out how to tell if sound is off
 	*/
-	// this.controller.setupWidget("checkbox-sound-enabled",
-	// 	this.soundEnabledAtts = {
-	// 		fieldName: 'sound-enabled',
-	// 		modelProperty: 'sound-enabled',
-	// 		disabledProperty: 'sound-enabled_disabled'
-	// 	},
-	// 	this.model
-	// );
+    this.controller.setupWidget("checkbox-sound-enabled",
+        this.soundEnabledAtts = {
+            fieldName: 'sound-enabled',
+            modelProperty: 'sound-enabled',
+            disabledProperty: 'sound-enabled_disabled'
+        },
+        this.model
+    );
 	// this.controller.setupWidget("checkbox-vibration-enabled",
 	// 	this.soundEnabledAtts = {
 	// 		fieldName: 'vibration-enabled',
@@ -149,7 +149,7 @@ PreferencesAssistant.prototype.setup = function() {
 	/*
 		temporarily disabling sound and vibration prefs until we can sort out how to tell if sound is off
 	*/
-	// this.controller.listen('checkbox-sound-enabled', Mojo.Event.propertyChange, this.saveSettings.bindAsEventListener(this));
+    this.controller.listen('checkbox-sound-enabled', Mojo.Event.propertyChange, this.saveSettings.bindAsEventListener(this));
 	// this.controller.listen('checkbox-vibration-enabled', Mojo.Event.propertyChange, this.saveSettings.bindAsEventListener(this));
 	this.controller.listen('checkbox-timeline-scrollonupdate', Mojo.Event.propertyChange, this.saveSettings.bindAsEventListener(this));
 	this.controller.listen('checkbox-notify-newmessages', Mojo.Event.propertyChange, this.saveSettings.bindAsEventListener(this));
