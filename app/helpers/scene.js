@@ -5,7 +5,7 @@ var scene_helpers = {};
 
 
 /**
- * This adds a number of common scene methods to the passed scene assistant
+ * This adds a number of common scene methods mixins-style to the passed scene assistant
  * @param {object} assistant a scene assistant
  */
 scene_helpers.addCommonSceneMethods = function(assistant) {
@@ -441,7 +441,7 @@ scene_helpers.addCommonSceneMethods = function(assistant) {
 		var text = entryobj.SC_text_raw;
 		var screenname = entryobj.user.screen_name;
 
-		var text = 'RT @' + screenname + ': '+text+'';
+		text = 'RT @' + screenname + ': '+text+'';
 		
 		this.showPostPanel({
 			'text'         : text,
@@ -458,7 +458,7 @@ scene_helpers.addCommonSceneMethods = function(assistant) {
 		var text = entryobj.SC_text_raw;
 		var screenname = entryobj.user.screen_name;
 
-		var text = text+' /via @' + screenname;
+		text = text+' /via @' + screenname;
 		
 		this.showPostPanel({
 			'text'         : text,
@@ -566,7 +566,9 @@ scene_helpers.addCommonSceneMethods = function(assistant) {
 			'type'         : 'photo',
 			'select_start' : url.length+1,
 			'select_length': text.length
-		});		
+		});
+		
+		return true;	
 	};
 
 
@@ -731,10 +733,16 @@ scene_helpers.addCommonSceneMethods = function(assistant) {
 	};
 	
 	
-
-	assistant.showBanner = function(text, category) {
+    /**
+     * helper to easily show banners 
+     * 
+     * @param {string} soundClass default false (no sound). (alerts|notifications|vibrate)
+     */
+	assistant.showBanner = function(text, category, soundClass) {
 		
-		var category = category || 'misc';
+		if (!soundClass) { soundClass = false; }
+		
+		category = category || 'misc';
 		
 		var launchArgs = {
 			'fromstage':this.getStageName()
@@ -742,8 +750,8 @@ scene_helpers.addCommonSceneMethods = function(assistant) {
 		var bannerArgs = {
 			'messageText':text
 		};
-		if (App.prefs.get('sound-enabled')) {
-			bannerArgs.soundClass = 'alerts';
+		if (soundClass && App.prefs.get('sound-enabled')) {
+			bannerArgs.soundClass = soundClass;
 		}
 
 		var appController = Mojo.Controller.getAppController();
@@ -928,7 +936,7 @@ scene_helpers.addCommonSceneMethods = function(assistant) {
 
 	assistant.processAjaxError = function(errobj) {		
 
-		var human_msg, twiterr_req, twiterr_msg;
+		var human_msg, twiterr_req, twiterr_msg, error_processed;
 		
 		switch(errobj.msg) {
 			case 'timeout':
@@ -986,7 +994,7 @@ scene_helpers.addCommonSceneMethods = function(assistant) {
 		}
 		
 		if (errobj.xhr && errobj.xhr.readyState > 3) {
-			var error_processed = {
+			error_processed = {
 				'status':		errobj.xhr.status,
 				'statusText':	errobj.xhr.statusText,
 				'responseText':	errobj.xhr.responseText,
@@ -997,7 +1005,7 @@ scene_helpers.addCommonSceneMethods = function(assistant) {
 				'twitter_msg':	twiterr_msg
 			};
 		} else {
-			var error_processed = {
+			error_processed = {
 				'status':		'n/a',
 				'statusText':	'n/a',
 				'responseText':	'n/a',
@@ -1079,6 +1087,7 @@ scene_helpers.addCommonSceneMethods = function(assistant) {
 	 */
 	assistant.bindTimelineEntryTaps = function(tl_selector) {
 		var thisA = this;
+		var userid;
 		
 		sch.debug('BINDING');
 				
@@ -1184,26 +1193,27 @@ scene_helpers.addCommonSceneMethods = function(assistant) {
 			var jqtarget = jQuery(e.target);
 
 			e.stopImmediatePropagation();
-
+            
+            var userid, status_id, isdm, status_obj;
 			if (jqtarget.is('div.timeline-entry>.user') || jqtarget.is('div.timeline-entry>.user img')) {
-				var userid = jQuery(this).attr('data-user-id');
+				userid = jQuery(this).attr('data-user-id');
 				Mojo.Controller.stageController.pushScene('user-detail', userid);
 				return;
 
 			} else if (jqtarget.is('.username.clickable')) {
-				var userid = jqtarget.attr('data-user-screen_name');
+				userid = jqtarget.attr('data-user-screen_name');
 				Mojo.Controller.stageController.pushScene('user-detail', '@'+userid);
 				return;
 
 			} else if (jqtarget.is('.hashtag.clickable')) {
-				var hashtag = jqtarget.attr('data-hashtag');
+				hashtag = jqtarget.attr('data-hashtag');
 				thisA.searchFor('#'+hashtag);
 				return;
 
 			} else if (jqtarget.is('div.timeline-entry .meta')) {
-				var status_id = jqtarget.attr('data-status-id');
-				var isdm = false;
-				var status_obj = null;
+				status_id = jqtarget.attr('data-status-id');
+				isdm = false;
+				status_obj = null;
 
 				status_obj = thisA.getTweetFromModel(parseInt(status_id, 10));
 
@@ -1218,9 +1228,9 @@ scene_helpers.addCommonSceneMethods = function(assistant) {
 				return;
 
 			} else {
-				var status_id = jQuery(this).attr('data-status-id');
-				var isdm = false;
-				var status_obj = null;
+				status_id = jQuery(this).attr('data-status-id');
+				isdm = false;
+				status_obj = null;
 
 				if (jQuery(this).hasClass('dm')) {
 					isdm = true;
@@ -1304,12 +1314,12 @@ scene_helpers.addCommonSceneMethods = function(assistant) {
 			{label:$L('Okay'), value:"okay", type:'dismiss'}
 		];
 		
-		var title    = title   || 'Alert';
-		var msg      = msg     || '';
+		title    = title   || 'Alert';
+		msg      = msg     || '';
 		var onChoose = ok_cb   || function(choice) {
 			return true;
 		};
-		var choices  = choices || default_choices;
+		choices  = choices || default_choices;
 		
 		this.controller.showAlertDialog({
 			'onChoose':onChoose,
@@ -1322,13 +1332,28 @@ scene_helpers.addCommonSceneMethods = function(assistant) {
 	
 	
 	assistant.getStageName = function() {
+	    var stagename;
 		if (window.name) {
-			var stagename = window.name;
+			stagename = window.name;
 		} else {
-			var stagename = SPAZ_MAIN_STAGENAME;
+			stagename = SPAZ_MAIN_STAGENAME;
 		}
 		return stagename;
 	};
+
+    /**
+     * returns the AppController 
+     */
+    assistant.getAppController = function() {
+        return Mojo.Controller.getAppController();
+    };
+
+    /**
+     * returns the AppAssistant 
+     */
+    assistant.getAppAssistant = function() {
+        return Mojo.Controller.getAppController().assistant;
+    };
 
 
 	/**
