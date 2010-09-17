@@ -70,7 +70,7 @@ MyTimelineAssistant.prototype.aboutToActivate = function(callback){
 
 
 MyTimelineAssistant.prototype.setup = function() {
-	Mojo.Log.error("SETUP")
+	Mojo.Log.error("SETUP");
 
 	var thisA = this;
 	
@@ -184,18 +184,25 @@ MyTimelineAssistant.prototype.setup = function() {
 	
 	
 	this.controller.setupWidget("my-timeline",
-        this.timeline_attributes = {
-            itemTemplate: 'timeline-entry',
-            listTemplate: 'timeline-container',
-            swipeToDelete: false,
-            reorderable: false,
-            hasNoWidgets: true
-        },
-        this.timeline_model = {
-            items : []
-        }
-    );
-	
+		this.timeline_attributes = {
+			itemTemplate: 'timeline-entry',
+			listTemplate: 'timeline-container',
+			emptyTemplate: 'timeline-container-empty',
+			swipeToDelete: false,
+			reorderable: false,
+			hasNoWidgets: true,
+			formatters: {
+				'data': function(value, model) {
+					return thisA.renderItem(value);
+				}
+			}
+
+		},
+		this.timeline_model = {
+			items : []
+		}
+	);
+
 	/*
 		all of the data goes here. this data is filtered and copied to 
 		this.timeline_model as appropriate
@@ -291,6 +298,7 @@ MyTimelineAssistant.prototype.cleanup = function(event) {
 };
 
 MyTimelineAssistant.prototype.handleTimelineTap = function(e) {
+	Mojo.Log.error('Triggering Mojo.Event.tap on '+e.item.id);
 	jQuery('#my-timeline [data-status-id="'+e.item.id+'"]').trigger(Mojo.Event.tap);
 };
 
@@ -306,13 +314,10 @@ MyTimelineAssistant.prototype.getEntryElementByStatusId = function(id) {
 MyTimelineAssistant.prototype.refresh = function(event) {
 	var thisA = this;
 
-	Mojo.Log.error('refresh()');
+	Mojo.Log.info('refresh()');
 
 	if (thisA.isTopmostScene()) {
-		// jQuery('#my-timeline div.timeline-entry.new').removeClass('new');
 		thisA.markAllAsRead();
-		thisA.updateRelativeTimes();
-
 	}
 
 	this.showInlineSpinner('activity-spinner-my-timeline', 'Loading…');
@@ -330,43 +335,45 @@ MyTimelineAssistant.prototype.refresh = function(event) {
 				},
 				function(data) {
 					
-					Mojo.Log.error('getCombinedTimeline success');
+					Mojo.Log.info('getCombinedTimeline success');
 					
 					var new_count = 0, new_mention_count = 0, new_dm_count = 0, previous_count = 0;
 
 					previous_count = thisA.master_timeline_model.items.length;
+					
+					if (sch.isArray(data)) {
+						data = data.reverse();
+						var no_dupes = [];
 
-					data = data.reverse();
-					var no_dupes = [];
+						for (var i=0; i < data.length; i++) {
 
-					for (var i=0; i < data.length; i++) {
+							/*
+							only add if it doesn't already exist
+							*/
+							if (!thisA.itemExistsInModel(data[i])) {
 
-						/*
-						only add if it doesn't already exist
-						*/
-						if (!thisA.itemExistsInModel(data[i])) {
+								App.Tweets.save(data[i]);
 
-							App.Tweets.save(data[i]);
+								data[i].text = Spaz.makeItemsClickable(data[i].text);
+								data[i].Spaz_is_new = true;
 
-							data[i].text = Spaz.makeItemsClickable(data[i].text);
+								no_dupes.push(data[i]);
 
-							no_dupes.push(data[i]);
+								new_count++;
 
-							new_count++;
-
-							if (data[i].SC_is_reply) {
-								new_mention_count++;
-							} else if (data[i].SC_is_dm) {
-								new_dm_count++;
+								if (data[i].SC_is_reply) {
+									new_mention_count++;
+								} else if (data[i].SC_is_dm) {
+									new_dm_count++;
+								}
 							}
+
 						}
 
+
+						thisA.addItems(no_dupes);
 					}
 
-
-					thisA.updateRelativeTimes();
-
-					thisA.addItems(no_dupes);
 
 					thisA.hideInlineSpinner('activity-spinner-my-timeline');
 
@@ -405,7 +412,7 @@ MyTimelineAssistant.prototype.refresh = function(event) {
 						}
 
 					} else {
-						sch.error("I am not showing a banner! in "+thisA.controller.sceneElement.id);
+						Mojo.Log.info("I am not showing a banner! in "+thisA.controller.sceneElement.id);
 					}
 
 				},
@@ -416,7 +423,6 @@ MyTimelineAssistant.prototype.refresh = function(event) {
 					/*
 					Update relative dates
 					*/
-					thisA.updateRelativeTimes();
 					thisA.hideInlineSpinner('activity-spinner-my-timeline');
 				}
 			);
@@ -450,8 +456,7 @@ MyTimelineAssistant.prototype.addItems = function(new_items) {
 	for (var i=0; i < new_items.length; i++) {
 		model_item = {
 			'id':new_items[i].id,
-			'data':sch.clone(new_items[i]),
-			'html':this.renderItem(new_items[i])
+			'data':sch.clone(new_items[i])
 		};
 		// add each item to the model
 		model_items.push(model_item);
@@ -500,30 +505,36 @@ MyTimelineAssistant.prototype.itemExistsInModel = function(obj) {
 
 	for (var i=0; i < this.master_timeline_model.items.length; i++) {
 		if (this.master_timeline_model.items[i].id == obj.id) {
-			sch.error(obj.id +' exists in model');
+			Mojo.Log.info(obj.id +' exists in model');
 			return true;
 		}
 	}
-	sch.error(obj.id +' does not exist in model');
+	Mojo.Log.info(obj.id +' does not exist in model');
 	return false;
 };
 
 /**
- * oh my god this is probably deadly for performance 
+ * loop through items in master_timeline_model and set Spaz_is_new = false, Spaz_is_read = true
  */
 MyTimelineAssistant.prototype.markAllAsRead = function() {
 	
+	// die early
+	// return;
+	
+	
 	Mojo.Log.error("markAllAsRead");
 	
+	Mojo.Timing.resume("timing_html_markAllAsRead");
+	
 	for (var i=0; i < this.master_timeline_model.items.length; i++) {
-		
-		var $new_element = jQuery(this.master_timeline_model.items[i].html);
-
-		if ($new_element.length>0) {
-			$new_element.removeClass('new');
-			this.master_timeline_model.items[i].html = $new_element[0].outerHTML;
-		}
+		this.master_timeline_model.items[i].data.Spaz_is_new = false;
+		this.master_timeline_model.items[i].data.Spaz_is_read = true;
 	}
+	
+	Mojo.Timing.pause("timing_html_markAllAsRead");
+	
+	Mojo.Log.error(Mojo.Timing.createTimingString("timing_html", "Updating HTML element times"));
+	
 	
 	this.filterTimeline(null);
 	// this.controller.modelChanged(this.timeline_model);
@@ -531,25 +542,13 @@ MyTimelineAssistant.prototype.markAllAsRead = function() {
 
 
 /**
- * oh my god this is probably deadly for performance 
+ * DEPRECATED 
  */
 MyTimelineAssistant.prototype.updateRelativeTimes = function() {
 	
-	Mojo.Log.error("updateRelativeTimes");
+	Mojo.Log.error("updateRelativeTimes deprecated");
 	
-	for (var i=0; i < this.master_timeline_model.items.length; i++) {
-		var $new_element = jQuery(this.master_timeline_model.items[i].html);
-
-		if ($new_element) {
-			var unixtime = $new_element.find('span.date').attr('data-created_at');
-			$new_element.find('span.date').html(sch.getRelativeTime(unixtime));
-			this.master_timeline_model.items[i].html = $new_element[0].outerHTML;
-		}
-
-	}
 	
-	this.filterTimeline(null);
-	// this.controller.modelChanged(this.timeline_model);
 };
 
 
@@ -568,11 +567,6 @@ MyTimelineAssistant.prototype.loadTimelineCache = function() {
 			thisA.twit.setLastId(SPAZCORE_SECTION_HOME, data[SPAZCORE_SECTION_HOME + '_lastid']);
 			thisA.twit.setLastId(SPAZCORE_SECTION_REPLIES, data[SPAZCORE_SECTION_REPLIES + '_lastid']);
 			thisA.twit.setLastId(SPAZCORE_SECTION_DMS,     data[SPAZCORE_SECTION_DMS     + '_lastid']);
-			
-			Mojo.Log.error("++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++");
-			Mojo.Log.error("current thisA.master_timeline_model.items: %j", thisA.master_timeline_model.items);
-			Mojo.Log.error("data['my_master_timeline_model_items']: %j", data['my_master_timeline_model_items']);
-			Mojo.Log.error("++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++");
 			
 			if (data['my_master_timeline_model_items']) {
 				thisA.master_timeline_model.items = data['my_master_timeline_model_items'];
@@ -609,9 +603,6 @@ MyTimelineAssistant.prototype.saveTimelineCache = function() {
 	Mojo.Timing.resume("timing_saveTimelineCache");
 	
 	
-	Mojo.Log.error('this.master_timeline_model: %j', this.master_timeline_model);
-	
-	
 	var twitdata = {};
 	twitdata['version']                         = this.cacheVersion || -1;
 	twitdata['my_master_timeline_model_items']  = this.master_timeline_model.items;
@@ -632,10 +623,6 @@ MyTimelineAssistant.prototype.saveTimelineCache = function() {
  * this filters and updates the model
  */
 MyTimelineAssistant.prototype.filterTimeline = function(command, scroll_to_top) {
-	
-	Mojo.Log.error('typeof this: "%s"', typeof(this));
-	Mojo.Log.error('this.timeline_model: %j', this.timeline_model);
-	Mojo.Log.error('this.master_timeline_model: %j', this.master_timeline_model);
 	
 	if (!command) {
 		if (this._filterState) {
@@ -670,8 +657,8 @@ MyTimelineAssistant.prototype.filterTimeline = function(command, scroll_to_top) 
 	// reset the timeline_model
 	this.timeline_model.items = [];
 
-	Mojo.Log.error('this.master_timeline_model.items length: %s', this.master_timeline_model.items.length);
-	Mojo.Log.error('this.timeline_model.items length: %s', this.timeline_model.items.length);
+	Mojo.Log.info('this.master_timeline_model.items length: %s', this.master_timeline_model.items.length);
+	Mojo.Log.info('this.timeline_model.items length: %s', this.timeline_model.items.length);
 
 
 	switch(command) {
@@ -708,8 +695,7 @@ MyTimelineAssistant.prototype.filterTimeline = function(command, scroll_to_top) 
 			break;
 	}
 	
-	Mojo.Log.error('this.master_timeline_model.items length: %s', this.master_timeline_model.items.length);
-	Mojo.Log.error('this.timeline_model.items length: %s', this.timeline_model.items.length);
+	Mojo.Log.info('this.timeline_model.items length: %s', this.timeline_model.items.length);
 	
 	this.controller.modelChanged(this.timeline_model);
 	
@@ -724,6 +710,6 @@ MyTimelineAssistant.prototype.filterTimeline = function(command, scroll_to_top) 
  * set the filterstate directly to be applied next time around 
  */
 MyTimelineAssistant.prototype.setFilterState = function(state) {
-    Mojo.Log.error('NEW FILTER STATE:'+state);
+    Mojo.Log.info('NEW FILTER STATE:'+state);
     this._filterState = state;
 };

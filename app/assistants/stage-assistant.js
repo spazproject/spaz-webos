@@ -375,7 +375,7 @@ StageAssistant.prototype.loadTemplates = function() {
 		}
 
 		html += '<div class="timeline-entry';
-		if (!d.not_new) {
+		if (d.Spaz_is_new) {
 			html += ' new';
 		}
 		if (d.SC_is_reply) {
@@ -407,7 +407,7 @@ StageAssistant.prototype.loadTemplates = function() {
 		var html = '';
 
 		html += '<div class="timeline-entry dm';
-		if (!d.from_cache) {
+		if (d.Spaz_is_new) {
 			html += ' new';
 		}
 		html += '" data-isdm="true" data-status-id="'+d.id+'" data-user-id="'+d.sender.id+'" data-user-screen_name="'+d.sender.screen_name+'" data-timestamp="'+d.SC_created_at_unixtime+'">'
