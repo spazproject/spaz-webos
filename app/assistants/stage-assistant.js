@@ -422,11 +422,9 @@ StageAssistant.prototype.loadTemplates = function() {
 		+ '	 	<div class="text">'
 		+ '			'+d.text+''
 		+ '		</div>'
-		+ '	</div>';
-		// html += '  <div class="entry-json" style="display:none">'+sch.enJSON(d)+'</div>';
-		html += '  <div class="entry-json" style="display:none"></div>'
+		+ '	</div>'
 		+ '</div>';
-
+		
 		return html;
 	});
 
