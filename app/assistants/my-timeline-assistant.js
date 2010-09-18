@@ -141,7 +141,8 @@ MyTimelineAssistant.prototype.setup = function() {
 			dividerTemplate:'startlogin/user-list-separator',
 			swipeToDelete: false,
 			autoconfirmDelete: false,
-			reorderable: false
+			reorderable: false,
+			
 		},
 		this.accountsModel = {
 			listTitle: $L('Accounts'),
@@ -196,7 +197,6 @@ MyTimelineAssistant.prototype.setup = function() {
 					return thisA.renderItem(value);
 				}
 			}
-
 		},
 		this.timeline_model = {
 			items : []
@@ -289,13 +289,6 @@ MyTimelineAssistant.prototype.cleanup = function(event) {
 	
 	// this.stopRefresher();
 };
-
-
-MyTimelineAssistant.prototype.getEntryElementByStatusId = function(id) {
-	var el = jQuery('#my-timeline div.timeline-entry[data-status-id='+id+']', this.scroller).get(0);
-	return el;
-};
-
 
 
 MyTimelineAssistant.prototype.refresh = function(event) {
@@ -452,7 +445,7 @@ MyTimelineAssistant.prototype.addItems = function(new_items) {
 	
 	// sort, in reverse
 	model_items.sort(function(a,b){
-		return b.id - a.id; // newest first
+		return b.data.SC_created_at_unixtime - a.data.SC_created_at_unixtime; // newest first
 	});
 	
 	// re-assign the cloned items back to the model object
@@ -526,18 +519,6 @@ MyTimelineAssistant.prototype.markAllAsRead = function() {
 	this.filterTimeline(null);
 	// this.controller.modelChanged(this.timeline_model);
 };
-
-
-/**
- * DEPRECATED 
- */
-MyTimelineAssistant.prototype.updateRelativeTimes = function() {
-	
-	Mojo.Log.error("updateRelativeTimes deprecated");
-	
-	
-};
-
 
 
 MyTimelineAssistant.prototype.loadTimelineCache = function() {
