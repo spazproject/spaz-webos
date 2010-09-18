@@ -803,59 +803,9 @@ PostAssistant.prototype.onReturnFromFilePicker = function() {
 PostAssistant.prototype.renderSuccessfulPost = function(event, data) {
 	this.setPostButtonLabel('Posted!');
 	
-	if (sch.isArray(data)) {
-		data = data[0];
-	}
-
-	data.text = Spaz.makeItemsClickable(data.text);
-	
-	/*
-		save this tweet to Depot
-	*/
-	App.Tweets.save(data);
-	
-	dump(data);
-
-	var itemhtml = App.tpl.parseTemplate('tweet', data);
-	
-
-
-	/*
-		prepend the rendered markup to the timeline, so it shows on top
-	*/
-	if (jQuery('#my-timeline').length == 1) {
-		jQuery('#my-timeline').prepend(itemhtml);
-	}
-		
-	
-
-
-	/*
-		remove extra items
-	*/
-	// sch.removeExtraElements('#my-timeline div.timeline-entry', App.prefs.get('timeline-maxentries'));
-	
-	sch.removeExtraElements('#my-timeline div.timeline-entry:not(.reply):not(.dm)', App.prefs.get('timeline-maxentries'));
-	sch.removeExtraElements('#my-timeline div.timeline-entry.reply', App.prefs.get('timeline-maxentries-reply'));
-	sch.removeExtraElements('#my-timeline div.timeline-entry.dm', App.prefs.get('timeline-maxentries-dm'));
-	
-
-	/*
-		Update relative dates
-	*/
-	sch.updateRelativeTimes('div.timeline-entry .meta>.date', 'data-created_at');
-	
-	/*
-		re-apply filtering
-	*/
-    // this.filterTimeline();
-	
-	// this.playAudioCue('send');
-	
 	this.deactivateSpinner();
 	
 	this.controller.stageController.popScene();
-
 };
 
 
