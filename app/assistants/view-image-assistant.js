@@ -218,7 +218,7 @@ ViewImageAssistant.prototype.setup = function() {
 
 ViewImageAssistant.prototype.handleWindowResize = function (event){
 	if (this.imageViewer && this.imageViewer.mojo) { // Makes sure there is an image viewer and that it is a setup widget
-		this.imageViewer.mojo.manualSize(this.controller.window.innerWidth,	this.controller.window.innerHeight); //Sets the new width and height of the imageViewer to the width and height of the full screen window
+		this.imageViewer.mojo.manualSize(this.controller.window.innerWidth, this.controller.window.innerHeight); //Sets the new width and height of the imageViewer to the width and height of the full screen window
 	}
 };
 
@@ -230,12 +230,14 @@ ViewImageAssistant.prototype.activate = function(event) {
 	this.controller.stageController.setWindowOrientation('free');
 	this.imageViewer.mojo.centerUrlProvided(this.url); //A url, path to a local image, etc.
 	this.imageViewer.mojo.manualSize(Mojo.Environment.DeviceInfo.screenWidth, Mojo.Environment.DeviceInfo.screenHeight); // Defaults to the full width and height
+	
 };
 
 ViewImageAssistant.prototype.deactivate = function(event) {
 	/* remove any event handlers you added in activate and do any other cleanup that should happen before
 	this scene is popped or another scene is pushed on top */
 	this.controller.stageController.setWindowOrientation('up'); // Not sure if it's needed, but doesn't hurt
+	
 };
 
 ViewImageAssistant.prototype.cleanup = function(event) {
