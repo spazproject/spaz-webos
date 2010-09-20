@@ -10,13 +10,15 @@ function MyTimelineAssistant(argFromPusher) {
 	   to the scene controller (this.controller) has not be established yet, so any initialization
 	   that needs the scene controller should be done in the setup function below. */
 	scene_helpers.addCommonSceneMethods(this);
+
+	var thisA = this;
 	
+
 	/*
 		this connects App to this property of the appAssistant
 	*/
 	App = Spaz.getAppObj();
 	
-	var thisA = this;
 	
 	sch.error('argFromPusher:'+argFromPusher);
 	if (argFromPusher && argFromPusher.filter) {
@@ -141,7 +143,7 @@ MyTimelineAssistant.prototype.setup = function() {
 			dividerTemplate:'startlogin/user-list-separator',
 			swipeToDelete: false,
 			autoconfirmDelete: false,
-			reorderable: false,
+			reorderable: false
 			
 		},
 		this.accountsModel = {
@@ -248,6 +250,8 @@ MyTimelineAssistant.prototype.activate = function(params) {
 
 MyTimelineAssistant.prototype.deactivate = function(event) {
 	
+	var thisA = this;
+	
 	Mojo.Log.error('DEACTIVATE');
 	
 	/* remove any event handlers you added in activate and do any other cleanup that should happen before
@@ -264,9 +268,9 @@ MyTimelineAssistant.prototype.deactivate = function(event) {
 	*/
 	sch.debug('saving timeline cache…');
 
-	if (!this.doNotSaveCacheOnDeactivate) {
-        this.saveTimelineCache();
-	}
+	// if (!this.doNotSaveCacheOnDeactivate) {
+	// 	this.saveTimelineCache();
+	// }
 	
 	
 };
@@ -451,6 +455,11 @@ MyTimelineAssistant.prototype.addItems = function(new_items) {
 	// re-assign the cloned items back to the model object
 	this.master_timeline_model.items = model_items;
 	
+	var thisA = this;	
+	setTimeout(function() {
+		thisA.saveTimelineCache();
+	}, 1000);
+	
 	// this filters and updates the model
 	this.filterTimeline(null);
 };
@@ -523,40 +532,27 @@ MyTimelineAssistant.prototype.markAllAsRead = function() {
 
 MyTimelineAssistant.prototype.loadTimelineCache = function() {
 	
-	sch.error('LOADTIMELINECACHE');
+	sch.error('LOADTIMELINECACHE MyTimelineAssistant');
 	
 	Mojo.Timing.resume("timing_loadTimelineCache");
-	var thisA = this;
-
-	this._loadTimelineCache = function() {
-		var data = TempCache.load('mytimelinecache');
-
-		if (data !== null) {
-			thisA.twit.setLastId(SPAZCORE_SECTION_HOME, data[SPAZCORE_SECTION_HOME + '_lastid']);
-			thisA.twit.setLastId(SPAZCORE_SECTION_REPLIES, data[SPAZCORE_SECTION_REPLIES + '_lastid']);
-			thisA.twit.setLastId(SPAZCORE_SECTION_DMS,     data[SPAZCORE_SECTION_DMS     + '_lastid']);
-			
-			if (data['my_master_timeline_model_items']) {
-				thisA.master_timeline_model.items = data['my_master_timeline_model_items'];
-			} else {
-				thisA.master_timeline_model.items = [];
-			}
-			
-			thisA.filterTimeline(null);
-			// thisA.controller.modelChanged(thisA.timeline_model);
-			
-		}
-		sch.unlisten(document, 'temp_cache_load_db_success', this._loadTimelineCache);
-	};
-
-	if (!TempCache.exists()) {
-		sch.dump('CACHE DOES NOT EXIST');
-		sch.listen(document, 'temp_cache_load_db_success', this._loadTimelineCache);
-		TempCache.loadFromDB();
-	} else {
-		this._loadTimelineCache();
-	}
 	
+	var data = App.cache.load('mytimelinecache');
+
+	if (data !== null) {
+		this.twit.setLastId(SPAZCORE_SECTION_HOME, data[SPAZCORE_SECTION_HOME + '_lastid']);
+		this.twit.setLastId(SPAZCORE_SECTION_REPLIES, data[SPAZCORE_SECTION_REPLIES + '_lastid']);
+		this.twit.setLastId(SPAZCORE_SECTION_DMS,     data[SPAZCORE_SECTION_DMS     + '_lastid']);
+		
+		if (data['my_master_timeline_model_items']) {
+			this.master_timeline_model.items = data['my_master_timeline_model_items'];
+		} else {
+			this.master_timeline_model.items = [];
+		}
+		
+		this.filterTimeline(null);
+		
+	}
+
 	Mojo.Timing.pause("timing_loadTimelineCache");
 	
 	Mojo.Log.error(Mojo.Timing.createTimingString("timing_", "Cache op times"));
@@ -571,16 +567,20 @@ MyTimelineAssistant.prototype.saveTimelineCache = function() {
 	Mojo.Timing.resume("timing_saveTimelineCache");
 	
 	
+	Mojo.Log.info('Length of master_timeline_model.items: '+this.master_timeline_model.items.length);
+	
 	var twitdata = {};
 	twitdata['version']                         = this.cacheVersion || -1;
-	twitdata['my_master_timeline_model_items']  = this.master_timeline_model.items;
+	twitdata['my_master_timeline_model_items']  = this.master_timeline_model.items.slice(0,300);
+	
+	Mojo.Log.info('Length of twitdata[\'my_master_timeline_model_items\']: '+twitdata['my_master_timeline_model_items'].length);
+	
 	twitdata[SPAZCORE_SECTION_HOME + '_lastid'] = this.twit.getLastId(SPAZCORE_SECTION_HOME);
 	twitdata[SPAZCORE_SECTION_REPLIES + '_lastid'] = this.twit.getLastId(SPAZCORE_SECTION_REPLIES);
 	twitdata[SPAZCORE_SECTION_DMS     + '_lastid'] = this.twit.getLastId(SPAZCORE_SECTION_DMS);
 
-	TempCache.save('mytimelinecache', twitdata);
+	App.cache.save('mytimelinecache', twitdata, App.userid);
 	
-	TempCache.saveToDB();
 	Mojo.Timing.pause('timing_saveTimelineCache');
 	
 	Mojo.Log.error(Mojo.Timing.createTimingString("timing_", "Cache op times"));

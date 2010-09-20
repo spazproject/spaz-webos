@@ -190,7 +190,7 @@ scene_helpers.addCommonSceneMethods = function(assistant) {
 					This would refresh the current view
 				*/
 				case 'refresh':
-					this.refresh(); // need to have a "refresh" method defined for each scene asst
+					this.refresh(event, 'refresh'); // need to have a "refresh" method defined for each scene asst
 					break;
 				
 				/*
@@ -1056,7 +1056,7 @@ scene_helpers.addCommonSceneMethods = function(assistant) {
 
 	
 	assistant.clearTimelineCache = function(callback) {
-		this.cacheDepot = TempCache.clear();
+		this.cacheDepot = App.cache.clear();
 		App.Tweets.reset();
 		this.showAlert($L('Message cache cleared', 'Cache Cleared'));
 	};

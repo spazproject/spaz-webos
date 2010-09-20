@@ -198,147 +198,6 @@ AppAssistant.prototype.loadAccount = function(account_id) {
 };
 
 
-AppAssistant.prototype.handleLaunch = function(launchParams) {
-	
-	var cardStageProxy = this.controller.getStageProxy(SPAZ_MAIN_STAGENAME);
-	var cardStageController = this.controller.getStageController(SPAZ_MAIN_STAGENAME);
-	Mojo.Log.error('cardStageController:');
-	Mojo.Log.error(cardStageController);
-	var appController = Mojo.Controller.getAppController();
-	var dashboardStage = this.controller.getStageProxy(SPAZ_DASHBOARD_STAGENAME);
-	
-	Mojo.Log.info("Logging from AppAssistant handleLaunch");
-
-	Mojo.Log.info("Launch Parameters: %j", launchParams);
-	
-	Spaz.closeDashboard();
-	
-	
-
-	// /**
-	//  * opens the main app stage. embedded here for closure's sake
-	//  */
-	// var that = this;
-	// function openMainStage() {
-	// 	// this.App.bgnotifier.stop();
-	// 	if (!cardStageController) {
-	// 		
-	// 		that.initialize();
-	// 		
-	// 		Mojo.Log.error('NO CARDSTAGECONTROLLER EXISTS');
-	// 		Mojo.Log.error('FIRSTLOAD ----------------------');
-	// 		var pushStart = function(stageController) {
-	// 			that.mapObjectsToNewStage(stageController);
-	// 			that.gotoMyTimeline(stageController);
-	// 		};
-	// 		var stageArguments = {
-	// 			"name": SPAZ_MAIN_STAGENAME,
-	// 			"assistantName":"StageAssistant"
-	// 		};
-	// 		Mojo.Log.error('Creating stage');
-	// 		that.controller.createStageWithCallback(stageArguments, pushStart.bind(that), "card");
-	// 		
-	// 	} else {
-	// 		Mojo.Log.error("cardStageController Exists -----------------------");
-	// 		if (!window.sc) {
-	// 			that.mapObjectsToNewStage(cardStageController);
-	// 		}
-	// 		Mojo.Log.error('Focusing stage controller window');
-	// 		cardStageController.window.focus();
-	// 	}
-	// }
-
-	/*
-		if there are no launchparams, open the main stage as normal
-	*/
-	if (!launchParams) {
-		Mojo.Log.info('No launchParams - OPENING MAIN STAGE');
-		// openMainStage();
-	}
-	
-	if (launchParams) {
-		Mojo.Log.info("launchParams: %j", launchParams);
-		
-		/*
-			for compatibility with Bad Kitty and Twee APIs
-		*/
-		if (launchParams.tweet) {
-			launchParams.action = 'prepPost';
-			launchParams.msg = launchParams.tweet;
-		}
-		
-		switch(launchParams.action) {
-			
-			case 'prepPost':
-				
-				// 'account': DEFAULT is last used
-				// 'msg':
-				// 'irt':
-				break;
-			
-			case 'searchUsers':
-				break;
-				
-			case 'searchStatuses':
-				
-				break;
-				
-			case 'searchMessages':
-				
-				break;
-				
-			case 'user':
-				
-				// load a particular Twitter user profile
-				// param service:twitter|identica
-				
-				break;
-			
-			case 'post':
-				/*
-					this is NYI
-				*/
-				if (launchParams.actionopts) {
-					var msg = launchParams.actionopts.msg || '';
-					var irt = launchParams.actionopts.irt || -1;
-				}
-				// make the user choose an account to post from, and then
-				// do something here to open a posting window with a prefilled form
-								
-				break;
-			case 'bgcheck': 
-				
-				/*
-					right now bgchecking is buggy. the pref should always
-					be false, unless the user hacks their prefs up
-				*/
-				if (this.App.prefs.get('bgnotify-enabled')) {
-					Mojo.Log.error('RUNNING BG CHECK');
-					that.initialize();
-					this.App.bgnotifier.start();
-					break;
-				} // else we drop through to default
-				
-			default:
-				Mojo.Log.error('default action - OPENING MAIN STAGE');
-				openMainStage();
-		}
-		
-		if (launchParams.fromstage) {
-			Mojo.Log.error("fromstage:", launchParams.fromstage);
-			if (launchParams.fromstage === SPAZ_MAIN_STAGENAME) {
-				PalmSystem.activate();
-			} else {
-				var stageController = this.controller.getStageController(launchParams.fromstage);
-				if (stageController) {
-					stageController.window.focus();
-				}			
-			}
-		}
-	}
-};
-
-
 /**
  * @param {object} launchParams launch parameters passed to app
  * @param {string} launchParams.action the action to take. (prepPost|user|search|status)
@@ -352,102 +211,112 @@ AppAssistant.prototype.handleLaunch = function(launchParams) {
 AppAssistant.prototype.handleLaunch = function(launchParams) {
 	var appAssistant = this;
 	
-	var mainStageController = Mojo.Controller.getAppController().getStageController(SPAZ_MAIN_STAGENAME);
-	
-	Mojo.Log.info("Launch Parameters: %j", launchParams);
-
 	/*
-		for compatibility with Bad Kitty and Twee APIs
+		load up the timelineCache before going further
 	*/
-	if (launchParams.tweet) {
-		launchParams.action = 'prepPost';
-		launchParams.msg = launchParams.tweet;
-	}
-	if (launchParams.user) {
-		launchParams.action = 'user';
-		launchParams.userid = launchParams.user;
-	}
+	appAssistant.loadTimelineCache(function(e) {
 	
-	var stageCallback = function(stageController) {
-		Mojo.Log.error('RUNNING stageCallback');
-		
-		switch(launchParams.action) {
-			
-			/**
-			 * {
-			 *   action:"prepPost",
-			 *   msg:"Some Text",
-			 *   account:"ACCOUNT_HASH" // optional
-			 * }
-			 */
-			case 'prepPost':
-			case 'post':
-				appAssistant.loadAccount(launchParams.account||null);
-				stageController.pushScene('post', {
-					'text':launchParams.msg
-				});
-				break;
+		var mainStageController = Mojo.Controller.getAppController().getStageController(SPAZ_MAIN_STAGENAME);
 
-			/**
-			 * {
-			 *   action:"user",
-			 *   userid:"funkatron"
-			 * }
-			 */
-			case 'user':
-				// appAssistant.loadAccount(launchParams.account||null);
-				stageController.pushScene('user-detail', '@'+launchParams.userid);
-				break;
-			
-			/**
-			 * {
-			 *   action:"search",
-			 *   query:"spaz source:spaz"
-			 * }
-			 */			
-			case 'search':
-				stageController.pushScene('search-twitter', {
-					'searchterm':launchParams.query
-				});
-				break;
+		Mojo.Log.info("Launch Parameters: %j", launchParams);
 
-			/**
-			 * {
-			 *   action:"status",
-			 *   userid:24426249322
-			 * }
-			 */
-			case 'status':
-				stageController.pushScene('message-detail', launchParams.statusid);
-				break;
-				
-			
-			default:
-				stageController.pushScene('start', launchParams.query);
-				break;
-			
+		/*
+			for compatibility with Bad Kitty and Twee APIs
+		*/
+		if (launchParams.tweet) {
+			launchParams.action = 'prepPost';
+			launchParams.msg = launchParams.tweet;
 		}
-	};
+		if (launchParams.user) {
+			launchParams.action = 'user';
+			launchParams.userid = launchParams.user;
+		}
+
+		var stageCallback = function(stageController) {
+			Mojo.Log.error('RUNNING stageCallback');
+
+			switch(launchParams.action) {
+
+				/**
+				 * {
+				 *   action:"prepPost",
+				 *   msg:"Some Text",
+				 *   account:"ACCOUNT_HASH" // optional
+				 * }
+				 */
+				case 'prepPost':
+				case 'post':
+					appAssistant.loadAccount(launchParams.account||null);
+					stageController.pushScene('post', {
+						'text':launchParams.msg
+					});
+					break;
+
+				/**
+				 * {
+				 *   action:"user",
+				 *   userid:"funkatron"
+				 * }
+				 */
+				case 'user':
+					// appAssistant.loadAccount(launchParams.account||null);
+					stageController.pushScene('user-detail', '@'+launchParams.userid);
+					break;
+
+				/**
+				 * {
+				 *   action:"search",
+				 *   query:"spaz source:spaz"
+				 * }
+				 */			
+				case 'search':
+					stageController.pushScene('search-twitter', {
+						'searchterm':launchParams.query
+					});
+					break;
+
+				/**
+				 * {
+				 *   action:"status",
+				 *   userid:24426249322
+				 * }
+				 */
+				case 'status':
+					stageController.pushScene('message-detail', launchParams.statusid);
+					break;
+
+
+				default:
+					Mojo.Log.error('default handleLaunch action');
+					stageController.pushScene('start', launchParams.query);
+
+					break;
+
+			}
+		};
+
+
+		/*
+			we go ahead and re-activate the existing stage, or make a new main stage
+		*/
+		if (mainStageController) {
+			if (mainStageController.topScene() && mainStageController.topScene().sceneName == "start")
+				stageCallback(mainStageController);
+			else
+				phonebookStageController.window.focus(); 
+		} else {
+			Mojo.Controller.getAppController()
+				.createStageWithCallback(
+					{
+						name: SPAZ_MAIN_STAGENAME,
+						assistantName:SPAZ_STAGEASSISTANTNAME
+					},
+					stageCallback
+				);
+		}
+	});
 	
-	
-	/*
-		we go ahead and re-activate the existing stage, or make a new main stage
-	*/
-	if (mainStageController) {
-		if (mainStageController.topScene() && mainStageController.topScene().sceneName == "start")
-			stageCallback(mainStageController);
-		else
-			phonebookStageController.window.focus(); 
-	} else {
-		Mojo.Controller.getAppController()
-			.createStageWithCallback(
-				{
-					name: SPAZ_MAIN_STAGENAME,
-					assistantName:SPAZ_STAGEASSISTANTNAME
-				},
-				stageCallback
-			);
-	}
+
 };
 
 
@@ -523,3 +392,33 @@ AppAssistant.prototype.mapObjectsToNewStage = function(stageController) {
 
 
 
+
+AppAssistant.prototype.loadTimelineCache = function(onLoad) {
+	
+	if (!this.App.cache) {
+		this.App.cache = new TempCache({
+			'appObj':this.App
+		});
+	}
+	
+	Mojo.Log.error('LOADTIMELINECACHE');
+	
+	Mojo.Timing.resume("timing_loadTimelineCache");
+	var thisA = this;
+
+	function _onLoad(e) {
+		if (onLoad) {
+			onLoad(e);
+		}
+		Mojo.Timing.pause("timing_loadTimelineCache");
+		
+		Mojo.Log.error(Mojo.Timing.createTimingString("timing_", "Cache op times"));
+	}
+
+	if (!this.App.cache.exists()) {
+		Mojo.Log.error('CACHE DOES NOT EXIST in AppAssistant');
+		this.App.cache.loadFromDB(_onLoad);
+	} else {
+		_onLoad();
+	}	
+};
