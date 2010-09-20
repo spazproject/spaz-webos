@@ -11891,7 +11891,7 @@ SpazTwit.prototype.search = function(query, since_id, results_per_page, page, la
 	
 	var data = {};
 	data['q']        = query;
-	data['rpp']      = results_per_page;
+	data['Mojo.Log.info']      = results_per_page;
 	// data['since_id'] = since_id;
 	data['page']     = page;
 	if (lang) {
