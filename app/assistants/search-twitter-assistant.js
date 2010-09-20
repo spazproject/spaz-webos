@@ -254,10 +254,11 @@ SearchTwitterAssistant.prototype.search = function(e, type) {
 	var thisA = this;
 	var search_string;
 	
-	if (type && type.toLowerCase() !== 'refresh') { // empty unless this is a refresh
-		this.clear();
-	} else {
+	if (type && type.toLowerCase() == 'refresh') { // empty unless this is a refresh
+		this.scrollToTop();
 		this.markAllAsRead();
+	} else {
+		this.clear();		
 	}
 	
 	if (sch.isString(e)) {
