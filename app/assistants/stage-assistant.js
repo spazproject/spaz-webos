@@ -40,7 +40,7 @@ StageAssistant.prototype.setup = function() {
 StageAssistant.prototype.cleanup = function() {
 	
 	Mojo.Log.info("StageAssistant cleanup");
-	
+
 	var sc = null;
 	
 	/*
@@ -127,6 +127,8 @@ StageAssistant.prototype.gotoMyTimeline = function(stageController) {
 		}
 
 };
+
+
 
 
 StageAssistant.prototype.loadTemplates = function() {
