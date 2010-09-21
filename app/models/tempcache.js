@@ -195,9 +195,16 @@ TempCache.prototype.loadFromDB = function(onLoad, idkey) {
 TempCache.prototype.clear = function() {
     Mojo.Timing.resume("timing_TempCache.clear");
 	this.init();
+	
+	var SpazTempCache = openDatabase("ext:SpazTempCache", "1", 'SpazTempCache', 10*1024*1024);
 	SpazTempCache.transaction( (function (tx) { 
 	   tx.executeSql("DELETE FROM tempcache", []);
 	}));
-	sch.trigger('temp_cache_cleared', document);
+	
+	var appController = Mojo.Controller.getAppController();
+	
+	Mojo.Log.error('triggering temp_cache_cleared');
+	appController.sendToNotificationChain({"event":"temp_cache_cleared"});
+	
 	Mojo.Timing.pause("timing_TempCache.clear");
 };

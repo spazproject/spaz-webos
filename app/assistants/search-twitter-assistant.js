@@ -163,7 +163,8 @@ SearchTwitterAssistant.prototype.setup = function() {
 		this.timeline_model = {
 			items : []
 		}
-	);
+	);	
+	this.timeline_list = this.controller.get('search-timeline');
 
 
 	// this.refresh();

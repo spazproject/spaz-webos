@@ -204,7 +204,8 @@ MyTimelineAssistant.prototype.setup = function() {
 			items : []
 		}
 	);
-
+	this.timeline_list = this.controller.get('my-timeline');
+	
 	/*
 		all of the data goes here. this data is filtered and copied to 
 		this.timeline_model as appropriate
@@ -215,7 +216,6 @@ MyTimelineAssistant.prototype.setup = function() {
 	
 	this.loadTimelineCache();
 	
-	sch.listen(document, 'temp_cache_cleared', this.resetTwitState);	
 };
 
 
@@ -288,11 +288,19 @@ MyTimelineAssistant.prototype.cleanup = function(event) {
 
 	this.stopTrackingStageActiveState();
 	
-	sch.unlisten(document, 'temp_cache_cleared', this.resetTwitState);
-	
-	
 	// this.stopRefresher();
 };
+
+
+MyTimelineAssistant.prototype.considerForNotification = function(params){   
+	Mojo.Log.info('NOTIFICATION RECEIVED:%j', params);
+	
+	if (params && (params.event == "temp_cache_cleared")) {
+		this.resetTwitState();
+	}   
+	return undefined;   
+};
+
 
 
 MyTimelineAssistant.prototype.refresh = function(event) {
@@ -361,25 +369,6 @@ MyTimelineAssistant.prototype.refresh = function(event) {
 
 					thisA.hideInlineSpinner('activity-spinner-my-timeline');
 
-
-					/*
-					Scroll to the first new if there are new messages
-					and there were already some items in the timeline
-					*/
-					if (new_count > 0) {
-
-						// thisA.playAudioCue('newmsg');
-
-						if (previous_count > 0) {
-							if (App.prefs.get('timeline-scrollonupdate')) {
-								if (thisA.isTopmostScene()) {
-									sch.dump("Scrolling to New because previous_count > 0 (it wasn't empty before we added new stuff)");
-									thisA.scrollToNew();
-								}
-							}
-						}
-					}
-
 					/*
 					if we're not fullscreen, show a dashboard notification of new count(s)
 					*/
@@ -444,7 +433,6 @@ MyTimelineAssistant.prototype.addItems = function(new_items) {
 		};
 		// add each item to the model
 		model_items.push(model_item);
-		
 	}
 	
 	// sort, in reverse
@@ -461,7 +449,7 @@ MyTimelineAssistant.prototype.addItems = function(new_items) {
 	}, 1000);
 	
 	// this filters and updates the model
-	this.filterTimeline(null);
+	this.filterTimeline(null, false, true);
 };
 
 
@@ -525,7 +513,7 @@ MyTimelineAssistant.prototype.markAllAsRead = function() {
 	Mojo.Log.error(Mojo.Timing.createTimingString("timing_html", "Updating HTML element times"));
 	
 	
-	this.filterTimeline(null);
+	this.filterTimeline(null, false, false);
 	// this.controller.modelChanged(this.timeline_model);
 };
 
@@ -549,7 +537,7 @@ MyTimelineAssistant.prototype.loadTimelineCache = function() {
 			this.master_timeline_model.items = [];
 		}
 		
-		this.filterTimeline(null);
+		this.filterTimeline(null, true, false);
 		
 	}
 
@@ -566,12 +554,42 @@ MyTimelineAssistant.prototype.saveTimelineCache = function() {
 	
 	Mojo.Timing.resume("timing_saveTimelineCache");
 	
+	var cached_items = [];
+	
+	/*
+		generate current counts, and create array to cache
+	*/
+	var num_dms = 0, num_replies = 0, num_statuses = 0;
+	var max_dms = App.prefs.get('timeline-cache-maxentries-dm');
+	var max_replies = App.prefs.get('timeline-cache-maxentries-reply');
+	var max_statuses = App.prefs.get('timeline-cache-maxentries');
+	for (var i=0; i < this.master_timeline_model.items.length; i++) {
+		if (this.master_timeline_model.items[i].data.SC_is_dm) {
+			num_dms++;
+			if (num_dms <= max_dms) {
+				cached_items.push(this.master_timeline_model.items[i]);
+			}
+		} else if (this.master_timeline_model.items[i].data.SC_is_reply) {
+			num_replies++;
+			if (num_replies <= max_replies) {
+				cached_items.push(this.master_timeline_model.items[i]);
+			}			
+		} else {
+			num_statuses++;
+			if (num_statuses <= max_statuses) {
+				cached_items.push(this.master_timeline_model.items[i]);
+			}
+		}
+	}
+	
+	
+	Mojo.Log.info('Counts: DMs %s, Replies %s, Statuses %s', num_dms, num_replies, num_statuses);
 	
 	Mojo.Log.info('Length of master_timeline_model.items: '+this.master_timeline_model.items.length);
 	
 	var twitdata = {};
 	twitdata['version']                         = this.cacheVersion || -1;
-	twitdata['my_master_timeline_model_items']  = this.master_timeline_model.items.slice(0,300);
+	twitdata['my_master_timeline_model_items']  = cached_items;
 	
 	Mojo.Log.info('Length of twitdata[\'my_master_timeline_model_items\']: '+twitdata['my_master_timeline_model_items'].length);
 	
@@ -590,7 +608,7 @@ MyTimelineAssistant.prototype.saveTimelineCache = function() {
 /**
  * this filters and updates the model
  */
-MyTimelineAssistant.prototype.filterTimeline = function(command, scroll_to_top) {
+MyTimelineAssistant.prototype.filterTimeline = function(command, scroll_to_top, scroll_to_new) {
 	
 	if (!command) {
 		if (this._filterState) {
@@ -666,12 +684,21 @@ MyTimelineAssistant.prototype.filterTimeline = function(command, scroll_to_top) 
 	Mojo.Log.info('this.timeline_model.items length: %s', this.timeline_model.items.length);
 	
 	this.controller.modelChanged(this.timeline_model);
+
+	this.setFilterState(command);
 	
 	if (scroll_to_top) {
 		this.scrollToTop();
 	}
 	
-	this.setFilterState(command);
+
+	
+	if (App.prefs.get('timeline-scrollonupdate') && scroll_to_new) {
+		if (this.isTopmostScene()) {
+			this.scrollToNew();
+		}
+	}
+	
 };
 
 /**

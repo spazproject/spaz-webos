@@ -229,14 +229,36 @@ scene_helpers.addCommonSceneMethods = function(assistant) {
 	 *  
 	 */
 	assistant.scrollToBottom = function() {
-		Mojo.Log.error('scrollToBottom needs to be rewritten');
+		this.scroller.mojo.revealBottom();
 	};
 	
 	/**
 	 *  
 	 */
 	assistant.scrollToNew = function() {
-		Mojo.Log.error('scrollToNew needs to be rewritten');
+		
+		var firstnew = -1;
+		if (this.timeline_model && this.timeline_model.items && this.timeline_list) {
+			
+			for (var i=0; i < this.timeline_model.items.length; i++) {
+				if (this.timeline_model.items[i].data.Spaz_is_new === true) {
+					firstnew = i;
+				}
+			}
+			
+			if (firstnew >= 0 && (firstnew < this.timeline_model.items.length-1) ) {
+				Mojo.Log.error('Revealing item:' + firstnew);
+				this.timeline_list.mojo.revealItem(firstnew, true);
+			} else {
+				Mojo.Log.error('Not scrolling');
+			}
+			
+		} else {
+			Mojo.Log.error('Cannot scroll to new -- this.timeline_model not defined!');
+			Mojo.Log.error('this.timeline_model: %j', this.timeline_model);
+			Mojo.Log.error('this.timeline_list: %j', this.timeline_list);
+		}
+		
 	};
 
 

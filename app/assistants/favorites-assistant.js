@@ -84,7 +84,7 @@ FavoritesAssistant.prototype.setup = function() {
             items : []
         }
     );
-
+	this.timeline_list = this.controller.get('favorites-timeline');
 };
 
 FavoritesAssistant.prototype.activate = function(event) {
