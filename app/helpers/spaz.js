@@ -19,6 +19,13 @@ Spaz.getAppObj = function() {
 };
 
 
+Spaz.getActiveSceneAssistant = function() {
+	var appC = Mojo.Controller.getAppController();
+	var stageC = appC.getActiveStageController();
+	return stageC.activeScene().assistant;
+};
+
+
 /**
  * This helper looks through the array of scenes and looks for an existing instance of 
  * the given targetScene. If one exists, we pop all scenes before it to return to it. Otherwise
