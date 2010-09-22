@@ -278,7 +278,7 @@ AppAssistant.prototype.handleLaunch = function(launchParams) {
 				/**
 				 * {
 				 *   action:"status",
-				 *   userid:24426249322
+				 *   statusid:24426249322
 				 * }
 				 */
 				case 'status':
@@ -287,9 +287,13 @@ AppAssistant.prototype.handleLaunch = function(launchParams) {
 
 
 				default:
-					Mojo.Log.error('default handleLaunch action');
-					stageController.pushScene('start', launchParams.query);
-
+					Mojo.Log.info('default handleLaunch action');
+					
+					if (App.prefs.get('always-go-to-my-timeline')) {
+							this.controller.pushScene('my-timeline');
+					} else {
+						this.controller.pushScene('start');
+					}
 					break;
 
 			}
