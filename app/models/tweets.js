@@ -164,9 +164,14 @@ Tweets.prototype.getUser = function(id, onSuccess, onFailure) {
 			that.getRemoteUser(
 				id,
 				function(data) {
-					sch.debug('saving remotely retrieved user');
-					that.saveUser(data);
-					onSuccess(data);
+					if (!data) {
+						Mojo.Log.error('Success, but no result returned');
+						Spaz.getActiveSceneAssistant().showAlert($L('No response from server'), $L('Error'));
+					} else {
+						sch.debug('saving remotely retrieved user');
+						that.saveUser(data);
+						onSuccess(data);					
+					}
 				},
 				onFailure
 			);
