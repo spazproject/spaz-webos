@@ -244,10 +244,10 @@ StageAssistant.prototype.loadTemplates = function() {
 			html += '	<div id="message-detail-actions">'
 			+ '		<div class="spaz-button-group">'
 			+ '			<div class="palm-group palm-group-spaz">'
-			+ '				<div class="palm-group-title" id="search-toggle" x-mojo-loc="">Actions</div>'
+			+ '				<div class="palm-group-title" id="search-toggle" x-mojo-loc="">'+$L('Actions')+'</div>'
 			+ '				<div class="palm-list">'
 			+ '					<div class="palm-row single">'
-			+ '						<button class="palm-button" id="message-detail-action-dm" data-screen_name="'+d.sender.screen_name+'">Direct message this user</button>'
+			+ '						<button class="palm-button" id="message-detail-action-dm" data-screen_name="'+d.sender.screen_name+'">'+$L('Direct message user')+'</button>'
 			+ '					</div>'
 			+ '					<div class="palm-row single">'
 			+ '						<button class="palm-button" id="message-detail-action-delete" data-status-id="'+d.id+'">Delete</button>'
@@ -299,7 +299,7 @@ StageAssistant.prototype.loadTemplates = function() {
 			html += '   	 <div><a class="user-location" href="http://maps.google.com/?q=' +encodeURIComponent(d.location)+ '" title="View this location on a map">'+d.location+'</a></div>';
 		}
 		if (d.url) {
-			html += '		<div><a class="user-homepage" href="'+d.url+'" title="Open user\'s homepage">Homepage</a></div>';
+			html += '		<div><a class="user-homepage" href="'+d.url+'" title="Open user\'s homepage">'+$L('Homepage')+'</a></div>';
 		}
 		// if (d.protected) {
 		// 	html += '		<div class="protected-icon">Protected user</div>';
@@ -334,28 +334,21 @@ StageAssistant.prototype.loadTemplates = function() {
 		+ '					<div class="palm-group-title" id="search-toggle" x-mojo-loc="">Actions</div>'
 		+ '					<div class="palm-list">'
 		+ '						<div class="palm-row single">'
-		+ '							<button id="search-user" class="palm-button" data-screen_name="'+d.screen_name+'">Search for user</button>'
+		+ '							<button id="search-user" class="palm-button" data-screen_name="'+d.screen_name+'">'+$L('Search for user')+'</button>'
 		+ '						</div>';
 		if (App.username) {
 			html += '						<div class="palm-row single">'
-			+ '							<button id="reply-to-user" class="palm-button" data-screen_name="'+d.screen_name+'">@reply to user</button>'
+			+ '							<button id="reply-to-user" class="palm-button" data-screen_name="'+d.screen_name+'">'+$L('@mention user')+'</button>'
 			+ '						</div>'
 			+ '						<div class="palm-row single">'
-			+ '							<button id="dm-user" class="palm-button" data-screen_name="'+d.screen_name+'">Send direct message to user</button>'
+			+ '							<button id="dm-user" class="palm-button" data-screen_name="'+d.screen_name+'">'+$L('Direct message user')+'</button>'
+			+ '						</div>'
+			+ '						<div class="palm-row single" id="follow-user-row" style="display:none">'
+			+ '							<button id="follow-user" class="palm-button" data-screen_name="'+d.screen_name+'" data-following="false">'+$L('Follow')+'</button>'
 			+ '						</div>';
-			if (d.following) {
-				html += '						<div class="palm-row single">'
-				+ '							<button id="follow-user" class="palm-button" data-screen_name="'+d.screen_name+'" data-following="true">Stop following user</button>'
-				+ '						</div>';
 
-			} else {
-				html += '						<div class="palm-row single">'
-				+ '							<button id="follow-user" class="palm-button" data-screen_name="'+d.screen_name+'" data-following="false">Follow user</button>'
-				+ '						</div>';
-
-			}
 			html += '						<div class="palm-row single">'
-			+ '							<button id="block-user" class="palm-button" data-screen_name="'+d.screen_name+'" data-blocked="false">Block user</button>'
+			+ '							<button id="block-user" class="palm-button" data-screen_name="'+d.screen_name+'" data-blocked="false">'+$L('Block')+'</button>'
 			+ '						</div>';
 		};
 		html += '					</div>'
