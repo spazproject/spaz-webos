@@ -1080,7 +1080,7 @@ scene_helpers.addCommonSceneMethods = function(assistant) {
 	assistant.clearTimelineCache = function(callback) {
 		this.cacheDepot = App.cache.clear();
 		App.Tweets.reset();
-		this.showAlert($L('Message cache cleared', 'Cache Cleared'));
+		this.showAlert($L('Boom'), $L('Cache Cleared'));
 	};
 	
 	
