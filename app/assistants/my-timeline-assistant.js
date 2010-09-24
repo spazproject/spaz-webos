@@ -36,11 +36,13 @@ function MyTimelineAssistant(argFromPusher) {
 		// this.filterTimeline(null, true);
     }
 
-	this.cacheVersion = 3;  // we increment this when we change how the cache works
+	if (argFromPusher && argFromPusher.mark_cache_as_read === false) {
+		this.markCacheAsRead = false;
+	} else {
+		this.markCacheAsRead = true;
+	}
 	
-	
-	this.cacheDepot = makeCacheDepot(false);
-	
+	this.cacheVersion = 3;  // we increment this when we change how the cache works	
 	
 	/**
 	 * empties the timeline and resets the lastids in the twit object
@@ -50,7 +52,7 @@ function MyTimelineAssistant(argFromPusher) {
 	 * we define this here to get the closure thisA
 	 */
 	this.resetTwitState = function() {
-		thisA.master_timeline_model.items = [];
+		App.master_timeline_model.items = [];
 		thisA.timeline_model.items = [];
 		thisA.controller.modelChanged(thisA.timeline_model);
 		thisA.twit.setLastId(SPAZCORE_SECTION_HOME, 0);
@@ -210,11 +212,11 @@ MyTimelineAssistant.prototype.setup = function() {
 		all of the data goes here. this data is filtered and copied to 
 		this.timeline_model as appropriate
 	*/
-	this.master_timeline_model = {
+	App.master_timeline_model = {
 		'items':[]
 	};
 	
-	this.loadTimelineCache();
+	
 	
 };
 
@@ -225,26 +227,37 @@ MyTimelineAssistant.prototype.activate = function(params) {
 	Mojo.Log.error('ACTIVATE');
 	
 	var thisA = this; // for closures
-
-
-	var tts = App.prefs.get('timeline-text-size');
-	this.setTimelineTextSize('#my-timeline', tts);
+    
+    this.showInlineSpinner('activity-spinner-my-timeline', 'Loading cache…');
+    
+    this.getAppAssistant().loadTimelineCache(function(e) {
+        
+        thisA.loadTimelineCache();
+        
+        thisA.hideInlineSpinner('activity-spinner-my-timeline');
+        
+    	var tts = App.prefs.get('timeline-text-size');
+    	thisA.setTimelineTextSize('#my-timeline', tts);
 	
-	this.activateStarted = true;
+    	thisA.activateStarted = true;
 
-	/*
-		Prepare for timeline entry taps
-	*/
-	this.bindTimelineEntryTaps('my-timeline');
+    	/*
+    		Prepare for timeline entry taps
+    	*/
+    	thisA.bindTimelineEntryTaps('my-timeline');
 	
 
-	/*
-		start the mytimeline 
-	*/
-	if (this.refreshOnActivate || (params && params.refresh === true)) {
-		this.refresh();
-		this.refreshOnActivate = false;
-	}
+    	/*
+    		start the mytimeline 
+    	*/
+    	if (thisA.refreshOnActivate || (params && params.refresh === true)) {
+    		thisA.refresh(thisA.markCacheAsRead);
+    		thisA.refreshOnActivate = false;
+			thisA.markCacheAsRead = true;
+    	}
+
+    });
+
 };
 
 
@@ -294,21 +307,35 @@ MyTimelineAssistant.prototype.cleanup = function(event) {
 
 MyTimelineAssistant.prototype.considerForNotification = function(params){   
 	Mojo.Log.info('NOTIFICATION RECEIVED:%j', params);
+
+	if (params) {
+	    switch(params.event) {
+
+            case "temp_cache_cleared":
+                this.resetTwitState();
+                break;
+
+    	    case "refresh":
+    	        this.refresh(this.markCacheAsRead);
+    	        break;
+    	}
+	}
 	
-	if (params && (params.event == "temp_cache_cleared")) {
-		this.resetTwitState();
-	}   
-	return undefined;   
+	return;   
 };
 
 
 
-MyTimelineAssistant.prototype.refresh = function(event) {
+MyTimelineAssistant.prototype.refresh = function(mark_as_read) {
 	var thisA = this;
 
 	Mojo.Log.info('refresh()');
 
-	if (thisA.isTopmostScene()) {
+	if (mark_as_read !== false) {
+		mark_as_read = true;
+	}
+
+	if (thisA.isTopmostScene() && mark_as_read) {
 		thisA.markAllAsRead();
 	}
 
@@ -331,7 +358,7 @@ MyTimelineAssistant.prototype.refresh = function(event) {
 					
 					var new_count = 0, new_mention_count = 0, new_dm_count = 0, previous_count = 0;
 
-					previous_count = thisA.master_timeline_model.items.length;
+					previous_count = App.master_timeline_model.items.length;
 					
 					if (sch.isArray(data)) {
 						data = data.reverse();
@@ -423,7 +450,7 @@ MyTimelineAssistant.prototype.addItems = function(new_items) {
 	Mojo.Log.error("addItems");
 	
 	// now we have all the existing items from the model
-	var model_items = this.master_timeline_model.items.clone();
+	var model_items = App.master_timeline_model.items.clone();
 	
 	var model_item;
 	for (var i=0; i < new_items.length; i++) {
@@ -441,7 +468,7 @@ MyTimelineAssistant.prototype.addItems = function(new_items) {
 	});
 	
 	// re-assign the cloned items back to the model object
-	this.master_timeline_model.items = model_items;
+	App.master_timeline_model.items = model_items;
 	
 	var thisA = this;	
 	setTimeout(function() {
@@ -480,8 +507,8 @@ MyTimelineAssistant.prototype.renderItem = function(obj) {
 MyTimelineAssistant.prototype.itemExistsInModel = function(obj) {
 	
 
-	for (var i=0; i < this.master_timeline_model.items.length; i++) {
-		if (this.master_timeline_model.items[i].id == obj.id) {
+	for (var i=0; i < App.master_timeline_model.items.length; i++) {
+		if (App.master_timeline_model.items[i].id == obj.id) {
 			Mojo.Log.info(obj.id +' exists in model');
 			return true;
 		}
@@ -503,9 +530,9 @@ MyTimelineAssistant.prototype.markAllAsRead = function() {
 	
 	Mojo.Timing.resume("timing_html_markAllAsRead");
 	
-	for (var i=0; i < this.master_timeline_model.items.length; i++) {
-		this.master_timeline_model.items[i].data.Spaz_is_new = false;
-		this.master_timeline_model.items[i].data.Spaz_is_read = true;
+	for (var i=0; i < App.master_timeline_model.items.length; i++) {
+		App.master_timeline_model.items[i].data.Spaz_is_new = false;
+		App.master_timeline_model.items[i].data.Spaz_is_read = true;
 	}
 	
 	Mojo.Timing.pause("timing_html_markAllAsRead");
@@ -532,9 +559,9 @@ MyTimelineAssistant.prototype.loadTimelineCache = function() {
 		this.twit.setLastId(SPAZCORE_SECTION_DMS,     data[SPAZCORE_SECTION_DMS     + '_lastid']);
 		
 		if (data['my_master_timeline_model_items']) {
-			this.master_timeline_model.items = data['my_master_timeline_model_items'];
+			App.master_timeline_model.items = data['my_master_timeline_model_items'];
 		} else {
-			this.master_timeline_model.items = [];
+			App.master_timeline_model.items = [];
 		}
 		
 		this.filterTimeline(null, true, false);
@@ -563,21 +590,21 @@ MyTimelineAssistant.prototype.saveTimelineCache = function() {
 	var max_dms = App.prefs.get('timeline-cache-maxentries-dm');
 	var max_replies = App.prefs.get('timeline-cache-maxentries-reply');
 	var max_statuses = App.prefs.get('timeline-cache-maxentries');
-	for (var i=0; i < this.master_timeline_model.items.length; i++) {
-		if (this.master_timeline_model.items[i].data.SC_is_dm) {
+	for (var i=0; i < App.master_timeline_model.items.length; i++) {
+		if (App.master_timeline_model.items[i].data.SC_is_dm) {
 			num_dms++;
 			if (num_dms <= max_dms) {
-				cached_items.push(this.master_timeline_model.items[i]);
+				cached_items.push(App.master_timeline_model.items[i]);
 			}
-		} else if (this.master_timeline_model.items[i].data.SC_is_reply) {
+		} else if (App.master_timeline_model.items[i].data.SC_is_reply) {
 			num_replies++;
 			if (num_replies <= max_replies) {
-				cached_items.push(this.master_timeline_model.items[i]);
+				cached_items.push(App.master_timeline_model.items[i]);
 			}			
 		} else {
 			num_statuses++;
 			if (num_statuses <= max_statuses) {
-				cached_items.push(this.master_timeline_model.items[i]);
+				cached_items.push(App.master_timeline_model.items[i]);
 			}
 		}
 	}
@@ -585,7 +612,7 @@ MyTimelineAssistant.prototype.saveTimelineCache = function() {
 	
 	Mojo.Log.info('Counts: DMs %s, Replies %s, Statuses %s', num_dms, num_replies, num_statuses);
 	
-	Mojo.Log.info('Length of master_timeline_model.items: '+this.master_timeline_model.items.length);
+	Mojo.Log.info('Length of master_timeline_model.items: '+App.master_timeline_model.items.length);
 	
 	var twitdata = {};
 	twitdata['version']                         = this.cacheVersion || -1;
@@ -643,41 +670,41 @@ MyTimelineAssistant.prototype.filterTimeline = function(command, scroll_to_top, 
 	// reset the timeline_model
 	this.timeline_model.items = [];
 
-	Mojo.Log.info('this.master_timeline_model.items length: %s', this.master_timeline_model.items.length);
+	Mojo.Log.info('App.master_timeline_model.items length: %s', App.master_timeline_model.items.length);
 	Mojo.Log.info('this.timeline_model.items length: %s', this.timeline_model.items.length);
 
 
 	switch(command) {
 		case 'filter-timeline-all':
-			this.timeline_model.items = this.master_timeline_model.items;
+			this.timeline_model.items = App.master_timeline_model.items;
 			break;
 			
 		case 'filter-timeline-replies':
-			for (i=0; i < this.master_timeline_model.items.length; i++) {
-				if (this.master_timeline_model.items[i].data.SC_is_reply) {
-					this.timeline_model.items.push(this.master_timeline_model.items[i]);
+			for (i=0; i < App.master_timeline_model.items.length; i++) {
+				if (App.master_timeline_model.items[i].data.SC_is_reply) {
+					this.timeline_model.items.push(App.master_timeline_model.items[i]);
 				}
 			}
 			break;
 			
 		case 'filter-timeline-dms':
-			for (i=0; i < this.master_timeline_model.items.length; i++) {
-				if (this.master_timeline_model.items[i].data.SC_is_dm) {
-					this.timeline_model.items.push(this.master_timeline_model.items[i]);
+			for (i=0; i < App.master_timeline_model.items.length; i++) {
+				if (App.master_timeline_model.items[i].data.SC_is_dm) {
+					this.timeline_model.items.push(App.master_timeline_model.items[i]);
 				}
 			}
 			break;
 			
 		case 'filter-timeline-replies-dm':
-			for (i=0; i < this.master_timeline_model.items.length; i++) {
-				if (this.master_timeline_model.items[i].data.SC_is_dm || this.master_timeline_model.items[i].data.SC_is_reply) {
-					this.timeline_model.items.push(this.master_timeline_model.items[i]);
+			for (i=0; i < App.master_timeline_model.items.length; i++) {
+				if (App.master_timeline_model.items[i].data.SC_is_dm || App.master_timeline_model.items[i].data.SC_is_reply) {
+					this.timeline_model.items.push(App.master_timeline_model.items[i]);
 				}
 			}
 			break;
 			
 		default:
-			this.timeline_model.items = this.master_timeline_model.items;
+			this.timeline_model.items = App.master_timeline_model.items;
 			break;
 	}
 	

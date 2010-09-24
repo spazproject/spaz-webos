@@ -156,9 +156,10 @@ AppAssistant.prototype.initialize = function() {
 		'prefs_obj':this.App.prefs
 	});
 	
+	this.App.master_timeline_model = {
+	    items : []
+	};
 	
-	// this.App.bgnotifier = new BackgroundNotifier();
-
 };
 
 
@@ -212,114 +213,153 @@ AppAssistant.prototype.handleLaunch = function(launchParams) {
 	var appAssistant = this;
 	
 	/*
+	   initialize bgnotifier
+	*/
+	this.App.bgnotifier = new BackgroundNotifier(true);
+	
+	/*
 		load up the timelineCache before going further
 	*/
-	appAssistant.loadTimelineCache(function(e) {
 	
-		var mainStageController = Mojo.Controller.getAppController().getStageController(SPAZ_MAIN_STAGENAME);
+	
+	var mainStageController = Mojo.Controller.getAppController().getStageController(SPAZ_MAIN_STAGENAME);
 
-		Mojo.Log.info("Launch Parameters: %j", launchParams);
+	Mojo.Log.error("Launch Parameters: %j", launchParams);
+	
+	/*
+		for compatibility with Bad Kitty and Twee APIs
+	*/
+	if (launchParams.tweet) {
+		launchParams.action = 'prepPost';
+		launchParams.msg = launchParams.tweet;
+	}
+	if (launchParams.user) {
+		launchParams.action = 'user';
+		launchParams.userid = launchParams.user;
+	}
 
-		/*
-			for compatibility with Bad Kitty and Twee APIs
-		*/
-		if (launchParams.tweet) {
-			launchParams.action = 'prepPost';
-			launchParams.msg = launchParams.tweet;
+	var stageCallback = function(stageController) {
+		Mojo.Log.error('RUNNING stageCallback');
+
+		switch(launchParams.action) {
+
+			/**
+			 * {
+			 *   action:"prepPost",
+			 *   msg:"Some Text",
+			 *   account:"ACCOUNT_HASH" // optional
+			 * }
+			 */
+			case 'prepPost':
+			case 'post':
+				appAssistant.loadAccount(launchParams.account||null);
+				stageController.pushScene('post', {
+					'text':launchParams.msg
+				});
+				break;
+
+			/**
+			 * {
+			 *   action:"user",
+			 *   userid:"funkatron"
+			 * }
+			 */
+			case 'user':
+				// appAssistant.loadAccount(launchParams.account||null);
+				stageController.pushScene('user-detail', '@'+launchParams.userid);
+				break;
+
+			/**
+			 * {
+			 *   action:"search",
+			 *   query:"spaz source:spaz"
+			 * }
+			 */			
+			case 'search':
+				stageController.pushScene('search-twitter', {
+					'searchterm':launchParams.query
+				});
+				break;
+
+			/**
+			 * {
+			 *   action:"status",
+			 *   statusid:24426249322
+			 * }
+			 */
+			case 'status':
+				stageController.pushScene('message-detail', launchParams.statusid);
+				break;
+
+			case 'main_timeline':
+				Mojo.Log.info('main_timeline action');
+
+				appAssistant.App.bgnotifier.registerNextNotification();
+
+				appAssistant.loadAccount(launchParams.account||null);
+				
+				stageController.pushScene('my-timeline', { 'mark_cache_as_read':false });
+				break;				
+
+
+			default:
+				Mojo.Log.info('default handleLaunch action');
+				
+				appAssistant.App.bgnotifier.registerNextNotification();
+				
+				if (appAssistant.App.prefs.get('always-go-to-my-timeline')) {
+					stageController.pushScene('my-timeline');
+				} else {
+					stageController.pushScene('start');
+				}
+				break;
+
 		}
-		if (launchParams.user) {
-			launchParams.action = 'user';
-			launchParams.userid = launchParams.user;
-		}
-
-		var stageCallback = function(stageController) {
-			Mojo.Log.error('RUNNING stageCallback');
-
-			switch(launchParams.action) {
-
-				/**
-				 * {
-				 *   action:"prepPost",
-				 *   msg:"Some Text",
-				 *   account:"ACCOUNT_HASH" // optional
-				 * }
-				 */
-				case 'prepPost':
-				case 'post':
-					appAssistant.loadAccount(launchParams.account||null);
-					stageController.pushScene('post', {
-						'text':launchParams.msg
-					});
-					break;
-
-				/**
-				 * {
-				 *   action:"user",
-				 *   userid:"funkatron"
-				 * }
-				 */
-				case 'user':
-					// appAssistant.loadAccount(launchParams.account||null);
-					stageController.pushScene('user-detail', '@'+launchParams.userid);
-					break;
-
-				/**
-				 * {
-				 *   action:"search",
-				 *   query:"spaz source:spaz"
-				 * }
-				 */			
-				case 'search':
-					stageController.pushScene('search-twitter', {
-						'searchterm':launchParams.query
-					});
-					break;
-
-				/**
-				 * {
-				 *   action:"status",
-				 *   statusid:24426249322
-				 * }
-				 */
-				case 'status':
-					stageController.pushScene('message-detail', launchParams.statusid);
-					break;
+	};
 
 
-				default:
-					Mojo.Log.info('default handleLaunch action');
-					
-					if (App.prefs.get('always-go-to-my-timeline')) {
-							this.controller.pushScene('my-timeline');
-					} else {
-						this.controller.pushScene('start');
-					}
-					break;
-
-			}
-		};
-
-
-		/*
-			we go ahead and re-activate the existing stage, or make a new main stage
-		*/
-		if (mainStageController) {
-			if (mainStageController.topScene() && mainStageController.topScene().sceneName == "start")
-				stageCallback(mainStageController);
-			else
-				phonebookStageController.window.focus(); 
+	/*
+		we go ahead and re-activate the existing stage, or make a new main stage
+	*/
+	if (mainStageController) {
+		if (mainStageController.topScene() && mainStageController.topScene().sceneName == "start") {
+			stageCallback(mainStageController);
 		} else {
-			Mojo.Controller.getAppController()
-				.createStageWithCallback(
-					{
-						name: SPAZ_MAIN_STAGENAME,
-						assistantName:SPAZ_STAGEASSISTANTNAME
-					},
-					stageCallback
-				);
+			mainStageController.activate();
 		}
-	});
-	
+		/*
+			bgcheck action -- send a refresh event
+		*/
+		if (launchParams.action && launchParams.action == 'bgcheck') {
+			Mojo.Log.error('BGCHECK action');
+			Mojo.Controller.getAppController().sendToNotificationChain({"event":"refresh"});
+		}
+
+	} else {
+
+		/*
+			bgcheck action -- if called when we don't have a stage already, just run in bg
+		*/
+		if (launchParams.action && launchParams.action == 'bgcheck') {
+			Mojo.Log.error('BGCHECK action');
+		
+			appAssistant.App.bgnotifier.init(function() {
+				appAssistant.App.bgnotifier.checkForNewData();
+			});
+		
+			return;
+		}
+
+		Mojo.Controller.getAppController()
+			.createStageWithCallback(
+				{
+					name: SPAZ_MAIN_STAGENAME,
+					assistantName:SPAZ_STAGEASSISTANTNAME
+				},
+				stageCallback
+			);
+	}
+
 
 };
 

@@ -75,7 +75,7 @@ DashboardAssistant.prototype.launchMain = function() {
 		 method: 'launch', 
 		 parameters: { 
 			 id: Mojo.appInfo.id, 
-			 params: {'fromstage':this.args.fromstage} 
+			 params: {'fromstage':this.args.fromstage, 'action':'main_timeline', 'account':App.prefs.get('last_userid')} 
 		 } 
 	}); 
 	this.controller.window.close(); 
