@@ -332,6 +332,7 @@ AppAssistant.prototype.handleLaunch = function(launchParams) {
 		*/
 		if (launchParams.action && launchParams.action == 'bgcheck') {
 			Mojo.Log.error('BGCHECK action');
+			appAssistant.App.bgnotifier.registerNextNotification();
 			Mojo.Controller.getAppController().sendToNotificationChain({"event":"refresh"});
 		}
 

@@ -198,7 +198,7 @@ BackgroundNotifier.prototype.registerNextNotification = function() {
 	    Mojo.Log.error("Alarm Set Failure: " + response.returnValue + "-" + response.errorText);
 	};
 
-	Mojo.Log.error('this.interval:'+this.interval);
+	Mojo.Log.error('REGISTERING NOTIFICATION: this.interval:'+this.interval);
 
 	this.wakeupRequest = new Mojo.Service.Request('palm://com.palm.power/timeout', {
 	    method: 'set',
