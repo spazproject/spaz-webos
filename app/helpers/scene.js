@@ -1343,19 +1343,19 @@ scene_helpers.addCommonSceneMethods = function(assistant) {
 		return stagename;
 	};
 
-    /**
-     * returns the AppController 
-     */
-    assistant.getAppController = function() {
-        return Mojo.Controller.getAppController();
-    };
+	/**
+	* returns the AppController 
+	*/
+	assistant.getAppController = function() {
+		return Mojo.Controller.getAppController();
+	};
 
-    /**
-     * returns the AppAssistant 
-     */
-    assistant.getAppAssistant = function() {
-        return Mojo.Controller.getAppController().assistant;
-    };
+	/**
+	* returns the AppAssistant 
+	*/
+	assistant.getAppAssistant = function() {
+		return Mojo.Controller.getAppController().assistant;
+	};
 
 
 	/**
