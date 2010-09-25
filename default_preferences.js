@@ -24,7 +24,8 @@ var default_preferences = {
 	'notify-dms':true,
 	'notify-searchresults':true,
 	
-	'bgnotify-enabled':false,
+	'network-refresh-auto':true,
+	
 	'bgnotify-on-dm':true,
 	'bgnotify-on-mention':true,
 	'bgnotify-on-home':false,

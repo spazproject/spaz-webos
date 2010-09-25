@@ -623,6 +623,12 @@ MyTimelineAssistant.prototype.saveTimelineCache = function() {
 	twitdata[SPAZCORE_SECTION_HOME + '_lastid'] = this.twit.getLastId(SPAZCORE_SECTION_HOME);
 	twitdata[SPAZCORE_SECTION_REPLIES + '_lastid'] = this.twit.getLastId(SPAZCORE_SECTION_REPLIES);
 	twitdata[SPAZCORE_SECTION_DMS     + '_lastid'] = this.twit.getLastId(SPAZCORE_SECTION_DMS);
+	
+	this.getAppAssistant().saveLastIDs(
+		this.twit.getLastId(SPAZCORE_SECTION_HOME),
+		this.twit.getLastId(SPAZCORE_SECTION_REPLIES),
+		this.twit.getLastId(SPAZCORE_SECTION_DMS)
+	);
 
 	App.cache.save('mytimelinecache', twitdata, App.userid);
 	

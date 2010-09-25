@@ -21,12 +21,13 @@
 <div class="palm-group palm-group-spaz">
 	<div class="palm-group-title" x-mojo-loc=''>Notification settings</div>
 	<div class="palm-list">
-		<div class="palm-row first">
-			<div style="overflow:auto;" class="checkbox-container">
-				<div x-mojo-element="CheckBox" id="checkbox-notify-newmessages"></div>
-				<div class="checkbox-label">New statuses</div>
-			</div>
-		</div>
+	    
+        <div class="palm-row first">
+            <div style="overflow:auto;" class="checkbox-container">
+                <div x-mojo-element="CheckBox" id="checkbox-notify-newmessages"></div>
+                <div class="checkbox-label">New statuses</div>
+            </div>
+        </div>
 		<div class="palm-row">
 			<div style="overflow:auto;">
 				<div x-mojo-element="CheckBox" id="checkbox-notify-mentions"></div>
@@ -51,7 +52,15 @@
 <div class="palm-group palm-group-spaz">
 	<div class="palm-group-title" x-mojo-loc=''>Refresh rate</div>
 	<div class="palm-list">
-		<div class="palm-row first" x-mojo-tap-highlight="momentary">
+	    <div class="palm-row first">
+            <div style="overflow:auto;" class="checkbox-container">
+                <div x-mojo-element="CheckBox" id="checkbox-network-refresh-auto"></div>
+                <div class="checkbox-label">Auto-refresh</div>
+            </div>
+        </div>
+
+        
+		<div class="palm-row" x-mojo-tap-highlight="momentary">
 			<div class="palm-row-wrapper">
 				<div id="network-refreshinterval" x-mojo-element="ListSelector"></div>                                                   
 			</div>

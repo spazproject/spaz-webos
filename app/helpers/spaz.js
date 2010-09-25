@@ -334,10 +334,12 @@ Spaz.Prefs.getAuthKey = function() {
  */
 Spaz.Prefs.getAuthObject = function() {
 	var authkey = Spaz.Prefs.getAuthKey();
-	sch.debug('getAuthObject authkey:'+authkey);
+	Mojo.Log.error('getAuthObject authkey: %s', authkey);
 	
 	if (authkey) {
 		var auth = new SpazAuth(Spaz.Prefs.getAccountType());
+		Mojo.Log.error('Spaz.Prefs.getAccountType(): %s', Spaz.Prefs.getAccountType());
+		Mojo.Log.error('auth: %j', auth);
 		auth.load(authkey);
 		return auth;
 	} else {

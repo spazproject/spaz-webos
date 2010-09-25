@@ -437,6 +437,34 @@ AppAssistant.prototype.mapObjectsToNewStage = function(stageController) {
 
 
 
+AppAssistant.prototype.saveLastIDs = function(home, mention, dm) {
+	var cookie = new Mojo.Model.Cookie('SPAZ_WEBOS_LASTIDS');
+	
+	var data = { 'home':home, 'mention':mention, 'dm':dm };
+	
+	cookie.put(data);
+};
+
+
+AppAssistant.prototype.loadLastIDs = function() {
+	var cookie = new Mojo.Model.Cookie('SPAZ_WEBOS_LASTIDS');
+	
+	var data = cookie.get();
+	
+	if (!data || !data.home) {
+		this.resetLastIDs();
+		return { 'home':1, 'mention':1, 'dm':1 }
+	}
+	
+	return data;
+};
+
+
+AppAssistant.prototype.resetLastIDs = function() {
+	this.saveLastIDs(1,1,1);
+};
+
+
 
 AppAssistant.prototype.loadTimelineCache = function(onLoad) {
 	
