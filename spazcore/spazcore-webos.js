@@ -1,4 +1,4 @@
-/*********** Built 2010-09-21 21:06:10 EDT ***********/
+/*********** Built 2010-09-24 19:47:49 EDT ***********/
 /*jslint 
 browser: true,
 nomen: false,
@@ -6420,6 +6420,52 @@ sc.helpers.ltrim = function (str, chars) {
 sc.helpers.rtrim = function (str, chars) {
 	chars = chars || "\\s";
 	return str.replace(new RegExp("[" + chars + "]+$", "g"), "");
+};
+
+
+/**
+ * @param {string} input the input string
+ * @param {number} pad_length the length to pad the string
+ * @param {string} pad_string the string to pad with
+ * @param {string} pad_type STR_PAD_LEFT, STR_PAD_RIGHT, or STR_PAD_BOTH. Default is STR_PAD_RIGHT 
+ */
+sc.helpers.pad = function (input, pad_length, pad_string, pad_type) {
+    // http://kevin.vanzonneveld.net
+    // +   original by: Kevin van Zonneveld (http://kevin.vanzonneveld.net)
+    // + namespaced by: Michael White (http://getsprink.com)
+    // +      input by: Marco van Oort
+    // +   bugfixed by: Brett Zamir (http://brett-zamir.me)
+    // *     example 1: str_pad('Kevin van Zonneveld', 30, '-=', 'STR_PAD_LEFT');
+    // *     returns 1: '-=-=-=-=-=-Kevin van Zonneveld'
+    // *     example 2: str_pad('Kevin van Zonneveld', 30, '-', 'STR_PAD_BOTH');
+    // *     returns 2: '------Kevin van Zonneveld-----'
+
+    var half = '', pad_to_go;
+
+    var str_pad_repeater = function (s, len) {
+        var collect = '', i;
+
+        while (collect.length < len) {collect += s;}
+        collect = collect.substr(0,len);
+
+        return collect;
+    };
+
+    input += '';
+    pad_string = pad_string !== undefined ? pad_string : ' ';
+    
+    if (pad_type != 'STR_PAD_LEFT' && pad_type != 'STR_PAD_RIGHT' && pad_type != 'STR_PAD_BOTH') { pad_type = 'STR_PAD_RIGHT'; }
+    if ((pad_to_go = pad_length - input.length) > 0) {
+        if (pad_type == 'STR_PAD_LEFT') { input = str_pad_repeater(pad_string, pad_to_go) + input; }
+        else if (pad_type == 'STR_PAD_RIGHT') { input = input + str_pad_repeater(pad_string, pad_to_go); }
+        else if (pad_type == 'STR_PAD_BOTH') {
+            half = str_pad_repeater(pad_string, Math.ceil(pad_to_go/2));
+            input = half + input + half;
+            input = input.substr(0, pad_length);
+        }
+    }
+
+    return input;
 };
 
 
@@ -13030,11 +13076,28 @@ SpazTwit.prototype.removeFriend = function(user_id, onSuccess, onFailure) {
 
 };
 
+/**
+ * @param {string|number} target_id the target user id, or screen name if prefixed with a "@" 
+ * @param {string|number} [source_id] the surce user id, or screen name if prefixed with a "@" 
+ * @param {function} [onSuccess] success callback
+ * @param {function} [onFailure] failure callback
+ */
 SpazTwit.prototype.showFriendship = function(target_id, source_id, onSuccess, onFailure) {
 	var data = {};
-	data['target_id'] = target_id;
+	
+	if (sch.isString(target_id) && target_id.indexOf('@')===0) {
+		data['target_screen_name'] = target_id.substr(1);
+	} else {
+		data['target_id'] = target_id;
+	}
+	
 	if (source_id) {
-		data['source_id'] = source_id;
+		if (sch.isString(source_id) && source_id.indexOf('@')===0) {
+			data['source_screen_name'] = source_id.substr(1);
+		} else {
+			data['source_id'] = source_id;
+		}
+		
 	}
 	
 	
