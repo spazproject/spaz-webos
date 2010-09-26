@@ -306,7 +306,7 @@ MyTimelineAssistant.prototype.cleanup = function(event) {
 
 
 MyTimelineAssistant.prototype.considerForNotification = function(params){   
-	Mojo.Log.info('NOTIFICATION RECEIVED:%j', params);
+	Mojo.Log.error('NOTIFICATION RECEIVED:%j', params);
 
 	if (params) {
 	    switch(params.event) {

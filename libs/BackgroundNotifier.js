@@ -289,11 +289,10 @@ BackgroundNotifier.prototype.displayNotification = function(template_data, templ
 		'template':template
 	};
 
-	Mojo.Log.error('sceneArgs:');
-	Mojo.Log.error(sceneArgs);
+	Mojo.Log.error('sceneArgs: %j', sceneArgs);
 
 	if (dashboardStageController) { 
-		Mojo.Log.error('DELEGATING TO dashboardStageController');
+		Mojo.Log.error('DELEGATING TO dashboardStageController.delegateToSceneAssistant');
 		dashboardStageController.delegateToSceneAssistant("updateDashboard", sceneArgs); 
 	} else {
 		Mojo.Log.error('Making new dashboardStageController');
@@ -312,8 +311,11 @@ BackgroundNotifier.prototype.displayNotification = function(template_data, templ
 
 
 BackgroundNotifier.prototype.closeNotification = function() {
+	var appController = Mojo.Controller.getAppController();
 	var dashboardStageController = appController.getStageProxy(SPAZ_DASHBOARD_STAGENAME);
-	dashboardStageController.window.close();
+	if (dashboardStageController) {
+		dashboardStageController.window.close();
+	}
 };
 
 
@@ -333,72 +335,74 @@ BackgroundNotifier.prototype.getCombinedTimeline = function() {
 	/*
 		first, open a dashboard so we don't time out
 	*/
-	this.displayNotification({ 'title':'Checking…', 'message':'Checking for new messages', 'count':'?' }, 'dashboard/item-info');
+	// this.displayNotification({ 'title':'Checking…', 'message':'Checking for new messages', 'count':'?' }, 'dashboard/item-info');
 	
-	//     var that = this;
-	//     
-	// var counts = Mojo.Controller.getAppController().assistant.loadLastIDs();
-	// 
-	// this.twit.setLastId(SPAZCORE_SECTION_HOME,    counts.home);
-	// this.twit.setLastId(SPAZCORE_SECTION_REPLIES, counts.mention);
-	// this.twit.setLastId(SPAZCORE_SECTION_DMS,     counts.dm);
-	// 
-	// Mojo.Log.error('Getting combined timeline');
-	// 
-	//     this.twit.getCombinedTimeline(
-	// 	{
-	// 		'friends_count':200,
-	// 		'replies_count':200,
-	// 		'dm_count':200
-	// 	},
-	// 	function(data) {
-	// 		
-	// 		Mojo.Log.info('BackgroundNotifier getCombinedTimeline success');
-	// 		
-	// 		var new_count = 0, new_mention_count = 0, new_dm_count = 0, previous_count = 0;
-	// 
-	// 		previous_count = Spaz.getAppObj().master_timeline_model.items.length;
-	// 		
-	// 		var no_dupes = [];
-	// 		for (var i=0; i < data.length; i++) {
-	// 
-	// 			new_count++;
-	// 
-	// 			if (data[i].SC_is_reply) {
-	// 				new_mention_count++;
-	// 			} else if (data[i].SC_is_dm) {
-	// 				new_dm_count++;
-	// 			}
-	// 		}
-	// 
-	// 
-	// 		that.counts.dm = parseInt(that.counts.dm, 10) + parseInt(new_dm_count, 10);
-	// 
-	// 		that.counts.mention  = parseInt(that.counts.mention, 10) + parseInt(new_mention_count, 10);
-	// 		
-	// 		Mojo.Log.error('new, @mention, dm: %s %s %s', new_count, new_mention_count, new_dm_count);
-	// 		
-	// 		that.counts.home = parseInt(that.counts.home, 10) + parseInt((new_count - (new_mention_count + new_dm_count)), 10);
-	// 
-	// 		Mojo.Log.error('that.counts.home: %s', that.counts.home);
-	// 		
-	// 		if (that.counts.home > 0 && Spaz.getAppObj().prefs.get('bgnotify-on-home')) {
-	// 			that.displayNotification();
-	// 		} else if (that.counts.dm > 0 && Spaz.getAppObj().prefs.get('bgnotify-on-dm')) {
-	// 			that.displayNotification();
-	// 		} else if (that.counts.mention > 0 && Spaz.getAppObj().prefs.get('bgnotify-on-mention')) {
-	// 			that.displayNotification();
-	// 		} else {
-	// 			that.closeNotification();
-	// 		}
-	// 
-	// 	},
-	// 	function(errors) {
-	// 	    Mojo.Log.error('ERRORS: %j', errors);
-	// 	    Mojo.Log.error('Error loading new messages in BackgroundNotifier');
-	// 		var err_msg = $L("There was an error loading new messages");
-	// 	}
-	// );
+	this.showBanner($L('Checking for new messages'));
+	
+	    var that = this;
+	    
+	var counts = Mojo.Controller.getAppController().assistant.loadLastIDs();
+	
+	this.twit.setLastId(SPAZCORE_SECTION_HOME,    counts.home);
+	this.twit.setLastId(SPAZCORE_SECTION_REPLIES, counts.mention);
+	this.twit.setLastId(SPAZCORE_SECTION_DMS,     counts.dm);
+	
+	Mojo.Log.error('Getting combined timeline');
+	
+	    this.twit.getCombinedTimeline(
+		{
+			'friends_count':200,
+			'replies_count':200,
+			'dm_count':200
+		},
+		function(data) {
+			
+			Mojo.Log.info('BackgroundNotifier getCombinedTimeline success');
+			
+			var new_count = 0, new_mention_count = 0, new_dm_count = 0, previous_count = 0;
+	
+			previous_count = Spaz.getAppObj().master_timeline_model.items.length;
+			
+			var no_dupes = [];
+			for (var i=0; i < data.length; i++) {
+	
+				new_count++;
+	
+				if (data[i].SC_is_reply) {
+					new_mention_count++;
+				} else if (data[i].SC_is_dm) {
+					new_dm_count++;
+				}
+			}
+	
+	
+			that.counts.dm = parseInt(new_dm_count, 10);
+	
+			that.counts.mention = parseInt(new_mention_count, 10);
+			
+			Mojo.Log.error('new, @mention, dm: %s %s %s', new_count, new_mention_count, new_dm_count);
+			
+			that.counts.home = parseInt((new_count - (new_mention_count + new_dm_count)), 10);
+	
+			Mojo.Log.error('that.counts.home: %s', that.counts.home);
+			
+			if (that.counts.home > 0 && Spaz.getAppObj().prefs.get('bgnotify-on-home')) {
+				that.displayNotification();
+			} else if (that.counts.dm > 0 && Spaz.getAppObj().prefs.get('bgnotify-on-dm')) {
+				that.displayNotification();
+			} else if (that.counts.mention > 0 && Spaz.getAppObj().prefs.get('bgnotify-on-mention')) {
+				that.displayNotification();
+			} else {
+				that.closeNotification();
+			}
+	
+		},
+		function(errors) {
+		    Mojo.Log.error('ERRORS: %j', errors);
+		    Mojo.Log.error('Error loading new messages in BackgroundNotifier');
+			var err_msg = $L("There was an error loading new messages");
+		}
+	);
 	
 };
 

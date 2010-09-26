@@ -256,6 +256,7 @@ AppAssistant.prototype.handleLaunch = function(launchParams) {
 				stageController.pushScene('post', {
 					'text':launchParams.msg
 				});
+				stageController.activate();
 				break;
 
 			/**
@@ -267,6 +268,7 @@ AppAssistant.prototype.handleLaunch = function(launchParams) {
 			case 'user':
 				// appAssistant.loadAccount(launchParams.account||null);
 				stageController.pushScene('user-detail', '@'+launchParams.userid);
+				stageController.activate();
 				break;
 
 			/**
@@ -279,6 +281,7 @@ AppAssistant.prototype.handleLaunch = function(launchParams) {
 				stageController.pushScene('search-twitter', {
 					'searchterm':launchParams.query
 				});
+				stageController.activate();
 				break;
 
 			/**
@@ -289,6 +292,7 @@ AppAssistant.prototype.handleLaunch = function(launchParams) {
 			 */
 			case 'status':
 				stageController.pushScene('message-detail', launchParams.statusid);
+				stageController.activate();
 				break;
 
 			case 'main_timeline':
@@ -299,8 +303,17 @@ AppAssistant.prototype.handleLaunch = function(launchParams) {
 				appAssistant.loadAccount(launchParams.account||null);
 				
 				stageController.pushScene('my-timeline', { 'mark_cache_as_read':false });
+				stageController.activate();
 				break;				
 
+
+			case 'bgcheck':
+				Mojo.Log.error('BGCHECK action');
+				Mojo.Log.error('sendToNotificationChain refresh');
+				// Mojo.Controller.getAppController().sendToNotificationChain({"event":"refresh"});
+				stageController.sendEventToCommanders({'type':Mojo.Event.command, 'command':'refresh'});
+				appAssistant.App.bgnotifier.registerNextNotification();
+				break;
 
 			default:
 				Mojo.Log.info('default handleLaunch action');
@@ -322,19 +335,22 @@ AppAssistant.prototype.handleLaunch = function(launchParams) {
 		we go ahead and re-activate the existing stage, or make a new main stage
 	*/
 	if (mainStageController) {
-		if (mainStageController.topScene() && mainStageController.topScene().sceneName == "start") {
+		// if (mainStageController.topScene() && mainStageController.topScene().sceneName == "start") {
+		if (mainStageController.topScene()) {
 			stageCallback(mainStageController);
-		} else {
-			mainStageController.activate();
-		}
-		/*
-			bgcheck action -- send a refresh event
-		*/
-		if (launchParams.action && launchParams.action == 'bgcheck') {
-			Mojo.Log.error('BGCHECK action');
-			appAssistant.App.bgnotifier.registerNextNotification();
-			Mojo.Controller.getAppController().sendToNotificationChain({"event":"refresh"});
-		}
+		} // else {
+		 // 			if (!launchParams.action || launchParams.action !== 'bgcheck') {
+		 // 				mainStageController.activate();
+		 // 			}
+		 // 		}
+		// /*
+		// 	bgcheck action -- send a refresh event
+		// */
+		// if (launchParams.action && launchParams.action == 'bgcheck') {
+		// 	Mojo.Log.error('BGCHECK action');
+		// 	appAssistant.App.bgnotifier.registerNextNotification();
+		// 	Mojo.Controller.getAppController().sendToNotificationChain({"event":"refresh"});
+		// }
 
 	} else {
 
@@ -342,7 +358,7 @@ AppAssistant.prototype.handleLaunch = function(launchParams) {
 			bgcheck action -- if called when we don't have a stage already, just run in bg
 		*/
 		if (launchParams.action && launchParams.action == 'bgcheck') {
-			Mojo.Log.error('BGCHECK action');
+			Mojo.Log.error('BGCHECK action --- no mainStageController');
 		
 			appAssistant.App.bgnotifier.init(function() {
 				appAssistant.App.bgnotifier.checkForNewData();
@@ -453,7 +469,7 @@ AppAssistant.prototype.loadLastIDs = function() {
 	
 	if (!data || !data.home) {
 		this.resetLastIDs();
-		return { 'home':1, 'mention':1, 'dm':1 }
+		return { 'home':1, 'mention':1, 'dm':1 };
 	}
 	
 	return data;
