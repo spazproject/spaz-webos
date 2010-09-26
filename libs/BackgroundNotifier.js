@@ -413,19 +413,20 @@ BackgroundNotifier.prototype.getTotalCount = function() {
 
 
 
-BackgroundNotifier.prototype.showBanner = function(msg) {
-	var category = category || 'misc';
-
+BackgroundNotifier.prototype.showBanner = function(text, category, soundClass) {
+	
+	if (!soundClass) { soundClass = false; }
+	
+	category = category || 'misc';
+	
 	var launchArgs = {
 		'fromstage':this.getStageName()
 	};
-
 	var bannerArgs = {
-		'messageText':msg
+		'messageText':text
 	};
-
-	if (Spaz.getAppObj().prefs.get('sound-enabled')) {
-		bannerArgs.soundClass = 'alerts';
+	if (soundClass && App.prefs.get('sound-enabled')) {
+		bannerArgs.soundClass = soundClass;
 	}
 
 	var appController = Mojo.Controller.getAppController();
