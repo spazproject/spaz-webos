@@ -1358,6 +1358,25 @@ scene_helpers.addCommonSceneMethods = function(assistant) {
 	};
 
 
+	assistant.showBetaWarningAlert = function(force) {
+		if (!force) { force = false; }
+		if (Mojo.appInfo.id.indexOf('spaz-beta') === -1) {
+			return; // don't bother -- this is not a beta
+		}
+		var once_cookie = new Mojo.Model.Cookie('SPAZ_RUNONCE_BETAWARNING_COOKIE');
+		var ran_once = once_cookie.get() || 0;
+		if (!ran_once || force) {
+			this.showAlert(
+				$L('This is a BETA version of Spaz. It has bugs. It may not operate properly. It may insult you or your family. BE AWARE.'),
+				$L('Beta Warning'),
+				function(choice) {
+					once_cookie.put(1);
+				}
+			);
+		}
+	};
+
+
 	/**
 	 *  
 	 */
