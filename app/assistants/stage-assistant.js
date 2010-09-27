@@ -30,10 +30,7 @@ function StageAssistant () {
 StageAssistant.prototype.setup = function() {
 	Mojo.Log.info("Logging from StageAssistant Setup");
 	
-	Mojo.Log.error("App.tpl: %j", App.tpl);
-	
 	var thisSA = this;
-	this.gotoMyTimeline();
 };
 
 
@@ -99,33 +96,35 @@ StageAssistant.prototype.handleCommand = function(event){
 };
 
 
-
+/**
+ *  
+ */
 StageAssistant.prototype.gotoMyTimeline = function(stageController) {
-		/*
-			load users from prefs obj
-		*/
-		var users = new SpazAccounts(App.prefs);
-		users.load();
-		
-		/*
-			get last user
-		*/
-		if (App.prefs.get('always-go-to-my-timeline')) {
-			var last_userid = App.prefs.get('last_userid');
-			var last_user_obj = users.get(last_userid);
-			if (last_user_obj !== false) {
-				sch.error(last_user_obj);
-				App.username = last_user_obj.username;
-				App.type     = last_user_obj.type;
-				App.userid   = last_user_obj.id;
-				this.controller.pushScene('my-timeline');
-			} else {
-				this.controller.pushScene('start');
-			}
+	/*
+		load users from prefs obj
+	*/
+	var users = new SpazAccounts(App.prefs);
+	users.load();
+	
+	/*
+		get last user
+	*/
+	if (App.prefs.get('always-go-to-my-timeline')) {
+		var last_userid = App.prefs.get('last_userid');
+		var last_user_obj = users.get(last_userid);
+		if (last_user_obj !== false) {
+			sch.error(last_user_obj);
+			App.username = last_user_obj.username;
+			App.type     = last_user_obj.type;
+			App.userid   = last_user_obj.id;
+			this.controller.pushScene('my-timeline');
 		} else {
 			this.controller.pushScene('start');
 		}
-
+	} else {
+		this.controller.pushScene('start');
+	}
+				
 };
 
 
