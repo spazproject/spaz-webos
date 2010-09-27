@@ -258,6 +258,8 @@ MyTimelineAssistant.prototype.activate = function(params) {
 
     });
 
+	this.showBetaWarningAlert();
+	
 };
 
 
