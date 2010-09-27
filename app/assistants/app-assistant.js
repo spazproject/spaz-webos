@@ -266,7 +266,7 @@ AppAssistant.prototype.handleLaunch = function(launchParams) {
 			 * }
 			 */
 			case 'user':
-				// appAssistant.loadAccount(launchParams.account||null);
+				appAssistant.loadAccount(launchParams.account||null);
 				stageController.pushScene('user-detail', '@'+launchParams.userid);
 				stageController.activate();
 				break;
@@ -319,6 +319,8 @@ AppAssistant.prototype.handleLaunch = function(launchParams) {
 				Mojo.Log.info('default handleLaunch action');
 				
 				appAssistant.App.bgnotifier.registerNextNotification();
+				
+				appAssistant.loadAccount(launchParams.account||null);
 				
 				if (appAssistant.App.prefs.get('always-go-to-my-timeline')) {
 					stageController.pushScene('my-timeline');
