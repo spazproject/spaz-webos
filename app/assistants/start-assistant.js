@@ -106,7 +106,7 @@ StartAssistant.prototype.activate = function(argFromPusher) {
 		complete:function(){}
 	});
 
-	
+	this.showBetaWarningAlert();
 };
 
 
