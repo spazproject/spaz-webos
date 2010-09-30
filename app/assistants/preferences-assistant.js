@@ -53,6 +53,7 @@ PreferencesAssistant.prototype.setup = function() {
 		'timeline-scrollonupdate': 	App.prefs.get('timeline-scrollonupdate'),
 		'twitter-api-base-url': 	App.prefs.get('twitter-api-base-url'),
 		'network-refresh-auto': 		App.prefs.get('network-refresh-auto'),
+		'network-refresh-wake': 		App.prefs.get('network-refresh-wake'),
 		'network-refreshinterval': 	App.prefs.get('network-refreshinterval'),
 		'network-searchrefreshinterval': 	App.prefs.get('network-searchrefreshinterval'),
 		'timeline-friends-getcount':App.prefs.get('timeline-friends-getcount'),
@@ -146,6 +147,14 @@ PreferencesAssistant.prototype.setup = function() {
 		},
 		this.model
 	);
+	this.controller.setupWidget("checkbox-network-refresh-wake",
+		this.soundEnabledAtts = {
+			fieldName: 'network-refresh-wake',
+			modelProperty: 'network-refresh-wake',
+			disabledProperty: 'network-refresh-wake_disabled'
+		},
+		this.model
+	);
 	
 	this.controller.setupWidget("checkbox-post-send-on-enter",
 		this.soundEnabledAtts = {
@@ -164,6 +173,7 @@ PreferencesAssistant.prototype.setup = function() {
 	this.controller.listen('checkbox-timeline-scrollonupdate', Mojo.Event.propertyChange, this.saveSettings.bindAsEventListener(this));
 	this.controller.listen('checkbox-notify-newmessages', Mojo.Event.propertyChange, this.saveSettings.bindAsEventListener(this));
 	this.controller.listen('checkbox-network-refresh-auto', Mojo.Event.propertyChange, this.saveSettings.bindAsEventListener(this));
+	this.controller.listen('checkbox-network-refresh-wake', Mojo.Event.propertyChange, this.saveSettings.bindAsEventListener(this));
 	this.controller.listen('checkbox-notify-mentions', Mojo.Event.propertyChange, this.saveSettings.bindAsEventListener(this));
 	this.controller.listen('checkbox-notify-dms', Mojo.Event.propertyChange, this.saveSettings.bindAsEventListener(this));
 	this.controller.listen('checkbox-notify-searchresults', Mojo.Event.propertyChange, this.saveSettings.bindAsEventListener(this));

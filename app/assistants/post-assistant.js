@@ -899,6 +899,7 @@ PostAssistant.prototype.onUploadSuccess = function(e) {
 		}
 		
 		this.deactivateSpinner();
+		
 		this.controller.stageController.popScene({'refresh':true});
 	}
 	

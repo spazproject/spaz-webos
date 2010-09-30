@@ -220,7 +220,7 @@ BackgroundNotifier.prototype.registerNextNotification = function() {
 		    parameters: {
 		        'key': 'com.funkatron.app.spaz.bgcheck',
 		        'in': interval,
-		        'wakeup': Spaz.getAppObj().prefs.get('bgnotify-wakeoncheck'),
+		        'wakeup': Spaz.getAppObj().prefs.get('network-refresh-wake'),
 		        'uri': 'palm://com.palm.applicationManager/open',
 		        'params': {
 		            'id': Mojo.appInfo.id,
@@ -337,9 +337,15 @@ BackgroundNotifier.prototype.getCombinedTimeline = function() {
 	*/
 	// this.displayNotification({ 'title':'Checking…', 'message':'Checking for new messages', 'count':'?' }, 'dashboard/item-info');
 	
-	this.showBanner($L('Checking for new messages'));
+	/*
+		only show this banner if we are waking from sleep
+	*/
+	if (Spaz.getAppObj().prefs.get('network-refresh-wake')) {
+		this.showBanner($L('Checking for new messages'));
+	}
 	
-	    var that = this;
+	
+	var that = this;
 	    
 	var counts = Mojo.Controller.getAppController().assistant.loadLastIDs();
 	

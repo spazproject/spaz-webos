@@ -25,11 +25,11 @@ var default_preferences = {
 	'notify-searchresults':true,
 	
 	'network-refresh-auto':true,
+	'network-refresh-wake':false,
 	
 	'bgnotify-on-dm':true,
 	'bgnotify-on-mention':true,
 	'bgnotify-on-home':false,
-	'bgnotify-wakeoncheck':true,
 
     'timeline-scrollonupdate': true,
 
