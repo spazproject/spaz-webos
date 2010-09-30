@@ -183,9 +183,11 @@ TempCache.prototype.loadFromDB = function(onLoad, idkey) {
 	}
 	
 	var SpazTempCache = openDatabase("ext:SpazTempCache", "1", 'SpazTempCache', 10*1024*1024);
+	var sql_table = "CREATE TABLE IF NOT EXISTS tempcache (key, value)";
 	var sql_select    = "SELECT key, value FROM tempcache WHERE key LIKE 'json_cache_%'";
 	SpazTempCache.transaction( (function (tx) { 
-	   tx.executeSql(sql_select, [], success, failure);
+		tx.executeSql(sql_table, []);
+		tx.executeSql(sql_select, [], success, failure);
 	}));
 
 	
