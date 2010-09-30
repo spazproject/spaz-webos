@@ -73,8 +73,11 @@ DashboardAssistant.prototype.updateDashboard = function(args) {
 	var infoElement	 = this.controller.get('dashboardinfo'); 
 	infoElement.update(renderedInfo); 
 	
-	// this.initTwit();
-	// this.checkForUpdates();
+	/*
+		Flash the LED, if it's enabled in system settings
+	*/
+	this.controller.stageController.indicateNewContent(true);
+	
 }; 
 
 DashboardAssistant.prototype.activateWindow = function() { 
