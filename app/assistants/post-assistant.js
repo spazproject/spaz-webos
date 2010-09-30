@@ -900,7 +900,16 @@ PostAssistant.prototype.onUploadSuccess = function(e) {
 		
 		this.deactivateSpinner();
 		
-		this.controller.stageController.popScene({'refresh':true});
+		/*
+			only pop if we have a scene to pop to
+		*/
+		Mojo.Log.error('this.controller.stageController.getScenes().length: %s', this.controller.stageController.getScenes().length);
+		if (this.controller.stageController.getScenes().length > 1) {
+			this.controller.stageController.popScene({'refresh':true});
+		} else {
+			this.controller.stageController.swapScene({name: 'start'});
+		}
+		
 	}
 	
 
