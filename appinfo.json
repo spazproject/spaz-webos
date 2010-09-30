@@ -12,7 +12,9 @@
 	"copyright": "© Copyright 2010 Funkatron Productions",
 	"theme": "dark",
 	"noWindow":true,
-	"keywords":["Spaz", "spz", "Twitter", "Tweet", "Chat"],
+
+	"keywords":["Spaz", "spz", "Twitter", "Tweet", "Chat", "statusnet", "identica", "identi.ca", "status"],
+
 	"support": {
 		"url": "http://help.getspaz.com",
 		"email": {
@@ -26,5 +28,18 @@
 				"url": "http://getspaz.com/"
 			}
 		]
+	},
+
+	"universalSearch": {
+		"action" :  { 
+			"displayName" : "Post from Spaz",
+			"url"         : "com.funkatron.app.spaz-beta",
+			"launchParam" : {"action":"prepPost", "msg":""}
+		},
+		"search" : {
+			"displayName" : "Spaz",
+			"url"         : "com.funkatron.app.spaz-beta",
+			"launchParam" : {"action":"search", "query":"#{searchTerms}"}
+		}
 	}
 }
