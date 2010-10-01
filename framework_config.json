@@ -4,5 +4,5 @@
 "useNativeJSONParser":true,
 "debuggingEnabled":true,
 "logEvents":false,
-"escapeHTMLInTemplates": true
+"escapeHTMLInTemplates": false
 }
