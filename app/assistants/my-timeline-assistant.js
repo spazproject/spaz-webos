@@ -343,6 +343,11 @@ MyTimelineAssistant.prototype.refresh = function(mark_as_read) {
 
 	this.showInlineSpinner('activity-spinner-my-timeline', 'Loading…');
 
+	/*
+		reset scrollstate to avoid white flash
+	*/
+	var scrollstate = this.scroller.mojo.getState();
+	this.scroller.mojo.setState(scrollstate, false);
 
 	function getCombinedTimeline(statusobj) {
 
@@ -479,6 +484,12 @@ MyTimelineAssistant.prototype.addItems = function(new_items) {
 	
 	// this filters and updates the model
 	this.filterTimeline(null, false, true);
+	
+	/*
+		reset scrollstate to avoid white flash
+	*/
+	var scrollstate = this.scroller.mojo.getState();
+	this.scroller.mojo.setState(scrollstate, false);
 };
 
 

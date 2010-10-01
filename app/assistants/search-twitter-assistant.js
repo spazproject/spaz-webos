@@ -141,8 +141,7 @@ SearchTwitterAssistant.prototype.setup = function() {
 	this.searchButtonModel = {
 		"buttonLabel" : "Search",
 		"buttonClass" : 'Primary'
-	};
-	
+	};	
 	this.controller.setupWidget('submit-search-button', this.searchButtonAttributes, this.searchButtonModel);
 
 
@@ -287,7 +286,12 @@ SearchTwitterAssistant.prototype.search = function(e, type) {
 	}
 
 	this.activateSpinner();
-
+	
+	/*
+		reset scrollstate to avoid white flash
+	*/
+	var scrollstate = this.scroller.mojo.getState();
+	this.scroller.mojo.setState(scrollstate, false);
 
 	function getSearchTimeline(statusobj) {
 
@@ -404,6 +408,12 @@ SearchTwitterAssistant.prototype.addItems = function(new_items) {
 	
 	// this filters and updates the model
 	this.controller.modelChanged(this.timeline_model);
+	
+	/*
+		reset scrollstate to avoid white flash
+	*/
+	var scrollstate = this.scroller.mojo.getState();
+	this.scroller.mojo.setState(scrollstate, false);
 };
 
 

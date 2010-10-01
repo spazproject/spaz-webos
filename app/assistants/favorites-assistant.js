@@ -85,6 +85,20 @@ FavoritesAssistant.prototype.setup = function() {
         }
     );
 	this.timeline_list = this.controller.get('favorites-timeline');
+	
+	/*
+		more button
+	*/
+	jQuery('#more-favs-button').bind(Mojo.Event.tap, function() {
+		thisA.loadMore.call(thisA);
+	});
+	this.moreButtonAttributes = {};
+	this.moreButtonModel = {
+		"buttonLabel" : "More",
+		"buttonClass" : 'Primary'
+	};
+	this.controller.setupWidget('more-favs-button', this.moreButtonAttributes, this.moreButtonModel);
+	
 };
 
 FavoritesAssistant.prototype.activate = function(event) {
@@ -113,7 +127,7 @@ FavoritesAssistant.prototype.activate = function(event) {
 		this.refreshOnActivate = false;
 	}
 	
-
+	
 	
 };
 
@@ -129,6 +143,8 @@ FavoritesAssistant.prototype.deactivate = function(event) {
 FavoritesAssistant.prototype.cleanup = function(event) {
 	/* this function should do any cleanup needed before the scene is destroyed as 
 	   a result of being popped off the scene stack */
+	jQuery('#more-favs-button').unbind(Mojo.Event.tap);
+	
 };
 
 
@@ -141,10 +157,22 @@ FavoritesAssistant.prototype.getEntryElementByStatusId = function(id) {
 FavoritesAssistant.prototype.refresh = function(event) {
 	var thisA = this;
 	
+	var page = 0;
+	if (event && sch.isNumber(event)) {
+		page = event;
+	}
+	
 	sc.helpers.markAllAsRead('#favorites-timeline div.timeline-entry');
 	this.showInlineSpinner('activity-spinner-favorites', 'Loading favorite tweets…');
+	
+	/*
+		reset scrollstate to avoid white flash
+	*/
+	var scrollstate = this.scroller.mojo.getState();
+	this.scroller.mojo.setState(scrollstate, false);
+	
 	this.twit.getFavorites(
-		null,
+		page,
 		null,
 		function(data) {
 			if (sch.isArray(data)) {
@@ -185,6 +213,16 @@ FavoritesAssistant.prototype.refresh = function(event) {
 	
 };
 
+FavoritesAssistant.prototype.loadMore = function(event) {
+	if (this.faves_more_page) {
+		this.faves_more_page++;
+	} else {
+		this.faves_more_page = 2;
+	}
+	
+	this.refresh(this.faves_more_page);
+};
+
 
 /*
 	redefine addItems to work with list model
@@ -215,6 +253,12 @@ FavoritesAssistant.prototype.addItems = function(new_items) {
 	
 	// tell the controller it's changed to update list widget
 	this.controller.modelChanged(this.timeline_model);
+	
+	/*
+		reset scrollstate to avoid white flash
+	*/
+	var scrollstate = this.scroller.mojo.getState();
+	this.scroller.mojo.setState(scrollstate, false);
 };
 
 
