@@ -27,10 +27,6 @@ var default_preferences = {
 	'network-refresh-auto':true,
 	'network-refresh-wake':false,
 	
-	'bgnotify-on-dm':true,
-	'bgnotify-on-mention':true,
-	'bgnotify-on-home':false,
-
     'timeline-scrollonupdate': true,
 
     'timeline-maxentries': 100,

@@ -69,9 +69,9 @@ BackgroundNotifier.prototype.init = function(onFinish) {
 	
     this.initTwit();
 
-	this.notifyOnDM = Spaz.getAppObj().prefs.get('bgnotify-on-dm');
-	this.notifyOnMention = Spaz.getAppObj().prefs.get('bgnotify-on-mention');
-	// this.notifyOnTotal = Spaz.getAppObj().prefs.get('bgnotify-on-home');
+	this.notifyOnDM = Spaz.getAppObj().prefs.get('notify-dms');
+	this.notifyOnMention = Spaz.getAppObj().prefs.get('notify-mentions');
+	// this.notifyOnTotal = Spaz.getAppObj().prefs.get('notify-newmessages');
 	this.notifyOnTotal = true;
 
 	onFinish();
@@ -392,13 +392,17 @@ BackgroundNotifier.prototype.getCombinedTimeline = function() {
 	
 			Mojo.Log.error('that.counts.home: %s', that.counts.home);
 			
-			if (that.counts.home > 0 && Spaz.getAppObj().prefs.get('bgnotify-on-home')) {
+			if (that.counts.home > 0 && Spaz.getAppObj().prefs.get('notify-newmessages')) {
+				Mojo.Log.error('DISPLAYING notification!!!!!!!');
 				that.displayNotification();
-			} else if (that.counts.dm > 0 && Spaz.getAppObj().prefs.get('bgnotify-on-dm')) {
+			} else if (that.counts.dm > 0 && Spaz.getAppObj().prefs.get('notify-dms')) {
+				Mojo.Log.error('DISPLAYING notification!!!!!!!');
 				that.displayNotification();
-			} else if (that.counts.mention > 0 && Spaz.getAppObj().prefs.get('bgnotify-on-mention')) {
+			} else if (that.counts.mention > 0 && Spaz.getAppObj().prefs.get('notify-mentions')) {
+				Mojo.Log.error('DISPLAYING notification!!!!!!!');
 				that.displayNotification();
 			} else {
+				Mojo.Log.error('CLOSING notification!!!!!!!');
 				that.closeNotification();
 			}
 	
