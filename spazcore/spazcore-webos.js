@@ -1,4 +1,4 @@
-/*********** Built 2010-10-01 12:37:00 EDT ***********/
+/*********** Built 2010-10-01 13:27:33 EDT ***********/
 /*jslint 
 browser: true,
 nomen: false,
@@ -11508,7 +11508,7 @@ function SpazTwit(opts) {
 /**
  * the default timeout value (60 seconds) 
  */
-SpazTwit.prototype.DEFAULT_TIMEOUT = 1000*3;
+SpazTwit.prototype.DEFAULT_TIMEOUT = 1000*60;
 
 
 
@@ -13081,8 +13081,7 @@ SpazTwit.prototype._callMethod = function(opts) {
 	    'error':function(xhr, msg, exc) {
 			sc.helpers.error(opts.url + ' error:'+msg);
 	        if (xhr) {
-				if (xhr.readyState >= 4) {
-					Mojo.Log.error('xhr.readyState %s, (%s):', xhr.readyState, typeof xhr.readyState);
+				if (!xhr.readyState < 4) {
 					sc.helpers.dump("Error:"+xhr.status+" from "+opts['url']);
 					if (xhr.responseText) {
 						try {
