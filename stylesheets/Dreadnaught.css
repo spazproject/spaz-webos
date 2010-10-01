@@ -1012,17 +1012,18 @@ div.inline-spinner {
 
 div.error_info {
 	font-size:9pt;
-	border:1px solid #666;
-	background: #FFCCCC;
-	padding:3px;
-	margin: 3px 0px;
+	border-top:1px solid #AAA;
+	margin-top:8px;
+	padding-top:8px;
 }
 	div.error_info .human_msg {
-		font-size:11pt;
+		font-size:10pt;
 	}
 	
 	div.error_info .row {
 		overflow:hidden;
+		white-space:nowrap;
+		text-overflow: ellipsis;
 	}
 	div.error_info .label {
 		font-weight:bold;
@@ -1031,12 +1032,14 @@ div.error_info {
 		float:left;
 		text-align:right;
 		margin-right:3px;
-		text-wrap:none;
+		white-space:nowrap;
 	}
 	div.error_info .value {
+		max-width:200px;
 		float:left;
 		overflow:none;
-		text-wrap:none;
+		white-space:nowrap;
+		text-overflow: ellipsis;
 	}
 	
 	
