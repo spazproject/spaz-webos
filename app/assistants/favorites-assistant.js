@@ -163,7 +163,7 @@ FavoritesAssistant.prototype.refresh = function(event) {
 	}
 	
 	sc.helpers.markAllAsRead('#favorites-timeline div.timeline-entry');
-	this.showInlineSpinner('activity-spinner-favorites', 'Loading favorite tweets…');
+	this.showInlineSpinner('activity-spinner-favorites', $L('Loading favorites…'));
 	
 	/*
 		reset scrollstate to avoid white flash
@@ -201,6 +201,9 @@ FavoritesAssistant.prototype.refresh = function(event) {
 			thisA.hideInlineSpinner('activity-spinner-favorites');
 		},
 		function(xhr, msg, exc) {
+			Mojo.Log.error('EROROR in getFavorites');
+			Mojo.Log.error("%j , %j , %j", xhr, msg, exc);
+			
 			var err_msg = $L("There was an error retrieving your favorites");
 			thisA.displayErrorInfo(err_msg, null);
 

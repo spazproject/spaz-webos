@@ -324,9 +324,6 @@ SearchTwitterAssistant.prototype.search = function(e, type) {
 					
 					thisA.addItems(no_dupes);
 
-					/*
-						Update relative dates
-					*/
 					thisA.deactivateSpinner();
 
 					/*
@@ -341,13 +338,9 @@ SearchTwitterAssistant.prototype.search = function(e, type) {
 
 				},
 				function(xhr, msg, exc) {
-					var err_msg = $L("There was an error loading new messages");
+					var err_msg = $L("There was an error loading the search results");
 					thisA.displayErrorInfo(err_msg, null);
-
-					/*
-					Update relative dates
-					*/
-					thisA.hideInlineSpinner('activity-spinner-my-timeline');
+					thisA.deactivateSpinner();
 				}
 			);
 

@@ -709,7 +709,10 @@ scene_helpers.addCommonSceneMethods = function(assistant) {
 	 * stops and hides a spinner 
 	 */
 	assistant.hideInlineSpinner = function(id) {
-		jQuery('#'+id).get(0).mojo.stop();
+		Mojo.Log.error('hideInlineSpinner %s', id);
+		if (jQuery('#'+id).get(0)) {
+			jQuery('#'+id).get(0).mojo.stop();
+		}
 		jQuery('#'+id+'-container').hide();
 	};
 	
@@ -944,7 +947,7 @@ scene_helpers.addCommonSceneMethods = function(assistant) {
 		switch(errobj.msg) {
 			case 'timeout':
 				
-				human_msg = $L('The request timed out – server did not respond in time');
+				human_msg = $L('The request timed out – server did not respond');
 				break;
 				
 			case 'error':
@@ -972,8 +975,8 @@ scene_helpers.addCommonSceneMethods = function(assistant) {
 					twiterr_req = twiterr.request;
 					twiterr_msg = twiterr.error;
 				} catch (e) {
-					dump('Tried to decode JSON from responseText, but failed');
-					dump(e.name + ":" + e.message);
+					Mojo.Log.error('Tried to decode JSON from responseText, but failed');
+					Mojo.Log.error(e.name + ":" + e.message);
 				}
 				
 				break;
@@ -1009,9 +1012,9 @@ scene_helpers.addCommonSceneMethods = function(assistant) {
 			};
 		} else {
 			error_processed = {
-				'status':		'n/a',
-				'statusText':	'n/a',
-				'responseText':	'n/a',
+				'status':		'',
+				'statusText':	'',
+				'responseText':	'',
 				'url':			errobj.url,
 				'msg':			errobj.msg,
 				'human_msg':	human_msg,
@@ -1042,37 +1045,38 @@ scene_helpers.addCommonSceneMethods = function(assistant) {
 	
 	
 	assistant.displayErrorInfo = function(msg, errors, template) {
+		Mojo.Log.error('assistant.displayErrorInfo');
+		Mojo.Log.error('msg: %s', msg);
+		Mojo.Log.error('errors: %j', errors);
+		Mojo.Log.error('template: %s', template);
+		
 		
 		var error_info;
-		var error_html = '';
+		var error_str = '';
 		
 		errors = errors || null;
-		
-		dump(errors);
 		
 		if (errors && !sch.isArray(errors)) {
 			var err = errors;
 			errors = [errors];
 		}
 		
-		dump(errors);
-		
 		if (!template) {
-			template = 'error_info_text';
+			// template = 'error_info_text';
+			template = 'error_info';
 		} 
 
+		
+		error_str += msg + "\n";
 		
 		if ( errors ) {
 			for (var i = 0; i < errors.length; i++) {
 				error_info  = this.processAjaxError(errors[i]);
-				if (error_html.length>0) {
-					error_html += "-------------------\n";
-				}
-				error_html += App.tpl.parseTemplate(template, error_info);
+				error_str += App.tpl.parseTemplate(template, error_info);
 			}
 		}
 
-		var dialog_widget = Mojo.Controller.errorDialog(error_html);
+		var dialog_widget = Mojo.Controller.errorDialog(error_str);
 		
 	};
 

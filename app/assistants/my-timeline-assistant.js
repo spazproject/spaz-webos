@@ -423,13 +423,21 @@ MyTimelineAssistant.prototype.refresh = function(mark_as_read) {
 					}
 
 				},
-				function(xhr, msg, exc) {
-					var err_msg = $L("There was an error loading new messages");
-					thisA.displayErrorInfo(err_msg, null);
+				function(errors) {
+					var num_errors = 1;
+					var err_msg = '';
+					
+					if (sch.isArray(errors)) {
+						num_errors = errors.length;
+					}
+					
+					if (num_errors > 1) {
+						err_msg = $L("There were #{num_errors} errors:").interpolate({'num_errors':num_errors});
+					} else {
+						err_msg = $L("There was #{num_errors} error:").interpolate({'num_errors':num_errors});
+					}
+					thisA.displayErrorInfo(err_msg, errors);
 
-					/*
-					Update relative dates
-					*/
 					thisA.hideInlineSpinner('activity-spinner-my-timeline');
 				}
 			);
@@ -729,7 +737,10 @@ MyTimelineAssistant.prototype.filterTimeline = function(command, scroll_to_top, 
 	
 	Mojo.Log.info('this.timeline_model.items length: %s', this.timeline_model.items.length);
 	
-	this.controller.modelChanged(this.timeline_model);
+	if (this.controller) { // sanity check in case we change context
+		this.controller.modelChanged(this.timeline_model);
+	}
+	
 
 	this.setFilterState(command);
 	
