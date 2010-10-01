@@ -1,4 +1,4 @@
-/*********** Built 2010-09-24 19:47:49 EDT ***********/
+/*********** Built 2010-10-01 12:37:00 EDT ***********/
 /*jslint 
 browser: true,
 nomen: false,
@@ -64,18 +64,17 @@ onevar: false
  */
  
 /**
- * 
- * @namespace root namespace for SpazCore
+ * @namespace 
  */
 var sc = {};
 
 /**
- * @namespace namespace for app-specific stuff
+ * @namespace
  */
 sc.app = {};
 
 /**
- * @namespace namespace for helper methods
+ * @namespace
  */
 sc.helpers = {};
 
@@ -4282,16 +4281,16 @@ onevar: false
 var sc;
  
 /*
-* makes relative time out of "Sun Jul 08 19:01:12 +0000 2007" type string
-* Borrowed from Mike Demers (slightly altered)
-* https://twitter.pbwiki.com/RelativeTimeScripts
-* 
-* This requires date.js
-* http://www.datejs.com/
-* @param {string} time_value a string to convert into relative time
-* @param {object} [labels] labels for text portions of time descriptions
-* @param {boolean} [use_dateparse] Whether or not to use the Date.parse method to parse the time_value. Default is FALSE
-*/
+ * makes relative time out of "Sun Jul 08 19:01:12 +0000 2007" type string
+ * Borrowed from Mike Demers (slightly altered)
+ * https://twitter.pbwiki.com/RelativeTimeScripts
+ * 
+ * This requires date.js
+ * http://www.datejs.com/
+ * @param {string} time_value a string to convert into relative time
+ * @param {object} [labels] labels for text portions of time descriptions
+ * @param {boolean} [use_dateparse] Whether or not to use the Date.parse method to parse the time_value. Default is FALSE
+ */
 sc.helpers.getRelativeTime = function(time_value, labels, use_dateparse) {	
 	
 	var default_labels = {
@@ -4341,13 +4340,16 @@ sc.helpers.getRelativeTime = function(time_value, labels, use_dateparse) {
 	}
 };
 
-
+/**
+ * @member sc.helpers 
+ */
 sc.helpers.httpTimeToInt = function(entry_date, use_dateparse) {
 	return sc.helpers.dateToInt(entry_date, use_dateparse);
 };
 
 /**
  * this returns milliseconds, not seconds! 
+ * @member sc.helpers 
  */
 sc.helpers.dateToInt = function(entry_date, use_dateparse) {
 	var parsedDate = new Date();
@@ -4362,7 +4364,9 @@ sc.helpers.dateToInt = function(entry_date, use_dateparse) {
 	return parsedDate.getTime();
 };
 
-
+/**
+ * @member sc.helpers  
+ */
 sc.helpers.getTimeAsInt = function() {
 	var now = new Date();
 	return now.getTime();
@@ -4388,7 +4392,7 @@ var sc;
  * @param {Object} [scope] the scope to execute the handler within (what "this" refers to)
  * @param {boolean} [use_capture]  defaults to false
  * @returns {function} the handler that was passed -- or created, if we passed a scope. You can use this to remove the listener later on
- * @function
+ * @member sc.helpers 
  */
 sc.helpers.addListener = function(target, event_type, handler, scope, use_capture) {
 	
@@ -4417,7 +4421,7 @@ sc.helpers.addListener = function(target, event_type, handler, scope, use_captur
  * @param {function} handler  a method that will take the event as a param, and "this" refers to target
  * @param {Object} scope the scope to execute the handler
  * @param {boolean} use_capture  defaults to false
- * @function
+ * @member sc.helpers 
  */
 sc.helpers.removeListener = function(target, event_type, handler, use_capture) {
 
@@ -4473,7 +4477,7 @@ sc.helpers.removeDelegatedListener = function(base_target, selector, event_type,
  * @param {DOMElement}  target   the target for the event (element, window, etc)
  * @param {object}  data     data to pass with event. it is always passed as the second parameter to the handler (after the event object)
  * @param {boolean} bubble   whether the event should bubble or not. defaults to true
- * @function
+ * @member sc.helpers 
  */
 sc.helpers.triggerCustomEvent = function(event_type, target, data, bubble) {
 	
@@ -4506,31 +4510,36 @@ sc.helpers.getEventData = function(event_obj) {
 
 /**
  * Alias for sc.helpers.addListener 
+ * @member sc.helpers 
  * @function
  */
 sc.helpers.listen = sc.helpers.addListener;
 
 /**
  * Alias for sc.helpers.removeListener
+ * @member sc.helpers 
  * @function
  */
 sc.helpers.unlisten = sc.helpers.removeListener;
 
 /**
  * Alias for sc.helpers.addDelegatedListener
- * @function 
+ * @member sc.helpers  
+ * @function
  */
 sc.helpers.delegate = sc.helpers.addDelegatedListener;
 
 /**
  * Alias for sc.helpers.removeDelegatedListener
- * @function 
+ * @member sc.helpers  
+ * @function
  */
 sc.helpers.undelegate = sc.helpers.removeDelegatedListener;
 
 
 /**
  * Alias for sc.helpers.triggerCustomEvent 
+ * @member sc.helpers 
  * @function
  */
 sc.helpers.trigger  = sc.helpers.triggerCustomEvent;/*jslint 
@@ -4566,15 +4575,18 @@ var sc;
 *
 *  Base64 encode / decode
 *  http://www.webtoolkit.info/
-*
+* @namespace
 **/
-
 sc.helpers.Base64 = {
 
 	// private property
 	_keyStr : "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=",
 
-	// public method for encoding
+	/**
+	* public method for encoding
+	* @function
+	* @name sc.helpers.Base64.encode
+	*/
 	encode : function (input) {
 		var output = "";
 		var chr1, chr2, chr3, enc1, enc2, enc3, enc4;
@@ -4608,7 +4620,11 @@ sc.helpers.Base64 = {
 		return output;
 	},
 
-	// public method for decoding
+	/**
+	* public method for decoding
+	* @function
+	* @name sc.helpers.Base64.decode
+	*/
 	decode : function (input) {
 		var output = "";
 		var chr1, chr2, chr3;
@@ -4711,9 +4727,8 @@ sc.helpers.Base64 = {
 *
 *  Javascript crc32
 *  http://www.webtoolkit.info/
-*
+* @function
 **/
- 
 sc.helpers.crc32 = function (str) {
  
 	function Utf8Encode(string) {
@@ -4766,9 +4781,8 @@ sc.helpers.crc32 = function (str) {
 *
 *  MD5 (Message-Digest Algorithm)
 *  http://www.webtoolkit.info/
-*
+* @function
 **/
- 
 sc.helpers.MD5 = function (string) {
  
 	function RotateLeft(lValue, iShiftBits) {
@@ -4974,9 +4988,8 @@ sc.helpers.MD5 = function (string) {
 *
 *  Secure Hash Algorithm (SHA1)
 *  http://www.webtoolkit.info/
-*
+* @function
 **/
- 
 sc.helpers.SHA1 = function (msg) {
  
 	function rotate_left(n,s) {
@@ -5153,9 +5166,8 @@ sc.helpers.SHA1 = function (msg) {
 *  http://www.webtoolkit.info/
 *
 *  Original code by Angel Marin, Paul Johnston.
-*
+* @function
 **/
- 
 sc.helpers.SHA256 = function (s){
  
 	var chrsz   = 8;
@@ -5303,7 +5315,7 @@ Redistribution and use in source and binary forms, with or without modification,
 THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-/*
+/**
  * Generate a random uuid.
  *
  * USAGE: Math.uuid(length, radix)
@@ -5326,7 +5338,9 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
  *   "47473046"
  *   >>> Math.uuid(8, 16) // 8 character ID (base=16)
  *   "098F4D35"
- */
+ * @member sc.helpers
+ * @function
+ */
 sc.helpers.UUID = (function() {
   // Private array of chars to use
   var CHARS = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz'.split(''); 
@@ -5362,7 +5376,8 @@ sc.helpers.UUID = (function() {
 
 /**
  * Checks if the given value is an RFC 4122 UUID 
- */
+ * @member sc.helpers
+ */
 sc.helpers.isUUID = function(val) {
 	return val.match(/^[0-9A-Z]{8}-[0-9A-Z]{4}-[0-9A-Z]{4}-[0-9A-Z]{4}-[0-9A-Z]{12}$/);
 };
@@ -5384,6 +5399,7 @@ var sc, jQuery;
 /*
 	Return a boolean value telling whether
 	the first argument is a string.
+	* @member sc.helpers
 */
 sc.helpers.isString = function(thing) {
 	if (typeof thing === 'string') {return true;}
@@ -5394,7 +5410,9 @@ sc.helpers.isString = function(thing) {
     return false;
 };
 
-
+/**
+ * @member sc.helpers 
+ */
 sc.helpers.isNumber = function(chk) {
 	return typeof chk === 'number';
 };
@@ -5403,6 +5421,7 @@ sc.helpers.isNumber = function(chk) {
 
 /*
 	http://www.breakingpar.com/bkp/home.nsf/0/87256B280015193F87256C720080D723
+	* @member sc.helpers
 */
 sc.helpers.isArray = function(obj) {
 	if (!obj || !obj.constructor) { // short-circuit this if it's falsey
@@ -5418,6 +5437,7 @@ sc.helpers.isArray = function(obj) {
 
 /*
 	Returns a copy of the object using the _.extend() method
+	* @member sc.helpers
 */
 sc.helpers.clone = function(oldObj) {
 	return _.extend({}/* clone */, oldObj);
@@ -5425,6 +5445,7 @@ sc.helpers.clone = function(oldObj) {
 
 /**
  * @todo 
+ * @member sc.helpers
  */
 sc.helpers.each = function(arr, f) {
 	
@@ -5438,6 +5459,7 @@ sc.helpers.each = function(arr, f) {
  * 
  * @param {object} child the child type
  * @param {object} supertype the parent we inherit from 
+ * @member sc.helpers
  */
 sc.helpers.extend = function(child, supertype)
 {
@@ -5452,6 +5474,7 @@ sc.helpers.extend = function(child, supertype)
  * @param {object} defaults the default key/val pairs
  * @param {object} passed   the values provided to the calling method
  * @returns {object} a set of key/vals that have defaults filled-in
+ * @member sc.helpers
  */
 sc.helpers.defaults = function(defaults, passed) {
 	
@@ -5480,6 +5503,7 @@ var sc;
 /* A wrapper for JSON.parse() that correct Twitter issues and perform logging if JSON data could not be parsed
  * which will help to find out what is wrong
  * @param {String} text 
+ * @member sc.helpers
  */
 sc.helpers.deJSON = function(json)
  {
@@ -5504,7 +5528,8 @@ sc.helpers.deJSON = function(json)
 /**
  * really just a simple wrapper for JSON.stringify	
  * @param  any js construct
- */
+ * @member sc.helpers
+ */
 sc.helpers.enJSON = function(jsobj) {
 	return JSON.stringify(jsobj);
 };
@@ -5529,6 +5554,7 @@ sc.helpers.enJSON = function(jsobj) {
 /*
  This simple script converts XML (document of code) into a JSON object. It is the combination of 2
  'xml to json' great parsers (see below) which allows for both 'simple' and 'extended' parsing modes.
+ * @member sc.helpers
 */
 sc.helpers.xml2json = function(xml, extended) {
 	if (!xml) return {};
@@ -5704,7 +5730,8 @@ var sc;
 /**
  * Stub 
  * @platformstub
- */
+ * @member sc.helpers
+ */
 sc.helpers.getCurrentLocation = function() {
 	
 };/*jslint 
@@ -5727,7 +5754,8 @@ var sc;
  * @param {string} str  the string to check
  * @param {string} sn   the screen name to look for
  * @return {boolean} 
- */
+ * @member sc.helpers
+ */
 sc.helpers.containsScreenName = function(str, sn) {
 	
 	var re = new RegExp('(?:\\s|\\b|^[[:alnum:]]|^)@('+sn+')(?:\\s|\\b|$)', 'gi');
@@ -5764,7 +5792,8 @@ sc.helpers.extractScreenNames = function(str, tpl) {
 
 /**
  * find URLs within the given string 
- */
+ * @member sc.helpers
+ */
 sc.helpers.extractURLs = function(str) {
 	// var wwwlinks = /(^|\s)((https?|ftp)\:\/\/)?([a-z0-9+!*(),;?&=\$_.-]+(\:[a-z0-9+!*(),;?&=\$_.-]+)?@)?([✪a-z0-9-.]*)\.([a-z]{2,3})(\:[0-9]{2,5})?(\/([a-z0-9+\$_-]\.?)+)*\/?(\?[a-z+&\$_.-][a-z0-9;:@&%=+\/\$_.-]*)?(#[a-z_.-][a-z0-9+\$_.-]*)?(\s|$)/gi;
 	var wwwlinks = /(^|\s|\(|:)(((http(s?):\/\/)|(www\.))([\w✪]+[^\s\)<]+))/gi;
@@ -5797,7 +5826,8 @@ sc.helpers.extractURLs = function(str) {
  * @param {string} str
  * @param {object} map
  * @return {string}
- */
+ * @member sc.helpers
+ */
 sc.helpers.replaceMultiple = function(str, map) {
 	for (var key in map) {
 		str = str.replace(key, map[key]);
@@ -5816,7 +5846,8 @@ sc.helpers.replaceMultiple = function(str, map) {
  * @param {boolean} extra_code  a string that will be inserted verbatim into <a> tag
  * @param {integer} maxlen  the maximum length the link description can be (the string inside the <a></a> tag)
  * @return {string}
- */
+ * @member sc.helpers
+ */
 sc.helpers.autolink = function(str, type, extra_code, maxlen) {
 	if (!type) {
 		type = 'both';
@@ -5937,7 +5968,8 @@ sc.helpers.autolink = function(str, type, extra_code, maxlen) {
  * @param {string} str
  * @param {string} tpl  default is '<a href="http://twitter.com/#username#">@#username#</a>'
  * @return {string}
- */
+ * @member sc.helpers
+ */
 sc.helpers.autolinkTwitterScreenname = function(str, tpl) {
 	if (!tpl) {
 		tpl = '<a href="http://twitter.com/#username#">@#username#</a>';
@@ -5976,7 +6008,8 @@ sc.helpers.autolinkTwitterScreenname = function(str, tpl) {
  * @param {string} str
  * @param {string} tpl  default is '<a href="http://search.twitter.com/search?q=#hashtag_enc#">##hashtag#<a/>'
  * @return {string}
- */
+ * @member sc.helpers
+ */
 sc.helpers.autolinkTwitterHashtag = function(str, tpl) {
 	if (!tpl) {
 		tpl = '<a href="http://search.twitter.com/search?q=#hashtag_enc#">##hashtag#</a>';
@@ -6028,7 +6061,8 @@ sc.helpers.autolinkTwitterHashtag = function(str, tpl) {
  *  		'tpl':'' // should contain macros '#hashtag#' and '#hashtag_enc#'
  *  	}
  *  }
- */
+ * @member sc.helpers
+ */
 sc.helpers.makeClickable = function(str, opts) {
 	var autolink_type, autolink_extra_code, autolink_maxlen, screenname_tpl, hashtag_tpl;
 	
@@ -6062,7 +6096,8 @@ sc.helpers.makeClickable = function(str, opts) {
  * Simple html tag remover
  * @param {string} str
  * @return {string}
- */
+ * @member sc.helpers
+ */
 sc.helpers.stripTags = function(str) {
 	var re = /<[^>]*>/gim;
 	str = str.replace(re, '');
@@ -6072,7 +6107,8 @@ sc.helpers.stripTags = function(str) {
 
 /**
  * Converts the following entities into regular chars: &lt; &gt; &quot; &apos;
- */
+ * @member sc.helpers
+ */
 sc.helpers.fromHTMLSpecialChars = function(str) {
 	str = str.replace(/&lt;/gi, '<');
 	sc.helpers.dump(str);
@@ -6332,12 +6368,11 @@ sc.helpers._get_html_translation_table = function(table, quote_style) {
 *
 *  UTF-8 data encode / decode
 *  http://www.webtoolkit.info/
-*
+*  @namespace
 **/
- 
 sc.helpers.Utf8 = {
  
-	// public method for url encoding
+	/** @function public method for url encoding */
 	encode : function (string) {
 		string = string.replace(/\r\n/g,"\n");
 		var utftext = "";
@@ -6364,7 +6399,7 @@ sc.helpers.Utf8 = {
 		return utftext;
 	},
  
-	// public method for url decoding
+	/** @function public method for url decoding */
 	decode : function (utftext) {
 		var string = "";
 		var i = 0;
@@ -6428,7 +6463,8 @@ sc.helpers.rtrim = function (str, chars) {
  * @param {number} pad_length the length to pad the string
  * @param {string} pad_string the string to pad with
  * @param {string} pad_type STR_PAD_LEFT, STR_PAD_RIGHT, or STR_PAD_BOTH. Default is STR_PAD_RIGHT 
- */
+ * @member sc.helpers
+ */
 sc.helpers.pad = function (input, pad_length, pad_string, pad_type) {
     // http://kevin.vanzonneveld.net
     // +   original by: Kevin van Zonneveld (http://kevin.vanzonneveld.net)
@@ -6473,7 +6509,8 @@ sc.helpers.pad = function (input, pad_length, pad_string, pad_type) {
  * @param {string} str the string in which we're converting linebreaks
  * @param {string} [breaktag] the tag used to break up lines. defaults to <br>
  * @returns {string} the string with linebreaks converted to breaktags
- */
+ * @member sc.helpers
+ */
 sc.helpers.nl2br = function(str, breaktag) {
 	
 	breaktag = breaktag || '<br>';
@@ -6498,26 +6535,64 @@ var sc;
  * NOTE: to use all these helpers, you must additionally load a platform-specific definition file!
  */
 
-
+/**
+ * @constant 
+ */
 var SPAZCORE_PLATFORM_AIR			= 'AIR';
+/**
+ * @constant 
+ */
 var SPAZCORE_PLATFORM_WEBOS		= 'webOS';
+/**
+ * @constant 
+ */
 var SPAZCORE_PLATFORM_TITANIUM	= 'Titanium';
+/**
+ * @constant 
+ */
 var SPAZCORE_PLATFORM_UNKNOWN		= '__UNKNOWN';
 
 
+/**
+ * @constant 
+ */
 var SPAZCORE_OS_WINDOWS		= 'Windows';
+/**
+ * @constant 
+ */
 var SPAZCORE_OS_LINUX		= 'Linux';
+/**
+ * @constant 
+ */
 var SPAZCORE_OS_MACOS		= 'MacOS';
+/**
+ * @constant 
+ */
 var SPAZCORE_OS_UNKNOWN		= '__OS_UNKNOWN';
 
 
 /**
  * error reporting levels 
  */
+/**
+ * @constant 
+ */
 var SPAZCORE_DUMPLEVEL_DEBUG   = 4;
+/**
+ * @constant 
+ */
 var SPAZCORE_DUMPLEVEL_NOTICE  = 3;
+/**
+ * @constant 
+ */
 var SPAZCORE_DUMPLEVEL_WARNING = 2;
+/**
+ * @constant 
+ */
 var SPAZCORE_DUMPLEVEL_ERROR   = 1;
+/**
+ * @constant 
+ */
 var SPAZCORE_DUMPLEVEL_NONE    = 0; // this means "never ever dump anything!"
 
 
@@ -6530,6 +6605,7 @@ var SPAZCORE_DUMPLEVEL_NONE    = 0; // this means "never ever dump anything!"
 * Right now these checks are really, really basic
 * 
 * @return {String} an identifier for the platform
+* @member sc.helpers
 */
 sc.helpers.getPlatform = function() {
 	if (window.runtime) {
@@ -6551,6 +6627,7 @@ sc.helpers.getPlatform = function() {
 * 
 * @param {String} str the platform you're checking for
 * 
+* @member sc.helpers
 */
 sc.helpers.isPlatform = function(str) {
 	var pform = sc.helpers.getPlatform();
@@ -6561,15 +6638,23 @@ sc.helpers.isPlatform = function(str) {
 	}
 };
 
-
+/**
+ * @member sc.helpers 
+ */
 sc.helpers.isAIR = function() {
 	return sc.helpers.isPlatform(SPAZCORE_PLATFORM_AIR);
 };
 
+/**
+ * @member sc.helpers 
+ */
 sc.helpers.iswebOS = function() {
 	return sc.helpers.isPlatform(SPAZCORE_PLATFORM_WEBOS);
 };
 
+/**
+ * @member sc.helpers 
+ */
 sc.helpers.isTitanium = function() {
 	return sc.helpers.isPlatform(SPAZCORE_PLATFORM_TITANIUM);
 };
@@ -6578,28 +6663,32 @@ sc.helpers.isTitanium = function() {
 
 /**
  * Helper to send a debug dump 
- */
+ * @member sc.helpers
+ */
 sc.helpers.debug = function(obj) {
 	sc.helpers.dump(obj, SPAZCORE_DUMPLEVEL_DEBUG);
 };
 
 /**
  * helper to send a notice dump 
- */
+ * @member sc.helpers
+ */
 sc.helpers.note = function(obj) {
 	sc.helpers.dump(obj, SPAZCORE_DUMPLEVEL_NOTICE);
 };
 
 /**
  * helper to send a warn dump 
- */
+ * @member sc.helpers
+ */
 sc.helpers.warn = function(obj) {
 	sc.helpers.dump(obj, SPAZCORE_DUMPLEVEL_WARNING);
 };
 
 /**
  * helper to send an error dump 
- */
+ * @member sc.helpers
+ */
 sc.helpers.error = function(obj) {
 	sc.helpers.dump(obj, SPAZCORE_DUMPLEVEL_ERROR);
 };
@@ -6608,7 +6697,8 @@ sc.helpers.error = function(obj) {
 /**
  * A simple logging function
  * @platformstub
- */
+ * @member sc.helpers
+ */
 sc.helpers.dump = function(obj, level) {
 	console.log(obj);
 };
@@ -6616,33 +6706,18 @@ sc.helpers.dump = function(obj, level) {
 /**
  * Open a URL in the default system web browser
  * @platformstub
- */
+ * @member sc.helpers
+ */
 sc.helpers.openInBrowser = function(url) {
 	window.open(url);
-};
-
-/**
- * Gets the contents of a file
- * @platformstub
- */
-sc.helpers.getFileContents = function(path) {
-	// stub
-};
-
-/**
- * Saves the contents to a specified path. Serializes a passed object if 
- * serialize == true
- * @platformstub
- */
-sc.helpers.setFileContents = function(path, content, serialize) {
-	// stub
 };
 
 
 /**
  * Returns the current application version string
  * @platformstub
- */
+ * @member sc.helpers
+ */
 sc.helpers.getAppVersion = function() {
 	// stub
 };
@@ -6651,7 +6726,8 @@ sc.helpers.getAppVersion = function() {
 /**
  * Returns the user agent string for the app
  * @platformstub
- */
+ * @member sc.helpers
+ */
 sc.helpers.getUserAgent = function() {
 	// stub
 };
@@ -6659,7 +6735,8 @@ sc.helpers.getUserAgent = function() {
 /**
  * Sets the user agent string for the app
  * @platformstub
- */
+ * @member sc.helpers
+ */
 sc.helpers.setUserAgent = function(uastring) {
 	// stub
 };
@@ -6667,7 +6744,8 @@ sc.helpers.setUserAgent = function(uastring) {
 /**
  * Gets clipboard text
  * @platformstub
- */
+ * @member sc.helpers
+ */
 sc.helpers.getClipboardText = function() {
 	// stub
 };
@@ -6675,7 +6753,8 @@ sc.helpers.getClipboardText = function() {
 /**
  * Sets clipboard text
  * @platformstub
- */
+ * @member sc.helpers
+ */
 sc.helpers.setClipboardText = function(text) {
 	// stub
 };
@@ -6684,7 +6763,8 @@ sc.helpers.setClipboardText = function(text) {
 /**
  * Loads a value for a key from EncryptedLocalStore
  * @platformstub
- */
+ * @member sc.helpers
+ */
 sc.helpers.getEncryptedValue = function(key) {
 	// stub
 };
@@ -6692,7 +6772,8 @@ sc.helpers.getEncryptedValue = function(key) {
 /**
  * Sets a value in the EncryptedLocalStore of AIR
  * @platformstub
- */
+ * @member sc.helpers
+ */
 sc.helpers.setEncryptedValue = function(key, val) {
 	// stub
 };
@@ -6702,7 +6783,8 @@ sc.helpers.setEncryptedValue = function(key, val) {
  * Get the app storage directory
  * @TODO is there an equivalent for this on all platforms?
  * @platformstub
- */
+ * @member sc.helpers
+ */
 sc.helpers.getAppStoreDir = function() {
 	// stub
 };
@@ -6710,7 +6792,8 @@ sc.helpers.getAppStoreDir = function() {
 /**
  * Get the preferences file
  * @TODO this should be removed and we rely on the preferences lib 
- */
+ * @member sc.helpers
+ */
 sc.helpers.getPreferencesFile = function(name, create) {
 	// stub
 };
@@ -6740,7 +6823,7 @@ sc.helpers.getOS = function() {
 * checks to see if current platform is the one passed in. Use one of the defined constants, like SPAZCORE_OS_WINDOWS
 * 
 * @param {String} str the platform you're checking for
-* 
+* @member sc.helpers
 */
 sc.helpers.isOS = function(str) {
 	var type = sc.helpers.getOS();
@@ -6750,14 +6833,23 @@ sc.helpers.isOS = function(str) {
 	return false;
 };
 
+/**
+ * @member sc.helpers 
+ */
 sc.helpers.isWindows = function() {
 	return sc.helpers.isOS(SPAZCORE_OS_WINDOWS);
 };
 
+/**
+ * @member sc.helpers 
+ */
 sc.helpers.isLinux = function() {
 	return sc.helpers.isOS(SPAZCORE_OS_LINUX);
 };
 
+/**
+ * @member sc.helpers 
+ */
 sc.helpers.isMacOS = function() {
 	return sc.helpers.isOS(SPAZCORE_OS_MACOS);
 };
@@ -6787,6 +6879,7 @@ var sc, jQuery;
  * @param {integer} max_items the max # of item we should have
  * @param {boolean} remove_from_top whether or not to remove extra items from the top. default is FALSE
  * @requires jQuery
+ * @member sc.helpers 
  */
 sc.helpers.removeExtraElements = function(item_selector, max_items, remove_from_top) {
 
@@ -6829,6 +6922,7 @@ sc.helpers.removeExtraElements = function(item_selector, max_items, remove_from_
  * @param {string} item_selector a jquery-compatible selector to get items
  * @param {boolean} remove_from_top whether or not to remove extra items from the top. default is FALSE
  * @TODO
+ * @member sc.helpers 
  */
 sc.helpers.removeDuplicateElements = function(item_selector, remove_from_top) {
 	sc.helpers.dump('removeDuplicateElements TODO');
@@ -6844,6 +6938,7 @@ sc.helpers.removeDuplicateElements = function(item_selector, remove_from_top) {
  * @param {string} item_selector the jQuery selector for the elements which will contain the relative times
  * @param {string} time_attribute the attribute of the element that contains the created_at value
  * @requires jQuery
+ * @member sc.helpers 
  */
 sc.helpers.updateRelativeTimes = function(item_selector, time_attribute) {
 	jQuery(item_selector).each(function(i) {
@@ -6860,6 +6955,7 @@ sc.helpers.updateRelativeTimes = function(item_selector, time_attribute) {
  * 
  * @param {string} item_selector
  * @requires jQuery
+ * @member sc.helpers 
  */
 sc.helpers.markAllAsRead = function(item_selector) {
 	jQuery(item_selector).removeClass('new');
@@ -6877,7 +6973,7 @@ var sc, DOMParser;
 
 /**
  * Given a string, this returns an XMLDocument
- * @param {string} string
+ * @param {string} string an xml string
  * @return {XMLDocument}
  */
 sc.helpers.createXMLFromString = function (string) {
@@ -6897,16 +6993,49 @@ sc.helpers.createXMLFromString = function (string) {
 /**
  * "constants" for account types 
  */
+/**
+ * @constant 
+ */
 var SPAZCORE_ACCOUNT_TWITTER	= 'twitter';
+/**
+ * @constant 
+ */
 var SPAZCORE_ACCOUNT_IDENTICA	= 'identi.ca';
+/**
+ * @constant 
+ */
 var SPAZCORE_ACCOUNT_STATUSNET	= 'StatusNet';
+/**
+ * @constant 
+ */
 var SPAZCORE_ACCOUNT_FLICKR		= 'flickr';
+/**
+ * @constant 
+ */
 var SPAZCORE_ACCOUNT_WORDPRESS	= 'wordpress.com';
+/**
+ * @constant 
+ */
 var SPAZCORE_ACCOUNT_WORDPRESS_TWITTER	= 'wordpress-twitter';
+/**
+ * @constant 
+ */
 var SPAZCORE_ACCOUNT_TUMBLR		= 'tumblr';
+/**
+ * @constant 
+ */
 var SPAZCORE_ACCOUNT_TUMBLR_TWITTER		= 'tumblr-twitter';
+/**
+ * @constant 
+ */
 var SPAZCORE_ACCOUNT_FACEBOOK	= 'facebook';
+/**
+ * @constant 
+ */
 var SPAZCORE_ACCOUNT_FRIENDFEED	= 'friendfeed';
+/**
+ * @constant 
+ */
 var SPAZCORE_ACCOUNT_CUSTOM 	= 'custom';
 
 /**
@@ -7220,10 +7349,18 @@ SpazAccounts.prototype.setMeta = function(id, key, value) {
  * A library for performing authentication.
  * Currently supports both Basic and oAuth.
  */
-
+/**
+ * @constant 
+ */
 var SPAZCORE_AUTHTYPE_BASIC  = 'basic';
+/**
+ * @constant 
+ */
 var SPAZCORE_AUTHTYPE_OAUTH  = 'oauth';
 
+/**
+ * @constant 
+ */
 var SPAZAUTH_SERVICES = {};
 
 SPAZAUTH_SERVICES[SPAZCORE_ACCOUNT_STATUSNET] = {
@@ -7250,6 +7387,7 @@ SPAZAUTH_SERVICES['default'] = {
  *
  * @param {string} service name of the service to authenticate (ex: twitter, identica)
  * @class SpazAuth
+ * @constructor
  */
 function SpazAuth(service) {
     var serviceInfo = SPAZAUTH_SERVICES[service];
@@ -7281,6 +7419,7 @@ SpazAuth.addService = function(label, opts) {
  * Construct a new basic authentication object.
  *
  * @class SpazBasicAuth
+ * @constructor
  */
 function SpazBasicAuth() {
 };
@@ -7291,7 +7430,6 @@ function SpazBasicAuth() {
  * @param {string} username
  * @param {string} password
  * @param {function} [onComplete] a callback to fire when complete. Currently just passed TRUE all the time; for compatibility with oAuth need for callbacks
- * @class SpazBasicAuth
  * @return {Boolean} true. ALWAYS returns true!
  */
 SpazBasicAuth.prototype.authorize = function(username, password, onComplete) {
@@ -7309,7 +7447,6 @@ SpazBasicAuth.prototype.authorize = function(username, password, onComplete) {
 /**
  * Returns the authentication header
  * @returns {string} Authentication header value
- * @class SpazBasicAuth
  */
 SpazBasicAuth.prototype.signRequest = function() {
     return this.authHeader;
@@ -7320,7 +7457,6 @@ SpazBasicAuth.prototype.signRequest = function() {
   *
   * @param {string} pickle the serialized data string returned by save()
   * @returns {boolean} true if successfully loaded
-  * @class SpazBasicAuth
   */
 SpazBasicAuth.prototype.load = function(pickle) {
     var credentials = pickle.split(':', 2);
@@ -7337,7 +7473,6 @@ SpazBasicAuth.prototype.load = function(pickle) {
   * Save basic auth credentials into a serialized string
   *
   * @returns {string} serialized string
-  * @class SpazBasicAuth
   */
 SpazBasicAuth.prototype.save = function() {
     return this.username + ":" + this.password;
@@ -7359,6 +7494,7 @@ SpazBasicAuth.prototype.getPassword = function() {
  * @param {string} realm
  * @param {object} options
  * @class SpazOAuth
+ * @constructor
  */
 function SpazOAuth(realm, options) {
     this.realm = realm;
@@ -7372,7 +7508,6 @@ function SpazOAuth(realm, options) {
  * @param {string} password
  * @param {function} [onComplete] a callback to fire on complete. If this is set, the request is asynchronous
  * @returns {boolean} true if authorization successful, otherwise false
- * @class SpazOAuth
  */
 SpazOAuth.prototype.authorize = function(username, password, onComplete) {
 	
@@ -7513,7 +7648,6 @@ SpazOAuth.prototype.authorize = function(username, password, onComplete) {
   *
   * @param {string} key
   * @param {string} secret
-  * @class SpazOAuth
   */
 SpazOAuth.prototype.setAccessToken = function(key, secret) {
     this.accessToken = {key: key, secret: secret};
@@ -7532,7 +7666,6 @@ SpazOAuth.prototype.setAccessToken = function(key, secret) {
  * @param {string} url the URL of the request
  * @param {object} parameters map of all parameters in the request
  * @returns {string} Authorization header value
- * @class SpazOAuth
  */
 SpazOAuth.prototype.signRequest = function(method, url, parameters) {
     // We need to copy parameters because OAuth.js modifies it.
@@ -7552,7 +7685,6 @@ SpazOAuth.prototype.signRequest = function(method, url, parameters) {
   *
   * @param {string} pickle the serialized string returned by save()
   * @returns {boolean} true if successfully loaded
-  * @class SpazOAuth
   */
 SpazOAuth.prototype.load = function(pickle) {
     var credentials = pickle.split(':', 3);
@@ -7570,7 +7702,6 @@ SpazOAuth.prototype.load = function(pickle) {
   * Save OAuth credentials to a serialized string
   *
   * @returns {string} serialized string
-  * @class SpazOAuth
   */
 SpazOAuth.prototype.save = function() {
     return this.username + ":" + this.accessToken.key + ":" + this.accessToken.secret;
@@ -7578,6 +7709,7 @@ SpazOAuth.prototype.save = function() {
 
 /**
  * a library to get direct image urls for various image hosting servces 
+ * @constructor
  */
 function SpazImageURL(args) {
 	
@@ -7899,7 +8031,7 @@ sc.events.fileUploadFailure	= 'fileUploadFailure';
 
 
 /**
- * Constructor
+ * A File uploader class
  * 
  * opts = {
  *   api:'',
@@ -7908,6 +8040,7 @@ sc.events.fileUploadFailure	= 'fileUploadFailure';
  *   failureEvent:'',
  *   eventTarget:DOMElement
  * } 
+ * @constructor
  */
 function SpazFileUploader(opts) {
 
@@ -8493,6 +8626,7 @@ var sc, DOMParser, jQuery;
  * @param {string} [opts.password] a password, in case we're doing that kind of thing
  * @param {string} [opts.auth_method] the method of authentication: 'echo' or 'basic'. Default is 'echo'
  * @param {object} [opts.extra] Extra params to pass in the upload request
+ * @constructor
  */
 var SpazImageUploader = function(opts) {
     if (opts) {
@@ -8813,6 +8947,7 @@ SpazImageUploader.prototype.upload = function() {
 	
 	var onSuccess, rs;
 	if (srvc.parseResponse) {
+		/** @ignore */
 		onSuccess = function(data) {
 			if (sch.isString(data)) {
 				rs = srvc.parseResponse.call(srvc, data);
@@ -8873,6 +9008,9 @@ onevar: false
  */
 var sc, jQuery;
 
+/**
+ * @constructor 
+ */
 function SpazPhotoMailer(opts) {
 
 	this.apis = this.getAPIs();
@@ -9039,12 +9177,24 @@ onevar: false
  */
 var sc, Titanium, air, jQuery, Mojo;
 
+/**
+ * @constant 
+ */
 var SPAZCORE_PREFS_TI_KEY = 'preferences_json';
 
+/**
+ * @constant 
+ */
 var SPAZCORE_PREFS_AIR_FILENAME = 'preferences.json';
 
+/**
+ * @constant 
+ */
 var SPAZCORE_PREFS_MOJO_COOKIENAME = 'preferences.json';
 
+/**
+ * @constant 
+ */
 var SPAZCORE_PREFS_STANDARD_COOKIENAME = 'preferences_json';
  
 /**
@@ -9073,6 +9223,7 @@ var SPAZCORE_PREFS_STANDARD_COOKIENAME = 'preferences_json';
  * 
  * @TODO we need to pull out the platform-specifc stuff into the /platforms/... hierarchy
  * @class SpazPrefs
+ * @constructor
  */
 function SpazPrefs(defaults, id, sanity_methods) {	
 
@@ -9281,9 +9432,8 @@ var sc;
 
 /**
  * A library to shorten text 
+ * @constructor
  */
-
-
 function SpazShortText() {
 
 	this.map = {};
@@ -10013,11 +10163,26 @@ var sc, jQuery;
 /**
  * Constants to refer to services 
  */
+/**
+ * @constant 
+ */
 var SPAZCORE_SHORTURL_SERVICE_SHORTIE = 'short.ie';
+/**
+ * @constant 
+ */
 var SPAZCORE_SHORTURL_SERVICE_ISGD	  = 'is.gd';
+/**
+ * @constant 
+ */
 var SPAZCORE_SHORTURL_SERVICE_BITLY	  = 'bit.ly';
+/**
+ * @constant 
+ */
 var SPAZCORE_SHORTURL_SERVICE_JMP     = 'j.mp';
 
+/**
+ * @constant 
+ */
 var SPAZCORE_EXPANDABLE_DOMAINS = [
 	"bit.ly",
 	"cli.gs",
@@ -10115,6 +10280,8 @@ sc.events.newExpandURLFailure   = 'recoverLongURLFailure';
 /**
  * Constructor
  * @param {string} service	the name of a service. Preferrably one of the SPAZCORE_SHORTURL_SERVICE_* constants
+ * @class SpazShortURL
+ * @constructor
  */
 function SpazShortURL(service) {
 	
@@ -10465,6 +10632,7 @@ var sc;
  * SpazTemplate 
  * designed for fast templating functions
  * @class SpazTemplate
+ * @constructor
  */
 function SpazTemplate() {
 	
@@ -10623,14 +10791,6 @@ SpazTimeline.prototype.model = [];
  */
 SpazTimeline.prototype.start = function() {
 	sch.debug('Starting timeline');
-	this.requestData();
-};
-
-/**
- * right now this does the same as start(), but could change in the future 
- */
-SpazTimeline.prototype.refresh = function() {
-	sch.debug('Refreshing timeline (prototype)');
 	this.requestData();
 };
 
@@ -11144,27 +11304,90 @@ var sc, jQuery, Mojo, use_palmhost_proxy;
 /**
  * various constant definitions
  */
+/**
+ * @constant 
+ */
 var SPAZCORE_SECTION_FRIENDS = 'friends';
+/**
+ * @constant 
+ */
 var SPAZCORE_SECTION_HOME = 'home';
+/**
+ * @constant 
+ */
 var SPAZCORE_SECTION_REPLIES = 'replies';
+/**
+ * @constant 
+ */
 var SPAZCORE_SECTION_DMS = 'dms';
+/**
+ * @constant 
+ */
 var SPAZCORE_SECTION_FAVORITES = 'favorites';
+/**
+ * @constant 
+ */
 var SPAZCORE_SECTION_COMBINED = 'combined';
+/**
+ * @constant 
+ */
 var SPAZCORE_SECTION_PUBLIC = 'public';
+/**
+ * @constant 
+ */
 var SPAZCORE_SECTION_SEARCH = 'search';
+/**
+ * @constant 
+ */
 var SPAZCORE_SECTION_USER = 'user-timeline';
+/**
+ * @constant 
+ */
 var SPAZCORE_SECTION_FRIENDLIST = 'friendslist';
+/**
+ * @constant 
+ */
 var SPAZCORE_SECTION_FOLLOWERSLIST = 'followerslist';
+/**
+ * @constant 
+ */
 var SPAZCORE_SECTION_USERLISTS = 'userlists';
 
+/**
+ * @constant 
+ */
 var SPAZCORE_SERVICE_TWITTER = 'twitter';
+/**
+ * @constant 
+ */
 var SPAZCORE_SERVICE_IDENTICA = 'identi.ca';
+/**
+ * @constant 
+ */
 var SPAZCORE_SERVICE_WORDPRESS_TWITTER = 'wordpress-twitter';
+/**
+ * @constant 
+ */
 var SPAZCORE_SERVICE_TUMBLR_TWITTER = 'tumblr-twitter';
+/**
+ * @constant 
+ */
 var SPAZCORE_SERVICE_CUSTOM = 'custom';
+/**
+ * @constant 
+ */
 var SPAZCORE_SERVICEURL_TWITTER = 'https://api.twitter.com/1/';
+/**
+ * @constant 
+ */
 var SPAZCORE_SERVICEURL_IDENTICA = 'https://identi.ca/api/';
+/**
+ * @constant 
+ */
 var SPAZCORE_SERVICEURL_WORDPRESS_TWITTER = 'https://twitter-api.wordpress.com/';
+/**
+ * @constant 
+ */
 var SPAZCORE_SERVICEURL_TUMBLR_TWITTER = 'http://www.tumblr.com/';
 
 
@@ -11175,59 +11398,60 @@ var SPAZCORE_SERVICEURL_TUMBLR_TWITTER = 'http://www.tumblr.com/';
  * 
  * jQuery events raised by this library
  * 
- * 'spaztwit_ajax_error'
- * 'new_public_timeline_data' (data)
- * 'new_friends_timeline_data' (data)
- * 'error_friends_timeline_data' (data)
- * 'new_replies_timeline_data' (data)
- * 'error_replies_timeline_data' (data)
- * 'new_dms_timeline_data' (data)
- * 'error_dms_timeline_data' (data)
- * 'new_combined_timeline_data' (data)
- * 'error_combined_timeline_data' (data)
- * 'new_favorites_timeline_data' (data)
- * 'error_favorites_timeline_data' (data)
- * 'verify_credentials_succeeded' (data)
- * 'verify_credentials_failed' (data)
- * 'update_succeeded' (data)
- * 'update_failed' (data)
- * 'get_user_succeeded' (data)
- * 'get_user_failed' (data)
- * 'get_one_status_succeeded' (data)
- * 'get_one_status_failed' (data)
- * 'new_search_timeline_data' (data)
- * 'error_search_timeline_data' (data)
- * 'new_trends_data' (data)
- * 'error_trends_data' (data)
- * 'new_saved_searches_data' (data)
- * 'error_saved_searches_data' (data)
- * 'create_saved_search_succeeded' (data)
- * 'create_saved_search_failed' (data)
- * 'destroy_saved_search_succeeded' (data)
- * 'destroy_saved_search_failed' (data)
- * 'create_favorite_succeeded'
- * 'create_favorite_failed'
- * 'destroy_favorite_succeeded'
- * 'destroy_favorite_failed'
- * 'create_friendship_succeeded'
- * 'create_friendship_failed'
- * 'destroy_friendship_succeeded'
- * 'destroy_friendship_failed'
- * 'create_block_succeeded'
- * 'create_block_failed'
- * 'destroy_block_succeeded'
- * 'destroy_block_failed'
- * 'follow_succeeded'
- * 'follow_failed'
- * 'unfollow_succeeded'
- * 'unfollow_failed'
- * 'ratelimit_status_succeeded'
- * 'ratelimit_status_failed'
- * 'destroy_status_succeeded'
- * 'destroy_status_failed'
- * 'destroy_dm_succeeded'
- * 'destroy_dm_failed'
- * 
+ * <ul>
+ *   <li>'spaztwit_ajax_error'</li>
+ *   <li>'new_public_timeline_data' (data)</li>
+ *   <li>'new_friends_timeline_data' (data)</li>
+ *   <li>'error_friends_timeline_data' (data)</li>
+ *   <li>'new_replies_timeline_data' (data)</li>
+ *   <li>'error_replies_timeline_data' (data)</li>
+ *   <li>'new_dms_timeline_data' (data)</li>
+ *   <li>'error_dms_timeline_data' (data)</li>
+ *   <li>'new_combined_timeline_data' (data)</li>
+ *   <li>'error_combined_timeline_data' (data)</li>
+ *   <li>'new_favorites_timeline_data' (data)</li>
+ *   <li>'error_favorites_timeline_data' (data)</li>
+ *   <li>'verify_credentials_succeeded' (data)</li>
+ *   <li>'verify_credentials_failed' (data)</li>
+ *   <li>'update_succeeded' (data)</li>
+ *   <li>'update_failed' (data)</li>
+ *   <li>'get_user_succeeded' (data)</li>
+ *   <li>'get_user_failed' (data)</li>
+ *   <li>'get_one_status_succeeded' (data)</li>
+ *   <li>'get_one_status_failed' (data)</li>
+ *   <li>'new_search_timeline_data' (data)</li>
+ *   <li>'error_search_timeline_data' (data)</li>
+ *   <li>'new_trends_data' (data)</li>
+ *   <li>'error_trends_data' (data)</li>
+ *   <li>'new_saved_searches_data' (data)</li>
+ *   <li>'error_saved_searches_data' (data)</li>
+ *   <li>'create_saved_search_succeeded' (data)</li>
+ *   <li>'create_saved_search_failed' (data)</li>
+ *   <li>'destroy_saved_search_succeeded' (data)</li>
+ *   <li>'destroy_saved_search_failed' (data)</li>
+ *   <li>'create_favorite_succeeded'</li>
+ *   <li>'create_favorite_failed'</li>
+ *   <li>'destroy_favorite_succeeded'</li>
+ *   <li>'destroy_favorite_failed'</li>
+ *   <li>'create_friendship_succeeded'</li>
+ *   <li>'create_friendship_failed'</li>
+ *   <li>'destroy_friendship_succeeded'</li>
+ *   <li>'destroy_friendship_failed'</li>
+ *   <li>'create_block_succeeded'</li>
+ *   <li>'create_block_failed'</li>
+ *   <li>'destroy_block_succeeded'</li>
+ *   <li>'destroy_block_failed'</li>
+ *   <li>'follow_succeeded'</li>
+ *   <li>'follow_failed'</li>
+ *   <li>'unfollow_succeeded'</li>
+ *   <li>'unfollow_failed'</li>
+ *   <li>'ratelimit_status_succeeded'</li>
+ *   <li>'ratelimit_status_failed'</li>
+ *   <li>'destroy_status_succeeded'</li>
+ *   <li>'destroy_status_failed'</li>
+ *   <li>'destroy_dm_succeeded'</li>
+ *   <li>'destroy_dm_failed'</li>
+ * </ul>
  * 
  * @param {Object} opts various options
  * @param {Object} [opts.auth] SpazAuth object
@@ -11235,6 +11459,7 @@ var SPAZCORE_SERVICEURL_TUMBLR_TWITTER = 'http://www.tumblr.com/';
  * @param {Object} [opts.event_target] the DOM element to target the event on. Defaults to document
  * @param {Number} [opts.timeout] length of time, in seconds, to timeout
  * @class SpazTwit
+ * @constructor
 */
 function SpazTwit(opts) {
 	
@@ -11283,7 +11508,7 @@ function SpazTwit(opts) {
 /**
  * the default timeout value (60 seconds) 
  */
-SpazTwit.prototype.DEFAULT_TIMEOUT = 1000*60;
+SpazTwit.prototype.DEFAULT_TIMEOUT = 1000*3;
 
 
 
@@ -12365,7 +12590,15 @@ SpazTwit.prototype._getTimeline = function(opts) {
         'error':function(xhr, msg, exc) {
 			sc.helpers.dump(opts.url + ' error:"'+msg+'"');
 			if (msg.toLowerCase().indexOf('timeout') !== -1) {
-				stwit.triggerEvent(document, opts.failure_event_type, {'url':opts.url, 'xhr':null, 'msg':msg});
+				stwit.triggerEvent(opts.failure_event_type, {'url':opts.url, 'xhr':null, 'msg':msg});
+				/*
+					don't fire the callback if this is part of a combined call
+				*/
+				if (!opts.processing_opts || !opts.processing_opts.combined) {
+					if (opts.failure_callback) {
+						opts.failure_callback(null, msg, exc);
+					}
+				}
 			} else if (xhr) {
 				if (!xhr.readyState < 4) {
 					sc.helpers.dump("Error:"+xhr.status+" from "+opts['url']);
@@ -12404,7 +12637,12 @@ SpazTwit.prototype._getTimeline = function(opts) {
 			
 			if (opts.processing_opts && opts.processing_opts.combined) {
 				sc.helpers.dump('adding to combined processing errors');
-				stwit.combined_errors.push( {'url':opts.url, 'xhr':xhr, 'msg':msg, 'section':opts.processing_opts.section} );
+				if (xhr && xhr.readyState > 3) {
+					stwit.combined_errors.push( {'url':opts.url, 'xhr':xhr, 'msg':msg, 'section':opts.processing_opts.section} );
+				} else {
+					stwit.combined_errors.push( {'url':opts.url, 'xhr':null, 'msg':msg, 'section':opts.processing_opts.section} );
+				}
+				
 				stwit.combined_finished[opts.processing_opts.section] = true;
 				sc.helpers.dump(stwit.combined_errors);
 				sc.helpers.dump(stwit.combined_finished);
@@ -12421,7 +12659,7 @@ SpazTwit.prototype._getTimeline = function(opts) {
 			try {
 				data = sc.helpers.deJSON(data);
 			} catch(e) {
-				stwit.triggerEvent(document, opts.failure_event_type, {'url':opts.url, 'xhr':xhr, 'msg':'Error decoding data from server'});
+				stwit.triggerEvent(opts.failure_event_type, {'url':opts.url, 'xhr':xhr, 'msg':'Error decoding data from server'});
 			}
 
 			if (opts.process_callback) {
@@ -12843,7 +13081,8 @@ SpazTwit.prototype._callMethod = function(opts) {
 	    'error':function(xhr, msg, exc) {
 			sc.helpers.error(opts.url + ' error:'+msg);
 	        if (xhr) {
-				if (!xhr.readyState < 4) {
+				if (xhr.readyState >= 4) {
+					Mojo.Log.error('xhr.readyState %s, (%s):', xhr.readyState, typeof xhr.readyState);
 					sc.helpers.dump("Error:"+xhr.status+" from "+opts['url']);
 					if (xhr.responseText) {
 						try {
