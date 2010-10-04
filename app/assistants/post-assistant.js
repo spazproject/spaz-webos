@@ -526,7 +526,7 @@ PostAssistant.prototype.sendPost = function(event) {
 		var file = this.model.attachment;
 		this.postImageMessage(emailobj, status, file);
 		this.deactivateSpinner();
-		this.controller.stageController.popScene();
+		this.popScene();
 		return;
 		
 	} else {
@@ -729,7 +729,7 @@ PostAssistant.prototype.emailImageMessage = function(post_add_obj, message, file
 	  controller: this.controller
 	});
 	// next line should close new post "dialog"
-	this.controller.stageController.popScene();
+	this.popScene();
 };
 
 /**
@@ -801,11 +801,13 @@ PostAssistant.prototype.onReturnFromFilePicker = function() {
  * 
  */
 PostAssistant.prototype.renderSuccessfulPost = function(event, data) {
+	Mojo.Log.error('RENDERSUCCESSFULPOST');
+	
 	this.setPostButtonLabel('Posted!');
 	
 	this.deactivateSpinner();
 	
-	this.controller.stageController.popScene();
+	this.popScene();
 };
 
 
@@ -900,20 +902,27 @@ PostAssistant.prototype.onUploadSuccess = function(e) {
 		
 		this.deactivateSpinner();
 		
-		/*
-			only pop if we have a scene to pop to
-		*/
-		Mojo.Log.error('this.controller.stageController.getScenes().length: %s', this.controller.stageController.getScenes().length);
-		if (this.controller.stageController.getScenes().length > 1) {
-			this.controller.stageController.popScene({'refresh':true});
-		} else {
-			this.controller.stageController.swapScene({name: 'start'});
-		}
-		
+		this.popScene();		
 	}
 	
 
 };
+
+
+/**
+ * handles special popping logic 
+ */
+PostAssistant.prototype.popScene = function() {
+	/*
+		only pop if we have a scene to pop to
+	*/
+	Mojo.Log.error('this.controller.stageController.getScenes().length: %s', this.controller.stageController.getScenes().length);
+	if (this.controller.stageController.getScenes().length > 1) {
+		this.controller.stageController.popScene({'returnFromPop': true});
+	} else {
+		this.controller.stageController.swapScene({name: 'start'});
+	}
+}
 
 
 /**
