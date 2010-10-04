@@ -802,7 +802,7 @@ scene_helpers.addCommonSceneMethods = function(assistant) {
 		};
 		
 		if (App.prefs.get('sound-enabled')) {
-			bannerArgs.soundClass = 'alerts';
+			bannerArgs.soundClass = 'notification';
 		}
 		
 		var appController = Mojo.Controller.getAppController();
@@ -828,7 +828,7 @@ scene_helpers.addCommonSceneMethods = function(assistant) {
 			'messageText':count+" new result(s) for '"+query+"'"
 		};
 		if (App.prefs.get('sound-enabled')) {
-			bannerArgs.soundClass = 'alerts';
+			bannerArgs.soundClass = 'notification';
 		}
 		
 		
