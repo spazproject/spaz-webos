@@ -225,38 +225,52 @@ MyTimelineAssistant.prototype.setup = function() {
 MyTimelineAssistant.prototype.activate = function(params) {
 	
 	Mojo.Log.error('ACTIVATE');
-	
+
+	Mojo.Log.error('params: %j', params);
+
 	var thisA = this; // for closures
-    
-    this.showInlineSpinner('activity-spinner-my-timeline', 'Loading cache…');
-    
-    this.getAppAssistant().loadTimelineCache(function(e) {
-        
-        thisA.loadTimelineCache();
-        
-        thisA.hideInlineSpinner('activity-spinner-my-timeline');
-        
-    	var tts = App.prefs.get('timeline-text-size');
-    	thisA.setTimelineTextSize('#my-timeline', tts);
-	
-    	thisA.activateStarted = true;
 
-    	/*
-    		Prepare for timeline entry taps
-    	*/
-    	thisA.bindTimelineEntryTaps('my-timeline');
-	
+	thisA.activateStarted = true;
 
-    	/*
-    		start the mytimeline 
-    	*/
-    	if (thisA.refreshOnActivate || (params && params.refresh === true)) {
-    		thisA.refresh(thisA.markCacheAsRead);
-    		thisA.refreshOnActivate = false;
-			thisA.markCacheAsRead = true;
-    	}
+	if (!params || !params.returnFromPop) {
 
-    });
+		this.showInlineSpinner('activity-spinner-my-timeline', 'Loading cache…');
+
+		/*
+			load the App cache, and fire callback when it loads
+		*/
+		this.getAppAssistant().loadTimelineCache(function(e) {
+			
+			/*
+				grab our data for this user in the cache
+			*/
+			thisA.loadTimelineCache();
+			
+			/*
+				always mark the cached data as read, no matter what
+			*/
+			thisA.markAllAsRead();
+
+			thisA.hideInlineSpinner('activity-spinner-my-timeline');
+
+			var tts = App.prefs.get('timeline-text-size');
+			thisA.setTimelineTextSize('#my-timeline', tts);
+
+			/*
+				start the mytimeline 
+			*/
+			if (thisA.refreshOnActivate || (params && params.refresh === true)) {
+				thisA.refresh(thisA.markCacheAsRead);
+				thisA.refreshOnActivate = false;
+				thisA.markCacheAsRead = true;
+			}
+		});
+	}
+
+	/*
+	Prepare for timeline entry taps
+	*/
+	thisA.bindTimelineEntryTaps('my-timeline');
 
 	this.showBetaWarningAlert();
 	
