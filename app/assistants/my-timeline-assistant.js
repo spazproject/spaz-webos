@@ -659,6 +659,10 @@ MyTimelineAssistant.prototype.saveTimelineCache = function() {
 	twitdata[SPAZCORE_SECTION_REPLIES + '_lastid'] = this.twit.getLastId(SPAZCORE_SECTION_REPLIES);
 	twitdata[SPAZCORE_SECTION_DMS     + '_lastid'] = this.twit.getLastId(SPAZCORE_SECTION_DMS);
 	
+	/*
+		write out the lastIDs to a cookie, so we can use this data in
+		the bgnotifier without loading the whole cache
+	*/
 	this.getAppAssistant().saveLastIDs(
 		this.twit.getLastId(SPAZCORE_SECTION_HOME),
 		this.twit.getLastId(SPAZCORE_SECTION_REPLIES),
