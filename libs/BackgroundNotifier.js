@@ -258,6 +258,17 @@ BackgroundNotifier.prototype.unregisterNotification = function() {
  */
 BackgroundNotifier.prototype.displayNotification = function(template_data, template) {
 	
+	/*
+		show banner
+	*/
+	bannerArgs = {};
+	if (App.prefs.get('sound-enabled')) {
+		bannerArgs.soundClass = 'notification';
+	}
+	bannerArgs.messageText = $L('New Messages');
+	appController.showBanner(bannerArgs, {'fromStage':SPAZ_DASHBOARD_STAGENAME}, 'notifications');
+	
+	
 	if (!template_data) {
 		template_data = {
 			'title'      : "New Messages",
