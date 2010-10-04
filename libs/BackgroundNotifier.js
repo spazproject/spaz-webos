@@ -258,11 +258,13 @@ BackgroundNotifier.prototype.unregisterNotification = function() {
  */
 BackgroundNotifier.prototype.displayNotification = function(template_data, template) {
 	
+	var appController = Mojo.Controller.getAppController(); 
+	
 	/*
 		show banner
 	*/
 	bannerArgs = {};
-	if (App.prefs.get('sound-enabled')) {
+	if (Spaz.getAppObj().prefs.get('sound-enabled')) {
 		bannerArgs.soundClass = 'notification';
 	}
 	bannerArgs.messageText = $L('New Messages');
@@ -291,7 +293,7 @@ BackgroundNotifier.prototype.displayNotification = function(template_data, templ
 	Mojo.Log.error('template_data:');
 	Mojo.Log.info(template_data);
 	
-	var appController = Mojo.Controller.getAppController(); 
+
 	var dashboardStageController = appController.getStageProxy(SPAZ_DASHBOARD_STAGENAME); 
 
 	var sceneArgs = {
