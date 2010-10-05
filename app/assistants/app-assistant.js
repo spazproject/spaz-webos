@@ -298,6 +298,8 @@ AppAssistant.prototype.handleLaunch = function(launchParams) {
 			case 'main_timeline':
 				Mojo.Log.info('main_timeline action');
 
+				// reset state of bgnotifier so counts are back to 0
+				appAssistant.App.bgnotifier.resetState();
 				appAssistant.App.bgnotifier.registerNextNotification();
 
 				appAssistant.loadAccount(launchParams.account||null);
@@ -318,6 +320,8 @@ AppAssistant.prototype.handleLaunch = function(launchParams) {
 			default:
 				Mojo.Log.info('default handleLaunch action');
 				
+				// reset state of bgnotifier so counts are back to 0
+				appAssistant.App.bgnotifier.resetState();
 				appAssistant.App.bgnotifier.registerNextNotification();
 				
 				appAssistant.loadAccount(launchParams.account||null);
@@ -398,7 +402,8 @@ AppAssistant.prototype.handleCommand = function(event){
 				back
 			*/
 			case 'back':
-				Mojo.Controller.stageController.popScene();
+				// we pass returnFromPop so we can do something different in Acivate, if needed
+				Mojo.Controller.stageController.popScene({'returnFromPop':true});
 				break;
 
 

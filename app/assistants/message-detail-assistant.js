@@ -227,7 +227,7 @@ MessageDetailAssistant.prototype.activate = function(event) {
 			thisA.deleteStatus(status_id);
 		}
 		
-		Mojo.Controller.stageController.popScene();
+		Mojo.Controller.stageController.popScene({'returnFromPop':true});
 	});
 	
 	

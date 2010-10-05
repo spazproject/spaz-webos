@@ -62,7 +62,7 @@ Spaz.findAndSwapScene = function(targetScene, returnValue) {
 
 
 Spaz.popAllAndPushScene = function(targetScene, returnValue) {
-	Mojo.Controller.stageController.popScenesTo();
+	Mojo.Controller.stageController.popScenesTo(null, {'returnFromPop':true});
 	Mojo.Controller.stageController.pushScene(targetScene, returnValue);
 };
 
