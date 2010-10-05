@@ -282,15 +282,37 @@ PreferencesAssistant.prototype.setup = function() {
 
 
 
-/*
-	saves the current values of the selectors
-*/
+/**
+ * saves the current values of the selectors
+ */
 PreferencesAssistant.prototype.saveSettings = function(event) {
 	
 	for (var key in this.model) {
 		App.prefs.set(key, this.model[key]);
+		if (this.onSave[key]) {
+			this.onSave[key].call(this, e, this.model[key]);
+		}
 	}
-	
+};
+
+/**
+ * a hash of functions to call on save for certain prefs 
+ */
+PreferencesAssistant.prototype.onSave = {
+	'network-refreshinterval' : function(e, val) {
+		Spaz.getAppObj().bgnotifier.resetNotification();
+	},
+	'network-refresh-auto' : function(e, val) {
+		val = !!val;
+		if (val) { // if it's true now, it was false, so reset it to start over fresh
+			Spaz.getAppObj().bgnotifier.resetNotification();
+		} else { // otherwise turn it off
+			Spaz.getAppObj().bgnotifier.unregisterNotification();
+		}
+	},
+	'network-refresh-wake' : function(e, val) {
+		Spaz.getAppObj().bgnotifier.resetNotification();
+	}
 };
 
 //function declares & initializes our choice arrays
@@ -364,6 +386,7 @@ PreferencesAssistant.prototype.cleanup = function(event) {
 	/* this function should do any cleanup needed before the scene is destroyed as 
 	   a result of being popped off the scene stack */
 	
+	
 	this.controller.stopListening('network-refreshinterval', Mojo.Event.propertyChange, this.saveSettings);
 	this.controller.stopListening('network-searchrefreshinterval', Mojo.Event.propertyChange, this.saveSettings);
 	this.controller.stopListening('timeline-friends-getcount', Mojo.Event.propertyChange, this.saveSettings);
@@ -381,6 +404,8 @@ PreferencesAssistant.prototype.cleanup = function(event) {
 	*/
 	// this.controller.stopListening('checkbox-sound-enabled', Mojo.Event.propertyChange, this.saveSettings);
 	// this.controller.stopListening('checkbox-vibration-enabled', Mojo.Event.propertyChange, this.saveSettings);
+	this.controller.stopListening('checkbox-network-refresh-auto', Mojo.Event.propertyChange, this.saveSettings);
+	this.controller.stopListening('checkbox-network-refresh-wake', Mojo.Event.propertyChange, this.saveSettings);
 	this.controller.stopListening('checkbox-timeline-scrollonupdate', Mojo.Event.propertyChange, this.saveSettings);
 	this.controller.stopListening('checkbox-timeline-newmessages', Mojo.Event.propertyChange, this.saveSettings);
 	this.controller.stopListening('checkbox-timeline-mentions', Mojo.Event.propertyChange, this.saveSettings);
