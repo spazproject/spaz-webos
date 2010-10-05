@@ -282,6 +282,14 @@ BackgroundNotifier.prototype.unregisterNotification = function() {
 };
 
 /**
+ * resets the notification alarm; used when we change timing values 
+ */
+BackgroundNotifier.prototype.resetNotification = function() {
+	this.unregisterNotification();
+	this.registerNextNotification();
+};
+
+/**
  * @param {object} template_data
  */
 BackgroundNotifier.prototype.displayNotification = function(template_data, template) {
