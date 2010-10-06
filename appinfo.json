@@ -30,16 +30,4 @@
 		]
 	},
 
-	"universalSearch": {
-		"action" :  { 
-			"displayName" : "Post from Spaz",
-			"url"         : "com.funkatron.app.spaz-beta",
-			"launchParam" : {"action":"prepPost", "msg":""}
-		},
-		"search" : {
-			"displayName" : "Spaz",
-			"url"         : "com.funkatron.app.spaz-beta",
-			"launchParam" : {"action":"search", "query":"#{searchTerms}"}
-		}
-	}
 }
