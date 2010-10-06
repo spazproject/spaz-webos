@@ -9,24 +9,24 @@ function StartAssistant(argFromPusher) {
 	jQuery('#start-scene').hide();
 	
 	if (argFromPusher && argFromPusher.firstload) {
-		if (sc.app.prefs.get('always-go-to-my-timeline')) {
+		if (App.prefs.get('always-go-to-my-timeline')) {
 			
 			/*
 				load users from prefs obj
 			*/
-			this.Users = new SpazAccounts(sc.app.prefs);
+			this.Users = new SpazAccounts(App.prefs);
 			this.Users.load();
 			
 			/*
 				get last user
 			*/
-			var last_userid = sc.app.prefs.get('last_userid');
+			var last_userid = App.prefs.get('last_userid');
 			var last_user_obj = this.Users.get(last_userid);
 			if (last_user_obj !== false) {
 				dump(last_user_obj);
-				sc.app.username = last_user_obj.username;
-				sc.app.type     = last_user_obj.type;
-				sc.app.userid   = last_user_obj.id;
+				App.username = last_user_obj.username;
+				App.type     = last_user_obj.type;
+				App.userid   = last_user_obj.id;
 				Mojo.Controller.stageController.pushScene('my-timeline');
 			} else {
 				dump("Tried to load last_user_object, but failed.");
@@ -48,6 +48,11 @@ function StartAssistant(argFromPusher) {
 	
 	
 	scene_helpers.addCommonSceneMethods(this);
+	
+	/*
+		this connects App to this property of the appAssistant
+	*/
+	App = Spaz.getAppObj();
 	
 
 }
@@ -84,6 +89,7 @@ StartAssistant.prototype.activate = function(argFromPusher) {
 	/* put in event handlers here that should only be in effect when this scene is active. For
 	   example, key handlers that are observing the document */
 
+	jQuery('#app-title').text(Mojo.appInfo.title);
 	jQuery('#app-version').text("v"+Mojo.appInfo.version);
 	
 	/*
@@ -100,7 +106,7 @@ StartAssistant.prototype.activate = function(argFromPusher) {
 		complete:function(){}
 	});
 
-	
+	this.showBetaWarningAlert();
 };
 
 
@@ -122,7 +128,7 @@ StartAssistant.prototype.cleanup = function(event) {
 
 StartAssistant.prototype.refreshTrends = function() {
 	this.showInlineSpinner('#trends-spinner-container', 'Loading…');
-	sc.app.twit.getTrends();
+	App.twit.getTrends();
 };
 
 

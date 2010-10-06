@@ -4,6 +4,11 @@ function StartloginAssistant() {
 	   to the scene controller (this.controller) has not be established yet, so any initialization
 	   that needs the scene controller should be done in the setup function below. */
 	scene_helpers.addCommonSceneMethods(this);
+	
+	/*
+		this connects App to this property of the appAssistant
+	*/
+	App = Spaz.getAppObj();
 }
 
 StartloginAssistant.prototype.aboutToActivate = function(callback){
@@ -15,7 +20,7 @@ StartloginAssistant.prototype.setup = function() {
 	var thisA = this;
 
 	Mojo.Log.info('StartloginAssistant setup!');
-	Mojo.Log.info('sc.app.prefs', sc.app.prefs);
+	Mojo.Log.info('App.prefs', App.prefs);
 
 	this.scroller = this.controller.getSceneScroller();
 	
@@ -61,7 +66,7 @@ StartloginAssistant.prototype.setup = function() {
 	/*
 		load users from prefs obj
 	*/
-	this.Users = new SpazAccounts(sc.app.prefs);
+	this.Users = new SpazAccounts(App.prefs);
 	this.Users.load();
 	
 	sch.error(this.Users);
@@ -93,17 +98,17 @@ StartloginAssistant.prototype.setup = function() {
 		sch.debug('CLICKED ON ITEM');
 		sch.debug(sch.enJSON(e.item));
 	
-		sc.app.username = e.item.username;
-		sc.app.auth		= e.item.auth;
-		sc.app.type     = e.item.type;
-		sc.app.userid	= e.item.id;
+		App.username = e.item.username;
+		App.auth		= e.item.auth;
+		App.type     = e.item.type;
+		App.userid	= e.item.id;
 		
-		sch.debug('sc.app.username:' + sc.app.username);
-		sch.debug('sc.app.auth:'     + sc.app.auth);  
-		sch.debug('sc.app.type:'     + sc.app.type);   
-		sch.debug('sc.app.userid:'	 + sc.app.userid);
+		sch.debug('App.username:' + App.username);
+		sch.debug('App.auth:'     + App.auth);  
+		sch.debug('App.type:'     + App.type);   
+		sch.debug('App.userid:'	 + App.userid);
 		
-		sc.app.prefs.set('last_userid', sc.app.userid);
+		App.prefs.set('last_userid', App.userid);
 				
 		Spaz.popAllAndPushScene("my-timeline");
 	});
@@ -152,7 +157,7 @@ StartloginAssistant.prototype.setup = function() {
 	
 	this.controller.listen('goToMyTimelineCheckbox', Mojo.Event.propertyChange, function() {
 		var state = thisA.model['always-go-to-my-timeline'];
-		sc.app.prefs.set('always-go-to-my-timeline', state);
+		App.prefs.set('always-go-to-my-timeline', state);
 	});
 	
 	
@@ -170,7 +175,7 @@ StartloginAssistant.prototype.activate = function(event) {
 	this.model.username = 'foo';
 	this.model.password = 'foo';
 
-	this.model['always-go-to-my-timeline'] = sc.app.prefs.get('always-go-to-my-timeline');
+	this.model['always-go-to-my-timeline'] = App.prefs.get('always-go-to-my-timeline');
 	this.controller.modelChanged( this.model );
 
 };
@@ -200,7 +205,7 @@ StartloginAssistant.prototype.handleLogin = function(event) {
 
 	/**
 	 * - Get username and password from text fields
-	 * - initialize sc.app.twit
+	 * - initialize App.twit
 	 * - swap to my-timeline scene
 	 * 	
 	 */
@@ -215,7 +220,7 @@ StartloginAssistant.prototype.handleLogin = function(event) {
 		/*
 			now verify credentials against the Twitter API
 		*/
-		sc.app.twit.verifyCredentials(this.model.username, this.model.password);
+		App.twit.verifyCredentials(this.model.username, this.model.password);
 		
 	}
 	
@@ -471,9 +476,9 @@ var NewAccountDialogAssistant = Class.create({
 		*/
 		if (this.newAccountModel.username && this.newAccountModel.password) {
 			if (this.newAccountModel.type !== SPAZCORE_SERVICE_CUSTOM) {
-				sc.app.twit.setBaseURLByService(this.newAccountModel.type);
+				App.twit.setBaseURLByService(this.newAccountModel.type);
 			} else {
-				sc.app.twit.setBaseURL(this.newAccountModel['twitter-api-base-url']);
+				App.twit.setBaseURL(this.newAccountModel['twitter-api-base-url']);
 			}
 			
 			
@@ -509,8 +514,8 @@ var NewAccountDialogAssistant = Class.create({
 						that.sceneAssistant.accountsModel.items.push(newItem);
 						
 						// the accounts model
-						sc.app.accounts.setAll(that.sceneAssistant.accountsModel.items);
-						sc.app.accounts.setMeta(newaccid, 'twitter-api-base-url', that.newAccountModel['twitter-api-base-url']);
+						App.accounts.setAll(that.sceneAssistant.accountsModel.items);
+						App.accounts.setMeta(newaccid, 'twitter-api-base-url', that.newAccountModel['twitter-api-base-url']);
 
 						jQuery('#accountList')[0].mojo.noticeAddedItems(that.sceneAssistant.accountsModel.items.length, [newItem]);
 						that.widget.mojo.close();

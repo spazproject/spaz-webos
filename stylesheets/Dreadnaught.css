@@ -7,12 +7,6 @@ BODY, BODY>div[x-mojo-element=Scroller] {
 
 body.palm-default {
 	background-image: url('../images/dreadnaught/page-bg-darkgreen.png')  top left no-repeat;
-    z-index: -1;
-    position: fixed;
-    top: 0px;
-    left: 0px;
-    width: 320px;
-    height: 480px;
 }
  
 #mojo-scene-splash-scene-scroller {
@@ -208,7 +202,7 @@ div.timeline-entry {
 /*			font-weight:bold;*/
 			color:#CCCCFF;
 			text-transform: uppercase;
-			font-family:"Coconut-CondensedMedium";
+			font-family:"Prelude-CondensedMedium";
 			position:relative;
 			text-shadow: 0px 1px 4px #000;
 		}
@@ -236,7 +230,7 @@ div.timeline-entry {
 		font-size:	10pt;
 /*		font-weight:bold;*/
 		text-transform:uppercase;
-		font-family:"Coconut-CondensedMedium";
+		font-family:"Prelude-CondensedMedium";
 		text-align:	right;
 		color:#CCCCFF;
 		background-position: right center;
@@ -539,7 +533,7 @@ div.spaz-drawer {
 			font-size:11pt;
 			margin: .7em 0;
 			color:#CCCCCC;
-			font-family:"Coconut-Medium";
+			font-family:"Prelude";
 		}
 		
 			
@@ -682,7 +676,7 @@ div.spaz-drawer {
         #user-detail .user-location, #user-detail .user-homepage {
 			font-size:12pt;
 			font-weight:bold;
-			font-family:"Coconut-CondensedMedium";
+			font-family:"Prelude-CondensedMedium";
 			display:inline-block;
 			color:#CCCCFF;
 /*			-webkit-border-radius:6pt;*/
@@ -800,7 +794,7 @@ div.spaz-drawer {
 		overflow:auto;
 	}
 		#post-panel-counter {
-			font-family:"Coconut-CondensedMedium";
+			font-family:"Prelude-CondensedMedium";
 			font-size:14px;
 			margin:5px 10px;
 			float:left;
@@ -917,7 +911,7 @@ div.spaz-button-group {
 /*		background-color: rgba(51,51,51,.8);*/
 /*		padding: 8px 16px;*/
 		color:  #FFECCD;
-		font-family:"Coconut-CondensedMedium";
+		font-family:"Prelude-CondensedMedium";
 		font-size:12pt;
 		line-height:24pt;
 /*		-khtml-border-radius:16px;*/
@@ -939,7 +933,7 @@ div.spaz-row {
 	height: 48px;
 	margin: 2px 2px;
 	color:  #FFECCD;
-	font-family:"Coconut-CondensedMedium";
+	font-family:"Prelude-CondensedMedium";
 	font-size:16pt;
 	line-height:35pt;
 	border-width: 0 21px 0 21px;
@@ -977,7 +971,7 @@ div.spaz-row {
 	padding: 6px 0px 0px 35px;
 	display:block;
 	color:  rgba(255,255,255,.7);
-	font-family:"Coconut-CondensedMedium";
+	font-family:"Prelude-CondensedMedium";
 	font-size:12pt;
 	border-width: 0 17 0 17;
 	-webkit-border-image: url(../images/dreadnaught/spaz-button-reveal-active.png) 0 17 0 17;
@@ -1002,7 +996,7 @@ div.inline-spinner {
 	div.inline-spinner span.inline-spinner-label {
 		margin-left:1em;
 		color:  #FFFFFF;
-		font-family:"Coconut-CondensedMedium";
+		font-family:"Prelude-CondensedMedium";
 		font-size:12pt;
 
 	}
@@ -1018,17 +1012,18 @@ div.inline-spinner {
 
 div.error_info {
 	font-size:9pt;
-	border:1px solid #666;
-	background: #FFCCCC;
-	padding:3px;
-	margin: 3px 0px;
+	border-top:1px solid #AAA;
+	margin-top:8px;
+	padding-top:8px;
 }
 	div.error_info .human_msg {
-		font-size:11pt;
+		font-size:10pt;
 	}
 	
 	div.error_info .row {
 		overflow:hidden;
+		white-space:nowrap;
+		text-overflow: ellipsis;
 	}
 	div.error_info .label {
 		font-weight:bold;
@@ -1037,12 +1032,14 @@ div.error_info {
 		float:left;
 		text-align:right;
 		margin-right:3px;
-		text-wrap:none;
+		white-space:nowrap;
 	}
 	div.error_info .value {
+		max-width:200px;
 		float:left;
 		overflow:none;
-		text-wrap:none;
+		white-space:nowrap;
+		text-overflow: ellipsis;
 	}
 	
 	

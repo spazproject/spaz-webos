@@ -4,7 +4,6 @@
 	{"source": "vendors/jquery.tinysort.js"},	
 	{"source": "vendors/tools.tabs-1.0.1.js"},
 	{"source": "spazcore/spazcore-webos.js"},
-	{"source": "app/views/templates.js"},
 	{"source": "vendors/jquery-ui-justfx-1.6rc6.js"},
 	{"source": "libs/view_methods.js"},
 	{"source": "vendors/jquery.scrollTo.js"},

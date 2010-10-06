@@ -12,6 +12,11 @@ function PostAssistant(args) {
 	this.returningFromFilePicker = false;
 	
 	scene_helpers.addCommonSceneMethods(this);
+	
+	/*
+		this connects App to this property of the appAssistant
+	*/
+	App = Spaz.getAppObj();
 }
 PostAssistant.prototype.aboutToActivate = function(callback){
 	callback.defer(); //delays displaying scene, looks better
@@ -28,7 +33,7 @@ PostAssistant.prototype.setup = function() {
 	
 	this.postTextField = jQuery('#post-textfield')[0];
 	
-	this.Users = new SpazAccounts(sc.app.prefs);
+	this.Users = new SpazAccounts(App.prefs);
 	
 	this.model = {
 		'attachment':null,
@@ -65,7 +70,7 @@ PostAssistant.prototype.setup = function() {
 	this.controller.setupWidget('post-shorten-urls-button', this.buttonAttributes, this.shortenURLsButtonModel);
 	this.controller.setupWidget('post-textfield', {
 			'multiline':true,
-			'enterSubmits':sc.app.prefs.get('post-send-on-enter'),
+			'enterSubmits':App.prefs.get('post-send-on-enter'),
 			'autoFocus':true,
 			'changeOnKeyPress':true
 			
@@ -117,7 +122,7 @@ PostAssistant.prototype.setup = function() {
 	/*
 		check if we have a valid image uploader
 	*/
-	var iupl = sc.app.prefs.get('image-uploader');
+	var iupl = App.prefs.get('image-uploader');
 	var valid_iupl = false;
 	var image_uploader = new SpazImageUploader();
 	for (var key in image_uploader.services) {
@@ -127,7 +132,7 @@ PostAssistant.prototype.setup = function() {
 	}
 	if (!valid_iupl) {
 		iupl = default_preferences['image-uploader']; // set this as default
-		sc.app.prefs.set('image-uploader', iupl);
+		App.prefs.set('image-uploader', iupl);
 	}
 	
 	/*
@@ -163,7 +168,7 @@ PostAssistant.prototype.setup = function() {
 	Mojo.Event.listen(jQuery('#post-shorten-text-button')[0], Mojo.Event.tap, this.shortenText.bindAsEventListener(this));
 	Mojo.Event.listen(jQuery('#post-shorten-urls-button')[0], Mojo.Event.tap, this.shortenURLs.bindAsEventListener(this));
 	this.listenForEnter('post-textfield', function() {
-		if (sc.app.prefs.get('post-send-on-enter')) {
+		if (App.prefs.get('post-send-on-enter')) {
 			this.controller.get('post-send-button').mojo.activate();
 			this.sendPost();
 		}
@@ -216,7 +221,7 @@ PostAssistant.prototype.activate = function(args) {
 	*/
 	if (this.imageUploaderModel['image-uploader'] == 'tweetphoto') {
 		this.imageUploaderModel['image-uploader'] = 'yfrog';
-		sc.app.prefs.set('image-uploader', 'yfrog');
+		App.prefs.set('image-uploader', 'yfrog');
 		this.showAlert(
 			$L('Tweetphoto is no longer supported by Spaz, so I\'ve changed your image hosting preference to yfrog. You can pick a different service under the App menu in Preferences.'),
 			$L('Change in image hosting service')
@@ -236,11 +241,11 @@ PostAssistant.prototype.activate = function(args) {
 				case 'quote':
 					this.postTextField.mojo.setCursorPosition(0,0);
 					break;
-					if (sc.app.prefs.get('post-rt-cursor-position') == 'beginning') {
+					if (App.prefs.get('post-rt-cursor-position') == 'beginning') {
 						this.postTextField.mojo.setCursorPosition(0,0);
 					}					
 				case 'rt':
-					if (sc.app.prefs.get('post-rt-cursor-position') == 'beginning') {
+					if (App.prefs.get('post-rt-cursor-position') == 'beginning') {
 						this.postTextField.mojo.setCursorPosition(0,0);
 					}
 					break;
@@ -266,7 +271,7 @@ PostAssistant.prototype.activate = function(args) {
 	
 	
 
-	jQuery('#post-panel-username').text(sc.app.username);
+	jQuery('#post-panel-username').text(App.username);
 	
 
 	
@@ -440,8 +445,8 @@ PostAssistant.prototype.shortenURLs = function(event) {
 		'apiopts': {
 			'version':'2.0.1',
 			'format':'json',
-			'login': sc.app.prefs.get('services-bitly-login') || 'spazcore',
-			'apiKey':sc.app.prefs.get('services-bitly-apikey') || 'R_f3b86681a63a6bbefc7d8949fd915f1d'
+			'login': App.prefs.get('services-bitly-login') || 'spazcore',
+			'apiKey':App.prefs.get('services-bitly-apikey') || 'R_f3b86681a63a6bbefc7d8949fd915f1d'
 		}
 	});
 	
@@ -455,7 +460,7 @@ PostAssistant.prototype.shortenURLs = function(event) {
  */
 PostAssistant.prototype.changeImageUploader = function(e) {
 	var api_label = this.imageUploaderModel['image-uploader'];
-	sc.app.prefs.set('image-uploader', api_label);
+	App.prefs.set('image-uploader', api_label);
 	this.loadImageUploaderEmail(api_label);
 	
 };
@@ -474,7 +479,7 @@ PostAssistant.prototype.loadImageUploaderEmail = function(api_label) {
 	
 	if (!email) {
 		email = this.SPM.apis[api_label].getToAddress({
-			'username':sc.app.username
+			'username':App.username
 		});
 		this.setImageUploaderEmail(api_label, email);
 	}
@@ -487,7 +492,7 @@ PostAssistant.prototype.loadImageUploaderEmail = function(api_label) {
  * Gets the meta value for the current user & api's posting address
  */
 PostAssistant.prototype.getImageUploaderEmail = function(api_label) {
-	return this.Users.getMeta(sc.app.userid, api_label+'_posting_address');
+	return this.Users.getMeta(App.userid, api_label+'_posting_address');
 };
 
 /**
@@ -501,7 +506,7 @@ PostAssistant.prototype.setImageUploaderEmail = function(api_label, email) {
 		email = this.imageUploaderEmailModel['image-uploader-email'];
 	}
 	
-	this.Users.setMeta(sc.app.userid, api_label+'_posting_address', email);
+	this.Users.setMeta(App.userid, api_label+'_posting_address', email);
 };
 
 
@@ -521,7 +526,7 @@ PostAssistant.prototype.sendPost = function(event) {
 		var file = this.model.attachment;
 		this.postImageMessage(emailobj, status, file);
 		this.deactivateSpinner();
-		this.controller.stageController.popScene();
+		this.popScene();
 		return;
 		
 	} else {
@@ -724,7 +729,7 @@ PostAssistant.prototype.emailImageMessage = function(post_add_obj, message, file
 	  controller: this.controller
 	});
 	// next line should close new post "dialog"
-	this.controller.stageController.popScene();
+	this.popScene();
 };
 
 /**
@@ -796,61 +801,13 @@ PostAssistant.prototype.onReturnFromFilePicker = function() {
  * 
  */
 PostAssistant.prototype.renderSuccessfulPost = function(event, data) {
+	Mojo.Log.error('RENDERSUCCESSFULPOST');
+	
 	this.setPostButtonLabel('Posted!');
-	
-	if (sch.isArray(data)) {
-		data = data[0];
-	}
-
-	data.text = Spaz.makeItemsClickable(data.text);
-	
-	/*
-		save this tweet to Depot
-	*/
-	sc.app.Tweets.save(data);
-	
-	dump(data);
-
-	var itemhtml = sc.app.tpl.parseTemplate('tweet', data);
-	
-
-
-	/*
-		prepend the rendered markup to the timeline, so it shows on top
-	*/
-	if (jQuery('#my-timeline').length == 1) {
-		jQuery('#my-timeline').prepend(itemhtml);
-	}
-		
-	
-
-
-	/*
-		remove extra items
-	*/
-	// sch.removeExtraElements('#my-timeline div.timeline-entry', sc.app.prefs.get('timeline-maxentries'));
-	
-	sch.removeExtraElements('#my-timeline div.timeline-entry:not(.reply):not(.dm)', sc.app.prefs.get('timeline-maxentries'));
-	sch.removeExtraElements('#my-timeline div.timeline-entry.reply', sc.app.prefs.get('timeline-maxentries-reply'));
-	sch.removeExtraElements('#my-timeline div.timeline-entry.dm', sc.app.prefs.get('timeline-maxentries-dm'));
-	
-
-	/*
-		Update relative dates
-	*/
-	sch.updateRelativeTimes('div.timeline-entry .meta>.date', 'data-created_at');
-	
-	/*
-		re-apply filtering
-	*/
-    // this.filterTimeline();
-	
-	// this.playAudioCue('send');
 	
 	this.deactivateSpinner();
 	
-	this.controller.stageController.popScene();
-
+	this.popScene();
 };
 
 
@@ -944,11 +901,28 @@ PostAssistant.prototype.onUploadSuccess = function(e) {
 		}
 		
 		this.deactivateSpinner();
-		this.controller.stageController.popScene({'refresh':true});
+		
+		this.popScene();		
 	}
 	
 
 };
+
+
+/**
+ * handles special popping logic 
+ */
+PostAssistant.prototype.popScene = function() {
+	/*
+		only pop if we have a scene to pop to
+	*/
+	Mojo.Log.error('this.controller.stageController.getScenes().length: %s', this.controller.stageController.getScenes().length);
+	if (this.controller.stageController.getScenes().length > 1) {
+		this.controller.stageController.popScene({'returnFromPop': true});
+	} else {
+		this.controller.stageController.swapScene({name: 'start'});
+	}
+}
 
 
 /**

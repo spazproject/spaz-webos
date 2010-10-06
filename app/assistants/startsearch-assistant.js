@@ -4,6 +4,11 @@ function StartsearchAssistant() {
 	   to the scene controller (this.controller) has not be established yet, so any initialization
 	   that needs the scene controller should be done in the setup function below. */
 	scene_helpers.addCommonSceneMethods(this);
+	
+	/*
+		this connects App to this property of the appAssistant
+	*/
+	App = Spaz.getAppObj();
 }
 
 StartsearchAssistant.prototype.aboutToActivate = function(callback){
@@ -21,7 +26,7 @@ StartsearchAssistant.prototype.setup = function() {
 
 	var thisA = this;
 
-	if (sc.app.username) {
+	if (App.username) {
 		this.setupCommonMenus({
 			viewMenuItems: [
 				{
@@ -123,7 +128,7 @@ StartsearchAssistant.prototype.setup = function() {
 	/*
 		Setup reload saved searches button
 	*/
-	if (sc.app.username) {
+	if (App.username) {
 		this.reloadSearchesButtonAttributes = {
 			type: Mojo.Widget.activityButton
 		};
@@ -227,7 +232,7 @@ StartsearchAssistant.prototype.activate = function(event) {
 	/*
 		Prepare for timeline entry taps
 	*/
-	this.bindTimelineEntryTaps('#public-timeline');
+	this.bindTimelineEntryTaps('public-timeline');
 
 	/*
 		set up the public timeline
@@ -240,7 +245,7 @@ StartsearchAssistant.prototype.activate = function(event) {
 		'failure_event':'error_public_timeline_data',
 		'event_target' :document,
 		
-		'refresh_time':sc.app.prefs.get('network-searchrefreshinterval'),
+		'refresh_time':App.prefs.get('network-searchrefreshinterval'),
 		'max_items':50,
 
 		'request_data': function() {
@@ -259,7 +264,7 @@ StartsearchAssistant.prototype.activate = function(event) {
 			
 		},
 		'renderer': function(obj) {
-			return sc.app.tpl.parseTemplate('tweet', obj);
+			return App.tpl.parseTemplate('tweet', obj);
 			
 		}
 	});
@@ -285,7 +290,7 @@ StartsearchAssistant.prototype.deactivate = function(event) {
 	/*
 		stop listening for timeline entry taps
 	*/
-	this.unbindTimelineEntryTaps('#public-timeline');
+	this.unbindTimelineEntryTaps('public-timeline');
 	
 	/*
 		unbind and stop refresher for public timeline
@@ -312,7 +317,7 @@ StartsearchAssistant.prototype.cleanup = function(event) {
 StartsearchAssistant.prototype.refreshTrends = function() {
 	var thisA = this;
 	
-	sc.app.twit.getTrends(
+	App.twit.getTrends(
 		function(data) {
 			thisA.deactivateTrendsSpinner();
 			

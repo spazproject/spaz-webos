@@ -6,7 +6,12 @@ function UserDetailAssistant(argFromPusher) {
 	
 	scene_helpers.addCommonSceneMethods(this);	
 	
-	sch.debug('argFromPusher:' + sch.enJSON(argFromPusher));
+	/*
+		this connects App to this property of the appAssistant
+	*/
+	App = Spaz.getAppObj();
+	
+	Mojo.Log.error('argFromPusher: %j', argFromPusher);
 	
 	if (sc.helpers.isString(argFromPusher) || sc.helpers.isNumber(argFromPusher)) {
 		/*
@@ -30,7 +35,7 @@ UserDetailAssistant.prototype.setup = function() {
 	
 	this.initTwit();
 
-	if (sc.app.username) {
+	if (App.username) {
 		this.setupCommonMenus({
 			viewMenuItems: [
 				{
@@ -82,7 +87,7 @@ UserDetailAssistant.prototype.setup = function() {
 			/*
 				save this tweet to Depot
 			*/
-			sc.app.Tweets.save(this);
+			App.Tweets.save(this);
 			
 		});
 
@@ -90,7 +95,7 @@ UserDetailAssistant.prototype.setup = function() {
 			Render the new tweets as a collection (speed increase, I suspect)
 		*/
 		
-		var itemhtml = sc.app.tpl.parseArray('tweet', rendertweets);
+		var itemhtml = App.tpl.parseArray('tweet', rendertweets);
 
 		jQuery('#user-timeline').html(itemhtml);
 
@@ -110,11 +115,30 @@ UserDetailAssistant.prototype.setup = function() {
 		
 		thisA.userobj.description = Spaz.makeItemsClickable(thisA.userobj.description);
 		
-		var itemhtml = sc.app.tpl.parseTemplate('user-detail', thisA.userobj);
+		var itemhtml = App.tpl.parseTemplate('user-detail', thisA.userobj);
 		jQuery('#user-detail').html(itemhtml);
 		sch.debug(jQuery('#user-detail').get(0).outerHTML);
 		
 		thisA.twit.getUserTimeline(thisA.userobj.id);
+
+		if (App.username) {
+			thisA.twit.showFriendship(
+				thisA.userobj.id,
+				null,
+				function(data) {
+					if (data.relationship.target.following) {
+						jQuery('#follow-user').attr('data-following', 'true').text($L('Stop Following'));
+					} else {
+						jQuery('#follow-user').attr('data-following', 'false').text($L('Follow'));
+					}
+					jQuery('#follow-user-row').show();
+				},
+				function(xhr, msg, exc) {
+					thisA.showAlert($L('Could not retrieve relationship info:\n'+xhr.responseText), $L('Error'));
+				}
+			);
+		}
+		
 	});
 	
 	
@@ -133,23 +157,23 @@ UserDetailAssistant.prototype.setup = function() {
 	jQuery(document).bind('create_friendship_succeeded',  { thisAssistant:this }, function(e, userobj) {
 		jQuery('#follow-user[data-screen_name="'+userobj.screen_name+'"]')
 			.attr('data-following', 'true')
-			.html($L('Stop following user'));
+			.html($L('Stop Following'));
 	});
 	jQuery(document).bind('destroy_friendship_succeeded', { thisAssistant:this }, function(e, userobj) {
 		jQuery('#follow-user[data-screen_name="'+userobj.screen_name+'"]')
 			.attr('data-following', 'false')
-			.html($L('Follow user'));		
+			.html($L('Follow'));		
 	});
 
 	jQuery(document).bind('create_block_succeeded', { thisAssistant:this }, function(e, userobj) {
 		jQuery('#block-user[data-screen_name="'+userobj.screen_name+'"]')
 			.attr('data-blocked', 'true')
-			.html($L('Unblock user'));
+			.html($L('Unblock'));
 	});
 	jQuery(document).bind('destroy_block_succeeded', { thisAssistant:this }, function(e, userobj) {
 		jQuery('#block-user[data-screen_name="'+userobj.screen_name+'"]')
 			.attr('data-blocked', 'false')
-			.html($L('Block user'));
+			.html($L('Block'));
 	});
 	
 
@@ -280,28 +304,9 @@ UserDetailAssistant.prototype.activate = function(event) {
 		Mojo.Controller.stageController.pushScene('view-image', {'imageURLs':[avatar_url]});
 	});
 
-	// jQuery('#user-detail-container .username.clickable', this.scroller).live(Mojo.Event.tap, function(e) {
-	// 	var userid = jQuery(this).attr('data-user-screen_name');
-	// 	Mojo.Controller.stageController.pushScene('user-detail', userid);
-	// });
-	// 
-	// jQuery('#user-detail-container .hashtag.clickable', this.scroller).live(Mojo.Event.tap, function(e) {
-	// 	var hashtag = jQuery(this).attr('data-hashtag');
-	// 	thisA.searchFor('#'+hashtag);
-	// });
-	// 
-	// jQuery('#user-detail-container div.timeline-entry>.status>.meta', this.scroller).live(Mojo.Event.tap, function(e) {
-	// 	var statusid = jQuery(this).attr('data-status-id');
-	// 	Mojo.Controller.stageController.pushScene('message-detail', statusid);
-	// });
-	// 
-	// jQuery('#user-detail-container div.timeline-entry', this.scroller).live(Mojo.Event.tap, function(e) {
-	// 	var statusid = jQuery(this).attr('data-status-id');
-	// 	Mojo.Controller.stageController.pushScene('message-detail', statusid);
-	// });
 
 	if (!this.userRetrieved) {
-		sc.app.Tweets.getUser(
+		App.Tweets.getUser(
 			this.userid,
 			function(r) {
 				jQuery(document).trigger('get_user_succeeded', [r]);
@@ -310,10 +315,7 @@ UserDetailAssistant.prototype.activate = function(event) {
 				jQuery(document).trigger('get_user_failed', [r]);
 			}
 		);
-		// this.twit.getUser(this.userid);
 	}
-	
-	// this.addPostPopup();
 
 };
 
