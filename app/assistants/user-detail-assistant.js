@@ -41,13 +41,13 @@ UserDetailAssistant.prototype.setup = function() {
 
 			],
 			cmdMenuItems:[
-				{
-					items: [
-						{label:$L('Compose'),  icon:'compose', command:'compose', shortcut:'N'},
-						{}
-					]
-				}
-
+				
+				{label:$L('Search for User'),  iconPath: 'images/menu-icon-search-person.png', command:'search-for-user', shortcut:'R'},
+				{label:$L('Reply'),  icon:'at', command:'reply', shortcut:'R'},
+				{label:$L('DM'),  icon:'dms', command:'dm', shortcut:'D'},
+				{label:$L('F'), iconPath: 'images/menu-icon-start-following.png', command:'follow', shortcut:'F'},
+				{label:$L('B'), iconPath: 'images/theme/menu-icon-triangle-up.png', command:'more', shortcut:'B'}
+	
 			]
 		});
 		this.initAppMenu({ 'items':LOGGEDIN_APPMENU_ITEMS });

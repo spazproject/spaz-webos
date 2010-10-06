@@ -32,21 +32,33 @@ MessageDetailAssistant.prototype.setup = function() {
 	this.scroller = this.controller.getSceneScroller();
 	
 	if (sc.app.username) {
+		this.controller.setupWidget("share-submenu", undefined, {
+			items: [
+				{label: $L('ReTweet'), command: 'retweet'},
+				{label: $L('RT @…'), command:   'RT'},
+				{label: $L('Quote'), command:   'quote'},
+				{label: $L('Email'), command:   'email'},
+				{label: $L('SMS/IM'), command:  'sms'},
+				{label: $L('Facebook'), command:  'facebook'}
+			]
+		});
 		this.setupCommonMenus({
 			viewMenuItems: [
 				{
-					items:[
-						{label: $L("Message Details"), command:'scroll-top', 'class':"palm-header left", width:320}		
+					items: [
+						{label: $L('Refresh'),  icon:'sync', command:'refresh', shortcut:'R'},
+						{label: $L("Message Details"), command:'scroll-top', width:200},
+						{label: $L('Compose'),  icon:'compose', command:'compose', shortcut:'N'}
+
 					]
 				}
 
 			],
 			cmdMenuItems:[
-				{label:$L('Compose'),  icon:'compose', command:'compose', shortcut:'N'}
-				// {},
-				// {label:$L('Reply'),  icon:'reply', command:'reply', shortcut:'R'},
-				// {label:$L('Forward'),  icon:'forward-email', command:'retweet', shortcut:'N'},
-				// {label:$L('Favorite'),  iconPath:'images/theme/menu-icon-favorite-outline.png', command:'compose', shortcut:'N'}
+				{label:$L('Reply'),  icon:'at', command:'reply', shortcut:'R'},
+				{label:$L('Share'),  icon:'forward-email', submenu:'share-submenu', shortcut:'S'},
+				{label:$L('DM'),  icon:'dms', command:'dm', shortcut:'d'},
+				{label:$L('Favorite'),  iconPath:'images/theme/menu-icon-favorite-outline.png', command:'favorite', shortcut:'F'}
 			]
 		});
 		
