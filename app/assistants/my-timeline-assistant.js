@@ -224,6 +224,10 @@ MyTimelineAssistant.prototype.setup = function() {
 
 MyTimelineAssistant.prototype.activate = function(params) {
 	
+	if (!params) {
+		params = {};
+	}
+	
 	Mojo.Log.error('ACTIVATE');
 
 	Mojo.Log.error('params: %j', params);
@@ -232,7 +236,7 @@ MyTimelineAssistant.prototype.activate = function(params) {
 
 	thisA.activateStarted = true;
 
-	if (!params || !params.returnFromPop) {
+	if (!params.returnFromPop) { // don't run this if returnFromPop = true was passed
 
 		this.showInlineSpinner('activity-spinner-my-timeline', 'Loading cache…');
 
@@ -283,25 +287,12 @@ MyTimelineAssistant.prototype.deactivate = function(event) {
 	
 	Mojo.Log.error('DEACTIVATE');
 	
-	/* remove any event handlers you added in activate and do any other cleanup that should happen before
-	   this scene is popped or another scene is pushed on top */
-	
 	/*
 		stop listening for timeline entry taps
 	*/
 	this.unbindTimelineEntryTaps('my-timeline');
 	
-	
-	/*
-		save timeline cache
-	*/
-	sch.debug('saving timeline cache…');
-
-	// if (!this.doNotSaveCacheOnDeactivate) {
-	// 	this.saveTimelineCache();
-	// }
-	
-	
+		
 };
 
 
