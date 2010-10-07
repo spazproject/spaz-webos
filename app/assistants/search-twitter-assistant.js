@@ -132,7 +132,7 @@ SearchTwitterAssistant.prototype.setup = function() {
 		search button
 	*/
 	jQuery('#submit-search-button').bind(Mojo.Event.tap, function() {
-		thisA.search.call(thisA, thisA.searchBoxModel.value);
+		thisA.search.call(thisA, thisA.searchBoxModel.value, null, 1);
 	});
 	
 	this.searchButtonAttributes = {
@@ -173,6 +173,20 @@ SearchTwitterAssistant.prototype.setup = function() {
 	} else {
 		this.fillStar(false);
 	}
+	
+	/*
+		more button
+	*/
+	jQuery('#more-search-button').bind(Mojo.Event.tap, function() {
+		thisA.loadMore.call(thisA);
+	});
+	this.moreButtonAttributes = {};
+	this.moreButtonModel = {
+		"buttonLabel" : "More",
+		"buttonClass" : 'Primary'
+	};
+	this.controller.setupWidget('more-search-button', this.moreButtonAttributes, this.moreButtonModel);
+	
 
 };
 
@@ -208,8 +222,8 @@ SearchTwitterAssistant.prototype.activate = function(event) {
 	});
 	
 	this.listenForEnter('search-twitter-textfield', function() {
-		this.controller.get('submit-search-button').mojo.activate();
-		this.search(this.searchBoxModel.value);
+		thisA.controller.get('submit-search-button').mojo.activate();
+		thisA.search(thisA.searchBoxModel.value, null, 1);
 	});
 	
 	/*
@@ -226,9 +240,6 @@ SearchTwitterAssistant.prototype.deactivate = function(event) {
 	
 	Mojo.Log.error('DEACTIVATE');
 	
-	/* remove any event handlers you added in activate and do any other cleanup that should happen before
-	   this scene is popped or another scene is pushed on top */
-	
 	/*
 		stop listening for timeline entry taps
 	*/
@@ -237,10 +248,9 @@ SearchTwitterAssistant.prototype.deactivate = function(event) {
 
 
 SearchTwitterAssistant.prototype.cleanup = function(event) {
-	/* this function should do any cleanup needed before the scene is destroyed as 
-	   a result of being popped off the scene stack */
-
 	jQuery('#submit-search-button').unbind(Mojo.Event.tap);
+	
+	jQuery('#more-search-button').unbind(Mojo.Event.tap);
 	
 	this.stopListeningForEnter('search-twitter-textfield');
 	
@@ -250,7 +260,7 @@ SearchTwitterAssistant.prototype.cleanup = function(event) {
 
 
 
-SearchTwitterAssistant.prototype.search = function(e, type) {
+SearchTwitterAssistant.prototype.search = function(e, type, page) {
 	var thisA = this;
 	var search_string;
 	
@@ -265,6 +275,10 @@ SearchTwitterAssistant.prototype.search = function(e, type) {
 		search_string = e;
 	} else if (e.value && sch.isString(e.value)) {
 		search_string = e.value;
+	}
+	
+	if (!page) {
+		page = 1;
 	}
 	
 
@@ -298,10 +312,17 @@ SearchTwitterAssistant.prototype.search = function(e, type) {
 		if ( statusobj.isInternetConnectionAvailable === true) {
 
 			thisA.twit.search(
-				thisA.lastQuery,
-				null,null,null,null,null,
-				function(data, searchinfo) {
-
+				thisA.lastQuery, // query
+				null, // since_id
+				100, // results_per_page
+				page, // page
+				null, // lang
+				null, // , geocode
+				function(data, searchinfo) { // onSuccess
+					
+					Mojo.Log.error('searchinfo: %j', searchinfo);
+					Mojo.Log.error('data: %j', data);
+					
 					/*
 						reverse the tweets for collection rendering (faster)
 					*/
@@ -337,7 +358,7 @@ SearchTwitterAssistant.prototype.search = function(e, type) {
 					}
 
 				},
-				function(xhr, msg, exc) {
+				function(xhr, msg, exc) { // onFailure
 					var err_msg = $L("There was an error loading the search results");
 					thisA.displayErrorInfo(err_msg, null);
 					thisA.deactivateSpinner();
@@ -360,9 +381,25 @@ SearchTwitterAssistant.prototype.search = function(e, type) {
 };
 
 
-SearchTwitterAssistant.prototype.refresh = function() {
-	this.search(this.searchBoxModel.value, 'refresh');
+SearchTwitterAssistant.prototype.refresh = function(event) {
+	var page = 1;
+	
+	if (event && sch.isNumber(event)) { page = event; }
+	this.search(this.searchBoxModel.value, 'refresh', page);
 };
+
+
+SearchTwitterAssistant.prototype.loadMore = function(event) {
+	if (this.search_more_page) {
+		this.search_more_page++;
+	} else {
+		this.search_more_page = 2;
+	}
+	
+	this.refresh(this.search_more_page);
+};
+
+
 
 SearchTwitterAssistant.prototype.clear = function() {
 	this.timeline_model.items = [];
