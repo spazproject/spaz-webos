@@ -300,9 +300,6 @@ StageAssistant.prototype.loadTemplates = function() {
 		if (d.url) {
 			html += '		<div><a class="user-homepage" href="'+d.url+'" title="Open user\'s homepage">'+$L('Homepage')+'</a></div>';
 		}
-		// if (d.protected) {
-		// 	html += '		<div class="protected-icon">Protected user</div>';
-		// }
 		html += '	</div>';
 
 		html += ''
@@ -321,40 +318,6 @@ StageAssistant.prototype.loadTemplates = function() {
 		+ '		<div id="user-timeline" data-screen_name="'+d.screen_name+'" style="display:none"></div>'
 		+ '	</div>'
 		+ '</div>';
-
-
-
-
-		html += '		<div id="user-detail-actions">';
-
-
-		html += '			<div class="spaz-button-group">'
-		+ '				<div class="palm-group palm-group-spaz">'
-		+ '					<div class="palm-group-title" id="search-toggle" x-mojo-loc="">Actions</div>'
-		+ '					<div class="palm-list">'
-		+ '						<div class="palm-row single">'
-		+ '							<button id="search-user" class="palm-button" data-screen_name="'+d.screen_name+'">'+$L('Search for user')+'</button>'
-		+ '						</div>';
-		if (App.username) {
-			html += '						<div class="palm-row single">'
-			+ '							<button id="reply-to-user" class="palm-button" data-screen_name="'+d.screen_name+'">'+$L('@mention user')+'</button>'
-			+ '						</div>'
-			+ '						<div class="palm-row single">'
-			+ '							<button id="dm-user" class="palm-button" data-screen_name="'+d.screen_name+'">'+$L('Direct message user')+'</button>'
-			+ '						</div>'
-			+ '						<div class="palm-row single" id="follow-user-row" style="display:none">'
-			+ '							<button id="follow-user" class="palm-button" data-screen_name="'+d.screen_name+'" data-following="false">'+$L('Follow')+'</button>'
-			+ '						</div>';
-
-			html += '						<div class="palm-row single">'
-			+ '							<button id="block-user" class="palm-button" data-screen_name="'+d.screen_name+'" data-blocked="false">'+$L('Block')+'</button>'
-			+ '						</div>';
-		};
-		html += '					</div>'
-		+ '				</div>'
-		+ '			</div>'
-		+ '		</div>'
-		+ '	</div>';
 
 		return html;
 	});
