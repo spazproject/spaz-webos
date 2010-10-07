@@ -105,106 +105,141 @@ scene_helpers.addCommonSceneMethods = function(assistant) {
 			this.prepMessage();
 		}
 		if (event.type == Mojo.Event.command) {
-			switch (event.command) {
 
-				/*
-					timeline filtering
-				*/
-				case 'filter-timeline-all':
-				case 'filter-timeline-replies-dm':
-				case 'filter-timeline-replies':
-				case 'filter-timeline-dms':
-					var sceneobject = this.controller.stageController.activeScene();
-					var scenename = sceneobject.sceneName;
-					
-					sch.debug('scenename:'+scenename);
-					
-					/*
-						if we're in my-timeline, we do things differently
-					*/
-					if (scenename.indexOf('my-timeline') != -1) {
-						this.controller.prepareTransition(Mojo.Transition.crossFade).run();
-						this.filterTimeline(event.command, true);
-					} else {
-						// push to my-timeline with a param to set a filter
-						Spaz.findAndSwapScene('my-timeline', {'filter': event.command});
-
-					}
-					break;
-				
-				case 'new-search-card':
-
-					App.new_search_card++;
-					this.createStage(
-						'search-twitter',
-						{'lightweight':'false'},
-						App.search_card_prefix+App.new_search_card
-					);
-
-					break;
-					
-				case 'update-location':
-					this.showLocationPanel();
-					break;
-					
-				/*
-					Compose a new message
-				*/
-				case 'compose':
-					this.prepMessage();
-					break;
-
-				/*
-					Scroll to top
-				*/
-				case 'toggle-accounts-panel':
-					if(this.controller.get('panel').hasClassName("sliding")){
-						this.controller.get('panel').removeClassName('sliding');
-						break;
-					}
-					this.controller.get('panel').addClassName('sliding');
-					
-				break;
-				case 'scroll-top':
-					dump("Scroll to top");
-					this.scrollToTop();
-					break;
-				/*
-					Scroll to bottom
-				*/
-				case 'scroll-bottom':
-					dump("Scroll to bottom");
-					this.scrollToBottom();
-					break;
-
-				/*
-					Scroll to first (last in list) new item
-				*/
-				case 'scroll-new':
-					dump("Scroll to new");
-					this.scrollToNew();
-					break;
-
-				
-				/*
-					This would refresh the current view
-				*/
-				case 'refresh':
-					this.refresh(event, 'refresh'); // need to have a "refresh" method defined for each scene asst
-					break;
-				
-				/*
-					This is only in the search-twitter-assistant scene
-				*/
-				case 'save-search':
-					if (this.isSavedSearch === false) {
-						this.saveSearch(this.searchBoxModel.value);
-					} else {
-						this.removeSearch(this.searchBoxModel.value);
-					}
-					break;
-
+			if (this._commands[event.command]) {
+				Mojo.Log.error('calling event.command: %j', event.command);
+				this._commands[event.command].call(this, event);
+			} else {
+				Mojo.Log.error('No event.command handler found: %j', event.command);
 			}
+					
+		}
+	};
+	
+	    
+	assistant.setCommand = function(label, func) {
+		this._commands[label] = func;
+	};
+
+	assistant.removeCommand = function(label) {
+		this._commands[label] = null;
+	};
+	
+	
+	
+	/**
+	 * handler for all filter commands on my-timeline 
+	 */
+	assistant.filterCommandHandler = function(e) {
+		var sceneobject = this.controller.stageController.activeScene();
+		var scenename = sceneobject.sceneName;
+		
+		sch.debug('scenename:'+scenename);
+		
+		/*
+			if we're in my-timeline, we do things differently
+		*/
+		if (scenename.indexOf('my-timeline') != -1) {
+			this.controller.prepareTransition(Mojo.Transition.crossFade).run();
+			this.filterTimeline(e.command, true);
+		} else {
+			// push to my-timeline with a param to set a filter
+			Spaz.findAndSwapScene('my-timeline', {'filter': event.command});
+
+		}
+	};
+	
+	/**
+	 * all our default commands
+	 * @variable 
+	 */
+	assistant._commands = {
+
+		/**
+		 * my-timeline view filtering handlers 
+		 */
+		'filter-timeline-all' : function(e) {
+			this.filterCommandHandler(e)
+		},
+		'filter-timeline-replies-dm' : function(e) {
+			this.filterCommandHandler(e)
+		},
+		'filter-timeline-replies' : function(e) {
+			this.filterCommandHandler(e)
+		},
+		'filter-timeline-dms' : function(e) {
+			this.filterCommandHandler(e)
+		},
+
+		'new-search-card':function(e) {
+
+			App.new_search_card++;
+			this.createStage(
+				'search-twitter',
+				{'lightweight':'false'},
+				App.search_card_prefix+App.new_search_card
+			);
+		},
+			
+		'update-location':function(e) {
+			this.showLocationPanel();
+		},
+
+		/*
+			Compose a new message
+		*/
+		'compose':function(e) {
+			this.prepMessage();
+		},
+
+		/*
+			Scroll to top
+		*/
+		'toggle-accounts-panel': function(e) {
+			if(this.controller.get('panel').hasClassName("sliding")){
+				this.controller.get('panel').removeClassName('sliding');
+				return;
+			}
+			this.controller.get('panel').addClassName('sliding');
+		},
+
+		'scroll-top':function(e) {
+			dump("Scroll to top");
+			this.scrollToTop();
+		},
+
+		/*
+			Scroll to bottom
+		*/
+		'scroll-bottom': function(e) {
+			dump("Scroll to bottom");
+			this.scrollToBottom();			
+		},
+
+		/*
+			Scroll to first (last in list) new item
+		*/
+		'scroll-new':function(e) {
+			dump("Scroll to new");
+			this.scrollToNew();
+		},
+		
+		/*
+			This would refresh the current view
+		*/
+		'refresh': function(e) {
+			this.refresh(e, 'refresh'); // need to have a "refresh" method defined for each scene asst
+		},
+		
+		/*
+			This is only in the search-twitter-assistant scene
+		*/
+		'save-search':function(e) {
+			if (this.isSavedSearch === false) {
+				this.saveSearch(this.searchBoxModel.value);
+			} else {
+				this.removeSearch(this.searchBoxModel.value);
+			}			
 		}
 	};
 	
