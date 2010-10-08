@@ -338,10 +338,20 @@ StageAssistant.prototype.loadTemplates = function() {
 		if (d.SC_is_reply) {
 			html += ' reply';
 		}
+		if (d.SC_is_retweet) {
+			html += ' retweet';
+		}
 		html += '" data-status-id="'+d.id+'" data-user-id="'+d.user.id+'" data-user-screen_name="'+d.user.screen_name+'" data-timestamp="'+d.SC_created_at_unixtime+'">'
 		+ '	<div class="user" data-user-id="'+d.user.id+'" data-user-screen_name="'+d.user.screen_name+'">'
-		+ '		<div class="user-img rounded-user-image" style="background-image:url('+d.user.profile_image_url+')"></div>'
-		+ '	</div>'
+		+ '		<div class="user-img rounded-user-image" style="background-image:url('+d.user.profile_image_url+'); background-size: 100% 100%;"></div>'
+		+ '	</div>';
+		if (d.SC_is_retweet) {
+			html +=''
+			+ '	<div class="rt-user" data-user-id="'+d.user.id+'" data-user-screen_name="'+d.user.screen_name+'">'
+			+ '		<div class="rt-user-img rounded-user-image" style="background-image:url('+d.retweeting_user.profile_image_url+'); background-size: 100% 100%;"></div>'
+			+ '	</div>';
+		}
+		html += ''
 		+ '	<div class="text-status">'
 		+ '		<div class="meta-wrapper">'
 		+ '			<div class="screen-name">'+d.user.screen_name;

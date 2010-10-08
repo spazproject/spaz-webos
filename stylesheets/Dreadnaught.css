@@ -185,7 +185,21 @@ div.timeline-entry {
 			width:48px;
 			height:48px;
 		}
+
+	div.timeline-entry .rt-user {
+		position:absolute;
+		width :24px;
+		height:24px;
+		top :40px;
+		left:36px;
+
+	}
+		div.timeline-entry .rt-user .rt-user-img, div.timeline-entry .rt-user img {
+			width :24px;
+			height:24px;
+		}
 	
+
 	div.timeline-entry .text-status {
 		margin-left:64px;
 		margin-top:0px;
