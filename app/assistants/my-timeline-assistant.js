@@ -208,6 +208,21 @@ MyTimelineAssistant.prototype.setup = function() {
 	);
 	this.timeline_list = this.controller.get('my-timeline');
 	
+	
+	/*
+		more button
+	*/
+	jQuery('#more-mytimeline-button').bind(Mojo.Event.tap, function() {
+		thisA.loadMore.call(thisA);
+	});
+	this.moreButtonAttributes = {};
+	this.moreButtonModel = {
+		"buttonLabel" : "More",
+		"buttonClass" : 'Primary'
+	};
+	this.controller.setupWidget('more-mytimeline-button', this.moreButtonAttributes, this.moreButtonModel);
+	
+	
 	/*
 		all of the data goes here. this data is filtered and copied to 
 		this.timeline_model as appropriate
@@ -306,6 +321,8 @@ MyTimelineAssistant.prototype.cleanup = function(event) {
 	
 	// jQuery(document).unbind('load_from_mytimeline_cache_done');
 
+	jQuery('#more-mytimeline-button').unbind(Mojo.Event.tap);
+
 	this.stopTrackingStageActiveState();
 	
 	// this.stopRefresher();
@@ -333,7 +350,7 @@ MyTimelineAssistant.prototype.considerForNotification = function(params){
 
 
 
-MyTimelineAssistant.prototype.refresh = function(mark_as_read) {
+MyTimelineAssistant.prototype.refresh = function(mark_as_read, page) {
 	var thisA = this;
 
 	Mojo.Log.info('refresh()');
@@ -341,29 +358,40 @@ MyTimelineAssistant.prototype.refresh = function(mark_as_read) {
 	if (mark_as_read !== false) {
 		mark_as_read = true;
 	}
-
+	
+	if (page && !sch.isNumber(page)) {
+		page = 1;
+	}
+	
 	if (thisA.isTopmostScene() && mark_as_read) {
 		thisA.markAllAsRead();
 	}
 
 	this.showInlineSpinner('activity-spinner-my-timeline', 'Loading…');
 
-	/*
-		reset scrollstate to avoid white flash
-	*/
-	var scrollstate = this.scroller.mojo.getState();
-	this.scroller.mojo.setState(scrollstate, false);
-
+	this.resetScrollstate();
+	
 	function getCombinedTimeline(statusobj) {
 
 		if ( statusobj.isInternetConnectionAvailable === true) {
+
+			var combined_opts = {
+				'friends_count':App.prefs.get('timeline-friends-getcount'),
+				'replies_count':App.prefs.get('timeline-replies-getcount'),
+				'dm_count':App.prefs.get('timeline-dm-getcount'),
+				'home_page':page,
+				'replies_page':page,
+				'dm_page':page
+			};
+			if (page >= 2) {
+				combined_opts.home_since	= 1;
+				combined_opts.replies_since = 1;
+				combined_opts.dm_since		= 1;
+			}
+			
 			
 			thisA.twit.getCombinedTimeline(
-				{
-					'friends_count':App.prefs.get('timeline-friends-getcount'),
-					'replies_count':App.prefs.get('timeline-replies-getcount'),
-					'dm_count':App.prefs.get('timeline-dm-getcount')
-				},
+				combined_opts,
 				function(data) {
 					
 					Mojo.Log.info('getCombinedTimeline success');
@@ -385,8 +413,22 @@ MyTimelineAssistant.prototype.refresh = function(mark_as_read) {
 
 								App.Tweets.save(data[i]);
 
+								/*
+									rework for RTs
+								*/
+								if (data[i].SC_is_retweet) {
+									data[i].retweeting_user = data[i].user;
+									data[i].user = data[i].retweeted_status.user;
+									data[i].id = data[i].retweeted_status.id;
+									data[i].in_reply_to_status_id = data[i].retweeted_status.in_reply_to_status_id;
+									data[i].isSent = data[i].isSent;
+									data[i].text = data[i].retweeted_status.text;
+								}
+
 								data[i].text = Spaz.makeItemsClickable(data[i].text);
 								data[i].Spaz_is_new = true;
+								
+								
 
 								no_dupes.push(data[i]);
 
@@ -495,14 +537,10 @@ MyTimelineAssistant.prototype.addItems = function(new_items) {
 		thisA.saveTimelineCache();
 	}, 1000);
 	
-	// this filters and updates the model
-	this.filterTimeline(null, false, true);
+	this.resetScrollstate();	
 	
-	/*
-		reset scrollstate to avoid white flash
-	*/
-	var scrollstate = this.scroller.mojo.getState();
-	this.scroller.mojo.setState(scrollstate, false);
+	// this filters and updates the model
+	this.filterTimeline(null, false, true);	
 };
 
 
@@ -529,6 +567,19 @@ MyTimelineAssistant.prototype.renderItem = function(obj) {
 	}
     
 };
+
+
+
+MyTimelineAssistant.prototype.loadMore = function(event) {
+	if (this.mytimeline_more_page) {
+		this.mytimeline_more_page++;
+	} else {
+		this.mytimeline_more_page = 2;
+	}
+	
+	this.refresh(true, this.mytimeline_more_page);
+};
+
 
 MyTimelineAssistant.prototype.itemExistsInModel = function(obj) {
 	
@@ -753,19 +804,37 @@ MyTimelineAssistant.prototype.filterTimeline = function(command, scroll_to_top, 
 
 	this.setFilterState(command);
 	
-	if (scroll_to_top) {
-		this.scrollToTop();
-	}
-	
+	/*
+		scroll me!
+	*/
+	if (scroll_to_top || scroll_to_new) {
+		this.resetScrollstate();
 
-	
-	if (App.prefs.get('timeline-scrollonupdate') && scroll_to_new) {
-		if (this.isTopmostScene()) {
-			this.scrollToNew();
+		if (scroll_to_top) {
+			this.scrollToTop();
 		}
+		if (App.prefs.get('timeline-scrollonupdate') && scroll_to_new) {
+			if (this.isTopmostScene()) {
+				this.scrollToNew();
+			}
+		}		
+	} else {
+		this.resetScrollstate();	
 	}
+	
+	
 	
 };
+
+
+MyTimelineAssistant.prototype.resetScrollstate = function() {
+	/*
+		reset scrollstate to avoid white flash
+	*/
+	var scrollstate = this.scroller.mojo.getState();
+	this.scroller.mojo.setState(scrollstate, false);
+};
+
 
 /**
  * set the filterstate directly to be applied next time around 
