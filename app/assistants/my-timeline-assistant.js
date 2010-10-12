@@ -20,7 +20,7 @@ function MyTimelineAssistant(argFromPusher) {
 	App = Spaz.getAppObj();
 	
 	
-	sch.error('argFromPusher:'+argFromPusher);
+	Mojo.Log.error('argFromPusher: %j', argFromPusher);
 	if (argFromPusher && argFromPusher.filter) {
 	    sch.error('argFromPusher.filter:'+argFromPusher.filter);
 	}
