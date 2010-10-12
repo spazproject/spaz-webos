@@ -20,11 +20,12 @@ function MessageDetailAssistant(argFromPusher) {
 		*/
 		this.status_id  = argFromPusher;
 	} else {
-		this.status_obj = argFromPusher.status_obj;
+		this.passed_status_obj = argFromPusher.status_obj;
 		this.status_id  = argFromPusher.status_id;
 		this.isdm  = argFromPusher.isdm;
 	}
 	
+	this.statusobj = null;
 
 }
 
@@ -40,23 +41,12 @@ MessageDetailAssistant.prototype.setup = function() {
 	
 	this.scroller = this.controller.getSceneScroller();
 	
-	if (sc.app.username) {
-		this.controller.setupWidget("share-submenu", undefined, {
-			items: [
-				{label: $L('ReTweet'), command: 'retweet'},
-				{label: $L('RT @…'), command:   'RT'},
-				{label: $L('Quote'), command:   'quote'},
-				{label: $L('Email'), command:   'email'},
-				{label: $L('SMS/IM'), command:  'sms'},
-				{label: $L('Facebook'), command:  'facebook'}
-			]
-		});
+	if (App.username) {
 		this.setupCommonMenus({
 			viewMenuItems: [
 				{
 					items: [
-						{label: $L('Refresh'),  icon:'sync', command:'refresh', shortcut:'R'},
-						{label: $L("Message Details"), command:'scroll-top', width:200},
+						{label: $L("Message Details"), command:'scroll-top', width:260},
 						{label: $L('Compose'),  icon:'compose', command:'compose', shortcut:'N'}
 
 					]
@@ -64,14 +54,116 @@ MessageDetailAssistant.prototype.setup = function() {
 
 			],
 			cmdMenuItems:[
-				{label:$L('Reply'),  icon:'at', command:'reply', shortcut:'R'},
-				{label:$L('Share'),  icon:'forward-email', submenu:'share-submenu', shortcut:'S'},
-				{label:$L('DM'),  icon:'dms', command:'dm', shortcut:'d'},
-				{label:$L('Favorite'),  iconPath:'images/theme/menu-icon-favorite-outline.png', command:'favorite', shortcut:'F'}
+				{},
+				{
+					items:[
+						{label:$L('Reply'),  icon:'reply', command:'reply', shortcut:'R'},
+						{label:$L('Share'),  icon:'forward-email',  command:'share', shortcut:'S'},
+						{label:$L('Favorite'), iconPath:'images/theme/menu-icon-favorite-outline.png', command:'favorite', disabled:true, shortcut:'F'},
+						{label:$L('Delete'),  icon:'stop', command:'delete', disabled:true, shortcut:'D'}
+					]
+				},
+				{}
 			]
 		});
 		
 		this.initAppMenu({ 'items':LOGGEDIN_APPMENU_ITEMS });
+		
+		
+		this.setCommand('reply', function(e) {
+			if (thisA.statusobj) {
+				var screen_name;
+				if (thisA.statusobj.SC_is_dm) {
+					screen_name = thisA.statusobj.sender.screen_name;
+					thisA.prepDirectMessage(screen_name);
+				} else {
+					screen_name = thisA.statusobj.user.screen_name;
+					thisA.prepReply(screen_name, thisA.statusobj.id, thisA.statusobj);
+				}
+
+			} else {
+				Mojo.Log.error('this.statusobj not yet defined');
+			}
+		});
+		this.setCommand('share', function(e) {
+			if (thisA.statusobj) {
+				thisA.showShareMenu(e, thisA.statusobj);
+			} else {
+				Mojo.Log.error('this.statusobj not yet defined');
+			}
+		});
+		this.setCommand('favorite', function(e) {
+			Mojo.Log.error('called favorite handler');
+			if (thisA.statusobj) {
+				Mojo.Log.error('statusobj defined');
+				if (thisA.statusobj.SC_is_dm) {
+					Mojo.Log.error("can't fave a dm");
+					return; // can't fave a dm
+				} else {
+					if (thisA.statusobj.favorited) {
+						Mojo.Log.error('UNFAVORITING %j', thisA.statusobj);
+						thisA.twit.unfavorite(
+							thisA.statusobj.id,
+							function(data) {
+								thisA.statusobj.favorited = false;
+								thisA.setFavButtonState();
+								thisA.showBanner($L('Removed favorite'));
+							},
+							function(xhr, msg, exc) {
+								thisA.showBanner($L('Error removing favorite'));
+							}
+						);
+					} else {
+						Mojo.Log.error('FAVORITING %j', thisA.statusobj);
+						thisA.twit.favorite(
+							thisA.statusobj.id,
+							function(data) {
+								thisA.statusobj.favorited = true;
+								thisA.setFavButtonState();
+								thisA.showBanner($L('Added favorite'));								
+							},
+							function(xhr, msg, exc) {
+								thisA.showBanner($L('Error adding favorite'));
+							}
+						);
+					}
+				}
+			} else {
+				Mojo.Log.error('this.statusobj not yet defined');
+			}
+		});
+		this.setCommand('delete', function(e) {
+			if (thisA.statusobj) {
+				
+				thisA.showAlert(
+					$L('Do you want to delete this message?'),
+					$L('Confirm Delete'),
+					function(choice) {
+						switch(choice) {
+							case 'yes':
+								var status_id = thisA.statusobj.id;
+								if (thisA.statusobj.SC_is_dm) {
+									thisA.deleteDirectMessage(status_id);
+								} else {
+									thisA.deleteStatus(status_id);
+								}
+
+								Mojo.Controller.stageController.popScene({'returnFromPop':true});
+								break;
+
+							default:
+						}
+						return true;
+					},
+					[
+						{label:$L('Yes'), value:"yes", type:'negative'},
+						{label:$L('No'), value:"no", type:'dismiss'}
+					]
+				);
+				
+			}
+		});
+		
 		
 	} else {
 		this.setupCommonMenus({
@@ -98,20 +190,6 @@ MessageDetailAssistant.prototype.setup = function() {
 	});
 
 	
-
-
-	jQuery(document).bind('create_favorite_succeeded',  { thisAssistant:this }, function(e, statusobj) {
-		jQuery('#message-detail-action-favorite[data-status-id="'+statusobj.id+'"]')
-			.attr('data-favorited', 'true')
-			.html('Remove as favorite');
-	});
-	jQuery(document).bind('destroy_favorite_succeeded', { thisAssistant:this }, function(e, statusobj) {
-		jQuery('#message-detail-action-favorite[data-status-id="'+statusobj.id+'"]')
-			.attr('data-favorited', 'false')
-			.html('Add as favorite');		
-	});
-	
-
 	
 	/* this function is for setup tasks that have to happen when the scene is first created */
 		
@@ -130,8 +208,8 @@ MessageDetailAssistant.prototype.activate = function(event) {
 	   example, key handlers that are observing the document */
 	
 	if (this.isdm) {
-		if (this.status_obj){
-			jQuery(document).trigger('get_one_status_succeeded', [this.status_obj]);
+		if (this.passed_status_obj){
+			jQuery(document).trigger('get_one_status_succeeded', [this.passed_status_obj]);
 		} else {
 			App.Tweets.get(this.status_id, this.isdm,
 				function(data) {
@@ -145,7 +223,7 @@ MessageDetailAssistant.prototype.activate = function(event) {
 					
 				},
 				function(message) {
-					sch.error('Couldn\'t retrieve message from Depot:'+message);
+					Mojo.Log.error('Couldn\'t retrieve message from Depot:'+message);
 					thisA.showAlert($L('There was an error retrieving the message data'));
 				}
 			);
@@ -163,27 +241,6 @@ MessageDetailAssistant.prototype.activate = function(event) {
 				thisA.showAlert($L('There was an error retrieving the message data'));
 			}
 		);
-		// if (this.status_obj){
-		// 			jQuery(document).trigger('get_one_status_succeeded', [this.status_obj]);
-		// 		} else {
-		// 			App.Tweets.get(this.status_id, this.isdm,
-		// 				function(data) {
-		// 					if (data !== null) {
-		// 						sch.error('Message '+data.id+' pulled from DB');
-		// 						jQuery(document).trigger('get_one_status_succeeded', [data]);
-		// 					} else { // if nothing is returned, get it from Twitter
-		// 						sch.error('Message '+this.status_id+' missing from DB; retrieving from Twitter');
-		// 						thisA.twit.getOne(thisA.status_id);
-		// 					}	
-		// 				},
-		// 				function(message) {
-		// 					sch.error('Couldn\'t retrieve message from Depot:'+message);
-		// 					thisA.twit.getOne(thisA.status_id);
-		// 				}
-		// 			);
-		// 			
-		// 
-		// 		}
 	}
 	
 
@@ -199,48 +256,8 @@ MessageDetailAssistant.prototype.activate = function(event) {
 		Mojo.Controller.stageController.pushScene('user-detail', userid);
 	});
 	
-	jQuery('#message-detail-action-reply', this.scroller).live(Mojo.Event.tap, function(e) {
-		var screen_name = jQuery(this).attr('data-screen_name');
-		var in_reply_to = jQuery(this).attr('data-status-id');
-		thisA.prepReply(screen_name, in_reply_to, thisA.statusobj);
-	});
-	jQuery('#message-detail-action-share', this.scroller).live(Mojo.Event.tap, function(e) {
-		thisA.controller.popupSubmenu({
-			onChoose:  thisA.sharePopupmenuChoose,
-			placeNear: e.target,
-			items: [
-				{label: $L('ReTweet'), command: 'retweet'},
-				{label: $L('RT @…'), command:   'RT'},
-				{label: $L('Quote'), command:   'quote'},
-				{label: $L('Email'), command:   'email'},
-				{label: $L('SMS/IM'), command:  'sms'},
-				{label: $L('Facebook'), command:  'facebook'}
-			]
-		});
-	});
-	jQuery('#message-detail-action-dm', this.scroller).live(Mojo.Event.tap, function(e) {
-		thisA.prepDirectMessage(jQuery(this).attr('data-screen_name'));
-	});
-	jQuery('#message-detail-action-favorite', this.scroller).live(Mojo.Event.tap, function(e) {
-		var status_id = parseInt(jQuery(this).attr('data-status-id'), 10);		
-		if (jQuery(this).attr('data-favorited') === 'true') {
-			sch.debug('UNFAVORITING');
-			thisA.twit.unfavorite(status_id);
-		} else {
-			sch.debug('FAVORITING');
-			thisA.twit.favorite(status_id);
-		}
-	});
-	jQuery('#message-detail-action-delete', this.scroller).live(Mojo.Event.tap, function(e) {
-		var status_id = parseInt(jQuery(this).attr('data-status-id'), 10);
-		if (thisA.isdm) {
-			thisA.deleteDirectMessage(status_id);
-		} else {
-			thisA.deleteStatus(status_id);
-		}
-		
-		Mojo.Controller.stageController.popScene({'returnFromPop':true});
-	});
+	
+
 	
 	
 	
@@ -281,11 +298,6 @@ MessageDetailAssistant.prototype.activate = function(event) {
 MessageDetailAssistant.prototype.deactivate = function(event) {
 	jQuery('#message-detail-container .in-reply-to-link', this.scroller).die(Mojo.Event.tap);
 	jQuery('#message-detail-image', this.scroller).die(Mojo.Event.tap);
-	jQuery('#message-detail-action-reply', this.scroller).die(Mojo.Event.tap);
-	jQuery('#message-detail-action-share', this.scroller).die(Mojo.Event.tap);
-	jQuery('#message-detail-action-dm', this.scroller).die(Mojo.Event.tap);
-	jQuery('#message-detail-action-favorite', this.scroller).die(Mojo.Event.tap);
-	jQuery('#message-detail-action-delete', this.scroller).die(Mojo.Event.tap);
 	
 	jQuery('#message-detail-container .user', this.scroller).die(Mojo.Event.tap);
 	jQuery('#message-detail-container .username.clickable', this.scroller).die(Mojo.Event.tap);
@@ -298,8 +310,6 @@ MessageDetailAssistant.prototype.deactivate = function(event) {
 MessageDetailAssistant.prototype.cleanup = function(event) {
 	jQuery(document).unbind('get_one_status_succeeded');
 	jQuery(document).unbind('get_one_status_failed');
-	jQuery(document).unbind('uncreate_favorite_succeeded');
-	jQuery(document).unbind('destroy_favorite_succeeded');
 };
 
 
@@ -310,11 +320,14 @@ MessageDetailAssistant.prototype.processStatusReturn = function(e, statusobj) {
 	
 	sch.dump(e.data.thisAssistant);
 
+	if (!statusobj.SC_is_dm) {
+		statusobj.isSent = (statusobj.user.screen_name.toLowerCase() === App.username.toLowerCase());
+	}
+
 	e.data.thisAssistant.statusobj = statusobj;
 	e.data.thisAssistant.statusRetrieved = false;
 
-	sch.dump('message data:');
-	sch.dump(e.data.thisAssistant.statusobj);
+	Mojo.Log.error('message data: %j', e.data.thisAssistant.statusobj);
 	
 	e.data.thisAssistant.statusobj.SC_thumbnail_urls = sui.getThumbsForUrls(e.data.thisAssistant.statusobj.text);
 	e.data.thisAssistant.statusobj.text = Spaz.makeItemsClickable(e.data.thisAssistant.statusobj.text);
@@ -337,32 +350,71 @@ MessageDetailAssistant.prototype.processStatusReturn = function(e, statusobj) {
 	jQuery('#message-detail').html(itemhtml);
 	
 	sch.updateRelativeTimes('#message-detail .status>.meta>.date>.date-relative', 'data-created_at');
+
+			
+	
+	if (e.data.thisAssistant.statusobj.isSent || e.data.thisAssistant.statusobj.SC_is_dm) {
+		e.data.thisAssistant.enableDeleteButton(true);
+	}
+	
+	if (!e.data.thisAssistant.statusobj.SC_is_dm) {
+		e.data.thisAssistant.enableFavButton(true);
+	}
+
+	e.data.thisAssistant.setFavButtonState();
+	
+};
+
+/**
+ * @param {Boolean} [is_favorite] true or false. if not provided, gets value from this.statusobj
+ */
+MessageDetailAssistant.prototype.setFavButtonState = function(is_favorite) {
+	
+	if (this.statusobj && !this.statusobj.SC_is_dm) {
+		
+		if (is_favorite !== true && is_favorite !== false) {
+			is_favorite = this.statusobj.favorited;
+		}
+		
+		var menu_item = this.cmdMenuModel.items[1].items[2];
+
+		Mojo.Log.error('menu_item: %j', menu_item);
+		Mojo.Log.error('is_favorite: %s', is_favorite);
+			
+		if (is_favorite) {
+			menu_item.iconPath = 'images/theme/menu-icon-favorite.png';
+			this.controller.modelChanged(this.cmdMenuModel);
+		} else {
+			menu_item.iconPath = 'images/theme/menu-icon-favorite-outline.png';
+			this.controller.modelChanged(this.cmdMenuModel);
+		}
+		
+	}
+};
+
+
+MessageDetailAssistant.prototype.enableFavButton = function(enabled) {
+	
+	if (enabled) {
+		this.cmdMenuModel.items[1].items[2].disabled = false;
+		this.controller.modelChanged(this.cmdMenuModel);
+	} else {
+		this.cmdMenuModel.items[1].items[2].disabled = true;
+		this.controller.modelChanged(this.cmdMenuModel);
+	}
 	
 };
 
 
-MessageDetailAssistant.prototype.sharePopupmenuChoose = function(cmd) {
+
+MessageDetailAssistant.prototype.enableDeleteButton = function(enabled) {
 	
-	switch (cmd) {
-		case 'retweet':
-			this.retweet(this.statusobj);
-			break;
-		case 'RT':
-			this.prepRetweet(this.statusobj);
-			break;
-		case 'quote':
-			this.prepQuote(this.statusobj);
-			break;
-		case 'email':
-			this.emailTweet(this.statusobj);
-			break;
-		case 'sms':
-			this.SMSTweet(this.statusobj);
-			break;
-		case 'facebook':
-			this.facebookTweet(this.statusobj);
-			break;
-		default:
-			return;
+	if (enabled) {
+		this.cmdMenuModel.items[1].items[3].disabled = false;
+		this.controller.modelChanged(this.cmdMenuModel);
+	} else {
+		this.cmdMenuModel.items[1].items[3].disabled = true;
+		this.controller.modelChanged(this.cmdMenuModel);
 	}
+	
 };
