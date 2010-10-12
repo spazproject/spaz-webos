@@ -113,6 +113,54 @@ a:link, a:visited, .clickable {
 }
 
 
+.palm-row .list-selector-triangle {
+  background: url(../images/dreadnaught/list-selector-triangle-dark.png) top no-repeat;
+}
+
+.palm-row.selected .list-selector-triangle {
+  background: url(../images/dreadnaught/list-selector-triangle-dark.png) bottom no-repeat;
+}
+
+.palm-popup-container {
+  -webkit-border-image: url(../images/dreadnaught/palm-popup-background-dark.png) 24 24 24 24 stretch stretch;
+}
+
+.palm-popup-container .palm-popup-content {
+  margin: 17px 9px 18px 9px;
+  padding: 0px;
+  max-height: 368px;
+  z-index: 1;
+  overflow: hidden;
+}
+
+.palm-popup-container .palm-popup-fade-top {
+  top: -16px;
+}
+.palm-popup-container .palm-popup-fade-top > .fade-background {
+  -webkit-border-image: url(../images/dreadnaught/palm-popup-fade-top-dark.png) 0 24 0 24 repeat repeat;
+}
+.palm-popup-container .palm-popup-fade-top > .fade-arrow {
+  background: url(../images/dreadnaught/palm-popup-fade-arrow-up-dark.png) center center no-repeat;
+}
+
+.palm-popup-container .palm-popup-fade-bottom {
+  bottom: -17px;
+}
+.palm-popup-container .palm-popup-fade-bottom > .fade-background {
+  -webkit-border-image: url(../images/dreadnaught/palm-popup-fade-bottom-dark.png) 0 24 0 24 repeat repeat;
+}
+.palm-popup-container .palm-popup-fade-bottom > .fade-arrow {
+  background: url(../images/dreadnaught/palm-popup-fade-arrow-down-dark.png) center center no-repeat;
+}
+
+.palm-row {
+  color: #fff;
+  background: url(../images/dreadnaught/list-separator-dark.png) bottom left repeat-x;
+}
+
+
+
+
 div.rounded-user-image {
 	-khtml-border-radius: 6px;
 }
