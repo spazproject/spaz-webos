@@ -69,8 +69,27 @@ StartAssistant.prototype.setup = function() {
 	
 	this.initAppMenu();
 	
+	this.buttonAttributes = {};
+	this.loginButtonModel = {
+		buttonLabel : $L("Log-in to your account"),
+		buttonClass: 'primary'
+	};
+	this.searchButtonModel = {
+		buttonLabel : $L("Explore"),
+		buttonClass: 'secondary'
+	};
+	this.helpButtonModel = {
+		buttonLabel : $L("Get Help"),
+		buttonClass: 'secondary'
+	};
+	this.controller.setupWidget('start-login-button',	this.buttonAttributes, this.loginButtonModel);
+	this.controller.setupWidget('start-search-button',	this.buttonAttributes, this.searchButtonModel);
+	this.controller.setupWidget('start-help-button',	this.buttonAttributes, this.helpButtonModel);
+	
+	
 	Mojo.Event.listen(jQuery('#start-login-button')[0], Mojo.Event.tap, this.showLogin.bind(this));
 	Mojo.Event.listen(jQuery('#start-search-button')[0], Mojo.Event.tap, this.showSearch.bind(this));
+	Mojo.Event.listen(jQuery('#start-help-button')[0], Mojo.Event.tap, this.showHelp.bind(this));
 };
 
 
@@ -122,6 +141,7 @@ StartAssistant.prototype.cleanup = function(event) {
 	   a result of being popped off the scene stack */
 	Mojo.Event.stopListening(jQuery('#start-login-button')[0], Mojo.Event.tap, this.showLogin);
 	Mojo.Event.stopListening(jQuery('#start-search-button')[0], Mojo.Event.tap, this.showSearch);
+	Mojo.Event.stopListening(jQuery('#start-help-button')[0], Mojo.Event.tap, this.showHelp);
 	
 };
 
@@ -143,6 +163,10 @@ StartAssistant.prototype.showSection = function(from, to) {
 
 StartAssistant.prototype.showSearch = function() {
 	Mojo.Controller.stageController.pushScene('startsearch');
+};
+
+StartAssistant.prototype.showHelp = function() {
+	Mojo.Controller.stageController.pushScene("help");
 };
 
 StartAssistant.prototype.showStart  = function() {
