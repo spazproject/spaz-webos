@@ -40,7 +40,8 @@ UserDetailAssistant.prototype.setup = function() {
 			viewMenuItems: [
 				{
 					items:[
-						{label: $L("User Details"), command:'scroll-top', 'class':"palm-header left", width:320}				
+						{label: $L("User Details"), command:'scroll-top', 'class':"palm-header left", width:260},
+						{label: $L('Compose'),  icon:'compose', command:'compose', shortcut:'N'}
 					]
 				}
 
