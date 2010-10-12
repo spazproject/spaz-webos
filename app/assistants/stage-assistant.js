@@ -177,40 +177,7 @@ StageAssistant.prototype.loadTemplates = function() {
 		}
 		html += '		</div>'
 		+ '	</div>';
-		if (App.username) {
-
-			html += '	<div id="message-detail-actions">'
-			+ '		<div class="palm-group palm-group-spaz">'
-			+ '			<div class="palm-group-title" id="search-toggle" x-mojo-loc="">Actions</div>'
-			+ '			<div class="palm-list">'
-			+ '				<div class="palm-row single">'
-			+ '					<button class="palm-button" id="message-detail-action-reply" data-status-id="'+d.id+'" data-screen_name="'+d.user.screen_name+'">@Reply to this message</button>'
-			+ '				</div>'
-			+ '				<div class="palm-row single">'
-			+ '					<button class="palm-button" id="message-detail-action-share" data-status-id="'+d.id+'">Share this message</button>'
-			+ '				</div>';
-			if (d.favorited) {
-				html += '   			<div class="palm-row single">'
-				 + '					<button class="palm-button" id="message-detail-action-favorite" data-status-id="'+d.id+'" data-screen_name="'+d.user.screen_name+'" data-favorited="true">Remove as favorite</button>'
-				 + '				</div>';
-			} else {
-				html += '   			<div class="palm-row single">'
-				+ '					<button class="palm-button" id="message-detail-action-favorite" data-status-id="'+d.id+'" data-screen_name="'+d.user.screen_name+'" data-favorited="false">Add as favorite</button>'
-				+ '				</div>';
-			}
-			html += '   			<div class="palm-row single">'
-			+ '					<button class="palm-button" id="message-detail-action-dm" data-screen_name="'+d.user.screen_name+'">Direct message this user</button>'
-			+ '				</div>';
-			if (d.isSent) {
-				html += '   			<div class="palm-row single">'
-				 + '					<button class="palm-button" id="message-detail-action-delete" data-status-id="'+d.id+'">Delete</button>'
-				 + '				</div>';		
-			}
-			html += '			</div>'
-			+ '		</div>'
-	    + '	</div>';
-		}
-		html += '</div>';
+		+ '</div>';
 
 		return html;
 	});
@@ -239,27 +206,7 @@ StageAssistant.prototype.loadTemplates = function() {
 		+ '			<div class="date"><strong>Direct message sent</strong> <span class="date-relative" data-created_at="'+d.created_at+'">'+sch.getRelativeTime(d.created_at)+'</span></div>'
 		+ '		</div>'
 		+ '	</div>';
-		if (App.username) {
-			html += '	<div id="message-detail-actions">'
-			+ '		<div class="spaz-button-group">'
-			+ '			<div class="palm-group palm-group-spaz">'
-			+ '				<div class="palm-group-title" id="search-toggle" x-mojo-loc="">'+$L('Actions')+'</div>'
-			+ '				<div class="palm-list">'
-			+ '					<div class="palm-row single">'
-			+ '						<button class="palm-button" id="message-detail-action-dm" data-screen_name="'+d.sender.screen_name+'">'+$L('Direct message user')+'</button>'
-			+ '					</div>'
-			+ '					<div class="palm-row single">'
-			+ '						<button class="palm-button" id="message-detail-action-delete" data-status-id="'+d.id+'">Delete</button>'
-			+ '					</div>'
-			+ '				</div>'
-			+ '			</div>'
-			+ '		</div>'
-			+ '	</div>';
-		};
-		html += '</div>';
-
-
-		// html = "DM detail view is not yet implemented!";
+		+ '</div>';
 
 		return html;
 	});
