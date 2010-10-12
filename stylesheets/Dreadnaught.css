@@ -716,7 +716,7 @@ div.spaz-drawer {
 		background-position: 0px 6px;
 	}
 
-	#user-detail .user-info {
+	#user-detail .user-info, #user-detail .user-info-stats {
 		margin-left: 8px;
 		margin-right:8px;
 		overflow:visible;		
@@ -736,15 +736,7 @@ div.spaz-drawer {
 			}
 
         #user-detail .user-location, #user-detail .user-homepage {
-			font-size:12pt;
-			font-weight:bold;
-			font-family:"Prelude-CondensedMedium";
-			display:inline-block;
 			color:#CCCCFF;
-/*			-webkit-border-radius:6pt;*/
-			padding:2pt 0pt;
-/*			text-decoration:none;*/
-			margin-left:0px;
 		}
 		#user-detail .user-description {
 			margin-top:.3em;
@@ -752,7 +744,45 @@ div.spaz-drawer {
 			font-size:  13pt;
 			margin-left:0px;
 		}
-
+		
+		#user-detail div.user-info-stats {
+			margin-top:.5em;
+			overflow:auto;
+		}
+		
+		#user-detail div.user-info-stats div.row {
+			background-color:rgba(16,16,16,.5);
+			-webkit-border-radius:10px;
+			margin-bottom:3px;
+			padding:5px;
+			overflow:auto;
+			height:1.1em;
+		}
+			#user-detail div.user-info-stats div.row>div {
+				font-size:12pt;
+				font-family:"Prelude-CondensedMedium";
+				margin:0;
+				border:0;
+/*				display:inline-block;*/
+				float:left;
+				overflow:      hidden;
+				text-overflow: ellipsis;
+				white-space:   nowrap;
+			
+			}
+				#user-detail div.user-info-stats div.label {
+					width:65px;
+					text-align:right;
+					font-weight:bold;
+					padding-right:8px;
+					color:#aaa;
+				}
+				#user-detail div.user-info-stats div.value {
+					max-width:220px;
+					text-align:left;
+				}
+		
+		
 	#user-detail-actions {}
 
 	#user-timeline {

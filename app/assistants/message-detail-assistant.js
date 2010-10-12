@@ -318,6 +318,8 @@ MessageDetailAssistant.prototype.processStatusReturn = function(e, statusobj) {
 	
 	var sui = new SpazImageURL();
 	
+	Mojo.Log.error('statusobj: %j', statusobj);
+	
 	sch.dump(e.data.thisAssistant);
 
 	if (!statusobj.SC_is_dm) {

@@ -240,14 +240,48 @@ StageAssistant.prototype.loadTemplates = function() {
 		}
 		html +='	</div>'
 		+ '	<div class="user-info">'
-		+ '		<div class="user-description">'+d.description+'</div>';
-		if (d.location) {
-			html += '   	 <div><a class="user-location" href="http://maps.google.com/?q=' +encodeURIComponent(d.location)+ '" title="View this location on a map">'+d.location+'</a></div>';
-		}
+		+ '		<div class="user-description">'+d.description+'</div>'
+		+ '	</div>';
+
+		/*
+			details table
+		*/
+		var url_str = $L('n/a');
+		var loc_str = $L('n/a');
 		if (d.url) {
-			html += '		<div><a class="user-homepage" href="'+d.url+'" title="Open user\'s homepage">'+$L('Homepage')+'</a></div>';
+			url_str = '<a class="user-homepage" href="'+d.url+'" title="Open user\'s homepage">'+d.url+'</a>';
+		}		
+		if (d.location) {
+			loc_str = '<a class="user-location" href="http://maps.google.com/?q=' +encodeURIComponent(d.location)+ '" title="View this location on a map">'+d.location+'</a>';
 		}
-		html += '	</div>';
+
+		html += ''
+		+ '<div class="user-info-stats">'
+		+ '	<div class="row">'
+		+ '		<div class="label">'+$L('URL')+'</div>'
+		+ '		<div class="value">'+url_str+'</div>'
+		+ '	</div>'
+		+ '	<div class="row">'
+		+ '		<div class="label">'+$L('Location')+'</div>'
+		+ '		<div class="value">'+loc_str+'</div>'
+		+ '	</div>'
+		+ '	<div class="row">'
+		+ '		<div class="label">'+$L('Friends')+'</div>'
+		+ '		<div class="value">'+d.friends_count+'</div>'
+		+ '	</div>'
+		+ '	<div class="row">'
+		+ '		<div class="label">'+$L('Followers')+'</div>'
+		+ '		<div class="value">'+d.followers_count+'</div>'
+		+ '	</div>'
+		+ '	<div class="row">'
+		+ '		<div class="label">'+$L('Statuses')+'</div>'
+		+ '		<div class="value">'+d.statuses_count+'</div>'
+		+ '	</div>'
+		+ '	<div class="row">'
+		+ '		<div class="label">'+$L('Since')+'</div>'
+		+ '		<div class="value">'+(new Date(d.created_at).toDateString())+'</div>'
+		+ '	</div>'
+		+ '</div>';
 
 		html += ''
 		+ '	<table class="palm-divider collapsible" id="user-timeline-trigger" x-mojo-tap-highlight="momentary">'
@@ -261,7 +295,7 @@ StageAssistant.prototype.loadTemplates = function() {
 		+ '			</tr>'
 		+ '		</tbody>'
 		+ '	</table> '
-	  + '	<div class="pane">'
+		+ '	<div class="pane">'
 		+ '		<div id="user-timeline" data-screen_name="'+d.screen_name+'" style="display:none"></div>'
 		+ '	</div>'
 		+ '</div>';
