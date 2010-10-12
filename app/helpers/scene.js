@@ -108,6 +108,7 @@ scene_helpers.addCommonSceneMethods = function(assistant) {
 
 			if (this._commands[event.command]) {
 				Mojo.Log.error('calling event.command: %j', event.command);
+				Mojo.Log.error('calling event.command handler: %s', this._commands[event.command]);
 				this._commands[event.command].call(this, event);
 			} else {
 				Mojo.Log.error('No event.command handler found: %j', event.command);
@@ -144,7 +145,7 @@ scene_helpers.addCommonSceneMethods = function(assistant) {
 			this.filterTimeline(e.command, true);
 		} else {
 			// push to my-timeline with a param to set a filter
-			Spaz.findAndSwapScene('my-timeline', {'filter': event.command});
+			Spaz.findAndSwapScene('my-timeline', {'filter': e.command});
 
 		}
 	};
@@ -159,16 +160,16 @@ scene_helpers.addCommonSceneMethods = function(assistant) {
 		 * my-timeline view filtering handlers 
 		 */
 		'filter-timeline-all' : function(e) {
-			this.filterCommandHandler(e)
+			this.filterCommandHandler(e);
 		},
 		'filter-timeline-replies-dm' : function(e) {
-			this.filterCommandHandler(e)
+			this.filterCommandHandler(e);
 		},
 		'filter-timeline-replies' : function(e) {
-			this.filterCommandHandler(e)
+			this.filterCommandHandler(e);
 		},
 		'filter-timeline-dms' : function(e) {
-			this.filterCommandHandler(e)
+			this.filterCommandHandler(e);
 		},
 
 		'new-search-card':function(e) {
@@ -645,6 +646,7 @@ scene_helpers.addCommonSceneMethods = function(assistant) {
 				jQuery('div.timeline-entry[data-status-id="'+id+'"]').remove();
 			},
 			function(xhr, msg, exc){
+				Mojo.Log.error("Error deleting status: '%s', '%s'", xhr.responseText, msg);
 				that.showBanner($L('Deleting status failed!'));
 			}
 		);
@@ -664,6 +666,7 @@ scene_helpers.addCommonSceneMethods = function(assistant) {
 				jQuery('div.timeline-entry.dm[data-status-id="'+id+'"]').remove();
 			},
 			function(xhr, msg, exc){
+				Mojo.Log.error("Error deleting dm: '%s', '%s'", xhr.responseText, msg);
 				that.showBanner($L('Deleting direct message failed!'));
 			}
 		);
@@ -1197,7 +1200,26 @@ scene_helpers.addCommonSceneMethods = function(assistant) {
 			Mojo.Log.error('status_obj: %j', status_obj);
 			this._lastClickedStatusObj = status_obj;
 
-
+			/*
+				build the menu items
+			*/
+			var menu_items;
+			if (status_obj.SC_is_dm) {
+				menu_items = [
+					{label: $L('Details'), command: 'details'},
+					{label: $L('Reply to DM'), command: 'reply-dm'}
+				];
+			} else {
+				menu_items = [
+					{label: $L('Details'), command: 'details'},
+					{label: $L('@reply'), command: 'reply'}
+				];
+				if (!status_obj.user['protected']) {					
+					menu_items.push({label: $L('Share'), command: 'share'});
+				}
+			}
+			
+			
 			this.controller.popupSubmenu({
 				onChoose: function(cmd) {
 					
@@ -1210,10 +1232,14 @@ scene_helpers.addCommonSceneMethods = function(assistant) {
 						username  = status_obj.sender.screen_name;
 						status_id = status_obj.id;
 						is_dm     = true;
+						
+						
 					} else {
 						username  = status_obj.user.screen_name;
 						status_id = status_obj.id;
-						is_dm     = false;							
+						is_dm     = false;
+						
+
 					}
 					Mojo.Log.info("Status Obj: %s", username);
 					Mojo.Log.info("Status Obj: %s", status_id);
@@ -1226,8 +1252,14 @@ scene_helpers.addCommonSceneMethods = function(assistant) {
 							Mojo.Controller.stageController.pushScene('message-detail', {'status_id':status_id, 'isdm':is_dm});
 
 							break;
+						case 'share':
+							thisA.showShareMenu(e, status_obj);
+							break;
 						case 'reply':
 							thisA.prepReply(username, status_id, status_obj);
+							break;
+						case 'reply-dm':
+							thisA.prepDirectMessage(username);
 							break;
 						case 'retweet':
 							thisA.retweet(status_obj);
@@ -1254,19 +1286,62 @@ scene_helpers.addCommonSceneMethods = function(assistant) {
 
 				},
 				placeNear: event_target,
-				items: [
-					{label: $L('Details'), command: 'details'},
-					{label: $L('@reply'), command: 'reply'},
-					{label: $L('ReTweet'), command: 'retweet'},
-					{label: $L('RT @…'), command: 'RT'},
-					{label: $L('Quote'), command:   'quote'},
-					{label: $L('Email'), command:   'email'},
-					{label: $L('SMS/IM'), command:  'sms'},
-					{label: $L('Facebook'), command:  'facebook'}
-				]
+				items: menu_items
 			});
 		}
 
+	};
+	
+	
+	assistant.showShareMenu = function(e, status_obj) {
+		var thisA = this;
+		
+		var items;
+		
+		if (!status_obj.SC_is_dm) {
+			items = [
+				{label: $L('ReTweet'), command: 'retweet'},
+				{label: $L('RT @…'), command:   'RT'},
+				{label: $L('Quote'), command:   'quote'},
+				{label: $L('Email'), command:   'email'},
+				{label: $L('SMS/IM'), command:  'sms'},
+				{label: $L('Facebook'), command:  'facebook'}
+			];
+		} else {
+			items = [
+				{label: $L('Email'), command:   'email'}
+			];			
+		}
+		
+		this.controller.popupSubmenu({
+			onChoose: function(cmd) {
+
+				switch (cmd) {
+					case 'retweet':
+						thisA.retweet(status_obj);
+						break;
+					case 'RT':
+						thisA.prepRetweet(status_obj);
+						break;
+					case 'quote':
+						thisA.prepQuote(status_obj);
+						break;
+					case 'email':
+						thisA.emailTweet(status_obj);
+						break;
+					case 'sms':
+						thisA.SMSTweet(status_obj);
+						break;
+					case 'facebook':
+						thisA.facebookTweet(status_obj);
+						break;
+					default:
+						return;
+				}
+			},
+			placeNear: e.target,
+			items: items
+		});
 	};
 	
 	
@@ -1348,6 +1423,7 @@ scene_helpers.addCommonSceneMethods = function(assistant) {
 	 * @param {string} msg  required 
 	 * @param {string} title  optional 
 	 * @param {function} ok_cb  callback like function(value) where value is value assigned to OK button. Optional
+	 * @param {array} [choices] an array of choice objects. Ex: {label:$L('Okay'), value:"okay", type:'dismiss'}
 	 */
 	assistant.showAlert = function(msg, title, ok_cb, choices) {
 		
