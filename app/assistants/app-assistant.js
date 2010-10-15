@@ -279,7 +279,7 @@ AppAssistant.prototype.handleLaunch = function(launchParams) {
 			 */			
 			case 'search':
 				stageController.pushScene('search-twitter', {
-					'searchterm':launchParams.query
+					'searchterm':decodeURIComponent(launchParams.query)
 				});
 				stageController.activate();
 				break;
