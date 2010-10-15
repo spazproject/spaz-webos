@@ -1,4 +1,4 @@
-/*********** Built 2010-10-08 14:38:47 EDT ***********/
+/*********** Built 2010-10-14 21:33:26 EDT ***********/
 /*jslint 
 browser: true,
 nomen: false,
@@ -11764,10 +11764,11 @@ SpazTwit.prototype.getAPIURL = function(key, urldata) {
     // Timeline URLs
 	urls.public_timeline    = "statuses/public_timeline.json";
 	urls.friends_timeline   = "statuses/friends_timeline.json";
-	urls.home_timeline		= "statuses/home_timeline.json";
+	urls.home_timeline	= "statuses/home_timeline.json";
 	urls.user_timeline      = "statuses/user_timeline.json";
 	urls.replies_timeline   = "statuses/replies.json";
-	urls.show				= "statuses/show/{{ID}}.json";
+	urls.show		= "statuses/show/{{ID}}.json";
+	urls.show_related	= "related_results/show/{{ID}}.json"
 	urls.favorites          = "favorites.json";
 	urls.user_favorites     = "favorites/{{ID}}.json"; // use this to retrieve favs of a user other than yourself
 	urls.dm_timeline        = "direct_messages.json";
@@ -11826,7 +11827,7 @@ SpazTwit.prototype.getAPIURL = function(key, urldata) {
 	urls.retweeted_by_me	= "statuses/retweeted_by_me.json";
 	urls.retweeted_to_me	= "statuses/retweeted_to_me.json";
 	urls.retweets_of_me		= "statuses/retweets_of_me.json";
-
+	
 	// search
 	if (this.baseurl === SPAZCORE_SERVICEURL_TWITTER) {
 		urls.search				= "http://search.twitter.com/search.json";
@@ -12350,7 +12351,7 @@ SpazTwit.prototype.search = function(query, since_id, results_per_page, page, la
 	// 	}
 	// }
 	if (!results_per_page) {
-		results_per_page = 50;
+		results_per_page = 100;
 	}
 	
 	
@@ -13703,6 +13704,40 @@ SpazTwit.prototype._processOneItem = function(data, opts) {
 	this.triggerEvent(opts.success_event_type, data);
 	
 };
+
+
+
+/**
+ * get related messages to the given message id
+ * 
+ * @param {string|number} id message id
+ * @param {function} onSuccess callback function(data)
+ * @param {function} onFailure callback function(xhr, message, exc)
+ */
+SpazTwit.prototype.getRelated = function(id, onSuccess, onFailure) {
+	var data = {};
+	data['id'] = id;
+	
+	var url = this.getAPIURL('show_related', data);
+	
+	var opts = {
+		'url':url,
+		'success_event_type':'get_related_success',
+		'failure_event_type':'get_related_failed',
+		'success_callback':onSuccess,
+		'failure_callback':onFailure,
+		'method':'GET'
+	};
+
+	/*
+		Perform a request and get true or false back
+	*/
+	var xhr = this._callMethod(opts);
+};
+
+
+
+
 
 // Retweet API
 
