@@ -555,11 +555,13 @@ SearchTwitterAssistant.prototype.removeSearch = function(searchstr) {
 };
 
 SearchTwitterAssistant.prototype.fillStar = function(fill) {
-	if (fill) {
-		this.cmdMenuModel.items[2].iconPath = 'images/theme/menu-icon-favorite.png';
-	} else {
-		this.cmdMenuModel.items[2].iconPath = 'images/theme/menu-icon-favorite-outline.png';
+	if (App.username && this.cmdMenuModel.items[2]) {
+		if (fill) {
+			this.cmdMenuModel.items[2].iconPath = 'images/theme/menu-icon-favorite.png';
+		} else {
+			this.cmdMenuModel.items[2].iconPath = 'images/theme/menu-icon-favorite-outline.png';
+		}
+		this.controller.modelChanged(this.cmdMenuModel);
 	}
-	this.controller.modelChanged(this.cmdMenuModel);
 };
 
