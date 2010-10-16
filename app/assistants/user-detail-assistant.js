@@ -40,28 +40,129 @@ UserDetailAssistant.prototype.setup = function() {
 			viewMenuItems: [
 				{
 					items:[
-						{label: $L("User Details"), command:'scroll-top', 'class':"palm-header left", width:320}				
+						{label: $L("User Details"), command:'scroll-top', 'class':"palm-header left", width:260},
+						{label: $L('Compose'),  icon:'compose', command:'compose', shortcut:'N'}
 					]
 				}
 
 			],
 			cmdMenuItems:[
+				{},
 				{
 					items: [
-						{label:$L('Compose'),  icon:'compose', command:'compose', shortcut:'N'},
-						{}
+						{label:$L('Search for User'),  iconPath: 'images/menu-icon-search-person.png', command:'search-for-user', shortcut:'R'},
+						{label:$L('Mention'),  icon:'at', command:'mention', shortcut:'M'},
+						{label:$L('DM'),  icon:'dms', command:'dm', shortcut:'D'},
+						{label:$L('Follow/Unfollow'), iconPath: 'images/menu-icon-start-following.png', command:'follow', shortcut:'F'},
+						{label:$L('Block'), iconPath: 'images/theme/menu-icon-triangle-up.png', command:'more', shortcut:'B'}
 					]
-				}
-
+				},
+				{}
 			]
 		});
 		this.initAppMenu({ 'items':LOGGEDIN_APPMENU_ITEMS });
+		
+		this.setCommand('search-for-user', function(e) {
+			if (this.userRetrieved === true) {
+				thisA.searchFor('from:'+thisA.userobj.screen_name+' OR to:'+thisA.userobj.screen_name);
+			}
+		});
+		this.setCommand('mention', function(e) {
+			if (this.userRetrieved === true) {
+				this.prepReply(this.userobj.screen_name);
+			}
+		});
+		this.setCommand('dm', function(e) {
+			if (this.userRetrieved === true) {
+				this.prepDirectMessage(this.userobj.screen_name);
+			}
+		});
+		this.setCommand('follow', function(e) {
+			if (this.userRetrieved === true && this.userobj.you_are_following) {
+				if (this.userobj.you_are_following === 'yes') {
+					this.twit.removeFriend(
+						this.userobj.id,
+						function(data){
+							thisA.userobj.you_are_following = 'no';
+							thisA.setFollowButtonIcon(thisA.userobj.you_are_following);
+							
+							thisA.showBanner($L('Removed friend #{screen_name}').interpolate({'screen_name':thisA.userobj.screen_name}));
+						},
+						function(xhr, msg, exc){
+							thisA.showBanner($L('Failed to remove friend #{screen_name}').interpolate({'screen_name':thisA.userobj.screen_name}));
+						}	
+					);
+				} else if (this.userobj.you_are_following === 'no') {
+					this.twit.addFriend(
+						this.userobj.id,
+						function(data){
+							thisA.userobj.you_are_following = 'yes';
+							thisA.setFollowButtonIcon(thisA.userobj.you_are_following);
+							thisA.showBanner($L('Added friend #{screen_name}').interpolate({'screen_name':thisA.userobj.screen_name}));
+						},
+						function(xhr, msg, exc){
+							thisA.showBanner($L('Failed to add friend #{screen_name}').interpolate({'screen_name':thisA.userobj.screen_name}));
+						}		
+					);
+				}
+			}
+		});
+		this.setCommand('block', function(e) {
+			Mojo.Log.error('block');
+		});
+		this.setCommand('block-and-report', function(e) {
+			Mojo.Log.error('block and report');
+		});
+		this.setCommand('more', function(e) {
+			var near = e.originalEvent && e.originalEvent.target;
+			this.controller.popupSubmenu({
+				onChoose: function(command) {
+					Mojo.Log.error('COMMAND: %s', command);
+					if (thisA.userRetrieved === true) {
+						switch(command) {
+							
+							case 'block':
+								thisA.twit.block(
+									thisA.userobj.id,
+									function(data){
+										thisA.showBanner($L('Blocked #{screen_name}').interpolate({'screen_name':thisA.userobj.screen_name}));
+									},
+									function(xhr, msg, exc){
+										thisA.showBanner($L('Failed to block #{screen_name}').interpolate({'screen_name':thisA.userobj.screen_name}));
+									}
+								);
+								break;
+								
+							case 'block-and-report':
+								thisA.twit.reportSpam(
+									thisA.userobj.id,
+									function(data){
+										thisA.showBanner($L('Blocked & reported #{screen_name}').interpolate({'screen_name':thisA.userobj.screen_name}));
+									},
+									function(xhr, msg, exc){
+										thisA.showBanner($L('Failed to block & report #{screen_name}').interpolate({'screen_name':thisA.userobj.screen_name}));
+									}
+								);
+								break;
+							
+						}
+					}
+				},
+				placeNear: near,
+				items: [
+					{ label: $L("Block"), command: "block" },
+					{ label: $L("Block & Report Spammer"), command: "block-and-report" }
+				]
+			});
+		});
+		
 			
 	} else {
 		this.setupCommonMenus({});	
 		
 		this.initAppMenu();
 	};
+	
 	
 
 	this.scroller = this.controller.getSceneScroller();
@@ -126,12 +227,16 @@ UserDetailAssistant.prototype.setup = function() {
 				thisA.userobj.id,
 				null,
 				function(data) {
-					if (data.relationship.target.following) {
-						jQuery('#follow-user').attr('data-following', 'true').text($L('Stop Following'));
+					Mojo.Log.error('show friendship result: %j', data);
+					if (data.relationship.target.followed_by) {
+						Mojo.Log.error('You are following this user!');
+						thisA.userobj.you_are_following = 'yes';
+						thisA.setFollowButtonIcon(thisA.userobj.you_are_following);
 					} else {
-						jQuery('#follow-user').attr('data-following', 'false').text($L('Follow'));
+						Mojo.Log.error('You are NOT following this user!');
+						thisA.userobj.you_are_following = 'no';
+						thisA.setFollowButtonIcon(thisA.userobj.you_are_following);
 					}
-					jQuery('#follow-user-row').show();
 				},
 				function(xhr, msg, exc) {
 					thisA.showAlert($L('Could not retrieve relationship info:\n'+xhr.responseText), $L('Error'));
@@ -199,19 +304,7 @@ UserDetailAssistant.prototype.activate = function(event) {
 		
 		
 	});
-	jQuery('#user-detail-actions #search-user', this.scroller).live(Mojo.Event.tap, function(e) {
-		var screen_name = jQuery(this).attr('data-screen_name');
-		sch.debug("searching for '"+screen_name+"'");
-		thisA.searchFor('from:'+screen_name+' OR to:'+screen_name);
-	});
-	jQuery('#user-detail-actions #reply-to-user', this.scroller).live(Mojo.Event.tap, function(e) {
-		sch.debug(jQuery(this).attr('id'));
-		thisA.prepReply(jQuery(this).attr('data-screen_name'));
-	});
-	jQuery('#user-detail-actions #dm-user', this.scroller).live(Mojo.Event.tap, function(e) {
-		sch.debug(jQuery(this).attr('id'));
-		thisA.prepDirectMessage(jQuery(this).attr('data-screen_name'));
-	});
+
 	jQuery('#user-detail-actions #follow-user', this.scroller).live(Mojo.Event.tap, function(e) {
 		sch.debug("Friend user:"+jQuery(this).attr('data-screen_name'));
 		// Mojo.Controller.notYetImplemented();
@@ -336,9 +429,6 @@ UserDetailAssistant.prototype.deactivate = function(event) {
 		We have to unbind our event listeners or weird/bad things happen
 	*/
 	jQuery('#user-detail-actions #view-user-posts', this.scroller).die(Mojo.Event.tap);
-	jQuery('#user-detail-actions #search-user', this.scroller).die(Mojo.Event.tap);
-	jQuery('#user-detail-actions #reply-to-user', this.scroller).die(Mojo.Event.tap);
-	jQuery('#user-detail-actions #dm-user', this.scroller).die(Mojo.Event.tap);
 	jQuery('#user-detail-actions #follow-user', this.scroller).die(Mojo.Event.tap);
 	jQuery('#user-detail-actions #block-user', this.scroller).die(Mojo.Event.tap);
 	
@@ -362,4 +452,19 @@ UserDetailAssistant.prototype.cleanup = function(event) {
 	jQuery(document).unbind('create_block_succeeded');
 	jQuery(document).unbind('destroy_block_succeeded');
 	
+};
+
+/**
+ * Sets the icon for the follow button
+ * 
+ * @param {string} current_state 'yes' or 'no'
+ */
+UserDetailAssistant.prototype.setFollowButtonIcon = function(current_state) {
+	Mojo.Log.error('this.cmdMenuModel.items[1].items[3]: %j', this.cmdMenuModel.items[1].items[3]);
+	if (current_state == 'yes') {
+		this.cmdMenuModel.items[1].items[3].iconPath = 'images/menu-icon-stop-following.png';
+	} else {
+		this.cmdMenuModel.items[1].items[3].iconPath = 'images/menu-icon-start-following.png';
+	}
+	this.controller.modelChanged(this.cmdMenuModel);
 };

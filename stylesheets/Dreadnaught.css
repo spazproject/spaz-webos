@@ -113,6 +113,54 @@ a:link, a:visited, .clickable {
 }
 
 
+.palm-row .list-selector-triangle {
+  background: url(../images/dreadnaught/list-selector-triangle-dark.png) top no-repeat;
+}
+
+.palm-row.selected .list-selector-triangle {
+  background: url(../images/dreadnaught/list-selector-triangle-dark.png) bottom no-repeat;
+}
+
+.palm-popup-container {
+  -webkit-border-image: url(../images/dreadnaught/palm-popup-background-dark.png) 24 24 24 24 stretch stretch;
+}
+
+.palm-popup-container .palm-popup-content {
+  margin: 17px 9px 18px 9px;
+  padding: 0px;
+  max-height: 368px;
+  z-index: 1;
+  overflow: hidden;
+}
+
+.palm-popup-container .palm-popup-fade-top {
+  top: -16px;
+}
+.palm-popup-container .palm-popup-fade-top > .fade-background {
+  -webkit-border-image: url(../images/dreadnaught/palm-popup-fade-top-dark.png) 0 24 0 24 repeat repeat;
+}
+.palm-popup-container .palm-popup-fade-top > .fade-arrow {
+  background: url(../images/dreadnaught/palm-popup-fade-arrow-up-dark.png) center center no-repeat;
+}
+
+.palm-popup-container .palm-popup-fade-bottom {
+  bottom: -17px;
+}
+.palm-popup-container .palm-popup-fade-bottom > .fade-background {
+  -webkit-border-image: url(../images/dreadnaught/palm-popup-fade-bottom-dark.png) 0 24 0 24 repeat repeat;
+}
+.palm-popup-container .palm-popup-fade-bottom > .fade-arrow {
+  background: url(../images/dreadnaught/palm-popup-fade-arrow-down-dark.png) center center no-repeat;
+}
+
+.palm-row {
+  color: #fff;
+  background: url(../images/dreadnaught/list-separator-dark.png) bottom left repeat-x;
+}
+
+
+
+
 div.rounded-user-image {
 	-khtml-border-radius: 6px;
 }
@@ -185,7 +233,21 @@ div.timeline-entry {
 			width:48px;
 			height:48px;
 		}
+
+	div.timeline-entry .rt-user {
+		position:absolute;
+		width :24px;
+		height:24px;
+		top :40px;
+		left:36px;
+
+	}
+		div.timeline-entry .rt-user .rt-user-img, div.timeline-entry .rt-user img {
+			width :24px;
+			height:24px;
+		}
 	
+
 	div.timeline-entry .text-status {
 		margin-left:64px;
 		margin-top:0px;
@@ -453,8 +515,9 @@ div.spaz-drawer {
 	background-repeat: repeat-x;
 	background-color:#2B3235;
 	min-height:480px;
-	padding:0px 0px;
+	padding:0 0 7px 0;
 	-khtml-border-radius:10px;
+	overflow:auto;
 }
 
 
@@ -539,9 +602,6 @@ div.spaz-drawer {
 			
 			#message-detail .text-status .meta .date {
 			}
-		
-			#message-detail .text-status .meta .in-reply-to {
-			}
 
 	        #message-detail .text-status .meta .clickable,
 			#message-detail .text-status .meta a:link,
@@ -575,6 +635,28 @@ div.spaz-drawer {
 		padding:0 0 5px 0;
 */	}
 		
+#timeline-conversation {
+	margin:0px 7px;
+	background-color:rgba(16,16,16,.5);
+	-webkit-border-radius:10px;
+	padding:5px 10px;
+	overflow:auto;
+	font-size:11pt;
+	display:none;
+}
+	#timeline-conversation:active {
+		background-color:rgba(64,64,64,.5);
+	}
+	
+
+#timeline-conversation div.timeline-entry {
+	background-image:none;
+	background-color:transparent;
+	color:#FFFFFF;
+}
+#timeline-conversation div.timeline-entry.new {
+	color:#FFFFFF;
+}
 
 
 
@@ -654,7 +736,7 @@ div.spaz-drawer {
 		background-position: 0px 6px;
 	}
 
-	#user-detail .user-info {
+	#user-detail .user-info, #user-detail .user-info-stats {
 		margin-left: 8px;
 		margin-right:8px;
 		overflow:visible;		
@@ -674,15 +756,7 @@ div.spaz-drawer {
 			}
 
         #user-detail .user-location, #user-detail .user-homepage {
-			font-size:12pt;
-			font-weight:bold;
-			font-family:"Prelude-CondensedMedium";
-			display:inline-block;
 			color:#CCCCFF;
-/*			-webkit-border-radius:6pt;*/
-			padding:2pt 0pt;
-/*			text-decoration:none;*/
-			margin-left:0px;
 		}
 		#user-detail .user-description {
 			margin-top:.3em;
@@ -690,7 +764,45 @@ div.spaz-drawer {
 			font-size:  13pt;
 			margin-left:0px;
 		}
-
+		
+		#user-detail div.user-info-stats {
+			margin-top:.5em;
+			overflow:auto;
+		}
+		
+		#user-detail div.user-info-stats div.row {
+			background-color:rgba(16,16,16,.5);
+			-webkit-border-radius:10px;
+			margin-bottom:3px;
+			padding:5px;
+			overflow:auto;
+			height:1.1em;
+		}
+			#user-detail div.user-info-stats div.row>div {
+				font-size:12pt;
+				font-family:"Prelude-CondensedMedium";
+				margin:0;
+				border:0;
+/*				display:inline-block;*/
+				float:left;
+				overflow:      hidden;
+				text-overflow: ellipsis;
+				white-space:   nowrap;
+			
+			}
+				#user-detail div.user-info-stats div.label {
+					width:65px;
+					text-align:right;
+					font-weight:bold;
+					padding-right:8px;
+					color:#aaa;
+				}
+				#user-detail div.user-info-stats div.value {
+					max-width:220px;
+					text-align:left;
+				}
+		
+		
 	#user-detail-actions {}
 
 	#user-timeline {

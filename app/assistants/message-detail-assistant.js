@@ -20,11 +20,12 @@ function MessageDetailAssistant(argFromPusher) {
 		*/
 		this.status_id  = argFromPusher;
 	} else {
-		this.status_obj = argFromPusher.status_obj;
+		this.passed_status_obj = argFromPusher.status_obj;
 		this.status_id  = argFromPusher.status_id;
 		this.isdm  = argFromPusher.isdm;
 	}
 	
+	this.statusobj = null;
 
 }
 
@@ -44,22 +45,125 @@ MessageDetailAssistant.prototype.setup = function() {
 		this.setupCommonMenus({
 			viewMenuItems: [
 				{
-					items:[
-						{label: $L("Message Details"), command:'scroll-top', 'class':"palm-header left", width:320}		
+					items: [
+						{label: $L("Message Details"), command:'scroll-top', width:260},
+						{label: $L('Compose'),  icon:'compose', command:'compose', shortcut:'N'}
+
 					]
 				}
 
 			],
 			cmdMenuItems:[
-				{label:$L('Compose'),  icon:'compose', command:'compose', shortcut:'N'}
-				// {},
-				// {label:$L('Reply'),  icon:'reply', command:'reply', shortcut:'R'},
-				// {label:$L('Forward'),  icon:'forward-email', command:'retweet', shortcut:'N'},
-				// {label:$L('Favorite'),  iconPath:'images/theme/menu-icon-favorite-outline.png', command:'compose', shortcut:'N'}
+				{},
+				{
+					items:[
+						{label:$L('Reply'),  icon:'reply', command:'reply', shortcut:'R'},
+						{label:$L('Share'),  icon:'forward-email',  command:'share', shortcut:'S'},
+						{label:$L('Favorite'), iconPath:'images/theme/menu-icon-favorite-outline.png', command:'favorite', disabled:true, shortcut:'F'},
+						{label:$L('Delete'),  icon:'stop', command:'delete', disabled:true, shortcut:'D'}
+					]
+				},
+				{}
 			]
 		});
 		
 		this.initAppMenu({ 'items':LOGGEDIN_APPMENU_ITEMS });
+		
+		
+		this.setCommand('reply', function(e) {
+			if (thisA.statusobj) {
+				var screen_name;
+				if (thisA.statusobj.SC_is_dm) {
+					screen_name = thisA.statusobj.sender.screen_name;
+					thisA.prepDirectMessage(screen_name);
+				} else {
+					screen_name = thisA.statusobj.user.screen_name;
+					thisA.prepReply(screen_name, thisA.statusobj.id, thisA.statusobj);
+				}
+
+			} else {
+				Mojo.Log.error('this.statusobj not yet defined');
+			}
+		});
+		this.setCommand('share', function(e) {
+			if (thisA.statusobj) {
+				thisA.showShareMenu(e, thisA.statusobj);
+			} else {
+				Mojo.Log.error('this.statusobj not yet defined');
+			}
+		});
+		this.setCommand('favorite', function(e) {
+			Mojo.Log.error('called favorite handler');
+			if (thisA.statusobj) {
+				Mojo.Log.error('statusobj defined');
+				if (thisA.statusobj.SC_is_dm) {
+					Mojo.Log.error("can't fave a dm");
+					return; // can't fave a dm
+				} else {
+					if (thisA.statusobj.favorited) {
+						Mojo.Log.error('UNFAVORITING %j', thisA.statusobj);
+						thisA.twit.unfavorite(
+							thisA.statusobj.id,
+							function(data) {
+								thisA.statusobj.favorited = false;
+								thisA.setFavButtonState();
+								thisA.showBanner($L('Removed favorite'));
+							},
+							function(xhr, msg, exc) {
+								thisA.showBanner($L('Error removing favorite'));
+							}
+						);
+					} else {
+						Mojo.Log.error('FAVORITING %j', thisA.statusobj);
+						thisA.twit.favorite(
+							thisA.statusobj.id,
+							function(data) {
+								thisA.statusobj.favorited = true;
+								thisA.setFavButtonState();
+								thisA.showBanner($L('Added favorite'));								
+							},
+							function(xhr, msg, exc) {
+								thisA.showBanner($L('Error adding favorite'));
+							}
+						);
+					}
+				}
+			} else {
+				Mojo.Log.error('this.statusobj not yet defined');
+			}
+		});
+		this.setCommand('delete', function(e) {
+			if (thisA.statusobj) {
+				
+				thisA.showAlert(
+					$L('Do you want to delete this message?'),
+					$L('Confirm Delete'),
+					function(choice) {
+						switch(choice) {
+							case 'yes':
+								var status_id = thisA.statusobj.id;
+								if (thisA.statusobj.SC_is_dm) {
+									thisA.deleteDirectMessage(status_id);
+								} else {
+									thisA.deleteStatus(status_id);
+								}
+
+								Mojo.Controller.stageController.popScene({'returnFromPop':true});
+								break;
+
+							default:
+						}
+						return true;
+					},
+					[
+						{label:$L('Yes'), value:"yes", type:'negative'},
+						{label:$L('No'), value:"no", type:'dismiss'}
+					]
+				);
+				
+			}
+		});
+		
 		
 	} else {
 		this.setupCommonMenus({
@@ -86,20 +190,6 @@ MessageDetailAssistant.prototype.setup = function() {
 	});
 
 	
-
-
-	jQuery(document).bind('create_favorite_succeeded',  { thisAssistant:this }, function(e, statusobj) {
-		jQuery('#message-detail-action-favorite[data-status-id="'+statusobj.id+'"]')
-			.attr('data-favorited', 'true')
-			.html('Remove as favorite');
-	});
-	jQuery(document).bind('destroy_favorite_succeeded', { thisAssistant:this }, function(e, statusobj) {
-		jQuery('#message-detail-action-favorite[data-status-id="'+statusobj.id+'"]')
-			.attr('data-favorited', 'false')
-			.html('Add as favorite');		
-	});
-	
-
 	
 	/* this function is for setup tasks that have to happen when the scene is first created */
 		
@@ -118,8 +208,8 @@ MessageDetailAssistant.prototype.activate = function(event) {
 	   example, key handlers that are observing the document */
 	
 	if (this.isdm) {
-		if (this.status_obj){
-			jQuery(document).trigger('get_one_status_succeeded', [this.status_obj]);
+		if (this.passed_status_obj){
+			jQuery(document).trigger('get_one_status_succeeded', [this.passed_status_obj]);
 		} else {
 			App.Tweets.get(this.status_id, this.isdm,
 				function(data) {
@@ -133,7 +223,7 @@ MessageDetailAssistant.prototype.activate = function(event) {
 					
 				},
 				function(message) {
-					sch.error('Couldn\'t retrieve message from Depot:'+message);
+					Mojo.Log.error('Couldn\'t retrieve message from Depot:'+message);
 					thisA.showAlert($L('There was an error retrieving the message data'));
 				}
 			);
@@ -151,33 +241,13 @@ MessageDetailAssistant.prototype.activate = function(event) {
 				thisA.showAlert($L('There was an error retrieving the message data'));
 			}
 		);
-		// if (this.status_obj){
-		// 			jQuery(document).trigger('get_one_status_succeeded', [this.status_obj]);
-		// 		} else {
-		// 			App.Tweets.get(this.status_id, this.isdm,
-		// 				function(data) {
-		// 					if (data !== null) {
-		// 						sch.error('Message '+data.id+' pulled from DB');
-		// 						jQuery(document).trigger('get_one_status_succeeded', [data]);
-		// 					} else { // if nothing is returned, get it from Twitter
-		// 						sch.error('Message '+this.status_id+' missing from DB; retrieving from Twitter');
-		// 						thisA.twit.getOne(thisA.status_id);
-		// 					}	
-		// 				},
-		// 				function(message) {
-		// 					sch.error('Couldn\'t retrieve message from Depot:'+message);
-		// 					thisA.twit.getOne(thisA.status_id);
-		// 				}
-		// 			);
-		// 			
-		// 
-		// 		}
 	}
 	
 
-	jQuery('#message-detail-container .in-reply-to-link', this.scroller).live(Mojo.Event.tap, function(e) {
+	jQuery('#timeline-conversation .in-reply-to', this.scroller).live(Mojo.Event.tap, function(e) {
 		var statusid = jQuery(this).attr('data-irt-status-id');
-		Mojo.Controller.stageController.pushScene('message-detail', statusid);
+		Mojo.Log.error('statusid: %s', statusid);
+		thisA.buildConversationView(statusid);
 	});
 
 
@@ -187,73 +257,33 @@ MessageDetailAssistant.prototype.activate = function(event) {
 		Mojo.Controller.stageController.pushScene('user-detail', userid);
 	});
 	
-	jQuery('#message-detail-action-reply', this.scroller).live(Mojo.Event.tap, function(e) {
-		var screen_name = jQuery(this).attr('data-screen_name');
-		var in_reply_to = jQuery(this).attr('data-status-id');
-		thisA.prepReply(screen_name, in_reply_to, thisA.statusobj);
-	});
-	jQuery('#message-detail-action-share', this.scroller).live(Mojo.Event.tap, function(e) {
-		thisA.controller.popupSubmenu({
-			onChoose:  thisA.sharePopupmenuChoose,
-			placeNear: e.target,
-			items: [
-				{label: $L('ReTweet'), command: 'retweet'},
-				{label: $L('RT @…'), command:   'RT'},
-				{label: $L('Quote'), command:   'quote'},
-				{label: $L('Email'), command:   'email'},
-				{label: $L('SMS/IM'), command:  'sms'},
-				{label: $L('Facebook'), command:  'facebook'}
-			]
-		});
-	});
-	jQuery('#message-detail-action-dm', this.scroller).live(Mojo.Event.tap, function(e) {
-		thisA.prepDirectMessage(jQuery(this).attr('data-screen_name'));
-	});
-	jQuery('#message-detail-action-favorite', this.scroller).live(Mojo.Event.tap, function(e) {
-		var status_id = parseInt(jQuery(this).attr('data-status-id'), 10);		
-		if (jQuery(this).attr('data-favorited') === 'true') {
-			sch.debug('UNFAVORITING');
-			thisA.twit.unfavorite(status_id);
-		} else {
-			sch.debug('FAVORITING');
-			thisA.twit.favorite(status_id);
-		}
-	});
-	jQuery('#message-detail-action-delete', this.scroller).live(Mojo.Event.tap, function(e) {
-		var status_id = parseInt(jQuery(this).attr('data-status-id'), 10);
-		if (thisA.isdm) {
-			thisA.deleteDirectMessage(status_id);
-		} else {
-			thisA.deleteStatus(status_id);
-		}
-		
-		Mojo.Controller.stageController.popScene({'returnFromPop':true});
-	});
+	
+
 	
 	
 	
 	
-	jQuery('#message-detail-container .user', this.scroller).live(Mojo.Event.tap, function(e) {
+	jQuery('#message-detail .user', this.scroller).live(Mojo.Event.tap, function(e) {
 		var userid = jQuery(this).attr('data-user-id');
 		Mojo.Controller.stageController.pushScene('user-detail', userid);
 	});
 
-	jQuery('#message-detail-container .username.clickable', this.scroller).live(Mojo.Event.tap, function(e) {
+	jQuery('#message-detail .username.clickable', this.scroller).live(Mojo.Event.tap, function(e) {
 		var userid = jQuery(this).attr('data-user-screen_name');
 		Mojo.Controller.stageController.pushScene('user-detail', '@'+userid);
 	});
 
-	jQuery('#message-detail-container .hashtag.clickable', this.scroller).live(Mojo.Event.tap, function(e) {
+	jQuery('#message-detail .hashtag.clickable', this.scroller).live(Mojo.Event.tap, function(e) {
 		var hashtag = jQuery(this).attr('data-hashtag');
 		thisA.searchFor('#'+hashtag);
 	});
 
-	jQuery('#message-detail-container div.timeline-entry>.status>.meta', this.scroller).live(Mojo.Event.tap, function(e) {
-		var statusid = jQuery(this).attr('data-status-id');
-		Mojo.Controller.stageController.pushScene('message-detail', statusid);
-	});
-	
-	jQuery('#message-detail-container img.thumbnail', this.scroller).live(Mojo.Event.tap, function(e) {
+    jQuery('#message-detail div.timeline-entry>.status>.meta', this.scroller).live(Mojo.Event.tap, function(e) {
+        var statusid = jQuery(this).attr('data-status-id');
+        Mojo.Controller.stageController.pushScene('message-detail', statusid);
+    });
+
+	jQuery('#message-detail img.thumbnail', this.scroller).live(Mojo.Event.tap, function(e) {
 		var siu = new SpazImageURL();
 		var img_url = jQuery(this).attr('data-img-url');
 		sch.debug('MAIN URL:'+img_url);
@@ -262,50 +292,108 @@ MessageDetailAssistant.prototype.activate = function(event) {
 		Mojo.Controller.stageController.pushScene('view-image', {'imageURLs':[img_url]});
 	});
 	
-	// this.addPostPopup();
+	/*
+	    Because I didn't want to use a Mojo List due to laziness, we use the
+	    OLD SKOOL way from the user detail timeline
+	*/
+    jQuery('#timeline-conversation div.timeline-entry', this.scroller).live(Mojo.Event.tap, function(e) {
+		var jqtarget = jQuery(e.target);
+
+		e.stopImmediatePropagation();
+
+		if (jqtarget.is('div.timeline-entry>.user') || jqtarget.is('div.timeline-entry>.user img')) {
+			var userid = jQuery(this).attr('data-user-id');
+			Mojo.Controller.stageController.pushScene('user-detail', userid);
+			return;
+
+		} else if (jqtarget.is('.username.clickable')) {
+			var userid = jqtarget.attr('data-user-screen_name');
+			Mojo.Controller.stageController.pushScene('user-detail', '@'+userid);
+			return;
+
+		} else if (jqtarget.is('.hashtag.clickable')) {
+			var hashtag = jqtarget.attr('data-hashtag');
+			thisA.searchFor('#'+hashtag);
+			return;
+
+		} else if (jqtarget.is('div.timeline-entry .meta')) {
+			var status_id = jqtarget.attr('data-status-id');
+			var isdm = false;
+			var status_obj = null;
+
+			if (jqtarget.parent().parent().hasClass('dm')) {
+				isdm = true;
+			}
+
+			Mojo.Controller.stageController.pushScene('message-detail', {'status_id':status_id, 'isdm':isdm, 'status_obj':status_obj});
+			return;
+
+		} else if (jqtarget.is('div.timeline-entry a[href]')) {
+			return;
+
+		} else {
+			var status_id = jQuery(this).attr('data-status-id');
+			var isdm = false;
+			var status_obj = null;
+
+			if (jQuery(this).hasClass('dm')) {
+				isdm = true;
+			}
+
+			Mojo.Controller.stageController.pushScene('message-detail', {'status_id':status_id, 'isdm':isdm, 'status_obj':status_obj});
+			return;
+		}
+	});
+
+
 };
 
 
 MessageDetailAssistant.prototype.deactivate = function(event) {
-	jQuery('#message-detail-container .in-reply-to-link', this.scroller).die(Mojo.Event.tap);
+	jQuery('#message-detail .in-reply-to', this.scroller).die(Mojo.Event.tap);
 	jQuery('#message-detail-image', this.scroller).die(Mojo.Event.tap);
-	jQuery('#message-detail-action-reply', this.scroller).die(Mojo.Event.tap);
-	jQuery('#message-detail-action-share', this.scroller).die(Mojo.Event.tap);
-	jQuery('#message-detail-action-dm', this.scroller).die(Mojo.Event.tap);
-	jQuery('#message-detail-action-favorite', this.scroller).die(Mojo.Event.tap);
-	jQuery('#message-detail-action-delete', this.scroller).die(Mojo.Event.tap);
 	
-	jQuery('#message-detail-container .user', this.scroller).die(Mojo.Event.tap);
-	jQuery('#message-detail-container .username.clickable', this.scroller).die(Mojo.Event.tap);
-	jQuery('#message-detail-container .hashtag.clickable', this.scroller).die(Mojo.Event.tap);
-	jQuery('#message-detail-container div.timeline-entry>.status>.meta', this.scroller).die(Mojo.Event.tap);
-	jQuery('#message-detail-container img.thumbnail', this.scroller).die(Mojo.Event.tap);
+	jQuery('#message-detail .user', this.scroller).die(Mojo.Event.tap);
+	jQuery('#message-detail .username.clickable', this.scroller).die(Mojo.Event.tap);
+	jQuery('#message-detail .hashtag.clickable', this.scroller).die(Mojo.Event.tap);
+	jQuery('#message-detail div.timeline-entry>.status>.meta', this.scroller).die(Mojo.Event.tap);
+	jQuery('#message-detail img.thumbnail', this.scroller).die(Mojo.Event.tap);
+	
+
+	/*
+		stop listening for timeline entry taps
+	*/
+    jQuery('#timeline-conversation div.timeline-entry', this.scroller).die(Mojo.Event.tap);
+	
 	
 };
 
 MessageDetailAssistant.prototype.cleanup = function(event) {
 	jQuery(document).unbind('get_one_status_succeeded');
 	jQuery(document).unbind('get_one_status_failed');
-	jQuery(document).unbind('uncreate_favorite_succeeded');
-	jQuery(document).unbind('destroy_favorite_succeeded');
 };
 
 
 MessageDetailAssistant.prototype.processStatusReturn = function(e, statusobj) {
 	var itemhtml;
 	
+	var thisA = e.data.thisAssistant;
+	
 	var sui = new SpazImageURL();
 	
-	sch.dump(e.data.thisAssistant);
-
-	e.data.thisAssistant.statusobj = statusobj;
-	e.data.thisAssistant.statusRetrieved = false;
-
-	sch.dump('message data:');
-	sch.dump(e.data.thisAssistant.statusobj);
+	Mojo.Log.error('statusobj: %j', statusobj);
 	
-	e.data.thisAssistant.statusobj.SC_thumbnail_urls = sui.getThumbsForUrls(e.data.thisAssistant.statusobj.text);
-	e.data.thisAssistant.statusobj.text = Spaz.makeItemsClickable(e.data.thisAssistant.statusobj.text);
+	if (!statusobj.SC_is_dm) {
+		statusobj.isSent = (statusobj.user.screen_name.toLowerCase() === App.username.toLowerCase());
+	}
+
+	thisA.statusobj = statusobj;
+	thisA.statusRetrieved = false;
+
+	Mojo.Log.error('message data: %j', thisA.statusobj);
+	
+	thisA.statusobj.SC_thumbnail_urls = sui.getThumbsForUrls(thisA.statusobj.text);
+	thisA.statusobj.text = Spaz.makeItemsClickable(thisA.statusobj.text);
 	
 	/*
 		save this tweet to Depot
@@ -315,42 +403,180 @@ MessageDetailAssistant.prototype.processStatusReturn = function(e, statusobj) {
 	/*
 		render tweet
 	*/
-	if (e.data.thisAssistant.isdm) {
-		itemhtml = App.tpl.parseTemplate('message-detail-dm', e.data.thisAssistant.statusobj);
+	if (thisA.isdm) {
+		itemhtml = App.tpl.parseTemplate('message-detail-dm', thisA.statusobj);
 	} else {
-		itemhtml = App.tpl.parseTemplate('message-detail', e.data.thisAssistant.statusobj);
+		itemhtml = App.tpl.parseTemplate('message-detail', thisA.statusobj);
 	}
 	
 	
 	jQuery('#message-detail').html(itemhtml);
 	
 	sch.updateRelativeTimes('#message-detail .status>.meta>.date>.date-relative', 'data-created_at');
+
+			
+	
+	if (thisA.statusobj.isSent || thisA.statusobj.SC_is_dm) {
+		thisA.enableDeleteButton(true);
+	}
+	
+	if (!thisA.statusobj.SC_is_dm) {
+		thisA.enableFavButton(true);
+	}
+
+	thisA.setFavButtonState();
+	
+	if (thisA.statusobj.in_reply_to_status_id) {
+		var irt_html = App.tpl.parseTemplate('message-detail-irt', thisA.statusobj);
+		$('#timeline-conversation').html(irt_html).fadeIn(250);
+	}
+	
+	
+};
+
+/**
+ * @param {Boolean} [is_favorite] true or false. if not provided, gets value from this.statusobj
+ */
+MessageDetailAssistant.prototype.setFavButtonState = function(is_favorite) {
+	
+	if (this.statusobj && !this.statusobj.SC_is_dm) {
+		
+		if (is_favorite !== true && is_favorite !== false) {
+			is_favorite = this.statusobj.favorited;
+		}
+		
+		var menu_item = this.cmdMenuModel.items[1].items[2];
+
+		Mojo.Log.error('menu_item: %j', menu_item);
+		Mojo.Log.error('is_favorite: %s', is_favorite);
+			
+		if (is_favorite) {
+			menu_item.iconPath = 'images/theme/menu-icon-favorite.png';
+			this.controller.modelChanged(this.cmdMenuModel);
+		} else {
+			menu_item.iconPath = 'images/theme/menu-icon-favorite-outline.png';
+			this.controller.modelChanged(this.cmdMenuModel);
+		}
+		
+	}
+};
+
+
+MessageDetailAssistant.prototype.enableFavButton = function(enabled) {
+	
+	if (enabled) {
+		this.cmdMenuModel.items[1].items[2].disabled = false;
+		this.controller.modelChanged(this.cmdMenuModel);
+	} else {
+		this.cmdMenuModel.items[1].items[2].disabled = true;
+		this.controller.modelChanged(this.cmdMenuModel);
+	}
 	
 };
 
 
-MessageDetailAssistant.prototype.sharePopupmenuChoose = function(cmd) {
+
+MessageDetailAssistant.prototype.enableDeleteButton = function(enabled) {
 	
-	switch (cmd) {
-		case 'retweet':
-			this.retweet(this.statusobj);
-			break;
-		case 'RT':
-			this.prepRetweet(this.statusobj);
-			break;
-		case 'quote':
-			this.prepQuote(this.statusobj);
-			break;
-		case 'email':
-			this.emailTweet(this.statusobj);
-			break;
-		case 'sms':
-			this.SMSTweet(this.statusobj);
-			break;
-		case 'facebook':
-			this.facebookTweet(this.statusobj);
-			break;
-		default:
-			return;
+	if (enabled) {
+		this.cmdMenuModel.items[1].items[3].disabled = false;
+		this.controller.modelChanged(this.cmdMenuModel);
+	} else {
+		this.cmdMenuModel.items[1].items[3].disabled = true;
+		this.controller.modelChanged(this.cmdMenuModel);
 	}
+	
+};
+
+
+MessageDetailAssistant.prototype.buildConversationView = function(statusid) {
+
+    var thisA = this;
+
+    var $container = $('#timeline-conversation');
+
+	var initWindow = function() {
+		$container
+		    .html('<div class="loading"><img src="images/dreadnaught/tiny-spinner-191C1D.gif" style="display:inline-block; margin-bottom:-2px"> Loading…</div>')
+		    .find('.loading')
+		    .fadeIn(250);	
+	};
+
+
+	var build = function(base_id) {
+		var convo_array = [], added_ids = [];
+
+		initWindow();
+
+		Mojo.Log.error("==========Retrieving base_id "+base_id+' =======================');
+		App.Tweets.get(
+		    base_id, // status_id
+		    false, // isdm
+		    onRetrieved, // success
+		    function(message) { // failure
+				Mojo.Log.error('Couldn\'t retrieve message from Depot:'+message);
+				thisA.showAlert($L('There was an error retrieving the message data'));
+			}
+		);
+
+
+
+		function onRetrieved(status_obj) {		
+            
+            // add newly retrieved message
+            Mojo.Log.error("Adding "+status_obj.id);
+			status_obj.db_id = status_obj.id;
+			status_obj.id    = status_obj.id;
+			status_obj.text = Spaz.makeItemsClickable(status_obj.text);
+			var $status_html  = $(App.tpl.parseTemplate('tweet', status_obj));
+            // Mojo.Log.error("Adding %s", status_html);
+			$container.append($status_html.fadeIn(400));
+
+
+			Mojo.Log.error("Retrieved "+status_obj.id);
+
+			if (added_ids.indexOf(status_obj.id) !== -1) {
+				Mojo.Log.error("This id has already been retrieved");
+				finishLoadingConvo();
+				return;
+			} else {
+
+				convo_array.push(status_obj);
+				added_ids.push(status_obj.id);
+
+				Mojo.Log.error("conversation length is now "+convo_array.length);
+				Mojo.Log.error("added_ids: "+added_ids.toString());
+
+				if (status_obj.in_reply_to_status_id
+						&& (added_ids.indexOf(status_obj.in_reply_to_status_id) === -1)
+						&& (status_obj.in_reply_to_status_id != status_obj.id)
+						) {
+					App.Tweets.get(
+					    status_obj.in_reply_to_status_id, // status_id
+					    false, // isdm
+					    onRetrieved, // success
+					    function(message) { // failure
+        					Mojo.Log.error('Couldn\'t retrieve message from Depot:'+message);
+        					thisA.showAlert($L('There was an error retrieving the message data'));
+        				}
+					);
+				} else {
+					finishLoadingConvo();
+					return;
+				}				
+			}
+		}
+
+
+
+		function finishLoadingConvo() {
+            $container.find('.loading').fadeOut(400, function() {
+                $(this).remove();
+            });
+		}
+
+	};
+	
+	build(statusid);
+	
 };

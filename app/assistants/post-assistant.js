@@ -216,6 +216,8 @@ PostAssistant.prototype.activate = function(args) {
 
 	var thisA = this;
 	
+	this.checkForAccount();
+	
 	/*
 		Tweetphoto is no longer valid, so we need to change that
 	*/
@@ -231,7 +233,7 @@ PostAssistant.prototype.activate = function(args) {
 
 	if (this.args) {
 		
-		if (this.args.text) { this.postTextField.mojo.setText(this.args.text); }
+		if (this.args.text) { this.postTextField.mojo.setValue(this.args.text); }
 		
 		if (this.args.type) {
 			/*
@@ -922,7 +924,7 @@ PostAssistant.prototype.popScene = function() {
 	} else {
 		this.controller.stageController.swapScene({name: 'start'});
 	}
-}
+};
 
 
 /**
@@ -937,4 +939,19 @@ PostAssistant.prototype.onUploadFailure = function(e) {
 	this.postTextFieldModel.disabled = false;
 	this.controller.modelChanged(this.postTextFieldModel);
 	
+};
+
+
+
+PostAssistant.prototype.checkForAccount = function() {
+	if (!App.username) {
+		this.showAlert(
+			$L('You need to set up and select an account before posting'),
+			$L('Error'),
+			function(choice) {
+				this.controller.stageController.swapScene({name: 'startlogin'}, {'nextscene':'post', 'nextsceneargs':{'text':this.postTextField.mojo.getValue()} });
+			}
+		);
+		
+	}
 };

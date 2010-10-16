@@ -1,4 +1,4 @@
-function StartloginAssistant() {
+function StartloginAssistant(args) {
 	/* this is the creator function for your scene assistant object. It will be passed all the 
 	   additional parameters (after the scene name) that were passed to pushScene. The reference
 	   to the scene controller (this.controller) has not be established yet, so any initialization
@@ -9,6 +9,22 @@ function StartloginAssistant() {
 		this connects App to this property of the appAssistant
 	*/
 	App = Spaz.getAppObj();
+	
+	// default next scene is my-timeline
+	this.nextscene = 'my-timeline';
+	this.nextsceneargs = {};
+	
+	if (args) {
+		
+		if (args.nextscene) {
+			this.nextscene = args.nextscene;
+		}
+		
+		if (args.nextsceneargs) {
+			this.nextsceneargs = args.nextsceneargs;
+		}
+		
+	}
 }
 
 StartloginAssistant.prototype.aboutToActivate = function(callback){
@@ -109,8 +125,10 @@ StartloginAssistant.prototype.setup = function() {
 		sch.debug('App.userid:'	 + App.userid);
 		
 		App.prefs.set('last_userid', App.userid);
-				
-		Spaz.popAllAndPushScene("my-timeline");
+
+		Mojo.Log.error('nextscene: %s', thisA.nextscene);
+		Mojo.Log.error('nextsceneargs: %s', thisA.nextsceneargs);
+		Spaz.popAllAndPushScene(thisA.nextscene, thisA.nextsceneargs);
 	});
 	
 	/*

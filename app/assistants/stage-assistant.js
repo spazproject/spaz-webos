@@ -171,49 +171,21 @@ StageAssistant.prototype.loadTemplates = function() {
 		+ '		'+thumbHTML
 		+ '		<div class="text">'+d.text+'</div>'
 		+ '		<div class="meta" data-status-id="'+d.id+'">'
-		+ '			<div class="date"><strong>Posted</strong> <span class="date-relative" data-created_at="'+d.created_at+'">'+sch.getRelativeTime(d.created_at)+'</span> from <span class="source-link">'+d.source+'</span></div>';
-		if (d.in_reply_to_status_id) {
-			html += '			<div class="in-reply-to"><strong>In-reply-to</strong>: <span class="in-reply-to-link clickable" data-irt-status-id="'+d.in_reply_to_status_id+'">@'+d.in_reply_to_screen_name+'</span></div>';
-		}
-		html += '		</div>'
+		+ '			<div class="date">'
+		+ '             <strong>Posted</strong> <span class="date-relative" data-created_at="'+d.created_at+'">'+sch.getRelativeTime(d.created_at)+'</span>'
+		+ '             from <span class="source-link">'+d.source+'</span></div>'
+		+ '		</div>'
 		+ '	</div>';
-		if (App.username) {
-
-			html += '	<div id="message-detail-actions">'
-			+ '		<div class="palm-group palm-group-spaz">'
-			+ '			<div class="palm-group-title" id="search-toggle" x-mojo-loc="">Actions</div>'
-			+ '			<div class="palm-list">'
-			+ '				<div class="palm-row single">'
-			+ '					<button class="palm-button" id="message-detail-action-reply" data-status-id="'+d.id+'" data-screen_name="'+d.user.screen_name+'">@Reply to this message</button>'
-			+ '				</div>'
-			+ '				<div class="palm-row single">'
-			+ '					<button class="palm-button" id="message-detail-action-share" data-status-id="'+d.id+'">Share this message</button>'
-			+ '				</div>';
-			if (d.favorited) {
-				html += '   			<div class="palm-row single">'
-				 + '					<button class="palm-button" id="message-detail-action-favorite" data-status-id="'+d.id+'" data-screen_name="'+d.user.screen_name+'" data-favorited="true">Remove as favorite</button>'
-				 + '				</div>';
-			} else {
-				html += '   			<div class="palm-row single">'
-				+ '					<button class="palm-button" id="message-detail-action-favorite" data-status-id="'+d.id+'" data-screen_name="'+d.user.screen_name+'" data-favorited="false">Add as favorite</button>'
-				+ '				</div>';
-			}
-			html += '   			<div class="palm-row single">'
-			+ '					<button class="palm-button" id="message-detail-action-dm" data-screen_name="'+d.user.screen_name+'">Direct message this user</button>'
-			+ '				</div>';
-			if (d.isSent) {
-				html += '   			<div class="palm-row single">'
-				 + '					<button class="palm-button" id="message-detail-action-delete" data-status-id="'+d.id+'">Delete</button>'
-				 + '				</div>';		
-			}
-			html += '			</div>'
-			+ '		</div>'
-	    + '	</div>';
-		}
-		html += '</div>';
+		+ '</div>';
 
 		return html;
 	});
+
+    App.tpl.addTemplateMethod('message-detail-irt', function(d) {
+        html = '<div class="in-reply-to" data-irt-status-id="'+d.in_reply_to_status_id+'"><strong>View conversation with</strong> <span class="in-reply-to-link clickable" data-irt-status-id="'+d.in_reply_to_status_id+'">@'+d.in_reply_to_screen_name+'</span></div>';        
+        return html;
+    })
+
 
 	App.tpl.addTemplateMethod('message-detail-dm', function(d) {
 		var html = '';
@@ -239,27 +211,7 @@ StageAssistant.prototype.loadTemplates = function() {
 		+ '			<div class="date"><strong>Direct message sent</strong> <span class="date-relative" data-created_at="'+d.created_at+'">'+sch.getRelativeTime(d.created_at)+'</span></div>'
 		+ '		</div>'
 		+ '	</div>';
-		if (App.username) {
-			html += '	<div id="message-detail-actions">'
-			+ '		<div class="spaz-button-group">'
-			+ '			<div class="palm-group palm-group-spaz">'
-			+ '				<div class="palm-group-title" id="search-toggle" x-mojo-loc="">'+$L('Actions')+'</div>'
-			+ '				<div class="palm-list">'
-			+ '					<div class="palm-row single">'
-			+ '						<button class="palm-button" id="message-detail-action-dm" data-screen_name="'+d.sender.screen_name+'">'+$L('Direct message user')+'</button>'
-			+ '					</div>'
-			+ '					<div class="palm-row single">'
-			+ '						<button class="palm-button" id="message-detail-action-delete" data-status-id="'+d.id+'">Delete</button>'
-			+ '					</div>'
-			+ '				</div>'
-			+ '			</div>'
-			+ '		</div>'
-			+ '	</div>';
-		};
-		html += '</div>';
-
-
-		// html = "DM detail view is not yet implemented!";
+		+ '</div>';
 
 		return html;
 	});
@@ -293,17 +245,48 @@ StageAssistant.prototype.loadTemplates = function() {
 		}
 		html +='	</div>'
 		+ '	<div class="user-info">'
-		+ '		<div class="user-description">'+d.description+'</div>';
-		if (d.location) {
-			html += '   	 <div><a class="user-location" href="http://maps.google.com/?q=' +encodeURIComponent(d.location)+ '" title="View this location on a map">'+d.location+'</a></div>';
-		}
+		+ '		<div class="user-description">'+d.description+'</div>'
+		+ '	</div>';
+
+		/*
+			details table
+		*/
+		var url_str = $L('n/a');
+		var loc_str = $L('n/a');
 		if (d.url) {
-			html += '		<div><a class="user-homepage" href="'+d.url+'" title="Open user\'s homepage">'+$L('Homepage')+'</a></div>';
+			url_str = '<a class="user-homepage" href="'+d.url+'" title="Open user\'s homepage">'+d.url+'</a>';
+		}		
+		if (d.location) {
+			loc_str = '<a class="user-location" href="http://maps.google.com/?q=' +encodeURIComponent(d.location)+ '" title="View this location on a map">'+d.location+'</a>';
 		}
-		// if (d.protected) {
-		// 	html += '		<div class="protected-icon">Protected user</div>';
-		// }
-		html += '	</div>';
+
+		html += ''
+		+ '<div class="user-info-stats">'
+		+ '	<div class="row">'
+		+ '		<div class="label">'+$L('URL')+'</div>'
+		+ '		<div class="value">'+url_str+'</div>'
+		+ '	</div>'
+		+ '	<div class="row">'
+		+ '		<div class="label">'+$L('Location')+'</div>'
+		+ '		<div class="value">'+loc_str+'</div>'
+		+ '	</div>'
+		+ '	<div class="row">'
+		+ '		<div class="label">'+$L('Friends')+'</div>'
+		+ '		<div class="value">'+d.friends_count+'</div>'
+		+ '	</div>'
+		+ '	<div class="row">'
+		+ '		<div class="label">'+$L('Followers')+'</div>'
+		+ '		<div class="value">'+d.followers_count+'</div>'
+		+ '	</div>'
+		+ '	<div class="row">'
+		+ '		<div class="label">'+$L('Statuses')+'</div>'
+		+ '		<div class="value">'+d.statuses_count+'</div>'
+		+ '	</div>'
+		+ '	<div class="row">'
+		+ '		<div class="label">'+$L('Since')+'</div>'
+		+ '		<div class="value">'+(new Date(d.created_at).toDateString())+'</div>'
+		+ '	</div>'
+		+ '</div>';
 
 		html += ''
 		+ '	<table class="palm-divider collapsible" id="user-timeline-trigger" x-mojo-tap-highlight="momentary">'
@@ -317,44 +300,10 @@ StageAssistant.prototype.loadTemplates = function() {
 		+ '			</tr>'
 		+ '		</tbody>'
 		+ '	</table> '
-	  + '	<div class="pane">'
+		+ '	<div class="pane">'
 		+ '		<div id="user-timeline" data-screen_name="'+d.screen_name+'" style="display:none"></div>'
 		+ '	</div>'
 		+ '</div>';
-
-
-
-
-		html += '		<div id="user-detail-actions">';
-
-
-		html += '			<div class="spaz-button-group">'
-		+ '				<div class="palm-group palm-group-spaz">'
-		+ '					<div class="palm-group-title" id="search-toggle" x-mojo-loc="">Actions</div>'
-		+ '					<div class="palm-list">'
-		+ '						<div class="palm-row single">'
-		+ '							<button id="search-user" class="palm-button" data-screen_name="'+d.screen_name+'">'+$L('Search for user')+'</button>'
-		+ '						</div>';
-		if (App.username) {
-			html += '						<div class="palm-row single">'
-			+ '							<button id="reply-to-user" class="palm-button" data-screen_name="'+d.screen_name+'">'+$L('@mention user')+'</button>'
-			+ '						</div>'
-			+ '						<div class="palm-row single">'
-			+ '							<button id="dm-user" class="palm-button" data-screen_name="'+d.screen_name+'">'+$L('Direct message user')+'</button>'
-			+ '						</div>'
-			+ '						<div class="palm-row single" id="follow-user-row" style="display:none">'
-			+ '							<button id="follow-user" class="palm-button" data-screen_name="'+d.screen_name+'" data-following="false">'+$L('Follow')+'</button>'
-			+ '						</div>';
-
-			html += '						<div class="palm-row single">'
-			+ '							<button id="block-user" class="palm-button" data-screen_name="'+d.screen_name+'" data-blocked="false">'+$L('Block')+'</button>'
-			+ '						</div>';
-		};
-		html += '					</div>'
-		+ '				</div>'
-		+ '			</div>'
-		+ '		</div>'
-		+ '	</div>';
 
 		return html;
 	});
@@ -375,10 +324,20 @@ StageAssistant.prototype.loadTemplates = function() {
 		if (d.SC_is_reply) {
 			html += ' reply';
 		}
+		if (d.SC_is_retweet) {
+			html += ' retweet';
+		}
 		html += '" data-status-id="'+d.id+'" data-user-id="'+d.user.id+'" data-user-screen_name="'+d.user.screen_name+'" data-timestamp="'+d.SC_created_at_unixtime+'">'
 		+ '	<div class="user" data-user-id="'+d.user.id+'" data-user-screen_name="'+d.user.screen_name+'">'
-		+ '		<div class="user-img rounded-user-image" style="background-image:url('+d.user.profile_image_url+')"></div>'
-		+ '	</div>'
+		+ '		<div class="user-img rounded-user-image" style="background-image:url('+d.user.profile_image_url+'); background-size: 100% 100%;"></div>'
+		+ '	</div>';
+		if (d.SC_is_retweet) {
+			html +=''
+			+ '	<div class="rt-user" data-user-id="'+d.user.id+'" data-user-screen_name="'+d.user.screen_name+'">'
+			+ '		<div class="rt-user-img rounded-user-image" style="background-image:url('+d.retweeting_user.profile_image_url+'); background-size: 100% 100%;"></div>'
+			+ '	</div>';
+		}
+		html += ''
 		+ '	<div class="text-status">'
 		+ '		<div class="meta-wrapper">'
 		+ '			<div class="screen-name">'+d.user.screen_name;

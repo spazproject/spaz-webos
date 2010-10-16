@@ -141,10 +141,7 @@ FavoritesAssistant.prototype.deactivate = function(event) {
 };
 
 FavoritesAssistant.prototype.cleanup = function(event) {
-	/* this function should do any cleanup needed before the scene is destroyed as 
-	   a result of being popped off the scene stack */
-	jQuery('#more-favs-button').unbind(Mojo.Event.tap);
-	
+	jQuery('#more-favs-button').unbind(Mojo.Event.tap);	
 };
 
 
