@@ -173,7 +173,7 @@ StageAssistant.prototype.loadTemplates = function() {
 		+ '		<div class="meta" data-status-id="'+d.id+'">'
 		+ '			<div class="date"><strong>Posted</strong> <span class="date-relative" data-created_at="'+d.created_at+'">'+sch.getRelativeTime(d.created_at)+'</span> from <span class="source-link">'+d.source+'</span></div>';
 		if (d.in_reply_to_status_id) {
-			html += '			<div class="in-reply-to"><strong>In-reply-to</strong>: <span class="in-reply-to-link clickable" data-irt-status-id="'+d.in_reply_to_status_id+'">@'+d.in_reply_to_screen_name+'</span></div>';
+			html += '			<div class="in-reply-to" data-irt-status-id="'+d.in_reply_to_status_id+'"><strong>View conversation with</strong> <span class="in-reply-to-link clickable" data-irt-status-id="'+d.in_reply_to_status_id+'">@'+d.in_reply_to_screen_name+'</span></div>';
 		}
 		html += '		</div>'
 		+ '	</div>';

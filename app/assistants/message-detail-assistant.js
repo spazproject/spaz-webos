@@ -244,9 +244,10 @@ MessageDetailAssistant.prototype.activate = function(event) {
 	}
 	
 
-	jQuery('#message-detail-container .in-reply-to-link', this.scroller).live(Mojo.Event.tap, function(e) {
+	jQuery('#message-detail .in-reply-to', this.scroller).live(Mojo.Event.tap, function(e) {
 		var statusid = jQuery(this).attr('data-irt-status-id');
-		Mojo.Controller.stageController.pushScene('message-detail', statusid);
+		Mojo.Log.error('statusid: %s', statusid);
+		thisA.buildConversationView(statusid);
 	});
 
 
@@ -262,27 +263,27 @@ MessageDetailAssistant.prototype.activate = function(event) {
 	
 	
 	
-	jQuery('#message-detail-container .user', this.scroller).live(Mojo.Event.tap, function(e) {
+	jQuery('#message-detail .user', this.scroller).live(Mojo.Event.tap, function(e) {
 		var userid = jQuery(this).attr('data-user-id');
 		Mojo.Controller.stageController.pushScene('user-detail', userid);
 	});
 
-	jQuery('#message-detail-container .username.clickable', this.scroller).live(Mojo.Event.tap, function(e) {
+	jQuery('#message-detail .username.clickable', this.scroller).live(Mojo.Event.tap, function(e) {
 		var userid = jQuery(this).attr('data-user-screen_name');
 		Mojo.Controller.stageController.pushScene('user-detail', '@'+userid);
 	});
 
-	jQuery('#message-detail-container .hashtag.clickable', this.scroller).live(Mojo.Event.tap, function(e) {
+	jQuery('#message-detail .hashtag.clickable', this.scroller).live(Mojo.Event.tap, function(e) {
 		var hashtag = jQuery(this).attr('data-hashtag');
 		thisA.searchFor('#'+hashtag);
 	});
 
-	jQuery('#message-detail-container div.timeline-entry>.status>.meta', this.scroller).live(Mojo.Event.tap, function(e) {
-		var statusid = jQuery(this).attr('data-status-id');
-		Mojo.Controller.stageController.pushScene('message-detail', statusid);
-	});
-	
-	jQuery('#message-detail-container img.thumbnail', this.scroller).live(Mojo.Event.tap, function(e) {
+    jQuery('#message-detail div.timeline-entry>.status>.meta', this.scroller).live(Mojo.Event.tap, function(e) {
+        var statusid = jQuery(this).attr('data-status-id');
+        Mojo.Controller.stageController.pushScene('message-detail', statusid);
+    });
+
+	jQuery('#message-detail img.thumbnail', this.scroller).live(Mojo.Event.tap, function(e) {
 		var siu = new SpazImageURL();
 		var img_url = jQuery(this).attr('data-img-url');
 		sch.debug('MAIN URL:'+img_url);
@@ -291,19 +292,79 @@ MessageDetailAssistant.prototype.activate = function(event) {
 		Mojo.Controller.stageController.pushScene('view-image', {'imageURLs':[img_url]});
 	});
 	
-	// this.addPostPopup();
+	/*
+	    Because I didn't want to use a Mojo List due to laziness, we use the
+	    OLD SKOOL way from the user detail timeline
+	*/
+    jQuery('#timeline-conversation div.timeline-entry', this.scroller).live(Mojo.Event.tap, function(e) {
+		var jqtarget = jQuery(e.target);
+
+		e.stopImmediatePropagation();
+
+		if (jqtarget.is('div.timeline-entry>.user') || jqtarget.is('div.timeline-entry>.user img')) {
+			var userid = jQuery(this).attr('data-user-id');
+			Mojo.Controller.stageController.pushScene('user-detail', userid);
+			return;
+
+		} else if (jqtarget.is('.username.clickable')) {
+			var userid = jqtarget.attr('data-user-screen_name');
+			Mojo.Controller.stageController.pushScene('user-detail', '@'+userid);
+			return;
+
+		} else if (jqtarget.is('.hashtag.clickable')) {
+			var hashtag = jqtarget.attr('data-hashtag');
+			thisA.searchFor('#'+hashtag);
+			return;
+
+		} else if (jqtarget.is('div.timeline-entry .meta')) {
+			var status_id = jqtarget.attr('data-status-id');
+			var isdm = false;
+			var status_obj = null;
+
+			if (jqtarget.parent().parent().hasClass('dm')) {
+				isdm = true;
+			}
+
+			Mojo.Controller.stageController.pushScene('message-detail', {'status_id':status_id, 'isdm':isdm, 'status_obj':status_obj});
+			return;
+
+		} else if (jqtarget.is('div.timeline-entry a[href]')) {
+			return;
+
+		} else {
+			var status_id = jQuery(this).attr('data-status-id');
+			var isdm = false;
+			var status_obj = null;
+
+			if (jQuery(this).hasClass('dm')) {
+				isdm = true;
+			}
+
+			Mojo.Controller.stageController.pushScene('message-detail', {'status_id':status_id, 'isdm':isdm, 'status_obj':status_obj});
+			return;
+		}
+	});
+
+
 };
 
 
 MessageDetailAssistant.prototype.deactivate = function(event) {
-	jQuery('#message-detail-container .in-reply-to-link', this.scroller).die(Mojo.Event.tap);
+	jQuery('#message-detail .in-reply-to', this.scroller).die(Mojo.Event.tap);
 	jQuery('#message-detail-image', this.scroller).die(Mojo.Event.tap);
 	
-	jQuery('#message-detail-container .user', this.scroller).die(Mojo.Event.tap);
-	jQuery('#message-detail-container .username.clickable', this.scroller).die(Mojo.Event.tap);
-	jQuery('#message-detail-container .hashtag.clickable', this.scroller).die(Mojo.Event.tap);
-	jQuery('#message-detail-container div.timeline-entry>.status>.meta', this.scroller).die(Mojo.Event.tap);
-	jQuery('#message-detail-container img.thumbnail', this.scroller).die(Mojo.Event.tap);
+	jQuery('#message-detail .user', this.scroller).die(Mojo.Event.tap);
+	jQuery('#message-detail .username.clickable', this.scroller).die(Mojo.Event.tap);
+	jQuery('#message-detail .hashtag.clickable', this.scroller).die(Mojo.Event.tap);
+	jQuery('#message-detail div.timeline-entry>.status>.meta', this.scroller).die(Mojo.Event.tap);
+	jQuery('#message-detail img.thumbnail', this.scroller).die(Mojo.Event.tap);
+	
+
+	/*
+		stop listening for timeline entry taps
+	*/
+    jQuery('#timeline-conversation div.timeline-entry', this.scroller).die(Mojo.Event.tap);
+	
 	
 };
 
@@ -418,5 +479,103 @@ MessageDetailAssistant.prototype.enableDeleteButton = function(enabled) {
 		this.cmdMenuModel.items[1].items[3].disabled = true;
 		this.controller.modelChanged(this.cmdMenuModel);
 	}
+	
+};
+
+
+MessageDetailAssistant.prototype.buildConversationView = function(statusid) {
+
+    var thisA = this;
+
+	var initWindow = function() {
+		var container = $('#timeline-conversation');
+		container
+		    .html('<div class="loading">Loading…</div>')
+		    .fadeIn(250);		
+	};
+
+
+	var build = function(base_id) {
+		var convo_array = [], added_ids = [];
+
+		initWindow();
+
+		Mojo.Log.error("==========Retrieving base_id "+base_id+' =======================');
+		App.Tweets.get(
+		    base_id, // status_id
+		    false, // isdm
+		    onRetrieved, // success
+		    function(message) { // failure
+				Mojo.Log.error('Couldn\'t retrieve message from Depot:'+message);
+				thisA.showAlert($L('There was an error retrieving the message data'));
+			}
+		);
+
+
+
+		function onRetrieved(status_obj) {		
+
+            // Mojo.Log.error('Retrieved Status Object: --------------------');
+            // Mojo.Log.error(status_obj);
+            // Mojo.Log.error('---------------------------------------------');
+
+
+			Mojo.Log.error("Retrieved "+status_obj.id);
+
+			if (added_ids.indexOf(status_obj.id) !== -1) {
+				Mojo.Log.error("This id has already been retrieved");
+				renderConversation();
+				return;
+			} else {
+
+				convo_array.push(status_obj);
+				added_ids.push(status_obj.id);
+
+				Mojo.Log.error("conversation length is now "+convo_array.length);
+				Mojo.Log.error("added_ids: "+added_ids.toString());
+
+				if (status_obj.in_reply_to_status_id
+						&& (added_ids.indexOf(status_obj.in_reply_to_status_id) === -1)
+						&& (status_obj.in_reply_to_status_id != status_obj.id)
+						) {
+					App.Tweets.get(
+					    status_obj.in_reply_to_status_id, // status_id
+					    false, // isdm
+					    onRetrieved, // success
+					    function(message) { // failure
+        					Mojo.Log.error('Couldn\'t retrieve message from Depot:'+message);
+        					thisA.showAlert($L('There was an error retrieving the message data'));
+        				}
+					);
+				} else {
+					renderConversation();
+					return;
+				}				
+			}
+		}
+
+
+
+		function renderConversation() {
+
+			var container = $('#timeline-conversation');
+
+			container.empty();
+
+			for (var i=0; i < convo_array.length; i++) {
+				var status_obj  = convo_array[i];
+                Mojo.Log.error("Adding "+status_obj.id);
+				status_obj.db_id = status_obj.id;
+				status_obj.id    = status_obj.id;
+				status_obj.text = Spaz.makeItemsClickable(status_obj.text);
+				var status_html  = App.tpl.parseTemplate('tweet', status_obj);
+                // Mojo.Log.error("Adding %s", status_html);
+				container.append(status_html);
+			};
+		}
+
+	};
+	
+	build(statusid);
 	
 };

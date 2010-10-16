@@ -515,8 +515,9 @@ div.spaz-drawer {
 	background-repeat: repeat-x;
 	background-color:#2B3235;
 	min-height:480px;
-	padding:0px 0px;
+	padding:0 0 7px 0;
 	-khtml-border-radius:10px;
+	overflow:auto;
 }
 
 
@@ -603,6 +604,11 @@ div.spaz-drawer {
 			}
 		
 			#message-detail .text-status .meta .in-reply-to {
+				margin-top:5px;
+				background-color:rgba(16,16,16,.5);
+				-webkit-border-radius:10px;
+				padding:5px 5px 5px 10px;
+				overflow:auto;
 			}
 
 	        #message-detail .text-status .meta .clickable,
@@ -637,6 +643,23 @@ div.spaz-drawer {
 		padding:0 0 5px 0;
 */	}
 		
+#timeline-conversation {
+	margin:0px 7px;
+	background-color:rgba(16,16,16,.5);
+	-webkit-border-radius:10px;
+	padding:5px;
+	overflow:auto;
+	font-size:11pt;
+	display:none;
+}
+#timeline-conversation div.timeline-entry {
+	background-image:none;
+	background-color:transparent;
+	color:#FFFFFF;
+}
+#timeline-conversation div.timeline-entry.new {
+	color:#FFFFFF;
+}
 
 
 
