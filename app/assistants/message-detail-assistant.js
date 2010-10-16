@@ -244,7 +244,7 @@ MessageDetailAssistant.prototype.activate = function(event) {
 	}
 	
 
-	jQuery('#message-detail .in-reply-to', this.scroller).live(Mojo.Event.tap, function(e) {
+	jQuery('#timeline-conversation .in-reply-to', this.scroller).live(Mojo.Event.tap, function(e) {
 		var statusid = jQuery(this).attr('data-irt-status-id');
 		Mojo.Log.error('statusid: %s', statusid);
 		thisA.buildConversationView(statusid);
@@ -377,23 +377,23 @@ MessageDetailAssistant.prototype.cleanup = function(event) {
 MessageDetailAssistant.prototype.processStatusReturn = function(e, statusobj) {
 	var itemhtml;
 	
+	var thisA = e.data.thisAssistant;
+	
 	var sui = new SpazImageURL();
 	
 	Mojo.Log.error('statusobj: %j', statusobj);
 	
-	sch.dump(e.data.thisAssistant);
-
 	if (!statusobj.SC_is_dm) {
 		statusobj.isSent = (statusobj.user.screen_name.toLowerCase() === App.username.toLowerCase());
 	}
 
-	e.data.thisAssistant.statusobj = statusobj;
-	e.data.thisAssistant.statusRetrieved = false;
+	thisA.statusobj = statusobj;
+	thisA.statusRetrieved = false;
 
-	Mojo.Log.error('message data: %j', e.data.thisAssistant.statusobj);
+	Mojo.Log.error('message data: %j', thisA.statusobj);
 	
-	e.data.thisAssistant.statusobj.SC_thumbnail_urls = sui.getThumbsForUrls(e.data.thisAssistant.statusobj.text);
-	e.data.thisAssistant.statusobj.text = Spaz.makeItemsClickable(e.data.thisAssistant.statusobj.text);
+	thisA.statusobj.SC_thumbnail_urls = sui.getThumbsForUrls(thisA.statusobj.text);
+	thisA.statusobj.text = Spaz.makeItemsClickable(thisA.statusobj.text);
 	
 	/*
 		save this tweet to Depot
@@ -403,10 +403,10 @@ MessageDetailAssistant.prototype.processStatusReturn = function(e, statusobj) {
 	/*
 		render tweet
 	*/
-	if (e.data.thisAssistant.isdm) {
-		itemhtml = App.tpl.parseTemplate('message-detail-dm', e.data.thisAssistant.statusobj);
+	if (thisA.isdm) {
+		itemhtml = App.tpl.parseTemplate('message-detail-dm', thisA.statusobj);
 	} else {
-		itemhtml = App.tpl.parseTemplate('message-detail', e.data.thisAssistant.statusobj);
+		itemhtml = App.tpl.parseTemplate('message-detail', thisA.statusobj);
 	}
 	
 	
@@ -416,15 +416,21 @@ MessageDetailAssistant.prototype.processStatusReturn = function(e, statusobj) {
 
 			
 	
-	if (e.data.thisAssistant.statusobj.isSent || e.data.thisAssistant.statusobj.SC_is_dm) {
-		e.data.thisAssistant.enableDeleteButton(true);
+	if (thisA.statusobj.isSent || thisA.statusobj.SC_is_dm) {
+		thisA.enableDeleteButton(true);
 	}
 	
-	if (!e.data.thisAssistant.statusobj.SC_is_dm) {
-		e.data.thisAssistant.enableFavButton(true);
+	if (!thisA.statusobj.SC_is_dm) {
+		thisA.enableFavButton(true);
 	}
 
-	e.data.thisAssistant.setFavButtonState();
+	thisA.setFavButtonState();
+	
+	if (thisA.statusobj.in_reply_to_status_id) {
+		var irt_html = App.tpl.parseTemplate('message-detail-irt', thisA.statusobj);
+		$('#timeline-conversation').html(irt_html).fadeIn(250);
+	}
+	
 	
 };
 
@@ -487,11 +493,13 @@ MessageDetailAssistant.prototype.buildConversationView = function(statusid) {
 
     var thisA = this;
 
+    var $container = $('#timeline-conversation');
+
 	var initWindow = function() {
-		var container = $('#timeline-conversation');
-		container
-		    .html('<div class="loading">Loading…</div>')
-		    .fadeIn(250);		
+		$container
+		    .html('<div class="loading"><img src="images/dreadnaught/tiny-spinner-191C1D.gif" style="display:inline-block; margin-bottom:-2px"> Loading…</div>')
+		    .find('.loading')
+		    .fadeIn(250);	
 	};
 
 
@@ -514,17 +522,22 @@ MessageDetailAssistant.prototype.buildConversationView = function(statusid) {
 
 
 		function onRetrieved(status_obj) {		
-
-            // Mojo.Log.error('Retrieved Status Object: --------------------');
-            // Mojo.Log.error(status_obj);
-            // Mojo.Log.error('---------------------------------------------');
+            
+            // add newly retrieved message
+            Mojo.Log.error("Adding "+status_obj.id);
+			status_obj.db_id = status_obj.id;
+			status_obj.id    = status_obj.id;
+			status_obj.text = Spaz.makeItemsClickable(status_obj.text);
+			var $status_html  = $(App.tpl.parseTemplate('tweet', status_obj));
+            // Mojo.Log.error("Adding %s", status_html);
+			$container.append($status_html.fadeIn(400));
 
 
 			Mojo.Log.error("Retrieved "+status_obj.id);
 
 			if (added_ids.indexOf(status_obj.id) !== -1) {
 				Mojo.Log.error("This id has already been retrieved");
-				renderConversation();
+				finishLoadingConvo();
 				return;
 			} else {
 
@@ -548,7 +561,7 @@ MessageDetailAssistant.prototype.buildConversationView = function(statusid) {
         				}
 					);
 				} else {
-					renderConversation();
+					finishLoadingConvo();
 					return;
 				}				
 			}
@@ -556,22 +569,10 @@ MessageDetailAssistant.prototype.buildConversationView = function(statusid) {
 
 
 
-		function renderConversation() {
-
-			var container = $('#timeline-conversation');
-
-			container.empty();
-
-			for (var i=0; i < convo_array.length; i++) {
-				var status_obj  = convo_array[i];
-                Mojo.Log.error("Adding "+status_obj.id);
-				status_obj.db_id = status_obj.id;
-				status_obj.id    = status_obj.id;
-				status_obj.text = Spaz.makeItemsClickable(status_obj.text);
-				var status_html  = App.tpl.parseTemplate('tweet', status_obj);
-                // Mojo.Log.error("Adding %s", status_html);
-				container.append(status_html);
-			};
+		function finishLoadingConvo() {
+            $container.find('.loading').fadeOut(400, function() {
+                $(this).remove();
+            });
 		}
 
 	};

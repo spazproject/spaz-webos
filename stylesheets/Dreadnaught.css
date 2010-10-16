@@ -602,14 +602,6 @@ div.spaz-drawer {
 			
 			#message-detail .text-status .meta .date {
 			}
-		
-			#message-detail .text-status .meta .in-reply-to {
-				margin-top:5px;
-				background-color:rgba(16,16,16,.5);
-				-webkit-border-radius:10px;
-				padding:5px 5px 5px 10px;
-				overflow:auto;
-			}
 
 	        #message-detail .text-status .meta .clickable,
 			#message-detail .text-status .meta a:link,
@@ -647,11 +639,16 @@ div.spaz-drawer {
 	margin:0px 7px;
 	background-color:rgba(16,16,16,.5);
 	-webkit-border-radius:10px;
-	padding:5px;
+	padding:5px 10px;
 	overflow:auto;
 	font-size:11pt;
 	display:none;
 }
+	#timeline-conversation:active {
+		background-color:rgba(64,64,64,.5);
+	}
+	
+
 #timeline-conversation div.timeline-entry {
 	background-image:none;
 	background-color:transparent;
