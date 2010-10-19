@@ -868,7 +868,7 @@ div.spaz-drawer {
 }
 		
 	#post-panel-irt { /* "in-reply-to" */
-		margin:0px 10px 4px;
+		margin:5px 10px;
 		line-height:13px;
 	}
 
@@ -1153,6 +1153,9 @@ div.error_info {
 		white-space:nowrap;
 		text-overflow: ellipsis;
 	}
+		div.error_info .value.twitter_msg {
+			white-space:normal;			
+		}
 	
 	
 	
