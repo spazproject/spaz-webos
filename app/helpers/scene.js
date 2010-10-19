@@ -430,14 +430,19 @@ scene_helpers.addCommonSceneMethods = function(assistant) {
 	
 	assistant.showPostPanel = function(opts) {
 		
-		Mojo.Controller.stageController.pushScene("post", {
-			'text'         : opts.text         || '',
-			'type'         : opts.type         || null,
-			'select_start' : opts.select_start || 0,
-			'select_length': opts.select_length|| 0,
-			'irt_status'   : opts.irt_status   || null,
-			'irt_status_id': opts.irt_status_id|| 0
-		});
+		opts = sch.defaults({
+		    'text'         : '',
+			'type'         : null,
+			'select_start' : 0,
+			'select_length': 0,
+			'irt_status'   : null,
+			'irt_status_id': 0,
+			'dm_irt_text'  : null,
+			'dm_recipient' : null
+			
+		}, opts);
+		
+		Mojo.Controller.stageController.pushScene("post", opts);
 		
 	};
 	
@@ -570,19 +575,15 @@ scene_helpers.addCommonSceneMethods = function(assistant) {
 	/**
 	 *  
 	 */
-	assistant.prepDirectMessage = function(username) {
+	assistant.prepDirectMessage = function(username, irt_text) {
 		
-		var text = 'd ';
+		var text = '';
 		
-	    if (username) {
-			text += (username + ' ');
-	    }
-	
 		this.showPostPanel({
 			'text'         : text,
 			'type'         : 'dm',
-			'select_start' : 2,
-			'select_length': text.length
+			'dm_irt_text'  : irt_text,
+			'dm_recipient' : username
 		});
 
 	};
@@ -982,6 +983,8 @@ scene_helpers.addCommonSceneMethods = function(assistant) {
 
 		var human_msg, twiterr_req, twiterr_msg, error_processed;
 		
+		Mojo.Log.error("assistant.processAjaxError = function(errobj): %j", errobj);
+		
 		switch(errobj.msg) {
 			case 'timeout':
 				
@@ -1259,7 +1262,7 @@ scene_helpers.addCommonSceneMethods = function(assistant) {
 							thisA.prepReply(username, status_id, status_obj);
 							break;
 						case 'reply-dm':
-							thisA.prepDirectMessage(username);
+							thisA.prepDirectMessage('@'+username, status_obj.text);
 							break;
 						case 'retweet':
 							thisA.retweet(status_obj);
