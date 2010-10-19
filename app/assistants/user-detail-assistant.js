@@ -74,7 +74,7 @@ UserDetailAssistant.prototype.setup = function() {
 		});
 		this.setCommand('dm', function(e) {
 			if (this.userRetrieved === true) {
-				this.prepDirectMessage(this.userobj.screen_name);
+				this.prepDirectMessage('@'+this.userobj.screen_name);
 			}
 		});
 		this.setCommand('follow', function(e) {
