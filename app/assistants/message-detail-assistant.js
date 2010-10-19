@@ -75,7 +75,7 @@ MessageDetailAssistant.prototype.setup = function() {
 				var screen_name;
 				if (thisA.statusobj.SC_is_dm) {
 					screen_name = thisA.statusobj.sender.screen_name;
-					thisA.prepDirectMessage(screen_name);
+					thisA.prepDirectMessage('@'+screen_name, thisA.statusobj.text);
 				} else {
 					screen_name = thisA.statusobj.user.screen_name;
 					thisA.prepReply(screen_name, thisA.statusobj.id, thisA.statusobj);
