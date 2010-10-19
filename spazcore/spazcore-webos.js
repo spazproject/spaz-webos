@@ -1,4 +1,4 @@
-/*********** Built 2010-10-14 21:33:26 EDT ***********/
+/*********** Built 2010-10-18 22:19:58 EDT ***********/
 /*jslint 
 browser: true,
 nomen: false,
@@ -13616,6 +13616,39 @@ SpazTwit.prototype._processUpdateReturn = function(data, opts) {
 	opts.is_update_item = true;
 	this._processTimeline(SPAZCORE_SECTION_HOME, [data], opts);
 };
+
+/**
+ * @param {string|number} user_id a string or number. if a screen name, prefix with '@'; else assumed to be a numeric user_id 
+ * @param {string} text the message to send to the user_id
+ */
+SpazTwit.prototype.sendDirectMessage = function(user_id, text, onSuccess, onFailure) {
+    var url = this.getAPIURL('dm_new');
+	
+	var data = {};
+	
+	if (sch.isString(user_id) && user_id.indexOf('@') === 0) {
+	    data.screen_name = user_id;
+	} else {
+	    data.user_id = user_id;
+	}
+	
+	data.text = text;
+	
+	var opts = {
+		'url':url,
+		'data':data,
+		'success_callback':onSuccess,
+		'failure_callback':onFailure,
+		'success_event_type':'sent_dm_succeeded',
+		'failure_event_type':'sent_dm_failed'
+	};
+
+	/*
+		Perform a request and get true or false back
+	*/
+	var xhr = this._callMethod(opts);
+}
+
 
 /**
  * destroy/delete a status
