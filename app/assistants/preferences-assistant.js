@@ -169,7 +169,6 @@ PreferencesAssistant.prototype.setup = function() {
 		temporarily disabling sound and vibration prefs until we can sort out how to tell if sound is off
 	*/
     this.controller.listen('checkbox-sound-enabled', Mojo.Event.propertyChange, this.saveSettings.bindAsEventListener(this));
-	// this.controller.listen('checkbox-vibration-enabled', Mojo.Event.propertyChange, this.saveSettings.bindAsEventListener(this));
 	this.controller.listen('checkbox-timeline-scrollonupdate', Mojo.Event.propertyChange, this.saveSettings.bindAsEventListener(this));
 	this.controller.listen('checkbox-notify-newmessages', Mojo.Event.propertyChange, this.saveSettings.bindAsEventListener(this));
 	this.controller.listen('checkbox-network-refresh-auto', Mojo.Event.propertyChange, this.saveSettings.bindAsEventListener(this));
@@ -325,7 +324,10 @@ PreferencesAssistant.prototype.setupChoices = function(){
 		{label:$L('10min'), value:600000},
 		{label:$L('15min'), value:900000},
 		{label:$L('30min'), value:1800000},
-		{label:$L('1hr'),   value:3600000}
+		{label:$L('1hr'),   value:3600000},
+		{label:$L('2hr'),   value:7200000},
+		{label:$L('4hr'),   value:14400000},
+		{label:$L('8hr'),   value:28800000}
 	];
 	
 	this.validInitialLoads = [
@@ -402,8 +404,7 @@ PreferencesAssistant.prototype.cleanup = function(event) {
 	/*
 		temporarily disabling sound and vibration prefs until we can sort out how to tell if sound is off
 	*/
-	// this.controller.stopListening('checkbox-sound-enabled', Mojo.Event.propertyChange, this.saveSettings);
-	// this.controller.stopListening('checkbox-vibration-enabled', Mojo.Event.propertyChange, this.saveSettings);
+    this.controller.stopListening('checkbox-sound-enabled', Mojo.Event.propertyChange, this.saveSettings);
 	this.controller.stopListening('checkbox-network-refresh-auto', Mojo.Event.propertyChange, this.saveSettings);
 	this.controller.stopListening('checkbox-network-refresh-wake', Mojo.Event.propertyChange, this.saveSettings);
 	this.controller.stopListening('checkbox-timeline-scrollonupdate', Mojo.Event.propertyChange, this.saveSettings);
