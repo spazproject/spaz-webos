@@ -415,17 +415,19 @@ StageAssistant.prototype.loadTemplates = function() {
 		* twitter_msg':	    		
 		*/
 
-		dump(d);
+		Mojo.Log.error('%j', d);
 
 		var html = '';
 
 		html += '<div class="error_info">';
 
 		html += ' <div class="human_msg">'+d.human_msg+'</div>';
-		html += ' <div class="row url">'+d.url+'</div>';
+		if (d.url) {
+		    html += ' <div class="row url">'+d.url+'</div>';
+		}
 		if (d.twitter_msg) {
 			html += ' <div class="row"><div class="label">'+$L('Twitter error')+'</div> <div class="value twitter_msg">'+d.twitter_msg+'</div></div>'
-			+ ' <div class="row"><div class="label">'+$L('Twitter request')+'</div> <div class="value twitter_request">'+d.twitter_request+'</div></div>';
+			+ ' <div class="row"><div class="label">'+$L('Twitter req')+'</div> <div class="value twitter_request">'+d.twitter_request+'</div></div>';
 		}
 		if (d.status) {
 			html += ' <div class="row"><div class="label">'+$L('Status code')+'</div> <div class="value status">'+d.status+'</div></div>';
@@ -451,7 +453,7 @@ StageAssistant.prototype.loadTemplates = function() {
 		* twitter_msg':	    		
 		*/
 
-		sch.debug(d);
+		Mojo.Log.error('%j', d);
 
 		var html = '';
 
