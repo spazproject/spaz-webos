@@ -113,6 +113,8 @@ FriendsFollowersAssistant.prototype.setup = function() {
 	};
 	this.controller.setupWidget('more-friends-followers-button', this.moreButtonAttributes, this.moreButtonModel);
 	
+	this.listenForMetaTapScroll();
+	
 };
 
 FriendsFollowersAssistant.prototype.activate = function(event) {
