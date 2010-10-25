@@ -26,6 +26,10 @@
         "source": "app/assistants/favorites-assistant.js"
     },
     {
+        "scene": "friends-followers",
+        "source": "app/assistants/friends-followers-assistant.js"
+    },
+    {
         "scene": "help",
         "source": "app/assistants/help-assistant.js"
     },
