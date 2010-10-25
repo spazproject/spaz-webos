@@ -279,7 +279,9 @@ PostAssistant.prototype.activate = function(args) {
 	
 	
     if (this.args.type == 'dm') {
-        jQuery('#post-panel-scenetitle').html($L('DM as #{username} to #{recipient}').interpolate({'username':App.username, 'recipient':this.args.dm_recipient}));
+        jQuery('#post-panel-scenetitle').html($L('DM as #{username}').interpolate({'username':App.username}));
+        jQuery('#post-panel-subtitle').html($L('To #{recipient}').interpolate({'recipient':this.args.dm_recipient}));
+
     } else {
         jQuery('#post-panel-scenetitle').html($L('Post as #{username}').interpolate({'username':App.username}));
     }
