@@ -61,10 +61,10 @@ BODY {
 }
 .view-menu .palm-menu-text {
 	text-align:left;
-	background: url(../images/spaz-icon-alpha_32.png) no-repeat left;
+	background: url(../images/spaz-icon-alpha_32.png) no-repeat 120% 50%;
 }
 	.view-menu .palm-menu-text .truncating-text {
-		margin-left:38px;
+/*		margin-left:38px;*/
 		font-size:13pt;
 		font-weight:normal;
 	}
@@ -83,6 +83,11 @@ div.palm-page-header.spaz-page-header {
 		color:#FFFFFF;
 		text-shadow: rgb(0,0,0) 0px 1px 0px;
 		text-transform: none;
+	}
+	.palm-page-header.multi-line .subtitle {
+		color:#FFFFFF;
+		text-shadow: rgb(0,0,0) 0px 1px 0px;
+		padding-left:56px;
 	}
 
 a:link, a:visited, .clickable {
@@ -374,7 +379,15 @@ div.timeline-entry {
 	background-color: transparent !important;
 }
 
-	
+div.timeline-entry.follower {}
+	div.timeline-entry.follower div.user-name {
+		margin-left:64px;
+		margin-top:7px;
+		font-size:14pt;
+	}
+		div.timeline-entry.follower div.user-name-screen {
+			font-weight:bold;
+		}
 	
 /*
 	login scene stuff
@@ -1065,7 +1078,55 @@ div.spaz-row {
 		font-size:11pt;
 		line-height:5pt;
 	}
-	
+
+#accountList div.spaz-row {
+	height: 48px;
+	-webkit-border-radius:12px;
+	margin: 2px 2px;
+	color:  #FFECCD;
+	font-family:"Prelude-CondensedMedium";
+	font-size:16pt;
+	line-height:35pt;
+	-webkit-border-image:none;
+	padding:0px 11px;
+	overflow:hidden;
+	text-overflow:ellipsis;
+	white-space:nowrap;
+	background-image: url('../images/dreadnaught/entry-gradient-bg_short.png');
+	background-repeat: repeat-x;
+	background-color:#101010;
+	background-position: 0px -3px;
+}
+	#accountList div.spaz-row:active {
+		background-color:rgba(64,64,64,.8);
+		-webkit-border-image:none;
+/*		-webkit-border-image: url(../images/dreadnaught/spaz-button-large-active-bg.png) 0 21 0 21;*/
+	}
+	#accountList div.spaz-row .label{
+		float:left;
+	}
+		#accountList div.spaz-row-title {
+			font-size:15pt;
+			line-height:24pt;
+		}
+		#accountList div.spaz-row-subtitle {
+			font-size:11pt;
+			line-height:5pt;
+		}
+	#accountList div.spaz-row .info {
+		float: right;
+		width: 32px;
+		height:32px;
+		margin-top:7px;
+		background-image: url(../images/dreadnaught/icon-info.png);
+	}
+		#accountList div.spaz-row .info:active {
+			background-image: url(../images/dreadnaught/icon-info-active.png);
+		}
+
+
+
+		
 	
 .spaz-activity-spinner {
 	z-index:11002;
