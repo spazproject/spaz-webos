@@ -123,6 +123,7 @@ MyTimelineAssistant.prototype.setup = function() {
 					{label:'@',	icon:'at', command:'filter-timeline-replies'}, 
 					{label:$L('DM'), icon: 'dms', secondaryIconPath:'', command:'filter-timeline-dms'},
 					{label:$L('Favorites'), iconPath:'images/theme/menu-icon-favorite.png', command:'favorites', shortcut:'F'},
+					{label:$L('Friends and Followers'), iconPath:'images/theme/menu-icon-friends-followers.png', command:'friends-followers', shortcut:'L'},
 					{label:$L('Search'),    icon:'search', command:'search', shortcut:'S'}
 				]
 			},
@@ -140,13 +141,12 @@ MyTimelineAssistant.prototype.setup = function() {
 	
 	this.controller.setupWidget("accountList",
 		this.accountsAtts = {
-			itemTemplate: 'startlogin/user-list-entry',
-			listTemplate: 'startlogin/user-list-container',
-			dividerTemplate:'startlogin/user-list-separator',
+			itemTemplate: 'account-panel/user-list-entry',
+			listTemplate: 'account-panel/user-list-container',
+			dividerTemplate:'account-panel/user-list-separator',
 			swipeToDelete: false,
 			autoconfirmDelete: false,
 			reorderable: false
-			
 		},
 		this.accountsModel = {
 			listTitle: $L('Accounts'),
@@ -156,30 +156,76 @@ MyTimelineAssistant.prototype.setup = function() {
 	Mojo.Event.listen(jQuery('#accountList')[0], Mojo.Event.listTap, function(e) {
 		
 		/*
+			remap if we have an originalEvent
+		*/
+		if (e.originalEvent) {
+			Mojo.Log.error('originalEvent target: %s', e.originalEvent.target.outerHTML);
+			event_target = e.originalEvent.target;
+		} else {
+			event_target = e.target;
+		}
+		
+		var jqtarget = jQuery(event_target);
+		
+		if (jqtarget.is('.account-item .info')) {
+			var userid, account_type, account_api_url;
+			
+			Mojo.Log.info('tap on .account-item.info, pushing user-detail');
+			userid = e.item.username;
+			account_type = e.item.type;
+			
+			if (account_type === SPAZCORE_ACCOUNT_CUSTOM) {
+				account_api_url = Spaz.Prefs.getCustomAPIUrl(e.item.id);
+			}
+			
+			Mojo.Controller.stageController.pushScene(
+				'user-detail',
+				{
+					'userid':'@'+userid,
+					'account_type':account_type,
+					'account_api_url':account_api_url,
+					'auth_obj':Spaz.Prefs.getAuthObject(e.item.id)
+				}
+			);
+			return;
+		
+		} else if (App.username // ick
+						&& App.type
+						&& (App.username.toLowerCase() === e.item.username.toLowerCase())
+						&& (App.type.toLowerCase() === e.item.type.toLowerCase())) {
+							
+			Mojo.Log.error('This is the same account we are currently using. Closing panel');
+			thisA.controller.stageController.sendEventToCommanders({'type':Mojo.Event.command, 'command':'toggle-accounts-panel'});
+		
+		} else {
+			/*
 			save current user's cache and don't save on deactivate
-		*/
-		thisA.saveTimelineCache();
-		thisA.doNotSaveCacheOnDeactivate = true;
-		
-		sch.debug('CLICKED ON ITEM');
-		sch.debug(sch.enJSON(e.item));
-		
-		/*
+			*/
+			thisA.saveTimelineCache();
+			thisA.doNotSaveCacheOnDeactivate = true;
+
+			sch.debug('CLICKED ON ITEM');
+			sch.debug(sch.enJSON(e.item));
+
+			/*
 			set properties for new user
-		*/
-		App.username = e.item.username;
-		App.auth		= e.item.auth;
-		App.type     = e.item.type;
-		App.userid	= e.item.id;
-		
-		sch.debug('App.username:' + App.username);
-		sch.debug('App.auth:'     + App.auth);  
-		sch.debug('App.type:'     + App.type);   
-		sch.debug('App.userid:'	 + App.userid);
-		
-		App.prefs.set('last_userid', App.userid);
-		
-		Spaz.popAllAndPushScene("my-timeline");
+			*/
+			App.username = e.item.username;
+			App.auth		= e.item.auth;
+			App.type     = e.item.type;
+			App.userid	= e.item.id;
+
+			sch.debug('App.username:' + App.username);
+			sch.debug('App.auth:'     + App.auth);  
+			sch.debug('App.type:'     + App.type);   
+			sch.debug('App.userid:'	 + App.userid);
+
+			App.prefs.set('last_userid', App.userid);
+
+			Spaz.popAllAndPushScene("my-timeline");   
+		}
+
+
 	});
 	
 	this.setupInlineSpinner('activity-spinner-my-timeline');
