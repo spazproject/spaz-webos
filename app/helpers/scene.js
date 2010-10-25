@@ -264,7 +264,7 @@ scene_helpers.addCommonSceneMethods = function(assistant) {
 		}
 		this.topContainer = this.scroller.down();
 		dump('Scrolling to top');
-		this.scroller.mojo.scrollTo(0,0, true);
+		this.scroller.mojo.scrollTo(0,0, false);
 	};
 	
 	/**
