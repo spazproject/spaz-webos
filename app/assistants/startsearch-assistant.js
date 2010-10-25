@@ -32,7 +32,7 @@ StartsearchAssistant.prototype.setup = function() {
 				{
 					items: [
 						{label: $L('Search & Explore'), command:'scroll-top', width:260},
-						{label: $L('Compose'),  icon:'compose', command:'compose', shortcut:'N'},
+						{label: $L('Compose'),  icon:'compose', command:'compose', shortcut:'N'}
 					]
 				}
 
@@ -50,6 +50,7 @@ StartsearchAssistant.prototype.setup = function() {
 						{label:'@',	icon:'at', command:'filter-timeline-replies'}, 
 						{label:$L('DM'), icon: 'dms', secondaryIconPath:'', command:'filter-timeline-dms'},
 						{label:$L('Favorites'), iconPath:'images/theme/menu-icon-favorite.png', command:'favorites', shortcut:'F'},
+                        {label:$L('Friends and Followers'), iconPath:'images/theme/menu-icon-friends-followers.png', command:'friends-followers', shortcut:'L'},
 						{label:$L('Search'),    icon:'search', command:'search', shortcut:'S'}
 					]
 				},
