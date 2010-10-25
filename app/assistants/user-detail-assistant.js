@@ -19,9 +19,27 @@ function UserDetailAssistant(argFromPusher) {
 		*/
 		this.userid  = argFromPusher;
 		this.userRetrieved = false;
-	} else {
+	
+	} else if (argFromPusher.userid) {
+		
+		this.userid = argFromPusher.userid;
+		this.userRetrieved = false;		
+	
+	} else if (argFromPusher.userobj) {
 		this.userobj = argFromPusher.userobj;
 		this.userRetrieved = true;
+	}
+	
+	if (argFromPusher.account_type) {
+		this.user_type = argFromPusher.account_type;
+	}
+	
+	if (argFromPusher.account_api_url) {
+		this.user_api_url = argFromPusher.account_api_url;
+	}
+	
+	if (argFromPusher.auth_obj) {
+		this.auth_obj = argFromPusher.auth_obj;
 	}
 	
 }
@@ -53,7 +71,7 @@ UserDetailAssistant.prototype.setup = function() {
 						{label:$L('Search for User'),  iconPath: 'images/menu-icon-search-person.png', command:'search-for-user', shortcut:'R'},
 						{label:$L('Mention'),  icon:'at', command:'mention', shortcut:'M'},
 						{label:$L('DM'),  icon:'dms', command:'dm', shortcut:'D'},
-						{label:$L('Follow/Unfollow'), iconPath: 'images/menu-icon-start-following.png', command:'follow', shortcut:'F'},
+						{label:$L('Follow/Unfollow'), disabled:true, iconPath: 'images/menu-icon-start-following.png', command:'follow', shortcut:'F'},
 						{label:$L('Block'), iconPath: 'images/theme/menu-icon-triangle-up.png', command:'more', shortcut:'B'}
 					]
 				},
@@ -179,31 +197,34 @@ UserDetailAssistant.prototype.setup = function() {
 	jQuery(document).bind('new_user_timeline_data', { thisAssistant:this }, function(e, tweets) {
 		
 		var rendertweets = tweets;
-		// they come in oldest-first, so reverse it since we're rendering as a collection
-		rendertweets = rendertweets.reverse();
-
-		jQuery.each( rendertweets, function() {
-			this.text = Spaz.makeItemsClickable(this.text);
-			
-			/*
-				save this tweet to Depot
-			*/
-			App.Tweets.save(this);
-			
-		});
-
-		/*
-			Render the new tweets as a collection (speed increase, I suspect)
-		*/
 		
-		var itemhtml = App.tpl.parseArray('tweet', rendertweets);
+		if (rendertweets) {
+			// they come in oldest-first, so reverse it since we're rendering as a collection
+			rendertweets = rendertweets.reverse();
 
-		jQuery('#user-timeline').html(itemhtml);
+			jQuery.each( rendertweets, function() {
+				this.text = Spaz.makeItemsClickable(this.text);
 
-		/*
-			Update relative dates
-		*/
-		sch.updateRelativeTimes('#user-timeline>div.timeline-entry .meta>.date', 'data-created_at');
+				/*
+					save this tweet to Depot
+				*/
+				App.Tweets.save(this);
+
+			});
+
+			/*
+				Render the new tweets as a collection (speed increase, I suspect)
+			*/
+
+			var itemhtml = App.tpl.parseArray('tweet', rendertweets);
+
+			jQuery('#user-timeline').html(itemhtml);
+
+			/*
+				Update relative dates
+			*/
+			sch.updateRelativeTimes('#user-timeline>div.timeline-entry .meta>.date', 'data-created_at');
+		}
 
 	});
 	
@@ -220,28 +241,57 @@ UserDetailAssistant.prototype.setup = function() {
 		jQuery('#user-detail').html(itemhtml);
 		sch.debug(jQuery('#user-detail').get(0).outerHTML);
 		
-		thisA.twit.getUserTimeline(thisA.userobj.id);
+		thisA.getUserTimeline(thisA.userobj);
 
-		if (App.username) {
-			thisA.twit.showFriendship(
-				thisA.userobj.id,
-				null,
-				function(data) {
-					Mojo.Log.error('show friendship result: %j', data);
-					if (data.relationship.target.followed_by) {
-						Mojo.Log.error('You are following this user!');
-						thisA.userobj.you_are_following = 'yes';
+		/*
+			get the relationship state
+		*/
+		if (App.username && App.type) {
+			
+			/*
+				disable until we can get friendship info
+			*/
+			thisA.enableFollowButton(false);
+			
+			if ( thisA.user_type && (App.type !== thisA.user_type) ) {
+				
+				// can't get following info because the services aren't the same
+								
+			} else if (App.type === SPAZCORE_ACCOUNT_TWITTER) {
+				thisA.twit.showFriendship(
+					thisA.userobj.id,
+					null,
+					function(data) {
+						
+						thisA.enableFollowButton(true);
+						
+						Mojo.Log.error('show friendship result: %j', data);
+						if (data.relationship.target.followed_by) {
+							Mojo.Log.error('You are following this user!');
+							thisA.userobj.you_are_following = 'yes';
+						} else {
+							Mojo.Log.error('You are NOT following this user!');
+							thisA.userobj.you_are_following = 'no';
+						}
 						thisA.setFollowButtonIcon(thisA.userobj.you_are_following);
-					} else {
-						Mojo.Log.error('You are NOT following this user!');
-						thisA.userobj.you_are_following = 'no';
-						thisA.setFollowButtonIcon(thisA.userobj.you_are_following);
+					},
+					function(xhr, msg, exc) {
+						thisA.showAlert($L('Could not retrieve relationship info:\n'+sch.stripTags(xhr.responseText)), $L('Error'));
 					}
-				},
-				function(xhr, msg, exc) {
-					thisA.showAlert($L('Could not retrieve relationship info:\n'+xhr.responseText), $L('Error'));
+				);
+				
+			} else if (thisA.userobj.following !== null) { // the .following attribute exists and this is not twitter
+			
+				thisA.enableFollowButton(true);
+				if (thisA.userobj.following === true) {  // i am following this user
+					thisA.userobj.you_are_following = 'yes';
+				} else {  // i am NOT following this user
+					thisA.userobj.you_are_following = 'no';
 				}
-			);
+				thisA.setFollowButtonIcon(thisA.userobj.you_are_following);
+				
+			}
+			
 		}
 		
 	});
@@ -397,17 +447,54 @@ UserDetailAssistant.prototype.activate = function(event) {
 		Mojo.Controller.stageController.pushScene('view-image', {'imageURLs':[avatar_url]});
 	});
 
-
+	
+	
+	/*
+		kick off the "get the user obj" process, if we need to
+	*/
 	if (!this.userRetrieved) {
-		App.Tweets.getUser(
-			this.userid,
-			function(r) {
-				jQuery(document).trigger('get_user_succeeded', [r]);
-			},
-			function(r) {
-				jQuery(document).trigger('get_user_failed', [r]);
-			}
-		);
+		
+		/*
+			if we've passed some info on how to get the user info, get it remotely
+			and pass the extra data
+		*/
+		if (this.user_type || this.user_api_url || this.auth_obj) {		
+			App.Tweets.getRemoteUser(
+				this.userid,
+				function(r) {
+					jQuery(document).trigger('get_user_succeeded', [r]);
+				},
+				function(r) {
+					jQuery(document).trigger('get_user_failed', [r]);
+				},
+				{
+					'auth_obj':this.auth_obj,
+					'user_type':this.user_type,
+					'user_api_url':this.user_api_url
+				}
+			);
+			
+		/*
+			otherwise, just get it the "normal" way
+		*/
+		} else {
+			App.Tweets.getUser(
+				this.userid,
+				function(r) {
+					jQuery(document).trigger('get_user_succeeded', [r]);
+				},
+				function(r) {
+					jQuery(document).trigger('get_user_failed', [r]);
+				}
+			);
+		
+		}
+	
+	/*
+		just trigger the get_user_succeeded event with the object we already have
+	*/
+	} else {
+	    jQuery(document).trigger('get_user_succeeded', [this.userobj]);
 	}
 
 };
@@ -467,4 +554,37 @@ UserDetailAssistant.prototype.setFollowButtonIcon = function(current_state) {
 		this.cmdMenuModel.items[1].items[3].iconPath = 'images/menu-icon-start-following.png';
 	}
 	this.controller.modelChanged(this.cmdMenuModel);
+};
+
+
+UserDetailAssistant.prototype.enableFollowButton = function(enabled) {
+	
+	if (enabled) {
+		this.cmdMenuModel.items[1].items[3].disabled = false;
+		this.controller.modelChanged(this.cmdMenuModel);
+	} else {
+		this.cmdMenuModel.items[1].items[3].disabled = true;
+		this.controller.modelChanged(this.cmdMenuModel);
+	}
+	
+};
+
+
+UserDetailAssistant.prototype.getUserTimeline = function(userobj) {
+	var thisA = this;
+	
+	if (!userobj) {
+		userobj = this.userobj;
+	}
+	
+	if ( this.user_type && (App.type !== this.user_type) ) {
+		Mojo.Log.error('Can\'t getUserTimeline because user type is not current App.type');
+		jQuery('#user-timeline-trigger').hide();
+		return;
+	}
+	
+	/*
+		get the user timeline
+	*/
+	this.twit.getUserTimeline(userobj.id);
 };
