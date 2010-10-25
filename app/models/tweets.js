@@ -152,11 +152,15 @@ Tweets.prototype.saveUser = function(userobj) {
 };
 
 
-Tweets.prototype.getUser = function(id, onSuccess, onFailure) {
+Tweets.prototype.getUser = function(id, onSuccess, onFailure, extra) {
 	var that = this;
 	var screen_name;
 	
 	sch.debug('passed id is "'+id+'"');
+	
+	if (extra) {
+		Mojo.Log.error('extra passed to getUser:%j', extra);
+	}
 	
 	var onDataSuccess = function(data) { // wrapper for the passed onSuccess
 		if (!data) {
@@ -173,7 +177,8 @@ Tweets.prototype.getUser = function(id, onSuccess, onFailure) {
 						onSuccess(data);					
 					}
 				},
-				onFailure
+				onFailure,
+				extra
 			);
 		} else {
 			sch.debug("Retrieved user id "+id+" from lawnchair bucket");
@@ -291,24 +296,39 @@ Tweets.prototype.getBucket = function(isdm) {
 };
 
 
-Tweets.prototype.getRemote = function(id, isdm, onSuccess, onFailure) {
-	this.initSpazTwit();
-	
+Tweets.prototype.getRemote = function(id, isdm, onSuccess, onFailure, twit_opts) {
+	var twit;
+
+	if (twit_opts) {
+		twit = this.initTempSpazTwit(twit_opts);
+	} else {
+		this.initSpazTwit();
+		twit = this.twit;
+	}
+
 	sch.debug("getting message id "+id+" remotely!!");
 	
 	if (isdm) {
 		thisA.showAlert($L('There was an error retrieving this direct message from cache'));
 	} else {
-		this.twit.getOne(id, onSuccess, onFailure);
+		twit.getOne(id, onSuccess, onFailure);
 	}
 };
 
-Tweets.prototype.getRemoteUser = function(id, onSuccess, onFailure) {
-	this.initSpazTwit();
+Tweets.prototype.getRemoteUser = function(id, onSuccess, onFailure, twit_opts) {
+	var twit;
+	
+	if (twit_opts) {
+		twit = this.initTempSpazTwit(twit_opts);
+	} else {
+		this.initSpazTwit();
+		twit = this.twit;
+	}
+	
 	
 	sch.debug("getting user id "+id+" remotely!!");
 	
-	this.twit.getUser(id, onSuccess, onFailure);
+	twit.getUser(id, onSuccess, onFailure);
 };
 
 
@@ -337,6 +357,42 @@ Tweets.prototype.initSpazTwit = function(event_mode) {
 
 };
 
+
+/**
+ * in situations where we want to use different credentials/access a different
+ * service, we make a new, temporary SpazTwit object 
+ */
+Tweets.prototype.initTempSpazTwit = function(opts) {
+	var twit, auth;
+	
+	opts = sch.defaults({
+		'event_mode':'jquery',
+		'auth_obj':null,
+		'user_type':SPAZCORE_ACCOUNT_TWITTER,
+		'user_api_url':null
+	}, opts);
+	
+	Mojo.Log.error('initTempSpazTwit opts:%j', opts);	
+	
+	twit = new SpazTwit({
+		'event_mode':opts.event_mode,
+		'timeout':1000*60
+	});
+	twit.setSource(this.opts.prefs_obj.get('twitter-source'));
+	
+	if ( opts.auth_obj ) {
+		twit.setCredentials(opts.auth_obj);
+	}
+	
+	if (opts.user_api_url) {
+		twit.setBaseURL(opts.user_api_url);
+	} else if (opts.user_type) {
+		twit.setBaseURLByService(opts.user_type);
+	}
+	
+	return twit;
+	
+};
 
 
 Tweets.prototype.onSaveSuccess = function(obj, msg) {
