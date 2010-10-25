@@ -44,19 +44,19 @@ PostAssistant.prototype.setup = function() {
 		type: Mojo.Widget.activityButton
 	};
 	this.postButtonModel = {
-		buttonLabel : "Send",
+		buttonLabel : $L("Send"),
 		buttonClass: 'primary'
 	};
 	this.attachImageButtonModel = {
-		buttonLabel : "Attach Image",
+		buttonLabel : $L("Attach Image"),
 		buttonClass: 'secondary'
 	};
 	this.shortenTextButtonModel = {
-		buttonLabel : "Shorten text",
+		buttonLabel : $L("Shorten text"),
 		buttonClass: 'secondary'
 	};
 	this.shortenURLsButtonModel = {
-		buttonLabel : "Shorten URLs",
+		buttonLabel : $L("Shorten URLs"),
 		buttonClass: 'secondary'
 	};
 	this.postTextFieldModel = {
@@ -72,8 +72,7 @@ PostAssistant.prototype.setup = function() {
 			'multiline':true,
 			'enterSubmits':App.prefs.get('post-send-on-enter'),
 			'autoFocus':true,
-			'changeOnKeyPress':true
-			
+			'changeOnKeyPress':true			
 		},
 	this.postTextFieldModel);
 	
@@ -261,6 +260,13 @@ PostAssistant.prototype.activate = function(args) {
 		if (this.args.irt_status_id) {
 			this.setPostIRT(this.args.irt_status_id, this.args.irt_status);
 		}
+		
+		Mojo.Log.error('this.args: %j', this.args);
+		
+		if (this.args.type === 'dm' && this.args.dm_irt_text) {
+		    this.setDMIRT(this.args.dm_recipient, this.args.dm_irt_text);
+		    jQuery('#post-panel-irt-dismiss').hide();
+		}
 
 	}
 	
@@ -272,13 +278,15 @@ PostAssistant.prototype.activate = function(args) {
 	
 	
 	
+    if (this.args.type == 'dm') {
+        jQuery('#post-panel-scenetitle').html($L('DM as #{username}').interpolate({'username':App.username}));
+        jQuery('#post-panel-subtitle').html($L('To #{recipient}').interpolate({'recipient':this.args.dm_recipient}));
 
-	jQuery('#post-panel-username').text(App.username);
+    } else {
+        jQuery('#post-panel-scenetitle').html($L('Post as #{username}').interpolate({'username':App.username}));
+    }
 	
-
-	
-	
-	thisA._updateCharCount();
+	this._updateCharCount();
 
 
 };
@@ -367,6 +375,19 @@ PostAssistant.prototype.setPostIRT = function(status_id, statusobj) {
 	jQuery('#post-panel-irt-message', this.controller.getSceneScroller())
 		.html(status_text)
 		.attr('data-status-id', status_id);
+	jQuery('#post-panel-irt', this.controller.getSceneScroller()).slideDown('fast');
+};
+
+
+PostAssistant.prototype.setDMIRT = function(username, irt_text) {
+	var prefix = $L('From #{username}:').interpolate({username: username});
+	var status_text = irt_text;
+	
+	// update the GUI stuff
+	jQuery('#post-panel-irt-prefix', this.controller.getSceneScroller())
+	    .html(prefix);
+	jQuery('#post-panel-irt-message', this.controller.getSceneScroller())
+		.html(status_text);
 	jQuery('#post-panel-irt', this.controller.getSceneScroller()).slideDown('fast');
 };
 
@@ -534,7 +555,12 @@ PostAssistant.prototype.sendPost = function(event) {
 	} else {
 
 		if (status.length > 0 && status.length <= 140) {
-			var in_reply_to = parseInt(jQuery('#post-panel-irt-message', this.controller.getSceneScroller()).attr('data-status-id'), 10);
+		    if (this.args.type === 'dm') {
+		        var dm_recipient = this.args.dm_recipient;
+		    } else {
+		        var in_reply_to = parseInt(jQuery('#post-panel-irt-message', this.controller.getSceneScroller()).attr('data-status-id'), 10);
+		    }
+			
 
 			if (this.model.attachment) { // we have an attachment; post through service
 				var auth = Spaz.Prefs.getAuthObject();
@@ -564,7 +590,16 @@ PostAssistant.prototype.sendPost = function(event) {
 							sch.debug('Posting message…');
 							that.setPostButtonLabel('Posting message…');
 
-							if (in_reply_to > 0) {
+                            if (that.args.type === 'dm') {
+                                that.twit.sendDirectMessage(dm_recipient, status,
+                                    function(data) {
+                                      that.onDMSuccess.call(that, data);
+                                    },
+                                    function(xhr, msg, exc) {
+                                        that.onDMFailure.call(that, xhr, msg, exc);
+                                    }
+                                );
+                            } else if (in_reply_to > 0) {
 								that.twit.update(status, null, in_reply_to);
 							} else {
 								that.twit.update(status, null, null);
@@ -607,8 +642,17 @@ PostAssistant.prototype.sendPost = function(event) {
 				
 				
 			} else { // normal post without attachment
-				
-				if (in_reply_to > 0) {
+				if (this.args.type === 'dm') {
+                    that.twit.sendDirectMessage(dm_recipient, status,
+                        function(data) {
+                          that.onDMSuccess.call(that, data);
+                        },
+                        function(xhr, msg, exc) {
+                            that.onDMFailure.call(that, xhr, msg, exc);
+                        }
+                    );
+                    
+				} else if (in_reply_to > 0) {
 					this.twit.update(status, null, in_reply_to);
 				} else {
 					this.twit.update(status, null, null);
@@ -798,6 +842,27 @@ PostAssistant.prototype.onReturnFromFilePicker = function() {
 };
 
 
+/**
+ * just passes to renderSuccessfulPost 
+ */
+PostAssistant.prototype.onDMSuccess = function(data) {
+	this.setPostButtonLabel('Posted!');
+	
+	this.deactivateSpinner();
+	
+	this.popScene();
+};
+
+
+PostAssistant.prototype.onDMFailure = function(xhr, msg, exc) {
+    Mojo.Log.error('xhr, message, exc: %j, %s, %j', xhr, msg, exc);
+    this.deactivateSpinner();
+	this.postTextFieldModel.disabled = false;
+	this.controller.modelChanged(this.postTextFieldModel);
+	
+	var err_msg = $L("There was a problem sending your direct message");
+	this.displayErrorInfo(err_msg, {'xhr':xhr, 'msg':msg});
+};
 
 /**
  * 

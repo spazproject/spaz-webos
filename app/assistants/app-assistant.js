@@ -325,13 +325,19 @@ AppAssistant.prototype.handleLaunch = function(launchParams) {
 				appAssistant.App.bgnotifier.registerNextNotification();
 				
 				appAssistant.loadAccount(launchParams.account||null);
-				
-				if (appAssistant.App.prefs.get('always-go-to-my-timeline')) {
+								
+				if (stageController.topScene()) {
+                    stageController.activate(); // just activate
+				} else if (appAssistant.App.prefs.get('always-go-to-my-timeline') && appAssistant.App.username) {
 					stageController.pushScene('my-timeline');
+					stageController.activate();
 				} else {
 					stageController.pushScene('start');
+					stageController.activate();
 				}
 				break;
+				
+				
 
 		}
 	};
@@ -341,23 +347,9 @@ AppAssistant.prototype.handleLaunch = function(launchParams) {
 		we go ahead and re-activate the existing stage, or make a new main stage
 	*/
 	if (mainStageController) {
-		// if (mainStageController.topScene() && mainStageController.topScene().sceneName == "start") {
 		if (mainStageController.topScene()) {
 			stageCallback(mainStageController);
-		} // else {
-		 // 			if (!launchParams.action || launchParams.action !== 'bgcheck') {
-		 // 				mainStageController.activate();
-		 // 			}
-		 // 		}
-		// /*
-		// 	bgcheck action -- send a refresh event
-		// */
-		// if (launchParams.action && launchParams.action == 'bgcheck') {
-		// 	Mojo.Log.error('BGCHECK action');
-		// 	appAssistant.App.bgnotifier.registerNextNotification();
-		// 	Mojo.Controller.getAppController().sendToNotificationChain({"event":"refresh"});
-		// }
-
+		}
 	} else {
 
 		/*

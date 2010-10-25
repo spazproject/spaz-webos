@@ -229,7 +229,13 @@ scene_helpers.addCommonSceneMethods = function(assistant) {
 			This would refresh the current view
 		*/
 		'refresh': function(e) {
-			this.refresh(e, 'refresh'); // need to have a "refresh" method defined for each scene asst
+			if (this.refresh) {
+				Mojo.Log.error('`this.refresh`; calling');
+				this.refresh(e, 'refresh'); // need to have a "refresh" method defined for each scene asst
+			} else {
+				Mojo.Log.error('`this.refresh` DNE; ignoring');
+			}
+			
 		},
 		
 		/*
@@ -258,7 +264,7 @@ scene_helpers.addCommonSceneMethods = function(assistant) {
 		}
 		this.topContainer = this.scroller.down();
 		dump('Scrolling to top');
-		this.scroller.mojo.scrollTo(0,0, true);
+		this.scroller.mojo.scrollTo(0,0, false);
 	};
 	
 	/**
@@ -430,14 +436,19 @@ scene_helpers.addCommonSceneMethods = function(assistant) {
 	
 	assistant.showPostPanel = function(opts) {
 		
-		Mojo.Controller.stageController.pushScene("post", {
-			'text'         : opts.text         || '',
-			'type'         : opts.type         || null,
-			'select_start' : opts.select_start || 0,
-			'select_length': opts.select_length|| 0,
-			'irt_status'   : opts.irt_status   || null,
-			'irt_status_id': opts.irt_status_id|| 0
-		});
+		opts = sch.defaults({
+		    'text'         : '',
+			'type'         : null,
+			'select_start' : 0,
+			'select_length': 0,
+			'irt_status'   : null,
+			'irt_status_id': 0,
+			'dm_irt_text'  : null,
+			'dm_recipient' : null
+			
+		}, opts);
+		
+		Mojo.Controller.stageController.pushScene("post", opts);
 		
 	};
 	
@@ -570,19 +581,15 @@ scene_helpers.addCommonSceneMethods = function(assistant) {
 	/**
 	 *  
 	 */
-	assistant.prepDirectMessage = function(username) {
+	assistant.prepDirectMessage = function(username, irt_text) {
 		
-		var text = 'd ';
+		var text = '';
 		
-	    if (username) {
-			text += (username + ' ');
-	    }
-	
 		this.showPostPanel({
 			'text'         : text,
 			'type'         : 'dm',
-			'select_start' : 2,
-			'select_length': text.length
+			'dm_irt_text'  : irt_text,
+			'dm_recipient' : username
 		});
 
 	};
@@ -982,6 +989,8 @@ scene_helpers.addCommonSceneMethods = function(assistant) {
 
 		var human_msg, twiterr_req, twiterr_msg, error_processed;
 		
+		Mojo.Log.error("assistant.processAjaxError = function(errobj): %j", errobj);
+		
 		switch(errobj.msg) {
 			case 'timeout':
 				
@@ -1010,8 +1019,8 @@ scene_helpers.addCommonSceneMethods = function(assistant) {
 				
 				try {
 					var twiterr = sch.deJSON(errobj.xhr.responseText);
-					twiterr_req = twiterr.request;
-					twiterr_msg = twiterr.error;
+					twiterr_req = sch.stripTags(twiterr.request);
+					twiterr_msg = sch.stripTags(twiterr.error);
 				} catch (e) {
 					Mojo.Log.error('Tried to decode JSON from responseText, but failed');
 					Mojo.Log.error(e.name + ":" + e.message);
@@ -1033,7 +1042,7 @@ scene_helpers.addCommonSceneMethods = function(assistant) {
 			
 			default:
 			
-				human_msg = $L('Ajax Error');
+				human_msg = $L('An error of some sort occurred while talking to the server');
 				break;
 		}
 		
@@ -1259,7 +1268,7 @@ scene_helpers.addCommonSceneMethods = function(assistant) {
 							thisA.prepReply(username, status_id, status_obj);
 							break;
 						case 'reply-dm':
-							thisA.prepDirectMessage(username);
+							thisA.prepDirectMessage('@'+username, status_obj.text);
 							break;
 						case 'retweet':
 							thisA.retweet(status_obj);

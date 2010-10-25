@@ -68,9 +68,12 @@ StageAssistant.prototype.handleCommand = function(event){
 			case 'my-timeline':
 				Spaz.findAndSwapScene("my-timeline", active_scene);
 				break;
-			case 'favorites':
-				Spaz.findAndSwapScene("favorites", active_scene);
-				break;
+            case 'favorites':
+                Spaz.findAndSwapScene("favorites", active_scene);
+                break;
+            case 'friends-followers':
+                Spaz.findAndSwapScene("friends-followers", active_scene);
+                break;
 			case 'search':
 				Spaz.findAndSwapScene("startsearch", active_scene);
 				break;
@@ -184,7 +187,7 @@ StageAssistant.prototype.loadTemplates = function() {
     App.tpl.addTemplateMethod('message-detail-irt', function(d) {
         html = '<div class="in-reply-to" data-irt-status-id="'+d.in_reply_to_status_id+'"><strong>View conversation with</strong> <span class="in-reply-to-link clickable" data-irt-status-id="'+d.in_reply_to_status_id+'">@'+d.in_reply_to_screen_name+'</span></div>';        
         return html;
-    })
+    });
 
 
 	App.tpl.addTemplateMethod('message-detail-dm', function(d) {
@@ -331,7 +334,7 @@ StageAssistant.prototype.loadTemplates = function() {
 		+ '	<div class="user" data-user-id="'+d.user.id+'" data-user-screen_name="'+d.user.screen_name+'">'
 		+ '		<div class="user-img rounded-user-image" style="background-image:url('+d.user.profile_image_url+'); background-size: 100% 100%;"></div>'
 		+ '	</div>';
-		if (d.SC_is_retweet) {
+		if (d.SC_is_retweet && d.retweeting_user) {
 			html +=''
 			+ '	<div class="rt-user" data-user-id="'+d.user.id+'" data-user-screen_name="'+d.user.screen_name+'">'
 			+ '		<div class="rt-user-img rounded-user-image" style="background-image:url('+d.retweeting_user.profile_image_url+'); background-size: 100% 100%;"></div>'
@@ -415,17 +418,19 @@ StageAssistant.prototype.loadTemplates = function() {
 		* twitter_msg':	    		
 		*/
 
-		dump(d);
+		Mojo.Log.error('%j', d);
 
 		var html = '';
 
 		html += '<div class="error_info">';
 
 		html += ' <div class="human_msg">'+d.human_msg+'</div>';
-		html += ' <div class="row url">'+d.url+'</div>';
+		if (d.url) {
+		    html += ' <div class="row url">'+d.url+'</div>';
+		}
 		if (d.twitter_msg) {
 			html += ' <div class="row"><div class="label">'+$L('Twitter error')+'</div> <div class="value twitter_msg">'+d.twitter_msg+'</div></div>'
-			+ ' <div class="row"><div class="label">'+$L('Twitter request')+'</div> <div class="value twitter_request">'+d.twitter_request+'</div></div>';
+			+ ' <div class="row"><div class="label">'+$L('Twitter req')+'</div> <div class="value twitter_request">'+d.twitter_request+'</div></div>';
 		}
 		if (d.status) {
 			html += ' <div class="row"><div class="label">'+$L('Status code')+'</div> <div class="value status">'+d.status+'</div></div>';
@@ -451,7 +456,7 @@ StageAssistant.prototype.loadTemplates = function() {
 		* twitter_msg':	    		
 		*/
 
-		sch.debug(d);
+		Mojo.Log.error('%j', d);
 
 		var html = '';
 
@@ -469,5 +474,25 @@ StageAssistant.prototype.loadTemplates = function() {
 		return html;
 
 	});
+
+    App.tpl.addTemplateMethod('follower_row', function(d) {
+        var arr_html = [
+            '<div class="timeline-entry follower">',
+                '<div class="user" data-user-id="'+d.id+'" data-user-screen_name="'+d.screen_name+'">',
+                    '<div class="user-img rounded-user-image" style="background-image:url('+d.profile_image_url+')"></div>',
+                '</div>',
+                '<div class="user-name">',
+                    '<div class="user-name-screen">',
+                        d.screen_name,
+                    '</div>',
+                    '<div class="user-name-full">',
+                        d.name||'',
+                    '</div>',
+                '</div>',
+            '</div>'
+        ];
+        
+        return arr_html.join('');
+    });
 
 };

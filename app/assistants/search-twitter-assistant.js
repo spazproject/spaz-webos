@@ -187,7 +187,7 @@ SearchTwitterAssistant.prototype.setup = function() {
 	};
 	this.controller.setupWidget('more-search-button', this.moreButtonAttributes, this.moreButtonModel);
 	
-
+	this.listenForMetaTapScroll();
 };
 
 
