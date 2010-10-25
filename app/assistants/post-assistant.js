@@ -590,7 +590,7 @@ PostAssistant.prototype.sendPost = function(event) {
 							sch.debug('Posting message…');
 							that.setPostButtonLabel('Posting message…');
 
-                            if (this.args.type === 'dm') {
+                            if (that.args.type === 'dm') {
                                 that.twit.sendDirectMessage(dm_recipient, status,
                                     function(data) {
                                       that.onDMSuccess.call(that, data);
