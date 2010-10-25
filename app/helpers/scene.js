@@ -229,7 +229,13 @@ scene_helpers.addCommonSceneMethods = function(assistant) {
 			This would refresh the current view
 		*/
 		'refresh': function(e) {
-			this.refresh(e, 'refresh'); // need to have a "refresh" method defined for each scene asst
+			if (this.refresh) {
+				Mojo.Log.error('`this.refresh`; calling');
+				this.refresh(e, 'refresh'); // need to have a "refresh" method defined for each scene asst
+			} else {
+				Mojo.Log.error('`this.refresh` DNE; ignoring');
+			}
+			
 		},
 		
 		/*
@@ -1013,8 +1019,8 @@ scene_helpers.addCommonSceneMethods = function(assistant) {
 				
 				try {
 					var twiterr = sch.deJSON(errobj.xhr.responseText);
-					twiterr_req = twiterr.request;
-					twiterr_msg = twiterr.error;
+					twiterr_req = sch.stripTags(twiterr.request);
+					twiterr_msg = sch.stripTags(twiterr.error);
 				} catch (e) {
 					Mojo.Log.error('Tried to decode JSON from responseText, but failed');
 					Mojo.Log.error(e.name + ":" + e.message);
@@ -1036,7 +1042,7 @@ scene_helpers.addCommonSceneMethods = function(assistant) {
 			
 			default:
 			
-				human_msg = $L('Ajax Error');
+				human_msg = $L('An error of some sort occurred while talking to the server');
 				break;
 		}
 		
