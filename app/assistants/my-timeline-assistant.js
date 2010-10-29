@@ -66,6 +66,11 @@ function MyTimelineAssistant(argFromPusher) {
 	*/
 	this.doNotSaveCacheOnDeactivate = false;
 	
+	/*
+		when we first create this, the cache is definitely NOT loaded
+	*/
+	this.cacheLoaded = false;
+	
 }
 
 MyTimelineAssistant.prototype.aboutToActivate = function(callback){
