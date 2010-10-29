@@ -453,7 +453,7 @@ AppAssistant.prototype.mapObjectsToNewStage = function(stageController) {
 
 
 AppAssistant.prototype.saveLastIDs = function(home, mention, dm) {
-	var cookie = new Mojo.Model.Cookie('SPAZ_WEBOS_LASTIDS');
+	var cookie = new Mojo.Model.Cookie('LASTIDS_COOKIE');
 	
 	var data = { 'home':home, 'mention':mention, 'dm':dm };
 	
@@ -462,7 +462,7 @@ AppAssistant.prototype.saveLastIDs = function(home, mention, dm) {
 
 
 AppAssistant.prototype.loadLastIDs = function() {
-	var cookie = new Mojo.Model.Cookie('SPAZ_WEBOS_LASTIDS');
+	var cookie = new Mojo.Model.Cookie('LASTIDS_COOKIE');
 	
 	var data = cookie.get();
 	

@@ -9190,7 +9190,7 @@ var SPAZCORE_PREFS_AIR_FILENAME = 'preferences.json';
 /**
  * @constant 
  */
-var SPAZCORE_PREFS_MOJO_COOKIENAME = 'preferences.json';
+var SPAZCORE_PREFS_MOJO_COOKIENAME = 'preferences.json_COOKIE';
 
 /**
  * @constant 

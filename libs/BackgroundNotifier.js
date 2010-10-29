@@ -147,7 +147,7 @@ BackgroundNotifier.prototype.initTwit = function() {
  */
 BackgroundNotifier.prototype.loadState = function() {
 	if (!this.mojoCookie) {
-		this.mojoCookie = new Mojo.Model.Cookie('SPAZ_WEBOS_BGNOTIFIER_DATA');
+		this.mojoCookie = new Mojo.Model.Cookie('BGNOTIFIER_DATA_COOKIE');
 	}
 
 	var cdata = this.mojoCookie.get();
@@ -179,7 +179,7 @@ BackgroundNotifier.prototype.loadState = function() {
  */
 BackgroundNotifier.prototype.saveState = function() {
 	if (!this.mojoCookie) {
-		this.mojoCookie = new Mojo.Model.Cookie('SPAZ_WEBOS_BGNOTIFIER_DATA');
+		this.mojoCookie = new Mojo.Model.Cookie('BGNOTIFIER_DATA_COOKIE');
 	}
 
 	this.mojoCookie.put({

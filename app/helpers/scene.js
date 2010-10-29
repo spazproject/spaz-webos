@@ -1487,7 +1487,7 @@ scene_helpers.addCommonSceneMethods = function(assistant) {
 		if (Mojo.appInfo.id.indexOf('spaz-beta') === -1) {
 			return; // don't bother -- this is not a beta
 		}
-		var once_cookie = new Mojo.Model.Cookie('SPAZ_RUNONCE_BETAWARNING_COOKIE');
+		var once_cookie = new Mojo.Model.Cookie('RUNONCE_BETAWARNING_COOKIE');
 		var ran_once = once_cookie.get() || 0;
 		if (!ran_once || force) {
 			this.showAlert(
