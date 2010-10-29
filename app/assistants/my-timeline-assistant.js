@@ -22,25 +22,25 @@ function MyTimelineAssistant(argFromPusher) {
 	
 	Mojo.Log.error('argFromPusher: %j', argFromPusher);
 	if (argFromPusher && argFromPusher.filter) {
-	    sch.error('argFromPusher.filter:'+argFromPusher.filter);
+		sch.error('argFromPusher.filter:'+argFromPusher.filter);
 	}
-	
-    if (argFromPusher && argFromPusher.firstload === true) {
-        // console.debug();
-        // this.clearTimelineCache();
-    }
 
-    if (argFromPusher && argFromPusher.filter) {
-        this.setFilterState(argFromPusher.filter);
+	if (argFromPusher && argFromPusher.firstload === true) {
+		// console.debug();
+		// this.clearTimelineCache();
+	}
+
+	if (argFromPusher && argFromPusher.filter) {
+		this.setFilterState(argFromPusher.filter);
 		this.toggleCmd = argFromPusher.filter;
 		// this.filterTimeline(null, true);
-    }
+	}
 
 	if (argFromPusher && argFromPusher.mark_cache_as_read === false) {
 		this.markCacheAsRead = false;
 	} else {
-		this.markCacheAsRead = true;
-	}
+	this.markCacheAsRead = true;
+}
 	
 	this.cacheVersion = 3;  // we increment this when we change how the cache works	
 	
@@ -295,10 +295,8 @@ MyTimelineAssistant.prototype.activate = function(params) {
 
 	var thisA = this; // for closures
 
-	thisA.activateStarted = true;
-
-	if (!params.returnFromPop) { // don't run this if returnFromPop = true was passed
-
+	if (!params.returnFromPop && !this.cacheLoaded) { // don't run this if returnFromPop = true was passed
+		
 		this.showInlineSpinner('activity-spinner-my-timeline', 'Loading cache…');
 
 		/*
@@ -327,8 +325,13 @@ MyTimelineAssistant.prototype.activate = function(params) {
 			if (thisA.refreshOnActivate || (params && params.refresh === true)) {
 				thisA.refresh(thisA.markCacheAsRead);
 				thisA.refreshOnActivate = false;
+				if (params && params.refresh) {
+					params.refresh = false;
+				}
 				thisA.markCacheAsRead = true;
+				thisA.cacheLoaded = true;
 			}
+			thisA.cacheLoaded = true;
 		});
 	}
 
