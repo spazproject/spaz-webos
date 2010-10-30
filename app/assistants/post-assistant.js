@@ -220,19 +220,24 @@ PostAssistant.prototype.activate = function(args) {
 	/*
 		Tweetphoto is no longer valid, so we need to change that
 	*/
-	if (this.imageUploaderModel['image-uploader'] == 'tweetphoto') {
-		this.imageUploaderModel['image-uploader'] = 'yfrog';
-		App.prefs.set('image-uploader', 'yfrog');
+	if (this.imageUploaderModel['image-uploader'] == ('tweetphoto'||'yfrog')) {
+		this.imageUploaderModel['image-uploader'] = 'drippic';
+		App.prefs.set('image-uploader', 'drippic');
 		this.showAlert(
-			$L('Tweetphoto is no longer supported by Spaz, so I\'ve changed your image hosting preference to yfrog. You can pick a different service under the App menu in Preferences.'),
+			$L('Tweetphoto is no longer supported by Spaz, so I\'ve changed your image hosting preference to drippic. You can pick a different service under the App menu in Preferences.'),
 			$L('Change in image hosting service')
 		);
 	}
 	
 
-	if (this.args) {
+	if (this.args && !this.postTextField.mojo.getValue()) {
 		
-		if (this.args.text) { this.postTextField.mojo.setValue(this.args.text); }
+		/*
+			set the text if some was passed-in
+		*/
+		if (this.args.text) {
+		    this.postTextField.mojo.setValue(this.args.text);
+		}
 		
 		if (this.args.type) {
 			/*
@@ -418,7 +423,8 @@ PostAssistant.prototype.shortenURLs = function(event) {
 	
 	var event_target = jQuery('#post-shorten-urls-button')[0];
 	
-	var surl = new SpazShortURL(SPAZCORE_SHORTURL_SERVICE_BITLY);
+	// var surl = new SpazShortURL(SPAZCORE_SHORTURL_SERVICE_BITLY);
+	var surl = new SpazShortURL(SPAZCORE_SHORTURL_SERVICE_JMP);
 	var longurls = sc.helpers.extractURLs(this.postTextFieldModel.value);
 
 	/*
@@ -564,6 +570,7 @@ PostAssistant.prototype.sendPost = function(event) {
 
 			if (this.model.attachment) { // we have an attachment; post through service
 				var auth = Spaz.Prefs.getAuthObject();
+				var image_upl_status = status;
 				/*
 					FIRST, UPLOAD THE IMAGE
 					THEN, POST MSG TO TWITTER IF UPLOAD SUCCESSFUL
@@ -571,22 +578,35 @@ PostAssistant.prototype.sendPost = function(event) {
 				
 				var image_uploader = new SpazImageUploader();
 				
+				if (this.args.type === 'dm') {
+				    image_upl_status = 'from Spaz';
+				}
+				
+				
 				image_uploader_opts = {
 					'auth_obj': auth,
 					'service' : this.imageUploaderModel['image-uploader'],
 					'file_url': this.model.attachment,
 					'extra': {
-						'message':status
+						'message':image_upl_status
 					},
 					'onSuccess':function(event_data) { // onSuccess
 						if (event_data.url) {
 							var img_url = event_data.url;
-							status = img_url + ' ' + status;
-
-							if (status.length > 140) {
-								status = status.slice(0,138)+'…';
-							}
-
+							var img_url_len = 0, status_txt_len = 0;
+							
+							img_url_len = img_url.length;
+							status_txt_len = status.length;
+							
+							if (img_url_len + status_txt_len >= 140) {
+								status = status.slice(0,137-img_url_len)+'…';
+							};
+							
+							/*
+								make new status
+							*/
+							status = status + ' ' + img_url;
+							
 							sch.debug('Posting message…');
 							that.setPostButtonLabel('Posting message…');
 
