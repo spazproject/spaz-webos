@@ -623,11 +623,18 @@ scene_helpers.addCommonSceneMethods = function(assistant) {
 	 *  
 	 */
 	assistant.prepReply = function(username, status_id, statusobj) {
-		var text = '@';
+		var text = '@', screenname = null, unique_usernames = [];
+
+		Mojo.Log.error('username: %j', username);
 		
-	    if (username) {
+		if (sch.isArray(username)) {
+						
+			username = username.join(' @');
+		}
+
+		if (username) {
 			text += username + ' ';
-	    }
+		}
 	
 		this.showPostPanel({
 			'text'         : text,
@@ -1212,7 +1219,7 @@ scene_helpers.addCommonSceneMethods = function(assistant) {
 			/*
 				build the menu items
 			*/
-			var menu_items;
+			var menu_items = [], screen_names = [];
 			if (status_obj.SC_is_dm) {
 				menu_items = [
 					{label: $L('Details'), command: 'details'},
@@ -1223,6 +1230,12 @@ scene_helpers.addCommonSceneMethods = function(assistant) {
 					{label: $L('Details'), command: 'details'},
 					{label: $L('@reply'), command: 'reply'}
 				];
+				if (sch.extractScreenNames(status_obj.SC_text_raw).length > 0) {
+					menu_items.push({
+						label: $L('@reply to all'),
+						command: 'reply-all'
+					});
+				}
 				if (!status_obj.user['protected']) {					
 					menu_items.push({label: $L('Share'), command: 'share'});
 				}
@@ -1232,7 +1245,7 @@ scene_helpers.addCommonSceneMethods = function(assistant) {
 			this.controller.popupSubmenu({
 				onChoose: function(cmd) {
 					
-					var username, status_id, is_dm;
+					var username, status_id, is_dm, screen_names = [];
 					var status_obj = thisA._lastClickedStatusObj;
 					
 					Mojo.Log.info("onChoose cmd: %s", cmd);
@@ -1247,8 +1260,8 @@ scene_helpers.addCommonSceneMethods = function(assistant) {
 						username  = status_obj.user.screen_name;
 						status_id = status_obj.id;
 						is_dm     = false;
-						
-
+						screen_names = sch.extractScreenNames(status_obj.SC_text_raw, [username, Spaz.Prefs.getUsername()]);
+						screen_names.unshift(username);
 					}
 					Mojo.Log.info("Status Obj: %s", username);
 					Mojo.Log.info("Status Obj: %s", status_id);
@@ -1266,6 +1279,9 @@ scene_helpers.addCommonSceneMethods = function(assistant) {
 							break;
 						case 'reply':
 							thisA.prepReply(username, status_id, status_obj);
+							break;
+						case 'reply-all':
+							thisA.prepReply(screen_names, status_id, status_obj);
 							break;
 						case 'reply-dm':
 							thisA.prepDirectMessage('@'+username, status_obj.text);
@@ -1487,14 +1503,15 @@ scene_helpers.addCommonSceneMethods = function(assistant) {
 		if (Mojo.appInfo.id.indexOf('spaz-beta') === -1) {
 			return; // don't bother -- this is not a beta
 		}
-		var once_cookie = new Mojo.Model.Cookie('RUNONCE_BETAWARNING_COOKIE');
-		var ran_once = once_cookie.get() || 0;
+		
+		ran_once = Spaz.getAppObj().prefs.get('runonce_betawarning') || 0;
+		
 		if (!ran_once || force) {
 			this.showAlert(
 				$L('This is a BETA version of Spaz. It has bugs. It may not operate properly. It may insult you or your family. BE AWARE.'),
 				$L('Beta Warning'),
 				function(choice) {
-					once_cookie.put(1);
+					Spaz.getAppObj().prefs.set('runonce_betawarning', 1);
 				}
 			);
 		}
