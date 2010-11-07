@@ -267,6 +267,8 @@ SearchTwitterAssistant.prototype.search = function(e, type, page) {
 	if (type && type.toLowerCase() == 'refresh') { // empty unless this is a refresh
 		this.scrollToTop();
 		this.markAllAsRead();
+	} else if (type && type.toLowerCase() == 'loadmore') {
+		this.markAllAsRead();
 	} else {
 		this.clear();		
 	}
@@ -396,7 +398,7 @@ SearchTwitterAssistant.prototype.loadMore = function(event) {
 		this.search_more_page = 2;
 	}
 	
-	this.refresh(this.search_more_page);
+	this.search(this.searchBoxModel.value, 'loadmore', this.search_more_page);
 };
 
 
