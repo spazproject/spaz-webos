@@ -408,9 +408,9 @@ PreferencesAssistant.prototype.cleanup = function(event) {
 	this.controller.stopListening('checkbox-network-refresh-auto', Mojo.Event.propertyChange, this.saveSettings);
 	this.controller.stopListening('checkbox-network-refresh-wake', Mojo.Event.propertyChange, this.saveSettings);
 	this.controller.stopListening('checkbox-timeline-scrollonupdate', Mojo.Event.propertyChange, this.saveSettings);
-	this.controller.stopListening('checkbox-timeline-newmessages', Mojo.Event.propertyChange, this.saveSettings);
-	this.controller.stopListening('checkbox-timeline-mentions', Mojo.Event.propertyChange, this.saveSettings);
-	this.controller.stopListening('checkbox-timeline-dms', Mojo.Event.propertyChange, this.saveSettings);
-	this.controller.stopListening('checkbox-timeline-searchresults', Mojo.Event.propertyChange, this.saveSettings);
+	this.controller.stopListening('checkbox-notify-newmessages', Mojo.Event.propertyChange, this.saveSettings);
+	this.controller.stopListening('checkbox-notify-mentions', Mojo.Event.propertyChange, this.saveSettings);
+	this.controller.stopListening('checkbox-notify-dms', Mojo.Event.propertyChange, this.saveSettings);
+	this.controller.stopListening('checkbox-notify-searchresults', Mojo.Event.propertyChange, this.saveSettings);
 	
 };
