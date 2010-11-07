@@ -65,12 +65,6 @@ BackgroundNotifier.prototype.users = null;
 
 
 /**
- * @type Mojo.Model.Cookie 
- */
-BackgroundNotifier.prototype.mojoCookie = null;
-
-
-/**
  * initializes everything 
  */
 BackgroundNotifier.prototype.init = function(onFinish) {
@@ -146,29 +140,25 @@ BackgroundNotifier.prototype.initTwit = function() {
  * loads data from the cookie into counts and lastids 
  */
 BackgroundNotifier.prototype.loadState = function() {
-	if (!this.mojoCookie) {
-		this.mojoCookie = new Mojo.Model.Cookie('BGNOTIFIER_DATA_COOKIE');
-	}
-
-	var cdata = this.mojoCookie.get();
+	var state_obj = sch.deJSON(Spaz.getAppObj().prefs.get('cache_bgnotifier_data'));
 	
-	Mojo.Log.error('loaded cdata - counts and lastids: %j', cdata);
+	Mojo.Log.error('loaded state_obj - counts and lastids: %j', state_obj);
 	
-	if (cdata) {	
-		if (cdata.counts) {
-			if (isNaN(cdata.counts.home)) {cdata.counts.home = 0;}
-			if (isNaN(cdata.counts.mention)) {cdata.counts.mention = 0;}
-			if (isNaN(cdata.counts.dm)) {cdata.counts.dm = 0;}
-			this.counts = cdata.counts;
+	if (state_obj) {	
+		if (state_obj.counts) {
+			if (isNaN(state_obj.counts.home)) {state_obj.counts.home = 0;}
+			if (isNaN(state_obj.counts.mention)) {state_obj.counts.mention = 0;}
+			if (isNaN(state_obj.counts.dm)) {state_obj.counts.dm = 0;}
+			this.counts = state_obj.counts;
 		}
-		if (cdata.lastids) {
-			if (isNaN(cdata.lastids.home)) {cdata.lastids.home = 1;}
-			if (isNaN(cdata.lastids.mention)) {cdata.lastids.mention = 1;}
-			if (isNaN(cdata.lastids.dm)) {cdata.lastids.dm = 1;}
-			this.lastids = cdata.lastids;			
+		if (state_obj.lastids) {
+			if (!state_obj.lastids.home) {state_obj.lastids.home = 1;}
+			if (!state_obj.lastids.mentions) {state_obj.lastids.mention = 1;}
+			if (!state_obj.lastids.dm) {state_obj.lastids.dm = 1;}
+			this.lastids = state_obj.lastids;			
 		}
 	} else {
-		Mojo.Log.error('NO cdata - resetting state of lastids and counts');
+		Mojo.Log.error('NO state_obj - resetting state of lastids and counts');
 		this.resetState();
 	}
 	
@@ -178,14 +168,15 @@ BackgroundNotifier.prototype.loadState = function() {
  * saves data from counts and lastids into the cookie
  */
 BackgroundNotifier.prototype.saveState = function() {
-	if (!this.mojoCookie) {
-		this.mojoCookie = new Mojo.Model.Cookie('BGNOTIFIER_DATA_COOKIE');
-	}
-
-	this.mojoCookie.put({
+	
+	var state_obj = {
 		'counts'  : this.counts,
 		'lastids' : this.lastids
-	});
+	};
+	
+	Mojo.Log.error('saving state_obj - counts and lastids: %j', state_obj);
+	
+	Spaz.getAppObj().prefs.set('cache_bgnotifier_data', sch.enJSON(state_obj));
 };
 
 /**

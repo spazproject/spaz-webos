@@ -453,18 +453,18 @@ AppAssistant.prototype.mapObjectsToNewStage = function(stageController) {
 
 
 AppAssistant.prototype.saveLastIDs = function(home, mention, dm) {
-	var cookie = new Mojo.Model.Cookie('LASTIDS_COOKIE');
-	
 	var data = { 'home':home, 'mention':mention, 'dm':dm };
 	
-	cookie.put(data);
+	Mojo.Log.error("Saving last ids: %j", data);
+	
+	this.App.prefs.set('cache_lastids', sch.enJSON(data));
 };
 
 
 AppAssistant.prototype.loadLastIDs = function() {
-	var cookie = new Mojo.Model.Cookie('LASTIDS_COOKIE');
+	var data = sch.deJSON(this.App.prefs.get('cache_lastids'));
 	
-	var data = cookie.get();
+	Mojo.Log.error("Loading last ids: %j", data);
 	
 	if (!data || !data.home) {
 		this.resetLastIDs();
