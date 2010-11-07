@@ -61,7 +61,10 @@ BODY {
 }
 .view-menu .palm-menu-text {
 	text-align:left;
-	background: url(../images/spaz-icon-alpha_32.png) no-repeat 120% 50%;
+}
+.view-menu {
+	text-align:left;
+	background: url(../images/spaz-icon-alpha_32.png) no-repeat 84% 50%;
 }
 	.view-menu .palm-menu-text .truncating-text {
 /*		margin-left:38px;*/
