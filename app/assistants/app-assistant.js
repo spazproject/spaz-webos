@@ -21,6 +21,17 @@ var LOGGEDIN_APPMENU_ITEMS = [
 ];
 
 
+var RELATIVE_TIME_LABELS = {
+	'now':'now',
+	'seconds':'s',
+	'minute':'m',
+	'minutes':'m',
+	'hour':'hr',
+	'hours':'hr',
+	'day':'d',
+	'days':'d'	
+};
+
 function AppAssistant(appController) {
 	
 	Mojo.Log.info("Logging from AppAssistant Constructor");
