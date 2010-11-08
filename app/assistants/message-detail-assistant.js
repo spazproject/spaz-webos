@@ -71,14 +71,40 @@ MessageDetailAssistant.prototype.setup = function() {
 		
 		
 		this.setCommand('reply', function(e) {
+			var near = e.originalEvent && e.originalEvent.target; // need to get the DOM element location from orig event
 			if (thisA.statusobj) {
-				var screen_name;
-				if (thisA.statusobj.SC_is_dm) {
+				var screen_name = null, screen_names = [];
+				if (thisA.statusobj.SC_is_dm) { // this is a dm
 					screen_name = thisA.statusobj.sender.screen_name;
 					thisA.prepDirectMessage('@'+screen_name, thisA.statusobj.text);
-				} else {
+				} else { // this is a public reply
 					screen_name = thisA.statusobj.user.screen_name;
-					thisA.prepReply(screen_name, thisA.statusobj.id, thisA.statusobj);
+					screen_names = sch.extractScreenNames(thisA.statusobj.SC_text_raw, [screen_name, Spaz.Prefs.getUsername()]);
+					if (screen_names.length > 0) { // we want to present reply to all option
+						this.controller.popupSubmenu({
+							onChoose: function(cmd) {
+
+								switch (cmd) {
+									case 'reply-detail':
+										thisA.prepReply(screen_name, thisA.statusobj.id, thisA.statusobj);
+										break;
+									case 'reply-all-detail':
+										screen_names.unshift(screen_name); // add the poster's screen_name back in
+										thisA.prepReply(screen_names, thisA.statusobj.id, thisA.statusobj);
+										break;
+									default:
+										return;
+								}
+							},
+							placeNear: near,
+							items: [
+								{label: $L('@reply'), command:  'reply-detail'},
+								{label: $L('@reply to all'), command:  'reply-all-detail'}
+							]
+						});
+					} else { // no extra usernames, do standard reply
+						thisA.prepReply(screen_name, thisA.statusobj.id, thisA.statusobj);
+					}
 				}
 
 			} else {
