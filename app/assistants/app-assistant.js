@@ -521,3 +521,31 @@ AppAssistant.prototype.loadTimelineCache = function(onLoad) {
 		_onLoad();
 	}	
 };
+
+
+AppAssistant.prototype.considerForNotification = function(params){   
+	Mojo.Log.error('NOTIFICATION RECEIVED in AppAssistant:%j ', params);
+
+	if (params) {
+	    switch(params.event) {
+			
+			case "temp_cache_cleared":
+				var stageController = Mojo.Controller.getAppController().getStageController(SPAZ_MAIN_STAGENAME);
+				
+				if (stageController) {
+					var scenes   = stageController.getScenes();
+					for (var k=0; k<scenes.length; k++) {
+						Mojo.Log.error('scene name: %s', scenes[k].sceneName);
+						if (scenes[k].sceneName == 'my-timeline') {
+							scenes[k].assistant.resetTwitState();
+						}
+					}
+				}
+				params.event = null;
+				break;
+
+    	}
+	}
+	
+	return params;   
+};

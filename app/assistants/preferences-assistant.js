@@ -414,3 +414,10 @@ PreferencesAssistant.prototype.cleanup = function(event) {
 	this.controller.stopListening('checkbox-notify-searchresults', Mojo.Event.propertyChange, this.saveSettings);
 	
 };
+
+
+PreferencesAssistant.prototype.considerForNotification = function(params){   
+	Mojo.Log.error('NOTIFICATION RECEIVED in PreferencesAssistant:%j', params);
+	
+	return params;   
+};

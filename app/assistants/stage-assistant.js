@@ -47,6 +47,11 @@ StageAssistant.prototype.cleanup = function() {
 	jQuery(document).die();
 };
 
+StageAssistant.prototype.considerForNotification = function(params){   
+	Mojo.Log.error('NOTIFICATION RECEIVED in StageAssistant:%j ', params);
+
+	return params;   
+};
 
 
 StageAssistant.prototype.handleCommand = function(event){
