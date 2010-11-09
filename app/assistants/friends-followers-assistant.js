@@ -203,6 +203,18 @@ FriendsFollowersAssistant.prototype.refresh = function(event) {
 		'@'+App.username,
 		cursor,
 		function(data, cursor_obj) {
+			
+			/*
+				if mode is wrong, don't add
+			*/
+			if ( (thisA.mode === 'friends' && method_name === 'getFollowersList') ) {
+				thisA.hideInlineSpinner('activity-spinner-friends-followers');
+				return;
+			} else if ( (thisA.mode === 'followers' && method_name === 'getFriendsList') ) {
+				thisA.hideInlineSpinner('activity-spinner-friends-followers');
+				return;
+			}
+			
 			if (sch.isArray(data)) {
 			
                 // data = data.reverse();
