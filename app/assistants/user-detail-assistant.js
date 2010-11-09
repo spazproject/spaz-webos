@@ -447,6 +447,15 @@ UserDetailAssistant.prototype.activate = function(event) {
 		Mojo.Controller.stageController.pushScene('view-image', {'imageURLs':[avatar_url]});
 	});
 
+	jQuery('#user-detail .username.clickable', this.scroller).live(Mojo.Event.tap, function(e) {
+		var userid = jQuery(this).attr('data-user-screen_name');
+		Mojo.Controller.stageController.pushScene('user-detail', '@'+userid);
+	});
+
+	jQuery('#user-detail .hashtag.clickable', this.scroller).live(Mojo.Event.tap, function(e) {
+		var hashtag = jQuery(this).attr('data-hashtag');
+		thisA.searchFor('#'+hashtag);
+	});
 	
 	
 	/*
@@ -525,6 +534,10 @@ UserDetailAssistant.prototype.deactivate = function(event) {
 	jQuery('#user-timeline-trigger', this.scroller).die(Mojo.Event.tap);
 	jQuery('#user-detail-container div.timeline-entry', this.scroller).die(Mojo.Event.tap);
 	jQuery('#user-detail div.user-image', this.scroller).die(Mojo.Event.tap);
+	
+	jQuery('#user-detail .username.clickable', this.scroller).die(Mojo.Event.tap);
+	jQuery('#user-detail .hashtag.clickable', this.scroller).die(Mojo.Event.tap);
+	
 };
 
 UserDetailAssistant.prototype.cleanup = function(event) {
