@@ -1,4 +1,4 @@
-/*********** Built 2010-11-06 16:00:40 EDT ***********/
+/*********** Built 2010-11-08 11:30:12 EST ***********/
 /*jslint 
 browser: true,
 nomen: false,
@@ -5902,7 +5902,7 @@ sc.helpers.extractScreenNames = function(str, without) {
 	
 	if (usernames.length > 0) {
 		usernames = _.uniq(usernames); // make unique
-		if (sch.isString(usernames)) {
+		if (sch.isString(usernames)) { // at least in webOS 1.4.5, if you only had one item it qould return as a string, not an array
 			usernames = [usernames];
 		}
 
@@ -8815,7 +8815,7 @@ SpazImageUploader.prototype.services = {
 			status = rspAttr.getNamedItem("stat").nodeValue;
 			
 			if (status == 'ok') {
-				var mediaurl = $(xmldoc).find('mediaurl').text();
+				var mediaurl = xmldoc.getElementsByTagName("mediaurl")[0].childNodes[0].nodeValue; 
 				return {'url':mediaurl};
 			} else {
 				var errMsg;
@@ -8851,7 +8851,7 @@ SpazImageUploader.prototype.services = {
 			}
 			
 			if (status == 'ok') {
-				var mediaurl = $(xmldoc).find('mediaurl').text();
+				var mediaurl = xmldoc.getElementsByTagName("mediaurl")[0].childNodes[0].nodeValue;
 				return {'url':mediaurl};
 			} else {
 				var errAttributes;
@@ -8887,7 +8887,7 @@ SpazImageUploader.prototype.services = {
     //         status = rspAttr.getNamedItem("stat").nodeValue;
     //         
     //         if (status == 'ok') {
-    //             var mediaurl = $(xmldoc).find('mediaurl').text();
+    //             var mediaurl = xmldoc.getElementsByTagName("mediaurl")[0].childNodes[0].nodeValue; 
     //             return {'url':mediaurl};
     //         } else {
     //             var errAttributes;
@@ -8941,7 +8941,7 @@ SpazImageUploader.prototype.services = {
 			status = rspAttr.getNamedItem("status").nodeValue;
 
 			if (status == 'ok') {
-				var mediaurl = $(xmldoc).find('mediaurl').text();
+				var mediaurl = xmldoc.getElementsByTagName("mediaurl")[0].childNodes[0].nodeValue; 
 				return {'url':mediaurl};
 			} else {
 				var errAttributes;
@@ -8971,7 +8971,7 @@ SpazImageUploader.prototype.services = {
 			status = rspAttr.getNamedItem("stat").nodeValue;
 			
 			if (status == 'ok') {
-				var mediaurl = $(xmldoc).find('mediaurl').text();
+				var mediaurl = xmldoc.getElementsByTagName("mediaurl")[0].childNodes[0].nodeValue; 
 				return {'url':mediaurl};
 			} else {
 				var errMsg;
@@ -9004,7 +9004,7 @@ SpazImageUploader.prototype.services = {
 			status = rspAttr.getNamedItem("stat").nodeValue;
 			
 			if (status == 'ok') {
-				var mediaurl = $(xmldoc).find('mediaurl').text();
+				var mediaurl = xmldoc.getElementsByTagName("mediaurl")[0].childNodes[0].nodeValue;
 				return {'url':mediaurl};
 			} else {
 				var errMsg;
