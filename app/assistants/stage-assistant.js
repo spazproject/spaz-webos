@@ -68,12 +68,12 @@ StageAssistant.prototype.handleCommand = function(event){
 			case 'my-timeline':
 				Spaz.findAndSwapScene("my-timeline", active_scene);
 				break;
-            case 'favorites':
-                Spaz.findAndSwapScene("favorites", active_scene);
-                break;
-            case 'friends-followers':
-                Spaz.findAndSwapScene("friends-followers", active_scene);
-                break;
+			case 'favorites':
+				Spaz.findAndSwapScene("favorites", active_scene);
+				break;
+			case 'friends-followers':
+				Spaz.findAndSwapScene("friends-followers", active_scene);
+				break;
 			case 'search':
 				Spaz.findAndSwapScene("startsearch", active_scene);
 				break;
