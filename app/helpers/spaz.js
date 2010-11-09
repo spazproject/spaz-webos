@@ -43,8 +43,14 @@ Spaz.findAndSwapScene = function(targetScene, returnValue) {
 	/*
 		get an array of existing scenes
 	*/
-	var scenes = Mojo.Controller.stageController.getScenes();
+	var scenes   = Mojo.Controller.stageController.getScenes();
 	
+	var topscene = Mojo.Controller.stageController.topScene();
+	
+	if (targetScene == topscene.sceneName) {
+		Mojo.Log.info('We are already on the scene %s', targetScene);
+		return;
+	}
 
 	for (var k=0; k<scenes.length; k++) {
 		if (scenes[k].sceneName == targetScene) { // this scene already exists, so popScenesTo it
