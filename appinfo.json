@@ -1,6 +1,6 @@
 {
 	"title": "Spaz Beta",
-	"version": "1.5.5",
+	"version": "1.5.6",
 	"type": "web",
 	"main": "index.html",
 	"id": "com.funkatron.app.spaz-beta",
@@ -28,18 +28,5 @@
 				"url": "http://getspaz.com/"
 			}
 		]
-	},
-
-	"universalSearch": {
-		"action" :  { 
-			"displayName" : "Post with Spaz",
-			"url"         : "com.funkatron.app.spaz-beta",
-			"launchParam" : {"action":"prepPost", "msg":"#{searchTerms}"}
-		},
-		"search" : {
-			"displayName" : "Spaz",
-			"url"         : "com.funkatron.app.spaz-beta",
-			"launchParam" : {"action":"search", "query":"#{searchTerms}"}
-		}
 	}
 }
