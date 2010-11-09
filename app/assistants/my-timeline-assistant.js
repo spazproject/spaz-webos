@@ -898,3 +898,4 @@ MyTimelineAssistant.prototype.setFilterState = function(state) {
     Mojo.Log.info('NEW FILTER STATE:'+state);
     this._filterState = state;
 };
+

@@ -144,6 +144,7 @@ UserDetailAssistant.prototype.setup = function() {
 									thisA.userobj.id,
 									function(data){
 										thisA.showBanner($L('Blocked #{screen_name}').interpolate({'screen_name':thisA.userobj.screen_name}));
+										Mojo.Controller.getAppController().sendToNotificationChain({"event":"blocked_user", "blocked_userid":thisA.userobj.id});
 									},
 									function(xhr, msg, exc){
 										thisA.showBanner($L('Failed to block #{screen_name}').interpolate({'screen_name':thisA.userobj.screen_name}));
@@ -156,6 +157,7 @@ UserDetailAssistant.prototype.setup = function() {
 									thisA.userobj.id,
 									function(data){
 										thisA.showBanner($L('Blocked & reported #{screen_name}').interpolate({'screen_name':thisA.userobj.screen_name}));
+										Mojo.Controller.getAppController().sendToNotificationChain({"event":"blocked_user", "blocked_userid":thisA.userobj.id});
 									},
 									function(xhr, msg, exc){
 										thisA.showBanner($L('Failed to block & report #{screen_name}').interpolate({'screen_name':thisA.userobj.screen_name}));
