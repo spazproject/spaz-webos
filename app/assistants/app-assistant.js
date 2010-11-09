@@ -265,7 +265,8 @@ AppAssistant.prototype.handleLaunch = function(launchParams) {
 			case 'post':
 				appAssistant.loadAccount(launchParams.account||null);
 				stageController.pushScene('post', {
-					'text':launchParams.msg
+					'text':launchParams.msg,
+					'xapp':true
 				});
 				stageController.activate();
 				break;
@@ -520,4 +521,56 @@ AppAssistant.prototype.loadTimelineCache = function(onLoad) {
 	} else {
 		_onLoad();
 	}	
+};
+
+
+AppAssistant.prototype.considerForNotification = function(params){   
+	Mojo.Log.error('NOTIFICATION RECEIVED in AppAssistant:%j ', params);
+
+	var mytimeline_scene;
+
+	if (params) {
+	    switch(params.event) {
+			
+			case "temp_cache_cleared":
+				// reset the state of the my-timeline scene
+				mytimeline_scene = Spaz.getSceneFromStack('my-timeline');
+				if (mytimeline_scene) {
+					mytimeline_scene.assistant.resetTwitState();
+				}
+				params.event = null;
+				
+				break;
+				
+			case "blocked_user":
+				var blocked_userid = params.blocked_userid;
+				
+				// remove all messages from this user from my-timeline
+				function iterator(obj) {
+					if (!obj.data.SC_is_dm) {
+						if (obj.data.user.id == blocked_userid) {
+							Mojo.Log.error("obj.data.user.id == %s, rejecting", blocked_userid);
+							return true;
+						}
+					}
+				}
+				
+				// remove from master timeline model
+				this.App.master_timeline_model.items = _.reject(this.App.master_timeline_model.items, iterator);
+
+				// remove from scene's current model
+				mytimeline_scene = Spaz.getSceneFromStack('my-timeline');
+				if (mytimeline_scene) {
+					mytimeline_scene.assistant.timeline_model.items = _.reject(mytimeline_scene.assistant.timeline_model.items, iterator);					
+					mytimeline_scene.modelChanged(mytimeline_scene.assistant.timeline_model);
+				}
+				
+				params.event = null;
+				params.blocked_userid = null;
+				
+				break;
+    	}
+	}
+	
+	return params;   
 };

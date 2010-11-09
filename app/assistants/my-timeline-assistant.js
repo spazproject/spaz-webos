@@ -52,6 +52,7 @@ function MyTimelineAssistant(argFromPusher) {
 	 * we define this here to get the closure thisA
 	 */
 	this.resetTwitState = function() {
+		Mojo.Log.error('Resetting twit state');
 		App.master_timeline_model.items = [];
 		thisA.timeline_model.items = [];
 		thisA.controller.modelChanged(thisA.timeline_model);
@@ -384,7 +385,7 @@ MyTimelineAssistant.prototype.cleanup = function(event) {
 
 
 MyTimelineAssistant.prototype.considerForNotification = function(params){   
-	Mojo.Log.error('NOTIFICATION RECEIVED:%j', params);
+	Mojo.Log.error('NOTIFICATION RECEIVED in MyTimelineAssistant:%j', params);
 
 	if (params) {
 	    switch(params.event) {
@@ -399,7 +400,7 @@ MyTimelineAssistant.prototype.considerForNotification = function(params){
     	}
 	}
 	
-	return;   
+	return params;   
 };
 
 
@@ -897,3 +898,4 @@ MyTimelineAssistant.prototype.setFilterState = function(state) {
     Mojo.Log.info('NEW FILTER STATE:'+state);
     this._filterState = state;
 };
+

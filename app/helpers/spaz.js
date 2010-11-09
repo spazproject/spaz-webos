@@ -74,6 +74,27 @@ Spaz.popAllAndPushScene = function(targetScene, returnValue) {
 
 
 /**
+ * @param {String} targetScene the name of the scene we're looking for 
+ * @returns {Object|Boolean} the scene object, or false if not found
+ */
+Spaz.getSceneFromStack = function(targetScene) {
+	var stageController = Mojo.Controller.getAppController().getStageController(SPAZ_MAIN_STAGENAME);
+	
+	if (stageController) {
+		var scenes   = stageController.getScenes();
+		for (var k=0; k<scenes.length; k++) {
+			if (scenes[k].sceneName == targetScene) {
+				return scenes[k];
+			}
+		}
+	}
+	return false;
+}
+
+
+
+
+/**
  * converts various items in a timeline entry's text into clickables
  * @param {string} str
  * @return {string}

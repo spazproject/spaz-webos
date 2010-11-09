@@ -26,6 +26,9 @@ function MessageDetailAssistant(argFromPusher) {
 	}
 	
 	this.statusobj = null;
+	
+	this.message_rendered = false;
+	this.conversation_rendered = false;
 
 }
 
@@ -405,58 +408,64 @@ MessageDetailAssistant.prototype.processStatusReturn = function(e, statusobj) {
 	
 	var thisA = e.data.thisAssistant;
 	
-	var sui = new SpazImageURL();
-	
-	Mojo.Log.error('statusobj: %j', statusobj);
-	
-	if (!statusobj.SC_is_dm) {
-		statusobj.isSent = (statusobj.user.screen_name.toLowerCase() === App.username.toLowerCase());
-	}
+	if (!thisA.message_rendered) {
+		var sui = new SpazImageURL();
 
-	thisA.statusobj = statusobj;
-	thisA.statusRetrieved = false;
+		Mojo.Log.error('statusobj: %j', statusobj);
 
-	Mojo.Log.error('message data: %j', thisA.statusobj);
-	
-	thisA.statusobj.SC_thumbnail_urls = sui.getThumbsForUrls(thisA.statusobj.text);
-	thisA.statusobj.text = Spaz.makeItemsClickable(thisA.statusobj.text);
-	
-	/*
-		save this tweet to Depot
-	*/
-	// App.Tweets.save(statusobj);
-	
-	/*
-		render tweet
-	*/
-	if (thisA.isdm) {
-		itemhtml = App.tpl.parseTemplate('message-detail-dm', thisA.statusobj);
-	} else {
-		itemhtml = App.tpl.parseTemplate('message-detail', thisA.statusobj);
+		if (!statusobj.SC_is_dm) {
+			statusobj.isSent = (statusobj.user.screen_name.toLowerCase() === App.username.toLowerCase());
+		}
+
+		thisA.statusobj = statusobj;
+		thisA.statusRetrieved = false;
+
+		Mojo.Log.error('message data: %j', thisA.statusobj);
+
+		thisA.statusobj.SC_thumbnail_urls = sui.getThumbsForUrls(thisA.statusobj.text);
+		thisA.statusobj.text = Spaz.makeItemsClickable(thisA.statusobj.text);
+
+		/*
+			save this tweet to Depot
+		*/
+		// App.Tweets.save(statusobj);
+
+		/*
+			render tweet
+		*/
+		if (thisA.isdm) {
+			itemhtml = App.tpl.parseTemplate('message-detail-dm', thisA.statusobj);
+		} else {
+			itemhtml = App.tpl.parseTemplate('message-detail', thisA.statusobj);
+		}
+
+
+		jQuery('#message-detail').html(itemhtml);
+		
+		
+		if (thisA.statusobj.isSent || thisA.statusobj.SC_is_dm) {
+			thisA.enableDeleteButton(true);
+		}
+
+		if (!thisA.statusobj.SC_is_dm) {
+			thisA.enableFavButton(true);
+		}
+
+		thisA.setFavButtonState();
+		
 	}
 	
-	
-	jQuery('#message-detail').html(itemhtml);
 	
 	sch.updateRelativeTimes('#message-detail .status>.meta>.date>.date-relative', 'data-created_at');
 
-			
-	
-	if (thisA.statusobj.isSent || thisA.statusobj.SC_is_dm) {
-		thisA.enableDeleteButton(true);
-	}
-	
-	if (!thisA.statusobj.SC_is_dm) {
-		thisA.enableFavButton(true);
-	}
 
-	thisA.setFavButtonState();
 	
-	if (thisA.statusobj.in_reply_to_status_id) {
+	if (thisA.statusobj.in_reply_to_status_id && !thisA.conversation_rendered) {
 		var irt_html = App.tpl.parseTemplate('message-detail-irt', thisA.statusobj);
-		$('#timeline-conversation').html(irt_html).fadeIn(250);
+		jQuery('#timeline-conversation').html(irt_html).fadeIn(250);
 	}
 	
+	thisA.message_rendered = true;
 	
 };
 
@@ -519,7 +528,14 @@ MessageDetailAssistant.prototype.buildConversationView = function(statusid) {
 
     var thisA = this;
 
-    var $container = $('#timeline-conversation');
+	if (!this.conversation_rendered) { this.conversation_rendered = false; }
+
+    var $container = jQuery('#timeline-conversation');
+	
+	if (this.conversation_rendered) {
+		Mojo.Log.error('timeline-conversation has already been set-up. returning.');
+		return;
+	}
 
 	var initWindow = function() {
 		$container
@@ -554,7 +570,7 @@ MessageDetailAssistant.prototype.buildConversationView = function(statusid) {
 			status_obj.db_id = status_obj.id;
 			status_obj.id    = status_obj.id;
 			status_obj.text = Spaz.makeItemsClickable(status_obj.text);
-			var $status_html  = $(App.tpl.parseTemplate('tweet', status_obj));
+			var $status_html  = jQuery(App.tpl.parseTemplate('tweet', status_obj));
             // Mojo.Log.error("Adding %s", status_html);
 			$container.append($status_html.fadeIn(400));
 
@@ -597,8 +613,9 @@ MessageDetailAssistant.prototype.buildConversationView = function(statusid) {
 
 		function finishLoadingConvo() {
             $container.find('.loading').fadeOut(400, function() {
-                $(this).remove();
+                jQuery(this).remove();
             });
+			thisA.conversation_rendered = true;
 		}
 
 	};
