@@ -1007,7 +1007,12 @@ PostAssistant.prototype.popScene = function() {
 	if (this.controller.stageController.getScenes().length > 1) {
 		this.controller.stageController.popScene({'returnFromPop': true});
 	} else {
-		this.controller.stageController.swapScene({name: 'start'});
+		if (this.args.xapp === true) { // if we launched with post args, just close the stage when done
+			window.close();
+		} else {
+			this.controller.stageController.swapScene({name: 'start'});
+		}
+		
 	}
 };
 
