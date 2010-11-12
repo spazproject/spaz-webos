@@ -289,7 +289,7 @@ PreferencesAssistant.prototype.saveSettings = function(event) {
 	for (var key in this.model) {
 		App.prefs.set(key, this.model[key]);
 		if (this.onSave[key]) {
-			this.onSave[key].call(this, e, this.model[key]);
+			this.onSave[key].call(this, event, this.model[key]);
 		}
 	}
 };

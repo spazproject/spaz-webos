@@ -97,6 +97,7 @@ PostAssistant.prototype.setup = function() {
 		this.imageUploaderEmailModel
 	);
 	
+	var i;
 	
 	/*
 		init photo emailer
@@ -104,7 +105,7 @@ PostAssistant.prototype.setup = function() {
 	this.SPM = new SpazPhotoMailer();
 	var emailers = this.SPM.getAPILabels();
 	this.validImageEmailers = [];
-	for (var i=0; i < emailers.length; i++) {
+	for (i=0; i < emailers.length; i++) {
 		this.validImageEmailers.push({label:$L(emailers[i]),  value:emailers[i]});
 	};
 
@@ -114,7 +115,7 @@ PostAssistant.prototype.setup = function() {
 	this.SFU = new SpazFileUploader();
 	var uploaders = this.SFU.getAPILabels();
 	this.validImageUploaders = [];
-	for (var i=0; i < uploaders.length; i++) {
+	for (i=0; i < uploaders.length; i++) {
 		this.validImageUploaders.push({label:$L(uploaders[i]),	value:uploaders[i]});
 	};
 	

@@ -89,7 +89,7 @@ Spaz.getSceneFromStack = function(targetScene) {
 		}
 	}
 	return false;
-}
+};
 
 
 
