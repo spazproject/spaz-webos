@@ -696,7 +696,7 @@ scene_helpers.addCommonSceneMethods = function(assistant) {
 		if (!saved_id) {
 			saved_id = null;
 		} else {
-			saved_id = parseInt(saved_id, 10);
+			// saved_id = parseInt(saved_id, 10);
 		}
 		
 		var lightweight = false;

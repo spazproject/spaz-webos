@@ -564,7 +564,8 @@ PostAssistant.prototype.sendPost = function(event) {
 		    if (this.args.type === 'dm') {
 		        var dm_recipient = this.args.dm_recipient;
 		    } else {
-		        var in_reply_to = parseInt(jQuery('#post-panel-irt-message', this.controller.getSceneScroller()).attr('data-status-id'), 10);
+		        // var in_reply_to = parseInt(jQuery('#post-panel-irt-message', this.controller.getSceneScroller()).attr('data-status-id'), 10);
+		        var in_reply_to = jQuery('#post-panel-irt-message', this.controller.getSceneScroller()).attr('data-status-id');
 		    }
 			
 
@@ -953,14 +954,16 @@ PostAssistant.prototype.onUploadSuccess = function(e) {
 		*/
 		if (rspAttr.getNamedItem("stat") && rspAttr.getNamedItem("stat").nodeValue === 'ok') {
 			returnobj['mediaurl'] = jQuery(xmldoc).find('mediaurl').text();
-			returnobj['statusid'] = parseInt(jQuery(xmldoc).find('statusid').text(), 10);
+			// returnobj['statusid'] = parseInt(jQuery(xmldoc).find('statusid').text(), 10);
+			returnobj['statusid'] = jQuery(xmldoc).find('statusid').text();
 
 		/*
 			because Twitgoo has to be different
 		*/
 		} else if (rspAttr.getNamedItem("status") && rspAttr.getNamedItem("status").nodeValue === 'ok') {
 			returnobj['mediaurl'] = jQuery(xmldoc).find('mediaurl').text();
-			returnobj['statusid'] = parseInt(jQuery(xmldoc).find('statusid').text(), 10);
+			// returnobj['statusid'] = parseInt(jQuery(xmldoc).find('statusid').text(), 10);
+			returnobj['statusid'] = jQuery(xmldoc).find('statusid').text();
 			
 		} else {
 			returnobj['errAttributes'] = xmldoc.getElementsByTagName("err")[0].attributes;
