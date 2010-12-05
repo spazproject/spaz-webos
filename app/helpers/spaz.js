@@ -34,7 +34,15 @@ Spaz.getActiveSceneAssistant = function() {
  * @param {string} targetScene the scene name
  * @param {many} returnValue a return value passed to the pop or swap call
  */
-Spaz.findAndSwapScene = function(targetScene, returnValue) {
+Spaz.findAndSwapScene = function(targetScene, returnValue, stageController) {
+	
+	if (!stageController) {
+		stageController = Mojo.Controller.stageController;
+	}
+	if (!stageController) {
+		stageController = Mojo.Controller.getAppController().getStageController(SPAZ_MAIN_STAGENAME);
+	}
+	
 	/*
 		initialize
 	*/
@@ -43,9 +51,9 @@ Spaz.findAndSwapScene = function(targetScene, returnValue) {
 	/*
 		get an array of existing scenes
 	*/
-	var scenes   = Mojo.Controller.stageController.getScenes();
+	var scenes   = stageController.getScenes();
 	
-	var topscene = Mojo.Controller.stageController.topScene();
+	var topscene = stageController.topScene();
 	
 	if (targetScene == topscene.sceneName) {
 		Mojo.Log.info('We are already on the scene %s', targetScene);
@@ -59,9 +67,9 @@ Spaz.findAndSwapScene = function(targetScene, returnValue) {
 	}
 	
 	if (scene_exists) {
-		Mojo.Controller.stageController.popScenesTo({name: targetScene, transition: Mojo.Transition.crossFade}, returnValue);
+		stageController.popScenesTo({name: targetScene, transition: Mojo.Transition.crossFade}, returnValue);
 	} else {
-		Mojo.Controller.stageController.swapScene({name: targetScene, transition: Mojo.Transition.crossFade}, returnValue);
+		stageController.swapScene({name: targetScene, transition: Mojo.Transition.crossFade}, returnValue);
 	}
 };
 
@@ -89,7 +97,7 @@ Spaz.getSceneFromStack = function(targetScene) {
 		}
 	}
 	return false;
-}
+};
 
 
 
