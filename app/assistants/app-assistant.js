@@ -316,7 +316,8 @@ AppAssistant.prototype.handleLaunch = function(launchParams) {
 
 				appAssistant.loadAccount(launchParams.account||null);
 				
-				stageController.pushScene('my-timeline', { 'mark_cache_as_read':false });
+				Spaz.findAndSwapScene('my-timeline', { 'mark_cache_as_read':false }, stageController);
+				
 				stageController.activate();
 				break;				
 
@@ -337,9 +338,11 @@ AppAssistant.prototype.handleLaunch = function(launchParams) {
 				appAssistant.App.bgnotifier.registerNextNotification();
 				
 				appAssistant.loadAccount(launchParams.account||null);
-								
-				if (stageController.topScene()) {
-                    stageController.activate(); // just activate
+				
+				var topscene = stageController.topScene();
+				
+				if (topscene) {
+					stageController.activate(); // just activate
 				} else if (appAssistant.App.prefs.get('always-go-to-my-timeline') && appAssistant.App.username) {
 					stageController.pushScene('my-timeline');
 					stageController.activate();
