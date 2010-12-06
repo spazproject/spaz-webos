@@ -55,7 +55,8 @@ Spaz.findAndSwapScene = function(targetScene, returnValue, stageController) {
 	
 	var topscene = stageController.topScene();
 	
-	if (targetScene == topscene.sceneName) {
+	
+	if (topscene && topscene.sceneName && targetScene == topscene.sceneName) {
 		Mojo.Log.info('We are already on the scene %s', targetScene);
 		return;
 	}
