@@ -102,7 +102,7 @@ scene_helpers.addCommonSceneMethods = function(assistant) {
 		
 		sch.debug(event.command);
 		if (event.type == Mojo.Event.forward) {			
-			if (this.controller.scenename != "post") {
+			if (this.controller.sceneName != "post") {
 				this.prepMessage();
 			} else {
 				Mojo.Log.info("We're in a post scene; ignoring forward gesture");
