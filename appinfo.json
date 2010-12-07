@@ -1,6 +1,6 @@
 {
 	"title": "Spaz",
-	"version": "2.0.0",
+	"version": "2.0.1",
 	"type": "web",
 	"main": "index.html",
 	"id": "com.funkatron.app.spaz",
@@ -28,5 +28,18 @@
 				"url": "http://getspaz.com/"
 			}
 		]
+	},
+	
+	"universalSearch": {
+		"action" :  { 
+			"displayName" : "Post with Spaz",
+			"url"         : "com.funkatron.app.spaz",
+			"launchParam" : {"action":"prepPost", "msg":"#{searchTerms}"}
+		},
+		"search" : {
+			"displayName" : "Spaz",
+			"url"         : "com.funkatron.app.spaz",
+			"launchParam" : {"action":"search", "query":"#{searchTerms}"}
+		}
 	}
 }
