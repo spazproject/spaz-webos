@@ -1,9 +1,9 @@
 {
-	"title": "Spaz",
+	"title": "Spaz Beta",
 	"version": "2.0.1",
 	"type": "web",
 	"main": "index.html",
-	"id": "com.funkatron.app.spaz",
+	"id": "com.funkatron.app.spaz-beta",
 	"splashicon": "images/splash-icon.png",
 	"splashBackground":"images/splash-bg.png",
 	"miniicon": "images/miniicon.png",
@@ -29,6 +29,30 @@
 			}
 		]
 	},
+	
+	"themes":{
+		"Dreadnaught":{
+			"name":"Dreadnaught",
+			"stylesheet":"Dreadnaught.css",
+			"img_folder":"dreadnaught"
+		},
+
+
+		"Minimal-Dark":{
+			"name":"Minimal Dark",
+			"stylesheet":"Minimal-Dark.css",
+			"img_folder":"whiteknight"
+		},
+
+
+		"Whiteknight":{
+			"name":"Whiteknight",
+			"stylesheet":"Whiteknight.css",
+			"img_folder":"whiteknight"
+		}
+
+	},
+
 	
 	"universalSearch": {
 		"action" :  { 
