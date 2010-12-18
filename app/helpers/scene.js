@@ -1032,6 +1032,7 @@ scene_helpers.addCommonSceneMethods = function(assistant) {
 					var twiterr = sch.deJSON(errobj.xhr.responseText);
 					twiterr_req = sch.stripTags(twiterr.request);
 					twiterr_msg = sch.stripTags(twiterr.error);
+					twiterr_msg = sch.stripTags(twiterr.error);
 				} catch (e) {
 					Mojo.Log.error('Tried to decode JSON from responseText, but failed');
 					Mojo.Log.error(e.name + ":" + e.message);
@@ -1064,7 +1065,7 @@ scene_helpers.addCommonSceneMethods = function(assistant) {
 				'responseText':	errobj.xhr.responseText,
 				'url':			errobj.url,
 				'msg':			errobj.msg,
-				'human_msg':	human_msg,
+				'human_msg':	twiterr_msg||human_msg,
 				'twitter_request':	twiterr_req,
 				'twitter_msg':	twiterr_msg
 			};
@@ -1075,7 +1076,7 @@ scene_helpers.addCommonSceneMethods = function(assistant) {
 				'responseText':	'',
 				'url':			errobj.url,
 				'msg':			errobj.msg,
-				'human_msg':	human_msg,
+				'human_msg':	twiterr_msg||human_msg,
 				'twitter_request':	twiterr_req,
 				'twitter_msg':	twiterr_msg
 			};
