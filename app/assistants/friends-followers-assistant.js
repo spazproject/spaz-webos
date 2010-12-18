@@ -352,4 +352,4 @@ FriendsFollowersAssistant.prototype.resetState = function() {
     this.timeline_model.items = [];
     this.controller.modelChanged(this.timeline_model);
     this.friends_more_cursor = -1;
-}
+};

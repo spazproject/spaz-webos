@@ -396,17 +396,21 @@ UserDetailAssistant.prototype.activate = function(event) {
 
 
 	jQuery('#user-detail-container div.timeline-entry', this.scroller).live(Mojo.Event.tap, function(e) {
-		var jqtarget = jQuery(e.target);
+		var jqtarget = jQuery(e.target),
+		    userid,
+		    isdm,
+		    status_id,
+		    status_obj;
 
 		e.stopImmediatePropagation();
 		
 		if (jqtarget.is('div.timeline-entry>.user') || jqtarget.is('div.timeline-entry>.user img')) {
-			var userid = jQuery(this).attr('data-user-id');
+			userid = jQuery(this).attr('data-user-id');
 			Mojo.Controller.stageController.pushScene('user-detail', userid);
 			return;
 			
 		} else if (jqtarget.is('.username.clickable')) {
-			var userid = jqtarget.attr('data-user-screen_name');
+			userid = jqtarget.attr('data-user-screen_name');
 			Mojo.Controller.stageController.pushScene('user-detail', '@'+userid);
 			return;
 			
@@ -416,9 +420,9 @@ UserDetailAssistant.prototype.activate = function(event) {
 			return;
 			
 		} else if (jqtarget.is('div.timeline-entry .meta')) {
-			var status_id = jqtarget.attr('data-status-id');
-			var isdm = false;
-			var status_obj = null;
+			status_id = jqtarget.attr('data-status-id');
+			isdm = false;
+			status_obj = null;
 
 			if (jqtarget.parent().parent().hasClass('dm')) {
 				isdm = true;
@@ -431,9 +435,9 @@ UserDetailAssistant.prototype.activate = function(event) {
 			return;
 
 		} else {
-			var status_id = jQuery(this).attr('data-status-id');
-			var isdm = false;
-			var status_obj = null;
+			status_id = jQuery(this).attr('data-status-id');
+			isdm = false;
+			status_obj = null;
 
 			if (jQuery(this).hasClass('dm')) {
 				isdm = true;
