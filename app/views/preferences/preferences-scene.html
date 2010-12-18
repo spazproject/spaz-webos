@@ -168,10 +168,18 @@
 
 
 <div class="palm-group palm-group-spaz">
-	<div class="palm-group-title" x-mojo-loc=''>Message caches</div>
+	<div class="palm-group-title" x-mojo-loc=''>Timeline cache</div>
 	<div class="palm-list">
-		<div class="palm-row single">
-			<button class="palm-button" id="clear-cache-button">Clear caches</button>
+
+		<div class="palm-row first">
+            <div style="overflow:auto;" class="checkbox-container">
+                <div x-mojo-element="CheckBox" id="checkbox-timeline-save-cache"></div>
+                <div class="checkbox-label">Cache timeline between sessions</div>
+            </div>
+        </div>
+        
+		<div class="palm-row last">
+			<button class="palm-button" id="clear-cache-button">Clear cache</button>
 		</div>        
 	</div>
 </div>

@@ -6,6 +6,13 @@ const SPAZ_BGNOTIFIER_DASHBOARD_STAGENAME = 'bgnotifier';
 
 const SPAZ_DONATION_URL = 'http://getspaz.com/donate';
 
+const TIMELINE_CACHE_MAXENTRIES =      100;
+const TIMELINE_CACHE_MAXENTRIES_DM =    30;
+const TIMELINE_CACHE_MAXENTRIES_REPLY = 30;
+
+const CACHE_VERSION = 3;  // we increment this when we change how the cache works	
+
+
 
 
 var LOGGEDIN_APPMENU_ITEMS = [
@@ -528,6 +535,84 @@ AppAssistant.prototype.loadTimelineCache = function(onLoad) {
 		_onLoad();
 	}	
 };
+
+
+
+
+AppAssistant.prototype.saveTimelineCache = function(twitobj) {
+	
+	sch.error('SAVETIMELINECACHE');
+	
+	Mojo.Timing.resume("timing_saveTimelineCache");
+	
+	var cached_items = [];
+	
+	if (this.App.prefs.get('timeline-save-cache')) {
+		/*
+			generate current counts, and create array to cache
+		*/
+		var num_dms = 0, num_replies = 0, num_statuses = 0;
+		var max_dms      = TIMELINE_CACHE_MAXENTRIES_DM;
+		var max_replies  = TIMELINE_CACHE_MAXENTRIES_REPLY;
+		var max_statuses = TIMELINE_CACHE_MAXENTRIES;
+	
+		for (var i=0; i < this.App.master_timeline_model.items.length; i++) {
+			if (this.App.master_timeline_model.items[i].data.SC_is_dm) {
+				num_dms++;
+				if (num_dms <= max_dms) {
+					cached_items.push(this.App.master_timeline_model.items[i]);
+				}
+			} else if (this.App.master_timeline_model.items[i].data.SC_is_reply) {
+				num_replies++;
+				if (num_replies <= max_replies) {
+					cached_items.push(this.App.master_timeline_model.items[i]);
+				}			
+			} else {
+				num_statuses++;
+				if (num_statuses <= max_statuses) {
+					cached_items.push(this.App.master_timeline_model.items[i]);
+				}
+			}
+		}
+	
+	
+		Mojo.Log.info('Counts: DMs %s, Replies %s, Statuses %s', num_dms, num_replies, num_statuses);
+	
+		Mojo.Log.info('Length of master_timeline_model.items: '+this.App.master_timeline_model.items.length);
+	}
+	
+	var twitdata = {};
+	twitdata['version']                         = CACHE_VERSION;
+	twitdata['my_master_timeline_model_items']  = cached_items;
+	
+	Mojo.Log.info('Length of twitdata[\'my_master_timeline_model_items\']: '+twitdata['my_master_timeline_model_items'].length);
+	
+
+	if (twitobj) {
+
+		twitdata[SPAZCORE_SECTION_HOME + '_lastid']    = twitobj.getLastId(SPAZCORE_SECTION_HOME);
+		twitdata[SPAZCORE_SECTION_REPLIES + '_lastid'] = twitobj.getLastId(SPAZCORE_SECTION_REPLIES);
+		twitdata[SPAZCORE_SECTION_DMS     + '_lastid'] = twitobj.getLastId(SPAZCORE_SECTION_DMS);
+	
+		/*
+			write out the lastIDs to a cookie, so we can use this data in
+			the bgnotifier without loading the whole cache
+		*/
+		this.saveLastIDs(
+			twitobj.getLastId(SPAZCORE_SECTION_HOME),
+			twitobj.getLastId(SPAZCORE_SECTION_REPLIES),
+			twitobj.getLastId(SPAZCORE_SECTION_DMS)
+		);
+	}
+
+	this.App.cache.save('mytimelinecache', twitdata, this.App.userid);
+	
+	Mojo.Timing.pause('timing_saveTimelineCache');
+	
+	Mojo.Log.error(Mojo.Timing.createTimingString("timing_", "Cache op times"));	
+};
+
+
 
 
 AppAssistant.prototype.considerForNotification = function(params){   

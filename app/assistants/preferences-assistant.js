@@ -60,6 +60,7 @@ PreferencesAssistant.prototype.setup = function() {
 		'timeline-replies-getcount':App.prefs.get('timeline-replies-getcount'),
 		'timeline-dm-getcount':     App.prefs.get('timeline-dm-getcount'),
 		'timeline-text-size':       App.prefs.get('timeline-text-size'),
+		'timeline-save-cache':           App.prefs.get('timeline-save-cache'),
 		'image-uploader':           App.prefs.get('image-uploader'),
 		'notify-newmessages':       App.prefs.get('notify-newmessages'),
 		'notify-mentions':          App.prefs.get('notify-mentions'),
@@ -83,6 +84,17 @@ PreferencesAssistant.prototype.setup = function() {
             fieldName: 'sound-enabled',
             modelProperty: 'sound-enabled',
             disabledProperty: 'sound-enabled_disabled'
+        },
+        this.model
+    );
+	/*
+		temporarily disabling sound and vibration prefs until we can sort out how to tell if sound is off
+	*/
+    this.controller.setupWidget("checkbox-timeline-save-cache",
+        this.soundEnabledAtts = {
+            fieldName: 'timeline-save-cache',
+            modelProperty: 'timeline-save-cache',
+            disabledProperty: 'timeline-save-cache_disabled'
         },
         this.model
     );
@@ -169,6 +181,7 @@ PreferencesAssistant.prototype.setup = function() {
 		temporarily disabling sound and vibration prefs until we can sort out how to tell if sound is off
 	*/
     this.controller.listen('checkbox-sound-enabled', Mojo.Event.propertyChange, this.saveSettings.bindAsEventListener(this));
+    this.controller.listen('checkbox-timeline-save-cache', Mojo.Event.propertyChange, this.saveSettings.bindAsEventListener(this));
 	this.controller.listen('checkbox-timeline-scrollonupdate', Mojo.Event.propertyChange, this.saveSettings.bindAsEventListener(this));
 	this.controller.listen('checkbox-notify-newmessages', Mojo.Event.propertyChange, this.saveSettings.bindAsEventListener(this));
 	this.controller.listen('checkbox-network-refresh-auto', Mojo.Event.propertyChange, this.saveSettings.bindAsEventListener(this));
@@ -405,6 +418,7 @@ PreferencesAssistant.prototype.cleanup = function(event) {
 		temporarily disabling sound and vibration prefs until we can sort out how to tell if sound is off
 	*/
     this.controller.stopListening('checkbox-sound-enabled', Mojo.Event.propertyChange, this.saveSettings);
+    this.controller.stopListening('checkbox-timeline-save-cache', Mojo.Event.propertyChange, this.saveSettings);
 	this.controller.stopListening('checkbox-network-refresh-auto', Mojo.Event.propertyChange, this.saveSettings);
 	this.controller.stopListening('checkbox-network-refresh-wake', Mojo.Event.propertyChange, this.saveSettings);
 	this.controller.stopListening('checkbox-timeline-scrollonupdate', Mojo.Event.propertyChange, this.saveSettings);

@@ -42,8 +42,6 @@ function MyTimelineAssistant(argFromPusher) {
 	this.markCacheAsRead = true;
 }
 	
-	this.cacheVersion = 3;  // we increment this when we change how the cache works	
-	
 	/**
 	 * empties the timeline and resets the lastids in the twit object
 	 * 
@@ -248,6 +246,8 @@ MyTimelineAssistant.prototype.setup = function() {
 			swipeToDelete: false,
 			reorderable: false,
 			hasNoWidgets: true,
+			lookahead:   30,
+			renderLimit: 10,
 			formatters: {
 				'data': function(value, model) {
 					return thisA.renderItem(value);
@@ -709,68 +709,7 @@ MyTimelineAssistant.prototype.loadTimelineCache = function() {
 
 MyTimelineAssistant.prototype.saveTimelineCache = function() {
 	
-	sch.error('SAVETIMELINECACHE');
-	
-	Mojo.Timing.resume("timing_saveTimelineCache");
-	
-	var cached_items = [];
-	
-	/*
-		generate current counts, and create array to cache
-	*/
-	var num_dms = 0, num_replies = 0, num_statuses = 0;
-	var max_dms = App.prefs.get('timeline-cache-maxentries-dm');
-	var max_replies = App.prefs.get('timeline-cache-maxentries-reply');
-	var max_statuses = App.prefs.get('timeline-cache-maxentries');
-	for (var i=0; i < App.master_timeline_model.items.length; i++) {
-		if (App.master_timeline_model.items[i].data.SC_is_dm) {
-			num_dms++;
-			if (num_dms <= max_dms) {
-				cached_items.push(App.master_timeline_model.items[i]);
-			}
-		} else if (App.master_timeline_model.items[i].data.SC_is_reply) {
-			num_replies++;
-			if (num_replies <= max_replies) {
-				cached_items.push(App.master_timeline_model.items[i]);
-			}			
-		} else {
-			num_statuses++;
-			if (num_statuses <= max_statuses) {
-				cached_items.push(App.master_timeline_model.items[i]);
-			}
-		}
-	}
-	
-	
-	Mojo.Log.info('Counts: DMs %s, Replies %s, Statuses %s', num_dms, num_replies, num_statuses);
-	
-	Mojo.Log.info('Length of master_timeline_model.items: '+App.master_timeline_model.items.length);
-	
-	var twitdata = {};
-	twitdata['version']                         = this.cacheVersion || -1;
-	twitdata['my_master_timeline_model_items']  = cached_items;
-	
-	Mojo.Log.info('Length of twitdata[\'my_master_timeline_model_items\']: '+twitdata['my_master_timeline_model_items'].length);
-	
-	twitdata[SPAZCORE_SECTION_HOME + '_lastid'] = this.twit.getLastId(SPAZCORE_SECTION_HOME);
-	twitdata[SPAZCORE_SECTION_REPLIES + '_lastid'] = this.twit.getLastId(SPAZCORE_SECTION_REPLIES);
-	twitdata[SPAZCORE_SECTION_DMS     + '_lastid'] = this.twit.getLastId(SPAZCORE_SECTION_DMS);
-	
-	/*
-		write out the lastIDs to a cookie, so we can use this data in
-		the bgnotifier without loading the whole cache
-	*/
-	this.getAppAssistant().saveLastIDs(
-		this.twit.getLastId(SPAZCORE_SECTION_HOME),
-		this.twit.getLastId(SPAZCORE_SECTION_REPLIES),
-		this.twit.getLastId(SPAZCORE_SECTION_DMS)
-	);
-
-	App.cache.save('mytimelinecache', twitdata, App.userid);
-	
-	Mojo.Timing.pause('timing_saveTimelineCache');
-	
-	Mojo.Log.error(Mojo.Timing.createTimingString("timing_", "Cache op times"));
+	this.getAppAssistant().saveTimelineCache(this.twit);
 	
 };
 

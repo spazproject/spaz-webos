@@ -32,7 +32,7 @@ TempCache.prototype.initUser = function(idkey) {
 		idkey = this.App.userid;
 	}
 	
-	sch.debug('TempCache: idkey for user is '+idkey);
+	Mojo.Log.info('TempCache: idkey for user is '+idkey);
 	
 	if (!this._spaztmpcache) {
 		this._spaztmpcache = {};
@@ -53,9 +53,9 @@ TempCache.prototype.save = function(key, val, idkey) {
 		idkey = this.App.userid;
 	}
 
-	sch.debug("saving key:"+key);
-	sch.debug("saving val:"+val);
-	sch.debug("saving idkey:"+idkey);	
+	Mojo.Log.info("saving key:"+key);
+	Mojo.Log.info("saving val:"+val);
+	Mojo.Log.info("saving idkey:"+idkey);	
 	
 	if (!this._spaztmpcache) {
 		this.init();
@@ -67,7 +67,12 @@ TempCache.prototype.save = function(key, val, idkey) {
 	
 	this._spaztmpcache[idkey][key] = val;
 	
-	this.saveToDB(idkey);
+	/*
+		try to avoid blocking
+	*/
+	var tc = this;
+	setTimeout(function() { tc.saveToDB(idkey); }, 1);
+	
 
 };
 
@@ -87,8 +92,8 @@ TempCache.prototype.load = function(key, idkey) {
 		this.initUser(idkey);
 	}
 	
-	sch.debug("TempCache: loading key:"+key);
-	sch.debug("TempCache: loading idkey:"+idkey);
+	Mojo.Log.info("TempCache: loading key:"+key);
+	Mojo.Log.info("TempCache: loading idkey:"+idkey);
 	
 	if (this._spaztmpcache[idkey][key]) {
 		return this._spaztmpcache[idkey][key];
@@ -109,7 +114,7 @@ TempCache.prototype.saveToDB = function(idkey) {
 	}
 	
 	function success(tx, rs) {
-		sch.debug("SUCCESS SAVING TEMP CACHE");
+		Mojo.Log.info("SUCCESS SAVING TEMP CACHE");
 		sch.triggerCustomEvent('temp_cache_save_db_success', document);
 		Mojo.Timing.pause("timing_TempCache.saveToDB");
 		
@@ -156,7 +161,7 @@ TempCache.prototype.loadFromDB = function(onLoad, idkey) {
 	}
 	
 	function success(tx, rs) {
-		sch.debug("SUCCESS LOADING TEMP CACHE");
+		Mojo.Log.info("SUCCESS LOADING TEMP CACHE");
 		Mojo.Timing.resume("timing_TempCache.sch.deJSON");
 		for(var i = 0; i < rs.rows.length; i++) {
 			var this_key = rs.rows.item(i).key.replace('json_cache_', '');

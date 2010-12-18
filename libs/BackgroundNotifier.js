@@ -633,9 +633,9 @@ BackgroundNotifier.prototype.saveTimelineCache = function() {
 		generate current counts, and create array to cache
 	*/
 	var num_dms = 0, num_replies = 0, num_statuses = 0;
-	var max_dms =      Spaz.getAppObj().prefs.get('timeline-cache-maxentries-dm');
-	var max_replies =  Spaz.getAppObj().prefs.get('timeline-cache-maxentries-reply');
-	var max_statuses = Spaz.getAppObj().prefs.get('timeline-cache-maxentries');
+	var max_dms =      TIMELINE_CACHE_MAXENTRIES_DM;
+	var max_replies =  TIMELINE_CACHE_MAXENTRIES_REPLY;
+	var max_statuses = TIMELINE_CACHE_MAXENTRIES;
 	for (var i=0; i < Spaz.getAppObj().master_timeline_model.items.length; i++) {
 		if (Spaz.getAppObj().master_timeline_model.items[i].data.SC_is_dm) {
 			num_dms++;
@@ -661,7 +661,7 @@ BackgroundNotifier.prototype.saveTimelineCache = function() {
 	Mojo.Log.info('Length of master_timeline_model.items: '+Spaz.getAppObj().master_timeline_model.items.length);
 	
 	var twitdata = {};
-	twitdata['version']                         = this.cacheVersion || -1;
+	twitdata['version']                         = CACHE_VERSION;
 	twitdata['my_master_timeline_model_items']  = cached_items;
 	
 	Mojo.Log.info('Length of twitdata[\'my_master_timeline_model_items\']: '+twitdata['my_master_timeline_model_items'].length);
