@@ -101,8 +101,12 @@ scene_helpers.addCommonSceneMethods = function(assistant) {
 	assistant.handleCommand = function(event){
 		
 		sch.debug(event.command);
-		if (event.type == Mojo.Event.forward) {
-			this.prepMessage();
+		if (event.type == Mojo.Event.forward) {			
+			if (this.controller.sceneName != "post") {
+				this.prepMessage();
+			} else {
+				Mojo.Log.info("We're in a post scene; ignoring forward gesture");
+			}
 		}
 		if (event.type == Mojo.Event.command) {
 
@@ -696,7 +700,7 @@ scene_helpers.addCommonSceneMethods = function(assistant) {
 		if (!saved_id) {
 			saved_id = null;
 		} else {
-			saved_id = parseInt(saved_id, 10);
+			// saved_id = parseInt(saved_id, 10);
 		}
 		
 		var lightweight = false;

@@ -316,7 +316,8 @@ AppAssistant.prototype.handleLaunch = function(launchParams) {
 
 				appAssistant.loadAccount(launchParams.account||null);
 				
-				stageController.pushScene('my-timeline', { 'mark_cache_as_read':false });
+				Spaz.findAndSwapScene('my-timeline', { 'mark_cache_as_read':false }, stageController);
+				
 				stageController.activate();
 				break;				
 
@@ -337,9 +338,11 @@ AppAssistant.prototype.handleLaunch = function(launchParams) {
 				appAssistant.App.bgnotifier.registerNextNotification();
 				
 				appAssistant.loadAccount(launchParams.account||null);
-								
-				if (stageController.topScene()) {
-                    stageController.activate(); // just activate
+				
+				var topscene = stageController.topScene();
+				
+				if (topscene) {
+					stageController.activate(); // just activate
 				} else if (appAssistant.App.prefs.get('always-go-to-my-timeline') && appAssistant.App.username) {
 					stageController.pushScene('my-timeline');
 					stageController.activate();
@@ -467,20 +470,22 @@ AppAssistant.prototype.mapObjectsToNewStage = function(stageController) {
 AppAssistant.prototype.saveLastIDs = function(home, mention, dm) {
 	var data = { 'home':home, 'mention':mention, 'dm':dm };
 	
-	Mojo.Log.error("Saving last ids: %j", data);
+	Mojo.Log.error("AppAssistant: Saving last ids to prefs: %j", data);
 	
 	this.App.prefs.set('cache_lastids', sch.enJSON(data));
+	
+	Mojo.Log.error("AppAssistant: confirmed cache_lastids:%j", this.App.prefs.get('cache_lastids'));
 };
 
 
 AppAssistant.prototype.loadLastIDs = function() {
 	var data = sch.deJSON(this.App.prefs.get('cache_lastids'));
 	
-	Mojo.Log.error("Loading last ids: %j", data);
+	Mojo.Log.error("AppAssistant: Loading last ids from prefs: %j", data);
 	
 	if (!data || !data.home) {
 		this.resetLastIDs();
-		return { 'home':1, 'mention':1, 'dm':1 };
+		return sch.deJSON(this.App.prefs.get('cache_lastids'));
 	}
 	
 	return data;
@@ -488,6 +493,7 @@ AppAssistant.prototype.loadLastIDs = function() {
 
 
 AppAssistant.prototype.resetLastIDs = function() {
+	Mojo.Log.error("AppAssistant: resetLastIDs");
 	this.saveLastIDs(1,1,1);
 };
 
@@ -501,7 +507,7 @@ AppAssistant.prototype.loadTimelineCache = function(onLoad) {
 		});
 	}
 	
-	Mojo.Log.error('LOADTIMELINECACHE');
+	Mojo.Log.info('LOADTIMELINECACHE');
 	
 	Mojo.Timing.resume("timing_loadTimelineCache");
 	var thisA = this;

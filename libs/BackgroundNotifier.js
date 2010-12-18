@@ -92,17 +92,17 @@ BackgroundNotifier.prototype.init = function(onFinish) {
 };
 
 BackgroundNotifier.prototype.start = function() {
-	Mojo.Log.error("BG NOTIFICATION DATA CHECK");
+	Mojo.Log.info("BG NOTIFICATION DATA CHECK");
 	this.checkForNewData();
 };
 
 BackgroundNotifier.prototype.skip = function() {
-	Mojo.Log.error("SKIPPING BG NOTIFICATION DATA CHECK");
+	Mojo.Log.info("SKIPPING BG NOTIFICATION DATA CHECK");
 	this.registerNextNotification();
 };
 
 BackgroundNotifier.prototype.stop = function() {
-	Mojo.Log.error("STOPPING BG NOTIFICATION DATA CHECK");
+	Mojo.Log.info("STOPPING BG NOTIFICATION DATA CHECK");
 	this.unregisterNotification();
 	// this.resetState();
 };
@@ -123,7 +123,7 @@ BackgroundNotifier.prototype.initTwit = function() {
 	
 	var auth;
 	if ( (auth = Spaz.Prefs.getAuthObject()) ) {
-	    Mojo.Log.error('AuthObject: %j', auth);
+	    Mojo.Log.info('AuthObject: %j', auth);
 		this.twit.setCredentials(auth);
 		if (Spaz.Prefs.getAccountType() === SPAZCORE_ACCOUNT_CUSTOM) {
 		    this.twit.setBaseURL(Spaz.Prefs.getCustomAPIUrl());
@@ -131,7 +131,7 @@ BackgroundNotifier.prototype.initTwit = function() {
 		    this.twit.setBaseURLByService(Spaz.Prefs.getAccountType());
 		}
 	} else {
-        Mojo.Log.error('NOT LOADING CREDENTIALS INTO TWIT');
+        Mojo.Log.info('NOT LOADING CREDENTIALS INTO TWIT');
 	}
 };
 
@@ -142,7 +142,7 @@ BackgroundNotifier.prototype.initTwit = function() {
 BackgroundNotifier.prototype.loadState = function() {
 	var state_obj = sch.deJSON(Spaz.getAppObj().prefs.get('cache_bgnotifier_data'));
 	
-	Mojo.Log.error('loaded state_obj - counts and lastids: %j', state_obj);
+	Mojo.Log.info('loaded state_obj - counts and lastids: %j', state_obj);
 	
 	if (state_obj) {	
 		if (state_obj.counts) {
@@ -153,14 +153,16 @@ BackgroundNotifier.prototype.loadState = function() {
 		}
 		if (state_obj.lastids) {
 			if (!state_obj.lastids.home) {state_obj.lastids.home = 1;}
-			if (!state_obj.lastids.mentions) {state_obj.lastids.mention = 1;}
+			if (!state_obj.lastids.mention) {state_obj.lastids.mention = 1;}
 			if (!state_obj.lastids.dm) {state_obj.lastids.dm = 1;}
 			this.lastids = state_obj.lastids;			
 		}
 	} else {
-		Mojo.Log.error('NO state_obj - resetting state of lastids and counts');
+		Mojo.Log.info('NO state_obj - resetting state of lastids and counts');
 		this.resetState();
 	}
+	
+	Mojo.Log.info('loaded state_obj AFTER CHECKS - counts and lastids: %j', state_obj);
 	
 };
 
@@ -174,15 +176,20 @@ BackgroundNotifier.prototype.saveState = function() {
 		'lastids' : this.lastids
 	};
 	
-	Mojo.Log.error('saving state_obj - counts and lastids: %j', state_obj);
+	Mojo.Log.info('saving state_obj - counts and lastids: %j', state_obj);
 	
 	Spaz.getAppObj().prefs.set('cache_bgnotifier_data', sch.enJSON(state_obj));
+	
+	Mojo.Log.info('Just saved state_obj - counts and lastids: %j', Spaz.getAppObj().prefs.get('cache_bgnotifier_data'));
 };
 
 /**
  * reset the counts and lastids 
  */
 BackgroundNotifier.prototype.resetState = function() {
+	
+	Mojo.Log.info('RESETTING STATE');
+	
 	this.counts = {
 		'dm':0,
 		'mention':0,
@@ -210,7 +217,7 @@ BackgroundNotifier.prototype.getIntervalString = function() {
 		interval = '00:' + sch.pad( ((numeric / 1000) / 60).toString(), 2, '0', 'STR_PAD_LEFT') + ':00';
 	}
 	
-	Mojo.Log.error('interval: %s', interval);
+	Mojo.Log.info('interval: %s', interval);
 	
 	return interval;
 };
@@ -221,7 +228,7 @@ BackgroundNotifier.prototype.getIntervalString = function() {
 BackgroundNotifier.prototype.registerNextNotification = function() {
 	
 	var wakeupSuccess = function(response) {
-	    Mojo.Log.error("Alarm Set Success: " + response.returnValue);
+	    Mojo.Log.info("Alarm Set Success: " + response.returnValue);
 	    wakeupTaskId = sch.enJSON(response.taskId);
 	};
 
@@ -231,7 +238,7 @@ BackgroundNotifier.prototype.registerNextNotification = function() {
 
 	var interval = this.getIntervalString();
 
-	Mojo.Log.error('REGISTERING NOTIFICATION: interval:'+interval);
+	Mojo.Log.info('REGISTERING NOTIFICATION: interval:'+interval);
 
 	if ( Spaz.getAppObj().prefs.get('network-refresh-auto') ) {
 		this.wakeupRequest = new Mojo.Service.Request('palm://com.palm.power/timeout', {
@@ -264,7 +271,7 @@ BackgroundNotifier.prototype.unregisterNotification = function() {
 	        'key': 'com.funkatron.app.spaz.bgcheck'
 	    },
 	    onSuccess: function(response) {
-			Mojo.Log.error("Alarm Clear Success: " + response.returnValue);
+			Mojo.Log.info("Alarm Clear Success: " + response.returnValue);
 		},
 	    onFailure: function(response) {
 			Mojo.Log.error("Alarm Clear FAILURE: " + response.returnValue);
@@ -318,8 +325,8 @@ BackgroundNotifier.prototype.displayNotification = function(template_data, templ
 	}
 	
 	
-	Mojo.Log.error('Displaying Notification');
-	Mojo.Log.error('template_data:');
+	Mojo.Log.info('Displaying Notification');
+	Mojo.Log.info('template_data:');
 	Mojo.Log.info(template_data);
 	
 
@@ -331,13 +338,13 @@ BackgroundNotifier.prototype.displayNotification = function(template_data, templ
 		'template':template
 	};
 
-	Mojo.Log.error('sceneArgs: %j', sceneArgs);
+	Mojo.Log.info('sceneArgs: %j', sceneArgs);
 
 	if (dashboardStageController) { 
-		Mojo.Log.error('DELEGATING TO dashboardStageController.delegateToSceneAssistant');
+		Mojo.Log.info('DELEGATING TO dashboardStageController.delegateToSceneAssistant');
 		dashboardStageController.delegateToSceneAssistant("updateDashboard", sceneArgs); 
 	} else {
-		Mojo.Log.error('Making new dashboardStageController');
+		Mojo.Log.info('Making new dashboardStageController');
 		var pushDashboard = function(stageController){
 			stageController.pushScene('dashboard', sceneArgs); 
 		}; 
@@ -390,7 +397,7 @@ BackgroundNotifier.prototype.getCombinedTimeline = function() {
 	
 	var that = this;
 	
-	Mojo.Log.error('this.lastids before: %j', this.lastids);
+	Mojo.Log.info('this.lastids before: %j', this.lastids);
 	
 	/*
 		load the current master timeline lastids. If they are > our lastids, use the higher values
@@ -400,7 +407,7 @@ BackgroundNotifier.prototype.getCombinedTimeline = function() {
 	if (this.lastids.mention < lastids.mention) { this.lastids.mention = lastids.mention; }
 	if (this.lastids.dm < lastids.dm) { this.lastids.dm = lastids.dm; }
 
-	Mojo.Log.error('this.lastids after: %j', this.lastids);
+	Mojo.Log.info('this.lastids after: %j', this.lastids);
 
 	/*
 		set the lastids for our SpazTwit object
@@ -409,7 +416,7 @@ BackgroundNotifier.prototype.getCombinedTimeline = function() {
 	this.twit.setLastId(SPAZCORE_SECTION_REPLIES, this.lastids.mention);
 	this.twit.setLastId(SPAZCORE_SECTION_DMS,     this.lastids.dm);
 	
-	Mojo.Log.error('Getting combined timeline');
+	Mojo.Log.info('Getting combined timeline');
 	
 	this.twit.getCombinedTimeline(
 		{
@@ -431,17 +438,17 @@ BackgroundNotifier.prototype.getCombinedTimeline = function() {
 				new_count++;
 				if (!data[i].SC_is_dm) { // set lastid if this is not a DM
 					that.lastids.home = data[i].id;
-					Mojo.Log.error('New lastid.home is %s', that.lastids.home);
+					Mojo.Log.info('New lastid.home is %s', that.lastids.home);
 				}
 	
 				if (data[i].SC_is_reply) {
 					new_mention_count++;
 					that.lastids.mention = data[i].id; // set lastid if this is mention
-					Mojo.Log.error('New lastid.mention is %s', that.lastids.mention);
+					Mojo.Log.info('New lastid.mention is %s', that.lastids.mention);
 				} else if (data[i].SC_is_dm) {
 					new_dm_count++;
 					that.lastids.dm = data[i].id; // set lastid if this is DM
-					Mojo.Log.error('New lastid.dm is %s', that.lastids.dm);
+					Mojo.Log.info('New lastid.dm is %s', that.lastids.dm);
 				}
 			}
 	
@@ -452,24 +459,24 @@ BackgroundNotifier.prototype.getCombinedTimeline = function() {
 			
 			that.counts.home = that.counts.home + parseInt((new_count - (new_mention_count + new_dm_count)), 10);
 
-			Mojo.Log.error('new, @mention, dm: %s %s %s', new_count, new_mention_count, new_dm_count);
+			Mojo.Log.info('new, @mention, dm: %s %s %s', new_count, new_mention_count, new_dm_count);
 	
-			Mojo.Log.error('that.counts.home: %s', that.counts.home);
+			Mojo.Log.info('that.counts.home: %s', that.counts.home);
 			
 			if (new_count > 0 && Spaz.getAppObj().prefs.get('notify-newmessages')) {
-				Mojo.Log.error('DISPLAYING notification!!!!!!!');
+				Mojo.Log.info('DISPLAYING notification!!!!!!!');
 				that.displayNotification();
 			} else if (new_dm_count > 0 && Spaz.getAppObj().prefs.get('notify-dms')) {
-				Mojo.Log.error('DISPLAYING notification!!!!!!!');
+				Mojo.Log.info('DISPLAYING notification!!!!!!!');
 				that.displayNotification();
 			} else if (new_mention_count > 0 && Spaz.getAppObj().prefs.get('notify-mentions')) {
-				Mojo.Log.error('DISPLAYING notification!!!!!!!');
+				Mojo.Log.info('DISPLAYING notification!!!!!!!');
 				that.displayNotification();
 			} else {
-				// Mojo.Log.error('CLOSING notification!!!!!!!');
-				Mojo.Log.error('NOT DISPLAYING notification!!!!!!!');
+				// Mojo.Log.info('CLOSING notification!!!!!!!');
+				Mojo.Log.info('NOT DISPLAYING notification!!!!!!!');
 				// that.closeNotification();
-				this.saveState();
+				that.saveState();
 			}
 	
 		},
@@ -484,7 +491,10 @@ BackgroundNotifier.prototype.getCombinedTimeline = function() {
 
 
 BackgroundNotifier.prototype.getTotalCount = function() {
-	return parseInt(this.counts.home, 10) + parseInt(this.counts.dm, 10) + parseInt(this.counts.mention, 10);
+	var totalcount;
+	totalcount = parseInt(this.counts.home, 10) + parseInt(this.counts.dm, 10) + parseInt(this.counts.mention, 10);
+	Mojo.Log.info('getTotalCount: %s', totalcount);
+	return totalcount;
 };
 
 
@@ -528,7 +538,7 @@ BackgroundNotifier.prototype.getStageName = function() {
  */
 BackgroundNotifier.prototype.addItems = function(new_items) {
 	
-	Mojo.Log.error("addItems");
+	Mojo.Log.info("addItems");
 	
 	// now we have all the existing items from the model
 	var model_items = Spaz.getAppObj().master_timeline_model.items.clone();
@@ -578,7 +588,7 @@ BackgroundNotifier.prototype.itemExistsInModel = function(obj) {
 BackgroundNotifier.prototype.loadTimelineCacheData = function() {
 	var that = this;
 	
-	sch.error('LOADTIMELINECACHEDATA BackgroundNotifier');
+	Mojo.Log.info('LOADTIMELINECACHEDATA BackgroundNotifier');
 	
 	Mojo.Timing.resume("timing_loadTimelineCache");
 	
@@ -589,9 +599,9 @@ BackgroundNotifier.prototype.loadTimelineCacheData = function() {
 		this.twit.setLastId(SPAZCORE_SECTION_REPLIES, data[SPAZCORE_SECTION_REPLIES + '_lastid']);
 		this.twit.setLastId(SPAZCORE_SECTION_DMS,     data[SPAZCORE_SECTION_DMS     + '_lastid']);
 		
-		Mojo.Log.error('data[home]'+ data[SPAZCORE_SECTION_HOME + '_lastid']);
-		Mojo.Log.error('data[replies]'+ data[SPAZCORE_SECTION_REPLIES + '_lastid']);
-		Mojo.Log.error('data[dms]'+ data[SPAZCORE_SECTION_DMS     + '_lastid']);
+		Mojo.Log.info('data[home]'+ data[SPAZCORE_SECTION_HOME + '_lastid']);
+		Mojo.Log.info('data[replies]'+ data[SPAZCORE_SECTION_REPLIES + '_lastid']);
+		Mojo.Log.info('data[dms]'+ data[SPAZCORE_SECTION_DMS     + '_lastid']);
 		
 		if (data['my_master_timeline_model_items']) {
 			Spaz.getAppObj().master_timeline_model.items = data['my_master_timeline_model_items'];
@@ -602,7 +612,7 @@ BackgroundNotifier.prototype.loadTimelineCacheData = function() {
 
 	Mojo.Timing.pause("timing_loadTimelineCache");
 	
-	Mojo.Log.error(Mojo.Timing.createTimingString("timing_", "Cache op times"));
+	Mojo.Log.info(Mojo.Timing.createTimingString("timing_", "Cache op times"));
 
 	
 };
@@ -613,7 +623,7 @@ BackgroundNotifier.prototype.loadTimelineCacheData = function() {
  */
 BackgroundNotifier.prototype.saveTimelineCache = function() {
 	
-	sch.error('SAVETIMELINECACHE');
+	Mojo.Log.info('SAVETIMELINECACHE');
 	
 	Mojo.Timing.resume("timing_saveTimelineCache");
 	
@@ -646,9 +656,9 @@ BackgroundNotifier.prototype.saveTimelineCache = function() {
 	}
 	
 	
-	Mojo.Log.error('Counts: DMs %s, Replies %s, Statuses %s', num_dms, num_replies, num_statuses);
+	Mojo.Log.info('Counts: DMs %s, Replies %s, Statuses %s', num_dms, num_replies, num_statuses);
 	
-	Mojo.Log.error('Length of master_timeline_model.items: '+Spaz.getAppObj().master_timeline_model.items.length);
+	Mojo.Log.info('Length of master_timeline_model.items: '+Spaz.getAppObj().master_timeline_model.items.length);
 	
 	var twitdata = {};
 	twitdata['version']                         = this.cacheVersion || -1;
@@ -664,7 +674,7 @@ BackgroundNotifier.prototype.saveTimelineCache = function() {
 	
 	Mojo.Timing.pause('timing_saveTimelineCache');
 	
-	Mojo.Log.error(Mojo.Timing.createTimingString("timing_", "Cache op times"));
+	Mojo.Log.info(Mojo.Timing.createTimingString("timing_", "Cache op times"));
 	
 };
 

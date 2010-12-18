@@ -12,6 +12,8 @@ function DashboardAssistant(args) {
 	
 	this.args = sch.defaults(this.default_args, args);
 	
+	Mojo.Log.info('DashboardAssistant args: %j', args);
+	
 	/*
 		this connects App to this property of the appAssistant
 	*/
