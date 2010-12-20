@@ -529,14 +529,47 @@ scene_helpers.addCommonSceneMethods = function(assistant) {
 	assistant.facebookTweet = function(tweetobj) {
 		
 		var message = "From @"+tweetobj.user.screen_name + ": "+tweetobj.SC_text_raw;
+
+		var appids = [
+			'com.palm.app.facebook.beta',
+			'com.palm.app.facebook'
+		];
+
+		var index = 0;
 		
-			this.controller.serviceRequest("palm://com.palm.applicationManager", {
-				method:      'launch',
-				parameters:  {
-					id: 'com.palm.app.facebook',
-					params: { status: message }
-				}
-			});
+		var that = this;
+		
+		
+		function post() {
+			
+			if (index < appids.length) {
+				
+				Mojo.Log.info('Trying to post with appid %s', appids[index]);
+				
+				that.controller.serviceRequest("palm://com.palm.applicationManager", {
+					method:      'launch',
+					parameters:  {
+						id: appids[index],
+						params: { status: message }
+					},
+					onFailure: function() {
+						Mojo.Log.info('Failed to post with appid %s', appids[index]);
+						index++; // go to next appid
+						post(); // retry
+					}
+				});			
+				
+			} else {
+				Mojo.Log.info('Failed to post to Facebook');
+				that.showAlert($L('Facebook app not installed'), $L('Could not post'));
+			}
+			
+		}
+		
+		// start!
+		post();
+		
+		
 	};
 
 	/**
