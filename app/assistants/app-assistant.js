@@ -178,6 +178,12 @@ AppAssistant.prototype.initialize = function() {
 	    items : []
 	};
 	
+	if (!this.App.cache) {
+		this.App.cache = new TempCache({
+			'appObj':this.App
+		});
+	}
+	
 };
 
 
