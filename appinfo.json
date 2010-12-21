@@ -29,29 +29,6 @@
 			}
 		]
 	},
-	
-	"themes":{
-		"Dreadnaught":{
-			"name":"Dreadnaught",
-			"stylesheet":"Dreadnaught.css",
-			"img_folder":"dreadnaught"
-		},
-
-
-		"Minimal-Dark":{
-			"name":"Minimal Dark",
-			"stylesheet":"Minimal-Dark.css",
-			"img_folder":"whiteknight"
-		},
-
-
-		"Whiteknight":{
-			"name":"Whiteknight",
-			"stylesheet":"Whiteknight.css",
-			"img_folder":"whiteknight"
-		}
-
-	},
 
 	
 	"universalSearch": {
