@@ -307,38 +307,76 @@ scene_helpers.addCommonSceneMethods = function(assistant) {
 		
 	};
 
-
+	
+	
 	/**
-	 *  
+	 * Binds listeners for scrolling
 	 */
-	//     assistant.filterTimeline = function(command) {
-	// 
-	// 	if (!command) {
-	// 		command = this.filterState;
-	// 	}
-	// 
-	// 	switch (command) {
-	// 	case 'filter-timeline-all':
-	// 		jQuery('#my-timeline div.timeline-entry').show();
-	// 		break;
-	// 	case 'filter-timeline-replies-dm':
-	// 		jQuery('#my-timeline div.timeline-entry').hide();
-	// 		jQuery('#my-timeline div.timeline-entry.reply, #my-timeline div.timeline-entry.dm').show();
-	// 		break;
-	// 	case 'filter-timeline-replies':
-	// 		jQuery('#my-timeline div.timeline-entry').hide();
-	// 		jQuery('#my-timeline div.timeline-entry.reply').show();
-	// 		break;
-	// 	case 'filter-timeline-dms':
-	// 		jQuery('#my-timeline div.timeline-entry').hide();
-	// 		jQuery('#my-timeline div.timeline-entry.dm').show();
-	// 		break;
-	// 	default:
-	// 		jQuery('#my-timeline div.timeline-entry').show();
-	// 	}
-	// 
-	// 	this.filterState = command; 
-	// };
+	assistant.bindScrollToRefresh = function() {
+		var thisA = this;
+		
+		sch.debug('BINDING');
+		
+		if (!this.scroller) {
+			this.scroller = this.controller.getSceneScroller();
+		}
+		
+		this._handleScrollStarting = this.handleScrollStarting.bindAsEventListener(this);
+		this.controller.listen(this.scroller, Mojo.Event.scrollStarting, this._handleScrollStarting);
+	};
+	
+	
+	/**
+	 * Unbinds listeners for scrolling
+	 */
+	assistant.unbindScrollToRefresh = function() {
+		Mojo.Log.info('UNBINDING');
+		this.controller.stopListening(this.scroller, Mojo.Event.scrollStarting, this._handleScrollStarting);
+	};
+	
+	
+	assistant.handleScrollStarting = function(e) {
+		var thisA = this;
+		
+		this._longestPull = 0;
+		e.scroller.addListener({
+			moved:this.handleScrollMoved
+		});
+	};
+
+	
+	assistant.handleScrollMoved = function(done, position) {
+		
+		if (!this._longestPull) {
+			this._longestPull = 0;
+		}
+		if (!this._pullThreshold) {
+			this._pullThreshold = 150;
+		}
+
+	   	Mojo.Log.info("DONE:%s; POSITION:%j; this._longestPull:", done, position, this._longestPull);
+       
+	   	if (!done) { // not done
+	   		if (this._longestPull < position.y) {
+	   			this._longestPull = position.y;
+	   			Mojo.Log.info("NOW THIS._LONGESTPULL:", this._longestPull);
+	   		}
+	   	} else { // done, so check if we refresh
+	   		if (this._longestPull >= this._pullThreshold) {
+	   			this._longestPull = 0;
+	   			Mojo.Controller.stageController.sendEventToCommanders({
+	   				'type':Mojo.Event.command,
+	   				'command':'refresh'
+	   			});
+	   		} else {
+	   			this._longestPull = 0;
+	   		}
+	   		
+	   		Mojo.Log.info("RESET THIS._LONGESTPULL:", this._longestPull);
+	   	}
+
+	};
+	
 	
 	
 	

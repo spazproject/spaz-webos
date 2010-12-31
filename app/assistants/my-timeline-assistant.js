@@ -346,6 +346,8 @@ MyTimelineAssistant.prototype.activate = function(params) {
 	*/
 	thisA.bindTimelineEntryTaps('my-timeline');
 
+	thisA.bindScrollToRefresh();
+
 	this.showBetaWarningAlert();
 	
 };
@@ -362,7 +364,7 @@ MyTimelineAssistant.prototype.deactivate = function(event) {
 	*/
 	this.unbindTimelineEntryTaps('my-timeline');
 	
-		
+	thisA.unbindScrollToRefresh();
 };
 
 
