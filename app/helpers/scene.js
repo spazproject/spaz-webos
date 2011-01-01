@@ -315,7 +315,7 @@ scene_helpers.addCommonSceneMethods = function(assistant) {
 	assistant.bindScrollToRefresh = function() {
 		var thisA = this;
 		
-		sch.debug('BINDING');
+		Mojo.Log.info('BINDING');
 		
 		if (!this.scroller) {
 			this.scroller = this.controller.getSceneScroller();
@@ -338,10 +338,18 @@ scene_helpers.addCommonSceneMethods = function(assistant) {
 	assistant.handleScrollStarting = function(e) {
 		var thisA = this;
 		
+		
 		this._longestPull = 0;
-		e.scroller.addListener({
-			moved:this.handleScrollMoved
-		});
+		
+		Mojo.Log.error('this.scroller.mojo.getScrollPosition(): %j', this.scroller.mojo.getScrollPosition());
+		
+		if (this.scroller.mojo.getScrollPosition().top === 0) {
+			jQuery(this.scroller).addClass('pull-to-refresh');
+			e.scroller.addListener({
+				moved:this.handleScrollMoved.bind(this)	
+			});
+		}
+		
 	};
 
 	
@@ -351,29 +359,38 @@ scene_helpers.addCommonSceneMethods = function(assistant) {
 			this._longestPull = 0;
 		}
 		if (!this._pullThreshold) {
-			this._pullThreshold = 150;
+			this._pullThreshold = 100;
 		}
-
-	   	Mojo.Log.info("DONE:%s; POSITION:%j; this._longestPull:", done, position, this._longestPull);
+		
+		if ((position.y <= -5 && this._longestPull == 0)
+			|| (!jQuery(this.scroller).hasClass('pull-to-refresh'))) { // we're not pulling down, so kill it
+			jQuery(this.scroller).removeClass('pull-to-refresh');
+			done = true;
+			this._longestPull = 0;
+		}
+		
+	   	Mojo.Log.error("DONE:%s; POSITION:%j; this._longestPull:", done, position, this._longestPull);
        
-	   	if (!done) { // not done
-	   		if (this._longestPull < position.y) {
-	   			this._longestPull = position.y;
-	   			Mojo.Log.info("NOW THIS._LONGESTPULL:", this._longestPull);
-	   		}
-	   	} else { // done, so check if we refresh
-	   		if (this._longestPull >= this._pullThreshold) {
-	   			this._longestPull = 0;
-	   			Mojo.Controller.stageController.sendEventToCommanders({
-	   				'type':Mojo.Event.command,
-	   				'command':'refresh'
-	   			});
-	   		} else {
-	   			this._longestPull = 0;
-	   		}
-	   		
-	   		Mojo.Log.info("RESET THIS._LONGESTPULL:", this._longestPull);
-	   	}
+		if (!done) { // not done
+			if (this._longestPull < position.y) {
+				this._longestPull = position.y;
+				Mojo.Log.error("NOW THIS._LONGESTPULL:", this._longestPull);
+			}
+		} else { // done, so check if we refresh
+			if (this._longestPull >= this._pullThreshold) {
+				this._longestPull = 0;
+				Mojo.Controller.stageController.sendEventToCommanders({
+					'type':Mojo.Event.command,
+					'command':'refresh'
+				});
+			} else {
+				this._longestPull = 0;
+			}
+			
+			jQuery(this.scroller).removeClass('pull-to-refresh');
+
+			Mojo.Log.error("RESET THIS._LONGESTPULL:", this._longestPull);
+		}
 
 	};
 	

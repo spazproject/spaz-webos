@@ -9,7 +9,14 @@ body.palm-default {
 /*	background: url('../images/dreadnaught/page-bg-darkgreen.png')  top left no-repeat;*/
 	background:#000;
 }
- 
+
+
+.pull-to-refresh {
+	background-image:url(../images/dreadnaught/pull-to-refresh.png);
+	background-repeat: no-repeat;
+	background-position: center 50px;
+}
+
 #mojo-scene-splash-scene-scroller {
     background: url('../images/splash.jpeg') top left no-repeat;
 }
@@ -184,7 +191,7 @@ div.timeline {
 
 div.timeline-entry {
 	padding: 2px 6px 6px;
-	margin-bottom:5px;
+	border-bottom:solid 5px black;
 /*	-khtml-border-radius: 10px;*/
 /*	border-bottom: 1px solid #222;*/
 	clear:both;
