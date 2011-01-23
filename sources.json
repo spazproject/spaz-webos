@@ -1,5 +1,6 @@
 [
 	{"source": "app/auth_config.js"},
+	{"source": "app/views/themes.js"},
 	{"source": "vendors/jquery.tinysort.js"},	
 	{"source": "vendors/tools.tabs-1.0.1.js"},
 	{"source": "spazcore/spazcore-webos.js"},

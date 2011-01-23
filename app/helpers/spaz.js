@@ -25,7 +25,6 @@ Spaz.getActiveSceneAssistant = function() {
 	return stageC.activeScene().assistant;
 };
 
-
 /**
  * This helper looks through the array of scenes and looks for an existing instance of 
  * the given targetScene. If one exists, we pop all scenes before it to return to it. Otherwise
@@ -319,6 +318,16 @@ Spaz.closeDashboard = function(name) {
 	name = name || SPAZ_DASHBOARD_STAGENAME;
 	
 	Mojo.Controller.getAppController().closeStage(name);
+};
+
+
+Spaz.setTheme = function(theme) {
+	Mojo.Log.error('AppThemes: %j', AppThemes);
+	Mojo.Log.error('theme: %s', theme);
+	Mojo.Log.error('AppThemes[theme]: %j', AppThemes[theme]);
+	if (AppThemes && AppThemes[theme]) {
+		jQuery('link[title="apptheme"]').attr('href', 'stylesheets/'+AppThemes[theme].stylesheet);
+	}
 };
 
 

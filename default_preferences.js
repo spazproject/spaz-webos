@@ -4,6 +4,7 @@ var default_preferences = {
 	'last_type':null,
 	'last_userid':null,
 	
+	'app-theme':'Dreadnaught',
 
 	'users':[], // an array of user objects with properties { 'id', 'username', 'password', 'type', 'meta' }	
 	'always-go-to-my-timeline':false,

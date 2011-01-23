@@ -22,6 +22,8 @@ function StageAssistant () {
 		loads the SpazCore templates
 	*/
 	this.loadTemplates();
+	
+	Spaz.setTheme(Spaz.getAppObj().prefs.get('app-theme'));
 }
 
 
