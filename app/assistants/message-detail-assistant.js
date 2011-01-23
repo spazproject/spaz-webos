@@ -419,7 +419,12 @@ MessageDetailAssistant.prototype.processStatusReturn = function(e, statusobj) {
 		Mojo.Log.error('statusobj: %j', statusobj);
 
 		if (!statusobj.SC_is_dm) {
-			statusobj.isSent = (statusobj.user.screen_name.toLowerCase() === App.username.toLowerCase());
+			if (App.username) { // we may not be logged-in
+				statusobj.isSent = (statusobj.user.screen_name.toLowerCase() === App.username.toLowerCase());
+			} else {
+				statusobj.isSent = false;
+			}
+			
 		}
 
 		thisA.statusobj = statusobj;

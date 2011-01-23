@@ -119,7 +119,9 @@ FavoritesAssistant.prototype.activate = function(event) {
 		Prepare for timeline entry taps
 	*/
 	this.bindTimelineEntryTaps('favorites-timeline');
-
+	
+	this.bindScrollToRefresh();
+	
 	/*
 		start the favs timeline 
 	*/
@@ -138,6 +140,7 @@ FavoritesAssistant.prototype.deactivate = function(event) {
 		stop listening for timeline entry taps
 	*/
 	this.unbindTimelineEntryTaps('favorites-timeline');
+	this.unbindScrollToRefresh();
 		
 };
 

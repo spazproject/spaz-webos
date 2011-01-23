@@ -48,6 +48,7 @@ PreferencesAssistant.prototype.setup = function() {
 		note that these property keys MUST match a preference key
 	*/
 	this.model = {
+		'app-theme':       App.prefs.get('app-theme'),
 		'sound-enabled': 			App.prefs.get('sound-enabled'),
 		'vibration-enabled': 		App.prefs.get('vibration-enabled'),
 		'timeline-scrollonupdate': 	App.prefs.get('timeline-scrollonupdate'),
@@ -259,6 +260,16 @@ PreferencesAssistant.prototype.setup = function() {
 	);
 	this.controller.listen('timeline-text-size', Mojo.Event.propertyChange, this.saveSettings.bindAsEventListener(this));
 
+	this.controller.setupWidget('app-theme',
+		{
+			label: $L('Theme'),
+			choices: this.validAppThemes,
+			modelProperty:'app-theme'
+		},
+		this.model
+	);
+	this.controller.listen('app-theme', Mojo.Event.propertyChange, this.saveSettings.bindAsEventListener(this));
+
 
 	this.controller.setupWidget('post-rt-cursor-position',
 		{
@@ -324,6 +335,10 @@ PreferencesAssistant.prototype.onSave = {
 	},
 	'network-refresh-wake' : function(e, val) {
 		Spaz.getAppObj().bgnotifier.resetNotification();
+	},
+	'app-theme' : function(e, val) {
+		Mojo.Log.error('onSave for app-theme');
+		Spaz.setTheme(val);
 	}
 };
 
@@ -371,6 +386,11 @@ PreferencesAssistant.prototype.setupChoices = function(){
 		{label:$L('Venti'), value:'venti'}		
 	];
 	
+	this.validAppThemes = [];
+	for(var tkey in AppThemes) {
+		this.validAppThemes.push({label:tkey, value:tkey});
+	}
+	
 	this.validRTCursorPositions = [
 		{label:$L('Beginning'),  value:'beginning'}, 
 		{label:$L('End'),value:'end'}
@@ -408,6 +428,7 @@ PreferencesAssistant.prototype.cleanup = function(event) {
 	this.controller.stopListening('timeline-replies-getcount', Mojo.Event.propertyChange, this.saveSettings);
 	this.controller.stopListening('timeline-dm-getcount', Mojo.Event.propertyChange, this.saveSettings);
 	this.controller.stopListening('timeline-text-size', Mojo.Event.propertyChange, this.saveSettings);
+	this.controller.stopListening('app-theme', Mojo.Event.propertyChange, this.saveSettings);
 
 
 	Mojo.Event.stopListening(jQuery('#clear-cache-button')[0], Mojo.Event.tap, function(e) {
