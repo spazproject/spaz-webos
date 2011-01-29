@@ -320,6 +320,7 @@ scene_helpers.addCommonSceneMethods = function(assistant) {
 		if (!this.scroller) {
 			this.scroller = this.controller.getSceneScroller();
 		}
+		this.releaseText = this.controller.get("releaseText");
 		this.scrolling = this.scrolling.bind(this);
 		this.releaseScroll = this.releaseScroll.bind(this);
 		this._handleScrollStarting = this.handleScrollStarting.bindAsEventListener(this);
@@ -343,6 +344,12 @@ scene_helpers.addCommonSceneMethods = function(assistant) {
 	
 	assistant.handleScrollStarting = function(e) {
 		Mojo.Event.listen(this.scroller, Mojo.Event.dragging, this.scrolling);
+		var scrollY = this.scroller.mojo.getScrollPosition().top;
+		if(scrollY >= 0) {
+			this.releaseText.show();
+		}else {
+			this.releaseText.hide();		
+		}
 		/*setTimeout(function() {
 			var scrollY = this.scroller.mojo.getScrollPosition().top;
 			if(scrollY <= 20) {
@@ -368,6 +375,7 @@ scene_helpers.addCommonSceneMethods = function(assistant) {
 	assistant.scrolling = function(event) {
 		var scrollY = this.scroller.mojo.getScrollPosition().top;
 		if(scrollY >= 65) {
+			
 		   // Make sure the user REALLY meant to refresh by making them hold it there for 50ms.
 			//this.showInlineSpinner('activity-spinner-my-timeline', "Release to Refresh");
 			setTimeout(function() {
@@ -382,6 +390,7 @@ scene_helpers.addCommonSceneMethods = function(assistant) {
 	};
 	assistant.releaseScroll = releaseScroll = function(event) {
 		var scrollY = this.scroller.mojo.getScrollPosition().top;
+		this.releaseText.hide();
 
 		if(scrollY <= 20) {
 			//webOS did the thing that doesn't let you hold the list past the regular scroll limit :(
