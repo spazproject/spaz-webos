@@ -320,9 +320,14 @@ scene_helpers.addCommonSceneMethods = function(assistant) {
 		if (!this.scroller) {
 			this.scroller = this.controller.getSceneScroller();
 		}
-		
+		this.scrolling = this.scrolling.bind(this);
+		this.releaseScroll = this.releaseScroll.bind(this);
 		this._handleScrollStarting = this.handleScrollStarting.bindAsEventListener(this);
 		this.controller.listen(this.scroller, Mojo.Event.scrollStarting, this._handleScrollStarting);
+
+
+		//this._handleScrollStarting = this.handleScrollStarting.bindAsEventListener(this);
+		//this.controller.listen(this.scroller, Mojo.Event.scrollStarting, this._handleScrollStarting);
 	};
 	
 	
@@ -332,12 +337,19 @@ scene_helpers.addCommonSceneMethods = function(assistant) {
 	assistant.unbindScrollToRefresh = function() {
 		Mojo.Log.info('UNBINDING');
 		this.controller.stopListening(this.scroller, Mojo.Event.scrollStarting, this._handleScrollStarting);
+		//this.controller.stopListening(this.scroller, Mojo.Event.scrollStarting, this._handleScrollStarting);
 	};
 	
 	
 	assistant.handleScrollStarting = function(e) {
-		var thisA = this;
-		
+		Mojo.Event.listen(this.scroller, Mojo.Event.dragging, this.scrolling);
+		/*setTimeout(function() {
+			var scrollY = this.scroller.mojo.getScrollPosition().top;
+			if(scrollY <= 20) {
+				this.hideInlineSpinner();
+			}
+		}.bind(this), 300);*/
+		/*var thisA = this;
 		
 		this._longestPull = 0;
 		
@@ -348,8 +360,51 @@ scene_helpers.addCommonSceneMethods = function(assistant) {
 			e.scroller.addListener({
 				moved:this.handleScrollMoved.bind(this)	
 			});
+		}*/
+		
+		
+	};
+	
+	assistant.scrolling = function(event) {
+		var scrollY = this.scroller.mojo.getScrollPosition().top;
+		if(scrollY >= 65) {
+		   // Make sure the user REALLY meant to refresh by making them hold it there for 50ms.
+			//this.showInlineSpinner('activity-spinner-my-timeline', "Release to Refresh");
+			setTimeout(function() {
+				//this.hideInlineSpinner();
+				Mojo.Event.listen(this.scroller, "mouseup", this.releaseScroll);
+
+				//this.refreshText.innerHTML = this.releaseMsg;
+				//this.refreshArrow.style["-webkit-transform"] = "rotate(180deg)";
+			}.bind(this), 50);
+			
+		}
+	};
+	assistant.releaseScroll = releaseScroll = function(event) {
+		var scrollY = this.scroller.mojo.getScrollPosition().top;
+
+		if(scrollY <= 20) {
+			//webOS did the thing that doesn't let you hold the list past the regular scroll limit :(
+			//Don't refresh because it's possible that it wasn't the user's intention to refresh...
+			// reset the message
+			//this.hideInlineSpinner();
+			//this.refreshText.innerHTML = this.pullDownMsg;
 		}
 		
+	   // otherwise it's a valid refresh
+		else {
+			Mojo.Controller.stageController.sendEventToCommanders({
+				'type':Mojo.Event.command,
+				'command':'refresh'
+			});
+		   //this.refreshContent();
+		   
+		}
+
+		
+		// whether it's a real refresh or not, remove the listeners
+		this.controller.stopListening(this.scroller, Mojo.Event.dragging, this.scrolling);
+		this.controller.stopListening(this.scroller, "mouseup", this.releaseScroll);
 	};
 
 	
