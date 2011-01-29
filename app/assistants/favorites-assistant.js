@@ -4,11 +4,17 @@ function FavoritesAssistant() {
 	   to the scene controller (this.controller) has not be established yet, so any initialization
 	   that needs the scene controller should be done in the setup function below. */
 	scene_helpers.addCommonSceneMethods(this);
+	
+	/*
+		this connects App to this property of the appAssistant
+	*/
+	App = Spaz.getAppObj();
 }
 FavoritesAssistant.prototype.aboutToActivate = function(callback){
 	callback.defer();
-}
+};
 FavoritesAssistant.prototype.setup = function() {
+	var thisA = this;
 
 	this.scroller = this.controller.getSceneScroller();
 	this.initAppMenu({ 'items':LOGGEDIN_APPMENU_ITEMS });
@@ -34,10 +40,11 @@ FavoritesAssistant.prototype.setup = function() {
 				*/
 				toggleCmd:'favorites',
 				items: [
-					{label:$L('My Timeline'), icon:'conversation', command:'my-timeline', shortcut:'T', 'class':"palm-header left"},
+					{label:$L('My Timeline'), icon:'conversation', command:'filter-timeline-all', shortcut:'T', 'class':"palm-header left"},
 					{label:'@',	icon:'at', command:'filter-timeline-replies'}, 
 					{label:$L('DM'), icon: 'dms', secondaryIconPath:'', command:'filter-timeline-dms'},
 					{label:$L('Favorites'), iconPath:'images/theme/menu-icon-favorite.png', command:'favorites', shortcut:'F'},
+					{label:$L('Friends and Followers'), iconPath:'images/theme/menu-icon-friends-followers.png', command:'friends-followers', shortcut:'L'},
 					{label:$L('Search'),    icon:'search', command:'search', shortcut:'S'}
 				]
 			},
@@ -64,17 +71,35 @@ FavoritesAssistant.prototype.setup = function() {
         this.timeline_attributes = {
             itemTemplate: 'timeline-entry',
             listTemplate: 'timeline-container',
+			emptyTemplate: 'timeline-container-empty',
             swipeToDelete: false,
             reorderable: false,
-            hasNoWidgets: true
+            hasNoWidgets: true,
+			formatters: {
+				'data': function(value, model) {
+					return thisA.renderItem(value);
+				}
+			}
         },
         this.timeline_model = {
-            items : [
-                {id:0, html:'some html'}
-            ]
+            items : []
         }
     );
-
+	this.timeline_list = this.controller.get('favorites-timeline');
+	
+	/*
+		more button
+	*/
+	jQuery('#more-favs-button').bind(Mojo.Event.tap, function() {
+		thisA.loadMore.call(thisA);
+	});
+	this.moreButtonAttributes = {};
+	this.moreButtonModel = {
+		"buttonLabel" : "More",
+		"buttonClass" : 'Primary'
+	};
+	this.controller.setupWidget('more-favs-button', this.moreButtonAttributes, this.moreButtonModel);
+	
 };
 
 FavoritesAssistant.prototype.activate = function(event) {
@@ -86,18 +111,17 @@ FavoritesAssistant.prototype.activate = function(event) {
 
 	var thisA = this; // for closures below
 	
-	var tts = sc.app.prefs.get('timeline-text-size');
+	var tts = App.prefs.get('timeline-text-size');
 	this.setTimelineTextSize('#favorites-timeline', tts);
 	
 	
 	/*
 		Prepare for timeline entry taps
 	*/
-	this.bindTimelineEntryTaps('#favorites-timeline');
-	// maps list taps to item taps
-	this.handleTimelineTap = this.handleTimelineTap.bindAsEventListener(this);
-	this.controller.listen('favorites-timeline', Mojo.Event.listTap, this.handleTimelineTap);
-
+	this.bindTimelineEntryTaps('favorites-timeline');
+	
+	this.bindScrollToRefresh();
+	
 	/*
 		start the favs timeline 
 	*/
@@ -106,7 +130,7 @@ FavoritesAssistant.prototype.activate = function(event) {
 		this.refreshOnActivate = false;
 	}
 	
-
+	
 	
 };
 
@@ -115,20 +139,13 @@ FavoritesAssistant.prototype.deactivate = function(event) {
 	/*
 		stop listening for timeline entry taps
 	*/
-	this.unbindTimelineEntryTaps('#favorites-timeline');
-	
-	this.controller.stopListening('favorites-timeline', Mojo.Event.listTap, this.handleTimelineTap);
-	
+	this.unbindTimelineEntryTaps('favorites-timeline');
+	this.unbindScrollToRefresh();
+		
 };
 
 FavoritesAssistant.prototype.cleanup = function(event) {
-	/* this function should do any cleanup needed before the scene is destroyed as 
-	   a result of being popped off the scene stack */
-};
-
-
-FavoritesAssistant.prototype.handleTimelineTap = function(e) {
-	jQuery('#favorites-timeline [data-status-id="'+e.item.id+'"]').trigger(Mojo.Event.tap);
+	jQuery('#more-favs-button').unbind(Mojo.Event.tap);	
 };
 
 
@@ -141,46 +158,73 @@ FavoritesAssistant.prototype.getEntryElementByStatusId = function(id) {
 FavoritesAssistant.prototype.refresh = function(event) {
 	var thisA = this;
 	
+	var page = 0;
+	if (event && sch.isNumber(event)) {
+		page = event;
+	}
+	
 	sc.helpers.markAllAsRead('#favorites-timeline div.timeline-entry');
-	this.showInlineSpinner('activity-spinner-favorites', 'Loading favorite tweets…');
+	this.showInlineSpinner('activity-spinner-favorites', $L('Loading favorites…'));
+	
+	/*
+		reset scrollstate to avoid white flash
+	*/
+	var scrollstate = this.scroller.mojo.getState();
+	this.scroller.mojo.setState(scrollstate, false);
+	
 	this.twit.getFavorites(
-		null,
+		page,
 		null,
 		function(data) {
-			data = data.reverse();
-			var no_dupes = [];
+			if (sch.isArray(data)) {
 			
-			for (var i=0; i < data.length; i++) {
+				data = data.reverse();
+				var no_dupes = [];
+			
+				for (var i=0; i < data.length; i++) {
 				
-				/*
-					only add if it doesn't already exist
-				*/
-				if (!thisA.itemExistsInModel(data[i])) {
+					/*
+						only add if it doesn't already exist
+					*/
+					if (!thisA.itemExistsInModel(data[i])) {
 					
-					sc.app.Tweets.save(data[i]);
-					data[i].text = Spaz.makeItemsClickable(data[i].text);
-					no_dupes.push(data[i]);
-				}
+						App.Tweets.save(data[i]);
+						data[i].text = Spaz.makeItemsClickable(data[i].text);
+						no_dupes.push(data[i]);
+					}
 				
-			};
+				};
 			
-			thisA.addItems(no_dupes);
-			sc.helpers.markAllAsRead('#favorites-timeline div.timeline-entry'); // favs are never "new"
-			sc.helpers.updateRelativeTimes('#favorites-timeline div.timeline-entry span.date', 'data-created_at');
+				thisA.addItems(no_dupes);
+			
+			}
+			
 			thisA.hideInlineSpinner('activity-spinner-favorites');
 		},
 		function(xhr, msg, exc) {
+			Mojo.Log.error('EROROR in getFavorites');
+			Mojo.Log.error("%j , %j , %j", xhr, msg, exc);
+			
 			var err_msg = $L("There was an error retrieving your favorites");
 			thisA.displayErrorInfo(err_msg, null);
 
 			/*
 				Update relative dates
 			*/
-			sch.updateRelativeTimes('#favorites-timeline>div.timeline-entry .meta>.date', 'data-created_at');
 			thisA.hideInlineSpinner('activity-spinner-favorites');
 		}
 	);
 	
+};
+
+FavoritesAssistant.prototype.loadMore = function(event) {
+	if (this.faves_more_page) {
+		this.faves_more_page++;
+	} else {
+		this.faves_more_page = 2;
+	}
+	
+	this.refresh(this.faves_more_page);
 };
 
 
@@ -188,17 +232,64 @@ FavoritesAssistant.prototype.refresh = function(event) {
 	redefine addItems to work with list model
 */
 FavoritesAssistant.prototype.addItems = function(new_items) {
-	var model_item, model_items = [];
+	
+	// now we have all the existing items from the model
+	var model_items = this.timeline_model.items.clone();
+	
+	var model_item;
 	for (var i=0; i < new_items.length; i++) {
 		model_item = {
 			'id':new_items[i].id,
-			'html':sc.app.tpl.parseTemplate('tweet', new_items[i])
+			'data':sch.clone(new_items[i])
 		};
+		// add each item to the model
 		model_items.push(model_item);
+		
 	}
-	this.favorites_list = this.controller.get('favorites-timeline');
-	this.favorites_list.mojo.noticeAddedItems(0, model_items);
+	
+	// sort, in reverse
+	model_items.sort(function(a,b){
+		return b.id - a.id; // newest first
+	});
+	
+	// re-assign the cloned items back to the model object
+	this.timeline_model.items = model_items;
+	
+	// tell the controller it's changed to update list widget
+	this.controller.modelChanged(this.timeline_model);
+	
+	/*
+		reset scrollstate to avoid white flash
+	*/
+	var scrollstate = this.scroller.mojo.getState();
+	this.scroller.mojo.setState(scrollstate, false);
 };
+
+
+FavoritesAssistant.prototype.renderItem = function(obj) {
+    
+    var html = '';
+
+    Mojo.Timing.resume("timing_favorites-timeline.renderer");
+	try {
+		if (obj.SC_is_dm) {
+			html = App.tpl.parseTemplate('dm', obj);
+		} else {
+			html = App.tpl.parseTemplate('tweet', obj);
+		}
+		Mojo.Timing.pause("timing_favorites-timeline.renderer");
+		return html;
+		
+	} catch(err) {
+		sch.error("There was an error rendering the object: "+sch.enJSON(obj));
+		sch.error("Error:"+sch.enJSON(err));
+		Mojo.Timing.pause("timing_favorites-timeline.renderer");
+    	
+		return '';
+	}
+    
+};
+
 
 FavoritesAssistant.prototype.itemExistsInModel = function(obj) {
 	
@@ -212,9 +303,15 @@ FavoritesAssistant.prototype.itemExistsInModel = function(obj) {
 	return false;
 };
 
-// FavoritesAssistant.prototype.getData = function() {
-// 	sc.helpers.markAllAsRead('#favorites-timeline>div.timeline-entry');
-// 	this.showInlineSpinner('activity-spinner-favorites', 'Loading favorite tweets…');
-// 	
-// 	this.twit.getFavorites();
-// };
+/**
+ * oh my god this is probably deadly for performance 
+ */
+FavoritesAssistant.prototype.markAllAsRead = function() {
+	for (var i=0; i < this.timeline_model.items.length; i++) {
+		var new_element = jQuery(this.timeline_model.items[i].html).removeClass('new').get(0);
+		if (new_element) {
+			this.timeline_model.items[i].html = new_element.outerHTML;
+		}
+	}
+	this.controller.modelChanged(this.timeline_model);
+};

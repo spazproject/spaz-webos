@@ -5,7 +5,7 @@ var scene_helpers = {};
 
 
 /**
- * This adds a number of common scene methods to the passed scene assistant
+ * This adds a number of common scene methods mixins-style to the passed scene assistant
  * @param {object} assistant a scene assistant
  */
 scene_helpers.addCommonSceneMethods = function(assistant) {
@@ -100,140 +100,157 @@ scene_helpers.addCommonSceneMethods = function(assistant) {
 	 */
 	assistant.handleCommand = function(event){
 		
-		sch.error(event);
-		sch.error(event.command);
-		if (event.type == Mojo.Event.forward) {
-			this.prepMessage();
+		sch.debug(event.command);
+		if (event.type == Mojo.Event.forward) {			
+			if (this.controller.sceneName != "post") {
+				this.prepMessage();
+			} else {
+				Mojo.Log.info("We're in a post scene; ignoring forward gesture");
+			}
 		}
 		if (event.type == Mojo.Event.command) {
-			switch (event.command) {
 
-				/*
-					timeline filtering
-				*/
-				case 'filter-timeline-all':
-				case 'filter-timeline-replies-dm':
-				case 'filter-timeline-replies':
-				case 'filter-timeline-dms':
-					var sceneobject = this.controller.stageController.activeScene();
-					var scenename = sceneobject.sceneName;
-					
-					sch.error('scenename:'+scenename);
-					
-					/*
-						if we're in my-timeline, we do things differently
-					*/
-					if (scenename.indexOf('my-timeline') != -1) {
-						this.controller.prepareTransition(Mojo.Transition.crossFade).run();
-						this.filterTimeline(event.command, true);
-					} else {
-						// push to my-timeline with a param to set a filter
-						Spaz.findAndSwapScene('my-timeline', {'filter': event.command});
-
-					}
-					break;
-				
-				case 'new-search-card':
-
-					sc.app.new_search_card++;
-					this.createStage(
-						'search-twitter',
-						{'lightweight':'false'},
-						sc.app.search_card_prefix+sc.app.new_search_card
-					);
-
-					break;
-					
-				case 'update-location':
-					this.showLocationPanel();
-					break;
-					
-				/*
-					Compose a new message
-				*/
-				case 'compose':
-					this.prepMessage();
-					break;
-
-				/*
-					Scroll to top
-				*/
-				case 'toggle-accounts-panel':
-					if(this.controller.get('panel').hasClassName("sliding")){
-						this.controller.get('panel').removeClassName('sliding');
-						break;
-					}
-					this.controller.get('panel').addClassName('sliding');
-					
-				break;
-				case 'scroll-top':
-					dump("Scroll to top");
-					this.scrollToTop();
-					break;
-				/*
-					Scroll to bottom
-				*/
-				case 'scroll-bottom':
-					dump("Scroll to bottom");
-					this.scrollToBottom();
-					break;
-
-				/*
-					Scroll to first (last in list) new item
-				*/
-				case 'scroll-new':
-					dump("Scroll to new");
-					this.scrollToNew();
-					break;
-
-				
-				/*
-					This would refresh the current view
-				*/
-				case 'refresh':
-					this.refresh(); // need to have a "refresh" method defined for each scene asst
-					break;
-				
-				/*
-					This is only in the search-twitter-assistant scene
-				*/
-				case 'save-search':
-					if (this.isSavedSearch === false) {
-						this.saveSearch(this.searchBoxModel.value);
-					} else {
-						this.removeSearch(this.searchBoxModel.value);
-					}
-					break;
-					
-				/*
-					Message Detail Commands
-				*/
-					Mojo.Log.info(event.command + " called")
-				case 'reply':
-				case 'dm':
-				case 'favorite':
-				case 'delete':
-					this.handleCommandMenu(event.command);
-					break;
-				case 'retweet':
-					this.retweet(this.statusobj);
-					break;
-				case 'RT':
-					this.prepRetweet(this.statusobj);
-					break;
-				case 'quote':
-					this.prepQuote(this.statusobj);
-					break;
-				case 'email':
-					this.emailTweet(this.statusobj);
-					break;
-				case 'sms':
-					this.SMSTweet(this.statusobj);
-					break;
-				case 'facebook':
-					this.facebookTweet(this.statusobj);
-					break;
+			if (this._commands[event.command]) {
+				Mojo.Log.error('calling event.command: %j', event.command);
+				Mojo.Log.error('calling event.command handler: %s', this._commands[event.command]);
+				this._commands[event.command].call(this, event);
+			} else {
+				Mojo.Log.error('No event.command handler found: %j', event.command);
 			}
+					
+		}
+	};
+	
+	    
+	assistant.setCommand = function(label, func) {
+		this._commands[label] = func;
+	};
+
+	assistant.removeCommand = function(label) {
+		this._commands[label] = null;
+	};
+	
+	
+	
+	/**
+	 * handler for all filter commands on my-timeline 
+	 */
+	assistant.filterCommandHandler = function(e) {
+		var sceneobject = this.controller.stageController.activeScene();
+		var scenename = sceneobject.sceneName;
+		
+		sch.debug('scenename:'+scenename);
+		
+		/*
+			if we're in my-timeline, we do things differently
+		*/
+		if (scenename.indexOf('my-timeline') != -1) {
+			this.controller.prepareTransition(Mojo.Transition.crossFade).run();
+			this.filterTimeline(e.command, true);
+		} else {
+			// push to my-timeline with a param to set a filter
+			Spaz.findAndSwapScene('my-timeline', {'filter': e.command});
+
+		}
+	};
+	
+	/**
+	 * all our default commands
+	 * @variable 
+	 */
+	assistant._commands = {
+
+		/**
+		 * my-timeline view filtering handlers 
+		 */
+		'filter-timeline-all' : function(e) {
+			this.filterCommandHandler(e);
+		},
+		'filter-timeline-replies-dm' : function(e) {
+			this.filterCommandHandler(e);
+		},
+		'filter-timeline-replies' : function(e) {
+			this.filterCommandHandler(e);
+		},
+		'filter-timeline-dms' : function(e) {
+			this.filterCommandHandler(e);
+		},
+
+		'new-search-card':function(e) {
+
+			App.new_search_card++;
+			this.createStage(
+				'search-twitter',
+				{'lightweight':'false'},
+				App.search_card_prefix+App.new_search_card
+			);
+		},
+			
+		'update-location':function(e) {
+			this.showLocationPanel();
+		},
+
+		/*
+			Compose a new message
+		*/
+		'compose':function(e) {
+			this.prepMessage();
+		},
+
+		/*
+			Scroll to top
+		*/
+		'toggle-accounts-panel': function(e) {
+			if(this.controller.get('panel').hasClassName("sliding")){
+				this.controller.get('panel').removeClassName('sliding');
+				return;
+			}
+			this.controller.get('panel').addClassName('sliding');
+		},
+
+		'scroll-top':function(e) {
+			dump("Scroll to top");
+			this.scrollToTop();
+		},
+
+		/*
+			Scroll to bottom
+		*/
+		'scroll-bottom': function(e) {
+			dump("Scroll to bottom");
+			this.scrollToBottom();			
+		},
+
+		/*
+			Scroll to first (last in list) new item
+		*/
+		'scroll-new':function(e) {
+			dump("Scroll to new");
+			this.scrollToNew();
+		},
+		
+		/*
+			This would refresh the current view
+		*/
+		'refresh': function(e) {
+			if (this.refresh) {
+				Mojo.Log.error('`this.refresh`; calling');
+				this.refresh(e, 'refresh'); // need to have a "refresh" method defined for each scene asst
+			} else {
+				Mojo.Log.error('`this.refresh` DNE; ignoring');
+			}
+			
+		},
+		
+		/*
+			This is only in the search-twitter-assistant scene
+		*/
+		'save-search':function(e) {
+			if (this.isSavedSearch === false) {
+				this.saveSearch(this.searchBoxModel.value);
+			} else {
+				this.removeSearch(this.searchBoxModel.value);
+			}			
 		}
 	};
 	
@@ -251,73 +268,132 @@ scene_helpers.addCommonSceneMethods = function(assistant) {
 		}
 		this.topContainer = this.scroller.down();
 		dump('Scrolling to top');
-		this.scroller.mojo.scrollTo(0,0, true);
+		this.scroller.mojo.scrollTo(0,0, false);
 	};
 	
 	/**
 	 *  
 	 */
 	assistant.scrollToBottom = function() {
-		if (!this.scroller) {
-			this.scroller = this.controller.getSceneScroller();
-		}
-		dump('Scrolling to bottom');
-		jQuery(this.scroller).scrollTo( jQuery(this.scroller).height(), { axis:'y', duration:0 } );
+		this.scroller.mojo.revealBottom();
 	};
 	
 	/**
 	 *  
 	 */
 	assistant.scrollToNew = function() {
+		
+		var firstnew = -1;
+		if (this.timeline_model && this.timeline_model.items && this.timeline_list) {
+			
+			for (var i=0; i < this.timeline_model.items.length; i++) {
+				if (this.timeline_model.items[i].data.Spaz_is_new === true) {
+					firstnew = i;
+				}
+			}
+			
+			if (firstnew >= 0 && (firstnew < this.timeline_model.items.length-1) ) {
+				Mojo.Log.error('Revealing item:' + firstnew);
+				this.timeline_list.mojo.revealItem(firstnew, true);
+			} else {
+				Mojo.Log.error('Not scrolling');
+			}
+			
+		} else {
+			Mojo.Log.error('Cannot scroll to new -- this.timeline_model not defined!');
+			Mojo.Log.error('this.timeline_model: %j', this.timeline_model);
+			Mojo.Log.error('this.timeline_list: %j', this.timeline_list);
+		}
+		
+	};
+
+	
+	
+	/**
+	 * Binds listeners for scrolling
+	 */
+	assistant.bindScrollToRefresh = function() {
+		var thisA = this;
+		
+		Mojo.Log.info('BINDING');
+		
 		if (!this.scroller) {
 			this.scroller = this.controller.getSceneScroller();
 		}
-		var num_new   = jQuery('.timeline div.timeline-entry.new:visible', this.scroller).length;
-		var first_new = jQuery('.timeline div.timeline-entry.new:visible:last', this.scroller).get(0);
-		if (first_new) {
-			dump('Scrolling to first new item');
-			if (num_new == 1) { // if only one new, just scroll to the top
-				this.scrollToTop();
-			} else {
-				jQuery(this.scroller).scrollTo(first_new, { axis:'y', duration:0, offset:{top:-100} });				
-			}
-		} else {
-			dump('No new items to scroll to');
+		
+		this._handleScrollStarting = this.handleScrollStarting.bindAsEventListener(this);
+		this.controller.listen(this.scroller, Mojo.Event.scrollStarting, this._handleScrollStarting);
+	};
+	
+	
+	/**
+	 * Unbinds listeners for scrolling
+	 */
+	assistant.unbindScrollToRefresh = function() {
+		Mojo.Log.info('UNBINDING');
+		this.controller.stopListening(this.scroller, Mojo.Event.scrollStarting, this._handleScrollStarting);
+	};
+	
+	
+	assistant.handleScrollStarting = function(e) {
+		var thisA = this;
+		
+		
+		this._longestPull = 0;
+		
+		Mojo.Log.error('this.scroller.mojo.getScrollPosition(): %j', this.scroller.mojo.getScrollPosition());
+		
+		if (this.scroller.mojo.getScrollPosition().top === 0) {
+			jQuery(this.scroller).addClass('pull-to-refresh');
+			e.scroller.addListener({
+				moved:this.handleScrollMoved.bind(this)	
+			});
 		}
+		
 	};
 
+	
+	assistant.handleScrollMoved = function(done, position) {
+		
+		if (!this._longestPull) {
+			this._longestPull = 0;
+		}
+		if (!this._pullThreshold) {
+			this._pullThreshold = 100;
+		}
+		
+		if ((position.y <= -5 && this._longestPull == 0)
+			|| (!jQuery(this.scroller).hasClass('pull-to-refresh'))) { // we're not pulling down, so kill it
+			jQuery(this.scroller).removeClass('pull-to-refresh');
+			done = true;
+			this._longestPull = 0;
+		}
+		
+	   	Mojo.Log.error("DONE:%s; POSITION:%j; this._longestPull:", done, position, this._longestPull);
+       
+		if (!done) { // not done
+			if (this._longestPull < position.y) {
+				this._longestPull = position.y;
+				Mojo.Log.error("NOW THIS._LONGESTPULL:", this._longestPull);
+			}
+		} else { // done, so check if we refresh
+			if (this._longestPull >= this._pullThreshold) {
+				this._longestPull = 0;
+				Mojo.Controller.stageController.sendEventToCommanders({
+					'type':Mojo.Event.command,
+					'command':'refresh'
+				});
+			} else {
+				this._longestPull = 0;
+			}
+			
+			jQuery(this.scroller).removeClass('pull-to-refresh');
 
-	/**
-	 *  
-	 */
-	//     assistant.filterTimeline = function(command) {
-	// 
-	// 	if (!command) {
-	// 		command = this.filterState;
-	// 	}
-	// 
-	// 	switch (command) {
-	// 	case 'filter-timeline-all':
-	// 		jQuery('#my-timeline div.timeline-entry').show();
-	// 		break;
-	// 	case 'filter-timeline-replies-dm':
-	// 		jQuery('#my-timeline div.timeline-entry').hide();
-	// 		jQuery('#my-timeline div.timeline-entry.reply, #my-timeline div.timeline-entry.dm').show();
-	// 		break;
-	// 	case 'filter-timeline-replies':
-	// 		jQuery('#my-timeline div.timeline-entry').hide();
-	// 		jQuery('#my-timeline div.timeline-entry.reply').show();
-	// 		break;
-	// 	case 'filter-timeline-dms':
-	// 		jQuery('#my-timeline div.timeline-entry').hide();
-	// 		jQuery('#my-timeline div.timeline-entry.dm').show();
-	// 		break;
-	// 	default:
-	// 		jQuery('#my-timeline div.timeline-entry').show();
-	// 	}
-	// 
-	// 	this.filterState = command; 
-	// };
+			Mojo.Log.error("RESET THIS._LONGESTPULL:", this._longestPull);
+		}
+
+	};
+	
 	
 	
 	
@@ -358,18 +434,18 @@ scene_helpers.addCommonSceneMethods = function(assistant) {
 	
 	
 	assistant.initTwit = function(event_mode) {
-		// var username = sc.app.prefs.get('username');
-		// var password = sc.app.prefs.get('password');
+		// var username = App.prefs.get('username');
+		// var password = App.prefs.get('password');
 		
 		event_mode = event_mode || 'jquery'; // default this to jquery because we have so much using it
 		
-		var users = new SpazAccounts(sc.app.prefs);
+		var users = new SpazAccounts(App.prefs);
 		
 		this.twit = new SpazTwit({
 			'event_mode':event_mode,
 			'timeout':1000*60
 		});
-		this.twit.setSource(sc.app.prefs.get('twitter-source'));
+		this.twit.setSource(App.prefs.get('twitter-source'));
 		
 		
 		var auth;
@@ -419,14 +495,19 @@ scene_helpers.addCommonSceneMethods = function(assistant) {
 	
 	assistant.showPostPanel = function(opts) {
 		
-		Mojo.Controller.stageController.pushScene("post", {
-			'text'         : opts.text         || '',
-			'type'         : opts.type         || null,
-			'select_start' : opts.select_start || 0,
-			'select_length': opts.select_length|| 0,
-			'irt_status'   : opts.irt_status   || null,
-			'irt_status_id': opts.irt_status_id|| 0
-		});
+		opts = sch.defaults({
+		    'text'         : '',
+			'type'         : null,
+			'select_start' : 0,
+			'select_length': 0,
+			'irt_status'   : null,
+			'irt_status_id': 0,
+			'dm_irt_text'  : null,
+			'dm_recipient' : null
+			
+		}, opts);
+		
+		Mojo.Controller.stageController.pushScene("post", opts);
 		
 	};
 	
@@ -469,7 +550,7 @@ scene_helpers.addCommonSceneMethods = function(assistant) {
 		var text = entryobj.SC_text_raw;
 		var screenname = entryobj.user.screen_name;
 
-		var text = 'RT @' + screenname + ': '+text+'';
+		text = 'RT @' + screenname + ': '+text+'';
 		
 		this.showPostPanel({
 			'text'         : text,
@@ -486,7 +567,7 @@ scene_helpers.addCommonSceneMethods = function(assistant) {
 		var text = entryobj.SC_text_raw;
 		var screenname = entryobj.user.screen_name;
 
-		var text = text+' /via @' + screenname;
+		text = text+' /via @' + screenname;
 		
 		this.showPostPanel({
 			'text'         : text,
@@ -503,14 +584,47 @@ scene_helpers.addCommonSceneMethods = function(assistant) {
 	assistant.facebookTweet = function(tweetobj) {
 		
 		var message = "From @"+tweetobj.user.screen_name + ": "+tweetobj.SC_text_raw;
+
+		var appids = [
+			'com.palm.app.facebook.beta',
+			'com.palm.app.facebook'
+		];
+
+		var index = 0;
 		
-			this.controller.serviceRequest("palm://com.palm.applicationManager", {
-				method:      'launch',
-				parameters:  {
-					id: 'com.palm.app.facebook',
-					params: { status: message }
-				}
-			});
+		var that = this;
+		
+		
+		function post() {
+			
+			if (index < appids.length) {
+				
+				Mojo.Log.info('Trying to post with appid %s', appids[index]);
+				
+				that.controller.serviceRequest("palm://com.palm.applicationManager", {
+					method:      'launch',
+					parameters:  {
+						id: appids[index],
+						params: { status: message }
+					},
+					onFailure: function() {
+						Mojo.Log.info('Failed to post with appid %s', appids[index]);
+						index++; // go to next appid
+						post(); // retry
+					}
+				});			
+				
+			} else {
+				Mojo.Log.info('Failed to post to Facebook');
+				that.showAlert($L('Facebook app not installed'), $L('Could not post'));
+			}
+			
+		}
+		
+		// start!
+		post();
+		
+		
 	};
 
 	/**
@@ -559,19 +673,15 @@ scene_helpers.addCommonSceneMethods = function(assistant) {
 	/**
 	 *  
 	 */
-	assistant.prepDirectMessage = function(username) {
+	assistant.prepDirectMessage = function(username, irt_text) {
 		
-		var text = 'd ';
+		var text = '';
 		
-	    if (username) {
-			text += (username + ' ');
-	    }
-	
 		this.showPostPanel({
 			'text'         : text,
 			'type'         : 'dm',
-			'select_start' : 2,
-			'select_length': text.length
+			'dm_irt_text'  : irt_text,
+			'dm_recipient' : username
 		});
 
 	};
@@ -594,7 +704,9 @@ scene_helpers.addCommonSceneMethods = function(assistant) {
 			'type'         : 'photo',
 			'select_start' : url.length+1,
 			'select_length': text.length
-		});		
+		});
+		
+		return true;	
 	};
 
 
@@ -603,11 +715,18 @@ scene_helpers.addCommonSceneMethods = function(assistant) {
 	 *  
 	 */
 	assistant.prepReply = function(username, status_id, statusobj) {
-		var text = '@';
+		var text = '@', screenname = null, unique_usernames = [];
+
+		Mojo.Log.error('username: %j', username);
 		
-	    if (username) {
+		if (sch.isArray(username)) {
+						
+			username = username.join(' @');
+		}
+
+		if (username) {
 			text += username + ' ';
-	    }
+		}
 	
 		this.showPostPanel({
 			'text'         : text,
@@ -629,10 +748,11 @@ scene_helpers.addCommonSceneMethods = function(assistant) {
 			id,
 			function(data){
 				that.showBanner($L('Deleted status'));
-				sc.app.Tweets.remove(id);
+				App.Tweets.remove(id);
 				jQuery('div.timeline-entry[data-status-id="'+id+'"]').remove();
 			},
 			function(xhr, msg, exc){
+				Mojo.Log.error("Error deleting status: '%s', '%s'", xhr.responseText, msg);
 				that.showBanner($L('Deleting status failed!'));
 			}
 		);
@@ -648,10 +768,11 @@ scene_helpers.addCommonSceneMethods = function(assistant) {
 			id,
 			function(data){
 				that.showBanner($L('Deleted direct message'));
-				sc.app.Tweets.remove(id, true);
+				App.Tweets.remove(id, true);
 				jQuery('div.timeline-entry.dm[data-status-id="'+id+'"]').remove();
 			},
 			function(xhr, msg, exc){
+				Mojo.Log.error("Error deleting dm: '%s', '%s'", xhr.responseText, msg);
 				that.showBanner($L('Deleting direct message failed!'));
 			}
 		);
@@ -667,7 +788,7 @@ scene_helpers.addCommonSceneMethods = function(assistant) {
 		if (!saved_id) {
 			saved_id = null;
 		} else {
-			saved_id = parseInt(saved_id, 10);
+			// saved_id = parseInt(saved_id, 10);
 		}
 		
 		var lightweight = false;
@@ -678,7 +799,7 @@ scene_helpers.addCommonSceneMethods = function(assistant) {
 		/*
 			if username and pass aren't set, use lightweight version
 		*/
-		if (!(sc.app.username)) {
+		if (!(App.username)) {
 			lightweight = true;
 		}
 			
@@ -732,7 +853,10 @@ scene_helpers.addCommonSceneMethods = function(assistant) {
 	 * stops and hides a spinner 
 	 */
 	assistant.hideInlineSpinner = function(id) {
-		jQuery('#'+id).get(0).mojo.stop();
+		Mojo.Log.error('hideInlineSpinner %s', id);
+		if (jQuery('#'+id).get(0)) {
+			jQuery('#'+id).get(0).mojo.stop();
+		}
 		jQuery('#'+id+'-container').hide();
 	};
 	
@@ -759,10 +883,16 @@ scene_helpers.addCommonSceneMethods = function(assistant) {
 	};
 	
 	
-
-	assistant.showBanner = function(text, category) {
+    /**
+     * helper to easily show banners 
+     * 
+     * @param {string} soundClass default false (no sound). (alerts|notifications|vibrate)
+     */
+	assistant.showBanner = function(text, category, soundClass) {
 		
-		var category = category || 'misc';
+		if (!soundClass) { soundClass = false; }
+		
+		category = category || 'misc';
 		
 		var launchArgs = {
 			'fromstage':this.getStageName()
@@ -770,8 +900,8 @@ scene_helpers.addCommonSceneMethods = function(assistant) {
 		var bannerArgs = {
 			'messageText':text
 		};
-		if (sc.app.prefs.get('sound-enabled')) {
-			bannerArgs.soundClass = 'alerts';
+		if (soundClass && App.prefs.get('sound-enabled')) {
+			bannerArgs.soundClass = soundClass;
 		}
 
 		var appController = Mojo.Controller.getAppController();
@@ -815,8 +945,8 @@ scene_helpers.addCommonSceneMethods = function(assistant) {
 			'messageText':msg
 		};
 		
-		if (sc.app.prefs.get('sound-enabled')) {
-			bannerArgs.soundClass = 'alerts';
+		if (App.prefs.get('sound-enabled')) {
+			bannerArgs.soundClass = 'notification';
 		}
 		
 		var appController = Mojo.Controller.getAppController();
@@ -841,8 +971,8 @@ scene_helpers.addCommonSceneMethods = function(assistant) {
 		var bannerArgs = {
 			'messageText':count+" new result(s) for '"+query+"'"
 		};
-		if (sc.app.prefs.get('sound-enabled')) {
-			bannerArgs.soundClass = 'alerts';
+		if (App.prefs.get('sound-enabled')) {
+			bannerArgs.soundClass = 'notification';
 		}
 		
 		
@@ -956,12 +1086,14 @@ scene_helpers.addCommonSceneMethods = function(assistant) {
 
 	assistant.processAjaxError = function(errobj) {		
 
-		var human_msg, twiterr_req, twiterr_msg;
+		var human_msg, twiterr_req, twiterr_msg, error_processed;
+		
+		Mojo.Log.error("assistant.processAjaxError = function(errobj): %j", errobj);
 		
 		switch(errobj.msg) {
 			case 'timeout':
 				
-				human_msg = $L('The request timed out – server did not respond in time');
+				human_msg = $L('The request timed out – server did not respond');
 				break;
 				
 			case 'error':
@@ -986,11 +1118,12 @@ scene_helpers.addCommonSceneMethods = function(assistant) {
 				
 				try {
 					var twiterr = sch.deJSON(errobj.xhr.responseText);
-					twiterr_req = twiterr.request;
-					twiterr_msg = twiterr.error;
+					twiterr_req = sch.stripTags(twiterr.request);
+					twiterr_msg = sch.stripTags(twiterr.error);
+					twiterr_msg = sch.stripTags(twiterr.error);
 				} catch (e) {
-					dump('Tried to decode JSON from responseText, but failed');
-					dump(e.name + ":" + e.message);
+					Mojo.Log.error('Tried to decode JSON from responseText, but failed');
+					Mojo.Log.error(e.name + ":" + e.message);
 				}
 				
 				break;
@@ -1009,29 +1142,29 @@ scene_helpers.addCommonSceneMethods = function(assistant) {
 			
 			default:
 			
-				human_msg = $L('Ajax Error');
+				human_msg = $L('An error of some sort occurred while talking to the server');
 				break;
 		}
 		
 		if (errobj.xhr && errobj.xhr.readyState > 3) {
-			var error_processed = {
+			error_processed = {
 				'status':		errobj.xhr.status,
 				'statusText':	errobj.xhr.statusText,
 				'responseText':	errobj.xhr.responseText,
 				'url':			errobj.url,
 				'msg':			errobj.msg,
-				'human_msg':	human_msg,
+				'human_msg':	twiterr_msg||human_msg,
 				'twitter_request':	twiterr_req,
 				'twitter_msg':	twiterr_msg
 			};
 		} else {
-			var error_processed = {
-				'status':		'n/a',
-				'statusText':	'n/a',
-				'responseText':	'n/a',
+			error_processed = {
+				'status':		'',
+				'statusText':	'',
+				'responseText':	'',
 				'url':			errobj.url,
 				'msg':			errobj.msg,
-				'human_msg':	human_msg,
+				'human_msg':	twiterr_msg||human_msg,
 				'twitter_request':	twiterr_req,
 				'twitter_msg':	twiterr_msg
 			};
@@ -1059,205 +1192,289 @@ scene_helpers.addCommonSceneMethods = function(assistant) {
 	
 	
 	assistant.displayErrorInfo = function(msg, errors, template) {
+		Mojo.Log.error('assistant.displayErrorInfo');
+		Mojo.Log.error('msg: %s', msg);
+		Mojo.Log.error('errors: %j', errors);
+		Mojo.Log.error('template: %s', template);
+		
 		
 		var error_info;
-		var error_html = '';
+		var error_str = '';
 		
 		errors = errors || null;
-		
-		dump(errors);
 		
 		if (errors && !sch.isArray(errors)) {
 			var err = errors;
 			errors = [errors];
 		}
 		
-		dump(errors);
-		
 		if (!template) {
-			template = 'error_info_text';
+			// template = 'error_info_text';
+			template = 'error_info';
 		} 
 
+		
+		error_str += msg + "\n";
 		
 		if ( errors ) {
 			for (var i = 0; i < errors.length; i++) {
 				error_info  = this.processAjaxError(errors[i]);
-				if (error_html.length>0) {
-					error_html += "-------------------\n";
-				}
-				error_html += sc.app.tpl.parseTemplate(template, error_info);
+				error_str += App.tpl.parseTemplate(template, error_info);
 			}
 		}
 
-		var dialog_widget = Mojo.Controller.errorDialog(error_html);
+		var dialog_widget = Mojo.Controller.errorDialog(error_str);
 		
 	};
 
 	
 	assistant.clearTimelineCache = function(callback) {
-		this.cacheDepot = TempCache.clear();
-		sc.app.Tweets.reset();
-		this.showAlert($L('Message cache cleared', 'Cache Cleared'));
+		this.cacheDepot = App.cache.clear();
+		App.Tweets.reset();
+		this.showAlert($L('Boom'), $L('Cache Cleared'));
 	};
 	
+	
+	
+	assistant.handleTimelineListTap = function(e) {
+		var thisA = this;	
+		
+		var listitem = e.item;
+		var userid, status_id, isdm, status_obj;
+		var event_target;
+
+		/*
+			remap if we have an originalEvent
+		*/
+		if (e.originalEvent) {
+			Mojo.Log.info('originalEvent target: %s', e.originalEvent.target.outerHTML);
+			event_target = e.originalEvent.target;
+		} else {
+			event_target = e.target;
+		}
+		
+		Mojo.Log.error('Mojo.Event.tap received from live listener');
+		Mojo.Log.info('Mojo.Event.tap target element: %s', event_target.outerHTML);
+		Mojo.Log.info('Mojo.Event.tap target item: %j', listitem);
+		
+		/*
+			Check to see if a hold already fired. If so, don't do *anything*
+		*/
+		if (event_target.holdFired) {
+			event_target.holdFired = false;
+			return;
+		}
+		
+		var jqtarget = jQuery(event_target);
+
+		status_obj = sch.clone(listitem.data);
+
+		if (jqtarget.is('div.timeline-entry>.user') || jqtarget.is('div.timeline-entry>.user img')) {
+			Mojo.Log.info('tap on .user or .user img, pushing user-detail');
+			userid = jQuery(this).attr('data-user-id');
+			Mojo.Controller.stageController.pushScene('user-detail', userid);
+			return;
+
+		} else if (jqtarget.is('.username.clickable')) {
+			Mojo.Log.info('tap on username.clickable, pushing user-detail');
+			userid = jqtarget.attr('data-user-screen_name');
+			Mojo.Controller.stageController.pushScene('user-detail', '@'+userid);
+			return;
+
+		} else if (jqtarget.is('.hashtag.clickable')) {
+			Mojo.Log.info('tap on hashtag, searching');
+			hashtag = jqtarget.attr('data-hashtag');
+			thisA.searchFor('#'+hashtag);
+			return;
+
+		} else if (jqtarget.is('div.timeline-entry a[href]')) {
+			Mojo.Log.info('tap on a[href], ignoring');
+		
+			/*
+				this will cause a double tap, so ignore
+			*/			
+			return;
+
+             
+		} else if (jqtarget.is('div.timeline-entry .meta')) {
+			Mojo.Log.info('tap on .meta, ignoring');
+			/*
+				this will cause a double tap, so ignore
+			*/
+			return;
+
+		} else {
+			Mojo.Log.error('HOLD');
+			
+			Mojo.Log.error('status_obj: %j', status_obj);
+			this._lastClickedStatusObj = status_obj;
+
+			/*
+				build the menu items
+			*/
+			var menu_items = [], screen_names = [];
+			if (status_obj.SC_is_dm) {
+				menu_items = [
+					{label: $L('Details'), command: 'details'},
+					{label: $L('Reply to DM'), command: 'reply-dm'}
+				];
+			} else {
+				menu_items = [
+					{label: $L('Details'), command: 'details'},
+					{label: $L('@reply'), command: 'reply'}
+				];
+				if (sch.extractScreenNames(status_obj.SC_text_raw).length > 0) {
+					menu_items.push({
+						label: $L('@reply to all'),
+						command: 'reply-all'
+					});
+				}
+				if (!status_obj.user['protected']) {					
+					menu_items.push({label: $L('Share'), command: 'share'});
+				}
+			}
+			
+			
+			this.controller.popupSubmenu({
+				onChoose: function(cmd) {
+					
+					var username, status_id, is_dm, screen_names = [];
+					var status_obj = thisA._lastClickedStatusObj;
+					
+					Mojo.Log.info("onChoose cmd: %s", cmd);
+					
+					if (status_obj.SC_is_dm) {
+						username  = status_obj.sender.screen_name;
+						status_id = status_obj.id;
+						is_dm     = true;
+						
+						
+					} else {
+						username  = status_obj.user.screen_name;
+						status_id = status_obj.id;
+						is_dm     = false;
+						screen_names = sch.extractScreenNames(status_obj.SC_text_raw, [username, Spaz.Prefs.getUsername()]);
+						screen_names.unshift(username);
+					}
+					Mojo.Log.info("Status Obj: %s", username);
+					Mojo.Log.info("Status Obj: %s", status_id);
+					Mojo.Log.info("Status Obj: %s", is_dm);
+
+
+					switch (cmd) {
+						case 'details':
+							Mojo.Log.info('Pushing message detail scene');
+							Mojo.Controller.stageController.pushScene('message-detail', {'status_id':status_id, 'isdm':is_dm});
+
+							break;
+						case 'share':
+							thisA.showShareMenu(e, status_obj);
+							break;
+						case 'reply':
+							thisA.prepReply(username, status_id, status_obj);
+							break;
+						case 'reply-all':
+							thisA.prepReply(screen_names, status_id, status_obj);
+							break;
+						case 'reply-dm':
+							thisA.prepDirectMessage('@'+username, status_obj.text);
+							break;
+						case 'retweet':
+							thisA.retweet(status_obj);
+							break;
+						case 'RT':
+							thisA.prepRetweet(status_obj);
+							break;
+						case 'quote':
+							thisA.prepQuote(status_obj);
+							break;
+						case 'email':
+							thisA.emailTweet(status_obj);
+							break;
+						case 'sms':
+							thisA.SMSTweet(status_obj);
+							break;								
+						case 'facebook':
+							thisA.facebookTweet(status_obj);
+							break;
+
+						default:
+							return;
+					};
+
+				},
+				placeNear: event_target,
+				items: menu_items
+			});
+		}
+
+	};
+	
+	
+	assistant.showShareMenu = function(e, status_obj) {
+		var thisA = this;
+		
+		var items;
+		
+		if (!status_obj.SC_is_dm) {
+			items = [
+				{label: $L('ReTweet'), command: 'retweet'},
+				{label: $L('RT @…'), command:   'RT'},
+				{label: $L('Quote'), command:   'quote'},
+				{label: $L('Email'), command:   'email'},
+				{label: $L('SMS/IM'), command:  'sms'},
+				{label: $L('Facebook'), command:  'facebook'}
+			];
+		} else {
+			items = [
+				{label: $L('Email'), command:   'email'}
+			];			
+		}
+		
+		this.controller.popupSubmenu({
+			onChoose: function(cmd) {
+
+				switch (cmd) {
+					case 'retweet':
+						thisA.retweet(status_obj);
+						break;
+					case 'RT':
+						thisA.prepRetweet(status_obj);
+						break;
+					case 'quote':
+						thisA.prepQuote(status_obj);
+						break;
+					case 'email':
+						thisA.emailTweet(status_obj);
+						break;
+					case 'sms':
+						thisA.SMSTweet(status_obj);
+						break;
+					case 'facebook':
+						thisA.facebookTweet(status_obj);
+						break;
+					default:
+						return;
+				}
+			},
+			placeNear: e.target,
+			items: items
+		});
+	};
 	
 	
 	/**
 	 * Binds jQuery listeners for timeline entry taps contained in the passed selector. Uses .live()
 	 */
-	assistant.bindTimelineEntryTaps = function(tl_selector) {
+	assistant.bindTimelineEntryTaps = function(tl_id) {
 		var thisA = this;
+		var userid;
 		
 		sch.debug('BINDING');
-				
-		jQuery(tl_selector+' div.timeline-entry').live(Mojo.Event.hold, function(e) {
-			
-			sch.debug('HOLD');
-			
-			/*
-				Set this so we don't fire a tap after firing the hold
-			*/
-			e.target.holdFired = true;
-			
-			
-			
-			thisA.controller.popupSubmenu({
-				onChoose: function(cmd) {
-					var jqthis;
-					
-					sch.error(e.target.outerHTML);
-					
-					if (jQuery(e.target).is('div.timeline-entry')) {
-						sch.error('we are on the entry');
-						jqthis = jQuery(e.target); // we're on the timeline element
-					} else {
-						sch.error('we are below the entry');
-						jqthis = jQuery(e.target).parents('div.timeline-entry'); // get the containing timeline entry
-					}
-					
-					
-					var username   = jqthis.attr('data-user-screen_name');
-					sch.error(username);
-					
-					var status_id  = jqthis.attr('data-status-id');
-					sch.error(status_id);
-
-					var is_dm      = !!jqthis.hasClass('dm');
-					sch.error(is_dm);
-					
-					sc.app.Tweets.get(status_id, is_dm, function(status_obj) {
-						sch.error('status_obj:');
-						sch.error(status_obj);
-
-						switch (cmd) {
-							case 'reply':
-								thisA.prepReply(username, status_id, status_obj);
-								break;
-							case 'retweet':
-								thisA.retweet(status_obj);
-								break;
-							case 'RT':
-								thisA.prepRetweet(status_obj);
-								break;
-							case 'quote':
-								thisA.prepQuote(status_obj);
-								break;
-							case 'email':
-								thisA.emailTweet(status_obj);
-								break;
-							case 'sms':
-								thisA.SMSTweet(status_obj);
-								break;								
-							case 'facebook':
-								thisA.facebookTweet(status_obj);
-								break;
-								
-							default:
-								return;
-						};						
-					});
-					
-				},
-				placeNear: e.target,
-				items: [
-					{label: $L('@reply'), command: 'reply'},
-					{label: $L('ReTweet'), command: 'retweet'},
-					{label: $L('RT @…'), command: 'RT'},
-					{label: $L('Quote'), command:   'quote'},
-					{label: $L('Email'), command:   'email'},
-					{label: $L('SMS/IM'), command:  'sms'},
-					{label: $L('Facebook'), command:  'facebook'}
-				]
-			});
-			
-		});
 		
-		jQuery(tl_selector+' div.timeline-entry').live(Mojo.Event.listTap, function(e) {
-			sch.error('LISTTAP');
-			jQuery(this).trigger(Mojo.Event.tap);
-		});
+		this._handleTimelineListTap = this.handleTimelineListTap.bindAsEventListener(this);
+		this.controller.listen(tl_id, Mojo.Event.listTap, this._handleTimelineListTap);
 		
-		jQuery(tl_selector+' div.timeline-entry').live(Mojo.Event.tap, function(e) {
-			
-			sch.error('TAP');
-			
-			/*
-				Check to see if a hold already fired. If so, don't do *anything*
-			*/
-			if (e.target.holdFired) {
-				e.target.holdFired = false;
-				return;
-			}
-			
-			var jqtarget = jQuery(e.target);
-
-			e.stopImmediatePropagation();
-
-			if (jqtarget.is('div.timeline-entry>.user') || jqtarget.is('div.timeline-entry>.user img')) {
-				var userid = jQuery(this).attr('data-user-id');
-				Mojo.Controller.stageController.pushScene('user-detail', userid);
-				return;
-
-			} else if (jqtarget.is('.username.clickable')) {
-				var userid = jqtarget.attr('data-user-screen_name');
-				Mojo.Controller.stageController.pushScene('user-detail', '@'+userid);
-				return;
-
-			} else if (jqtarget.is('.hashtag.clickable')) {
-				var hashtag = jqtarget.attr('data-hashtag');
-				thisA.searchFor('#'+hashtag);
-				return;
-
-			} else if (jqtarget.is('div.timeline-entry .meta')) {
-				var status_id = jqtarget.attr('data-status-id');
-				var isdm = false;
-				var status_obj = null;
-
-				status_obj = thisA.getTweetFromModel(parseInt(status_id, 10));
-
-				if (jqtarget.parent().parent().hasClass('dm')) {
-					isdm = true;
-				}
-
-				Mojo.Controller.stageController.pushScene('message-detail', {'status_id':status_id, 'isdm':isdm, 'status_obj':status_obj});
-				return;
-
-			} else if (jqtarget.is('div.timeline-entry a[href]')) {
-				return;
-
-			} else {
-				var status_id = jQuery(this).attr('data-status-id');
-				var isdm = false;
-				var status_obj = null;
-
-				if (jQuery(this).hasClass('dm')) {
-					isdm = true;
-				}
-
-				Mojo.Controller.stageController.pushScene('message-detail', {'status_id':status_id, 'isdm':isdm, 'status_obj':status_obj});
-				return;
-			}
-		});
 	};
 	
 	
@@ -1268,10 +1485,9 @@ scene_helpers.addCommonSceneMethods = function(assistant) {
 	/**
 	 * Unbinds jQuery listeners for timeline entry taps contained in the passed selector. Uses .die()
 	 */
-	assistant.unbindTimelineEntryTaps = function(tl_selector) {
-		sch.error('UNBINDING');
-		jQuery(tl_selector+' div.timeline-entry').die(Mojo.Event.hold);
-		jQuery(tl_selector+' div.timeline-entry').die(Mojo.Event.tap);
+	assistant.unbindTimelineEntryTaps = function(tl_id) {
+		Mojo.Log.info('UNBINDING');
+		this.controller.stopListening(tl_id, Mojo.Event.listTap, this._handleTimelineListTap);
 	};
 	
 	
@@ -1325,6 +1541,7 @@ scene_helpers.addCommonSceneMethods = function(assistant) {
 	 * @param {string} msg  required 
 	 * @param {string} title  optional 
 	 * @param {function} ok_cb  callback like function(value) where value is value assigned to OK button. Optional
+	 * @param {array} [choices] an array of choice objects. Ex: {label:$L('Okay'), value:"okay", type:'dismiss'}
 	 */
 	assistant.showAlert = function(msg, title, ok_cb, choices) {
 		
@@ -1332,12 +1549,12 @@ scene_helpers.addCommonSceneMethods = function(assistant) {
 			{label:$L('Okay'), value:"okay", type:'dismiss'}
 		];
 		
-		var title    = title   || 'Alert';
-		var msg      = msg     || '';
+		title    = title   || 'Alert';
+		msg      = msg     || '';
 		var onChoose = ok_cb   || function(choice) {
 			return true;
 		};
-		var choices  = choices || default_choices;
+		choices  = choices || default_choices;
 		
 		this.controller.showAlertDialog({
 			'onChoose':onChoose,
@@ -1350,12 +1567,47 @@ scene_helpers.addCommonSceneMethods = function(assistant) {
 	
 	
 	assistant.getStageName = function() {
+	    var stagename;
 		if (window.name) {
-			var stagename = window.name;
+			stagename = window.name;
 		} else {
-			var stagename = SPAZ_MAIN_STAGENAME;
+			stagename = SPAZ_MAIN_STAGENAME;
 		}
 		return stagename;
+	};
+
+	/**
+	* returns the AppController 
+	*/
+	assistant.getAppController = function() {
+		return Mojo.Controller.getAppController();
+	};
+
+	/**
+	* returns the AppAssistant 
+	*/
+	assistant.getAppAssistant = function() {
+		return Mojo.Controller.getAppController().assistant;
+	};
+
+
+	assistant.showBetaWarningAlert = function(force) {
+		if (!force) { force = false; }
+		if (Mojo.appInfo.id.indexOf('spaz-beta') === -1) {
+			return; // don't bother -- this is not a beta
+		}
+		
+		ran_once = Spaz.getAppObj().prefs.get('runonce_betawarning') || 0;
+		
+		if (!ran_once || force) {
+			this.showAlert(
+				$L('This is a BETA version of Spaz. It has bugs. It may not operate properly. It may insult you or your family. BE AWARE.'),
+				$L('Beta Warning'),
+				function(choice) {
+					Spaz.getAppObj().prefs.set('runonce_betawarning', 1);
+				}
+			);
+		}
 	};
 
 
@@ -1372,7 +1624,7 @@ scene_helpers.addCommonSceneMethods = function(assistant) {
 		
 		var is_topmost = (topmost === this.controller);
 		
-		sch.error('is_topmost:'+is_topmost);
+		sch.debug('is_topmost:'+is_topmost);
 		
 		return is_topmost;
 	};

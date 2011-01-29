@@ -6,7 +6,12 @@ function UserDetailAssistant(argFromPusher) {
 	
 	scene_helpers.addCommonSceneMethods(this);	
 	
-	sch.debug('argFromPusher:' + sch.enJSON(argFromPusher));
+	/*
+		this connects App to this property of the appAssistant
+	*/
+	App = Spaz.getAppObj();
+	
+	Mojo.Log.error('argFromPusher: %j', argFromPusher);
 	
 	if (sc.helpers.isString(argFromPusher) || sc.helpers.isNumber(argFromPusher)) {
 		/*
@@ -14,9 +19,27 @@ function UserDetailAssistant(argFromPusher) {
 		*/
 		this.userid  = argFromPusher;
 		this.userRetrieved = false;
-	} else {
+	
+	} else if (argFromPusher.userid) {
+		
+		this.userid = argFromPusher.userid;
+		this.userRetrieved = false;		
+	
+	} else if (argFromPusher.userobj) {
 		this.userobj = argFromPusher.userobj;
 		this.userRetrieved = true;
+	}
+	
+	if (argFromPusher.account_type) {
+		this.user_type = argFromPusher.account_type;
+	}
+	
+	if (argFromPusher.account_api_url) {
+		this.user_api_url = argFromPusher.account_api_url;
+	}
+	
+	if (argFromPusher.auth_obj) {
+		this.auth_obj = argFromPusher.auth_obj;
 	}
 	
 }
@@ -30,36 +53,136 @@ UserDetailAssistant.prototype.setup = function() {
 	
 	this.initTwit();
 
-	if (sc.app.username) {
+	if (App.username) {
 		this.setupCommonMenus({
 			viewMenuItems: [
 				{
-					items: [
-						{label: $L('Refresh'),  icon:'sync', command:'refresh', shortcut:'R'},
-						{label: $L("User Details"), command:'scroll-top', width:200},
+					items:[
+						{label: $L("User Details"), command:'scroll-top', 'class':"palm-header left", width:260},
 						{label: $L('Compose'),  icon:'compose', command:'compose', shortcut:'N'}
-
 					]
 				}
 
 			],
 			cmdMenuItems:[
-				
-				{label:$L('Search for User'),  iconPath: 'images/menu-icon-search-person.png', command:'search-for-user', shortcut:'R'},
-				{label:$L('Reply'),  icon:'at', command:'reply', shortcut:'R'},
-				{label:$L('DM'),  icon:'dms', command:'dm', shortcut:'D'},
-				{label:$L('F'), iconPath: 'images/menu-icon-start-following.png', command:'follow', shortcut:'F'},
-				{label:$L('B'), iconPath: 'images/theme/menu-icon-triangle-up.png', command:'more', shortcut:'B'}
-	
+				{},
+				{
+					items: [
+						{label:$L('Search for User'),  iconPath: 'images/menu-icon-search-person.png', command:'search-for-user', shortcut:'R'},
+						{label:$L('Mention'),  icon:'at', command:'mention', shortcut:'M'},
+						{label:$L('DM'),  icon:'dms', command:'dm', shortcut:'D'},
+						{label:$L('Follow/Unfollow'), disabled:true, iconPath: 'images/menu-icon-start-following.png', command:'follow', shortcut:'F'},
+						{label:$L('Block'), iconPath: 'images/theme/menu-icon-triangle-up.png', command:'more', shortcut:'B'}
+					]
+				},
+				{}
 			]
 		});
 		this.initAppMenu({ 'items':LOGGEDIN_APPMENU_ITEMS });
+		
+		this.setCommand('search-for-user', function(e) {
+			if (this.userRetrieved === true) {
+				thisA.searchFor('from:'+thisA.userobj.screen_name+' OR to:'+thisA.userobj.screen_name);
+			}
+		});
+		this.setCommand('mention', function(e) {
+			if (this.userRetrieved === true) {
+				this.prepReply(this.userobj.screen_name);
+			}
+		});
+		this.setCommand('dm', function(e) {
+			if (this.userRetrieved === true) {
+				this.prepDirectMessage('@'+this.userobj.screen_name);
+			}
+		});
+		this.setCommand('follow', function(e) {
+			if (this.userRetrieved === true && this.userobj.you_are_following) {
+				if (this.userobj.you_are_following === 'yes') {
+					this.twit.removeFriend(
+						this.userobj.id,
+						function(data){
+							thisA.userobj.you_are_following = 'no';
+							thisA.setFollowButtonIcon(thisA.userobj.you_are_following);
+							
+							thisA.showBanner($L('Removed friend #{screen_name}').interpolate({'screen_name':thisA.userobj.screen_name}));
+						},
+						function(xhr, msg, exc){
+							thisA.showBanner($L('Failed to remove friend #{screen_name}').interpolate({'screen_name':thisA.userobj.screen_name}));
+						}	
+					);
+				} else if (this.userobj.you_are_following === 'no') {
+					this.twit.addFriend(
+						this.userobj.id,
+						function(data){
+							thisA.userobj.you_are_following = 'yes';
+							thisA.setFollowButtonIcon(thisA.userobj.you_are_following);
+							thisA.showBanner($L('Added friend #{screen_name}').interpolate({'screen_name':thisA.userobj.screen_name}));
+						},
+						function(xhr, msg, exc){
+							thisA.showBanner($L('Failed to add friend #{screen_name}').interpolate({'screen_name':thisA.userobj.screen_name}));
+						}		
+					);
+				}
+			}
+		});
+		this.setCommand('block', function(e) {
+			Mojo.Log.error('block');
+		});
+		this.setCommand('block-and-report', function(e) {
+			Mojo.Log.error('block and report');
+		});
+		this.setCommand('more', function(e) {
+			var near = e.originalEvent && e.originalEvent.target;
+			this.controller.popupSubmenu({
+				onChoose: function(command) {
+					Mojo.Log.error('COMMAND: %s', command);
+					if (thisA.userRetrieved === true) {
+						switch(command) {
+							
+							case 'block':
+								thisA.twit.block(
+									thisA.userobj.id,
+									function(data){
+										thisA.showBanner($L('Blocked #{screen_name}').interpolate({'screen_name':thisA.userobj.screen_name}));
+										Mojo.Controller.getAppController().sendToNotificationChain({"event":"blocked_user", "blocked_userid":thisA.userobj.id});
+									},
+									function(xhr, msg, exc){
+										thisA.showBanner($L('Failed to block #{screen_name}').interpolate({'screen_name':thisA.userobj.screen_name}));
+									}
+								);
+								break;
+								
+							case 'block-and-report':
+								thisA.twit.reportSpam(
+									thisA.userobj.id,
+									function(data){
+										thisA.showBanner($L('Blocked & reported #{screen_name}').interpolate({'screen_name':thisA.userobj.screen_name}));
+										Mojo.Controller.getAppController().sendToNotificationChain({"event":"blocked_user", "blocked_userid":thisA.userobj.id});
+									},
+									function(xhr, msg, exc){
+										thisA.showBanner($L('Failed to block & report #{screen_name}').interpolate({'screen_name':thisA.userobj.screen_name}));
+									}
+								);
+								break;
+							
+						}
+					}
+				},
+				placeNear: near,
+				items: [
+					{ label: $L("Block"), command: "block" },
+					{ label: $L("Block & Report Spammer"), command: "block-and-report" }
+				]
+			});
+		});
+		
 			
 	} else {
 		this.setupCommonMenus({});	
 		
 		this.initAppMenu();
 	};
+	
 	
 
 	this.scroller = this.controller.getSceneScroller();
@@ -76,31 +199,34 @@ UserDetailAssistant.prototype.setup = function() {
 	jQuery(document).bind('new_user_timeline_data', { thisAssistant:this }, function(e, tweets) {
 		
 		var rendertweets = tweets;
-		// they come in oldest-first, so reverse it since we're rendering as a collection
-		rendertweets = rendertweets.reverse();
-
-		jQuery.each( rendertweets, function() {
-			this.text = Spaz.makeItemsClickable(this.text);
-			
-			/*
-				save this tweet to Depot
-			*/
-			sc.app.Tweets.save(this);
-			
-		});
-
-		/*
-			Render the new tweets as a collection (speed increase, I suspect)
-		*/
 		
-		var itemhtml = sc.app.tpl.parseArray('tweet', rendertweets);
+		if (rendertweets) {
+			// they come in oldest-first, so reverse it since we're rendering as a collection
+			rendertweets = rendertweets.reverse();
 
-		jQuery('#user-timeline').html(itemhtml);
+			jQuery.each( rendertweets, function() {
+				this.text = Spaz.makeItemsClickable(this.text);
 
-		/*
-			Update relative dates
-		*/
-		sch.updateRelativeTimes('#user-timeline>div.timeline-entry .meta>.date', 'data-created_at');
+				/*
+					save this tweet to Depot
+				*/
+				App.Tweets.save(this);
+
+			});
+
+			/*
+				Render the new tweets as a collection (speed increase, I suspect)
+			*/
+
+			var itemhtml = App.tpl.parseArray('tweet', rendertweets);
+
+			jQuery('#user-timeline').html(itemhtml);
+
+			/*
+				Update relative dates
+			*/
+			sch.updateRelativeTimes('#user-timeline>div.timeline-entry .meta>.date', 'data-created_at');
+		}
 
 	});
 	
@@ -113,11 +239,63 @@ UserDetailAssistant.prototype.setup = function() {
 		
 		thisA.userobj.description = Spaz.makeItemsClickable(thisA.userobj.description);
 		
-		var itemhtml = sc.app.tpl.parseTemplate('user-detail', thisA.userobj);
+		var itemhtml = App.tpl.parseTemplate('user-detail', thisA.userobj);
 		jQuery('#user-detail').html(itemhtml);
 		sch.debug(jQuery('#user-detail').get(0).outerHTML);
 		
-		thisA.twit.getUserTimeline(thisA.userobj.id);
+		thisA.getUserTimeline(thisA.userobj);
+
+		/*
+			get the relationship state
+		*/
+		if (App.username && App.type) {
+			
+			/*
+				disable until we can get friendship info
+			*/
+			thisA.enableFollowButton(false);
+			
+			if ( thisA.user_type && (App.type !== thisA.user_type) ) {
+				
+				// can't get following info because the services aren't the same
+								
+			} else if (App.type === SPAZCORE_ACCOUNT_TWITTER) {
+				thisA.twit.showFriendship(
+					thisA.userobj.id,
+					null,
+					function(data) {
+						
+						thisA.enableFollowButton(true);
+						
+						Mojo.Log.error('show friendship result: %j', data);
+						if (data.relationship.target.followed_by) {
+							Mojo.Log.error('You are following this user!');
+							thisA.userobj.you_are_following = 'yes';
+						} else {
+							Mojo.Log.error('You are NOT following this user!');
+							thisA.userobj.you_are_following = 'no';
+						}
+						thisA.setFollowButtonIcon(thisA.userobj.you_are_following);
+					},
+					function(xhr, msg, exc) {
+						thisA.showAlert($L('Could not retrieve relationship info:\n'+sch.stripTags(xhr.responseText)), $L('Error'));
+					}
+				);
+				
+			} else if (thisA.userobj.following !== null) { // the .following attribute exists and this is not twitter
+			
+				thisA.enableFollowButton(true);
+				if (thisA.userobj.following === true) {  // i am following this user
+					thisA.userobj.you_are_following = 'yes';
+				} else {  // i am NOT following this user
+					thisA.userobj.you_are_following = 'no';
+				}
+				thisA.setFollowButtonIcon(thisA.userobj.you_are_following);
+				
+			}
+			
+		}
+		
 	});
 	
 	
@@ -136,23 +314,23 @@ UserDetailAssistant.prototype.setup = function() {
 	jQuery(document).bind('create_friendship_succeeded',  { thisAssistant:this }, function(e, userobj) {
 		jQuery('#follow-user[data-screen_name="'+userobj.screen_name+'"]')
 			.attr('data-following', 'true')
-			.html($L('Stop following user'));
+			.html($L('Stop Following'));
 	});
 	jQuery(document).bind('destroy_friendship_succeeded', { thisAssistant:this }, function(e, userobj) {
 		jQuery('#follow-user[data-screen_name="'+userobj.screen_name+'"]')
 			.attr('data-following', 'false')
-			.html($L('Follow user'));		
+			.html($L('Follow'));		
 	});
 
 	jQuery(document).bind('create_block_succeeded', { thisAssistant:this }, function(e, userobj) {
 		jQuery('#block-user[data-screen_name="'+userobj.screen_name+'"]')
 			.attr('data-blocked', 'true')
-			.html($L('Unblock user'));
+			.html($L('Unblock'));
 	});
 	jQuery(document).bind('destroy_block_succeeded', { thisAssistant:this }, function(e, userobj) {
 		jQuery('#block-user[data-screen_name="'+userobj.screen_name+'"]')
 			.attr('data-blocked', 'false')
-			.html($L('Block user'));
+			.html($L('Block'));
 	});
 	
 
@@ -178,19 +356,7 @@ UserDetailAssistant.prototype.activate = function(event) {
 		
 		
 	});
-	jQuery('#user-detail-actions #search-user', this.scroller).live(Mojo.Event.tap, function(e) {
-		var screen_name = jQuery(this).attr('data-screen_name');
-		sch.debug("searching for '"+screen_name+"'");
-		thisA.searchFor('from:'+screen_name+' OR to:'+screen_name);
-	});
-	jQuery('#user-detail-actions #reply-to-user', this.scroller).live(Mojo.Event.tap, function(e) {
-		sch.debug(jQuery(this).attr('id'));
-		thisA.prepReply(jQuery(this).attr('data-screen_name'));
-	});
-	jQuery('#user-detail-actions #dm-user', this.scroller).live(Mojo.Event.tap, function(e) {
-		sch.debug(jQuery(this).attr('id'));
-		thisA.prepDirectMessage(jQuery(this).attr('data-screen_name'));
-	});
+
 	jQuery('#user-detail-actions #follow-user', this.scroller).live(Mojo.Event.tap, function(e) {
 		sch.debug("Friend user:"+jQuery(this).attr('data-screen_name'));
 		// Mojo.Controller.notYetImplemented();
@@ -230,17 +396,21 @@ UserDetailAssistant.prototype.activate = function(event) {
 
 
 	jQuery('#user-detail-container div.timeline-entry', this.scroller).live(Mojo.Event.tap, function(e) {
-		var jqtarget = jQuery(e.target);
+		var jqtarget = jQuery(e.target),
+		    userid,
+		    isdm,
+		    status_id,
+		    status_obj;
 
 		e.stopImmediatePropagation();
 		
 		if (jqtarget.is('div.timeline-entry>.user') || jqtarget.is('div.timeline-entry>.user img')) {
-			var userid = jQuery(this).attr('data-user-id');
+			userid = jQuery(this).attr('data-user-id');
 			Mojo.Controller.stageController.pushScene('user-detail', userid);
 			return;
 			
 		} else if (jqtarget.is('.username.clickable')) {
-			var userid = jqtarget.attr('data-user-screen_name');
+			userid = jqtarget.attr('data-user-screen_name');
 			Mojo.Controller.stageController.pushScene('user-detail', '@'+userid);
 			return;
 			
@@ -250,9 +420,9 @@ UserDetailAssistant.prototype.activate = function(event) {
 			return;
 			
 		} else if (jqtarget.is('div.timeline-entry .meta')) {
-			var status_id = jqtarget.attr('data-status-id');
-			var isdm = false;
-			var status_obj = null;
+			status_id = jqtarget.attr('data-status-id');
+			isdm = false;
+			status_obj = null;
 
 			if (jqtarget.parent().parent().hasClass('dm')) {
 				isdm = true;
@@ -265,9 +435,9 @@ UserDetailAssistant.prototype.activate = function(event) {
 			return;
 
 		} else {
-			var status_id = jQuery(this).attr('data-status-id');
-			var isdm = false;
-			var status_obj = null;
+			status_id = jQuery(this).attr('data-status-id');
+			isdm = false;
+			status_obj = null;
 
 			if (jQuery(this).hasClass('dm')) {
 				isdm = true;
@@ -283,40 +453,64 @@ UserDetailAssistant.prototype.activate = function(event) {
 		Mojo.Controller.stageController.pushScene('view-image', {'imageURLs':[avatar_url]});
 	});
 
-	// jQuery('#user-detail-container .username.clickable', this.scroller).live(Mojo.Event.tap, function(e) {
-	// 	var userid = jQuery(this).attr('data-user-screen_name');
-	// 	Mojo.Controller.stageController.pushScene('user-detail', userid);
-	// });
-	// 
-	// jQuery('#user-detail-container .hashtag.clickable', this.scroller).live(Mojo.Event.tap, function(e) {
-	// 	var hashtag = jQuery(this).attr('data-hashtag');
-	// 	thisA.searchFor('#'+hashtag);
-	// });
-	// 
-	// jQuery('#user-detail-container div.timeline-entry>.status>.meta', this.scroller).live(Mojo.Event.tap, function(e) {
-	// 	var statusid = jQuery(this).attr('data-status-id');
-	// 	Mojo.Controller.stageController.pushScene('message-detail', statusid);
-	// });
-	// 
-	// jQuery('#user-detail-container div.timeline-entry', this.scroller).live(Mojo.Event.tap, function(e) {
-	// 	var statusid = jQuery(this).attr('data-status-id');
-	// 	Mojo.Controller.stageController.pushScene('message-detail', statusid);
-	// });
+	jQuery('#user-detail .username.clickable', this.scroller).live(Mojo.Event.tap, function(e) {
+		var userid = jQuery(this).attr('data-user-screen_name');
+		Mojo.Controller.stageController.pushScene('user-detail', '@'+userid);
+	});
 
-	if (!this.userRetrieved) {
-		sc.app.Tweets.getUser(
-			this.userid,
-			function(r) {
-				jQuery(document).trigger('get_user_succeeded', [r]);
-			},
-			function(r) {
-				jQuery(document).trigger('get_user_failed', [r]);
-			}
-		);
-		// this.twit.getUser(this.userid);
-	}
+	jQuery('#user-detail .hashtag.clickable', this.scroller).live(Mojo.Event.tap, function(e) {
+		var hashtag = jQuery(this).attr('data-hashtag');
+		thisA.searchFor('#'+hashtag);
+	});
 	
-	// this.addPostPopup();
+	
+	/*
+		kick off the "get the user obj" process, if we need to
+	*/
+	if (!this.userRetrieved) {
+		
+		/*
+			if we've passed some info on how to get the user info, get it remotely
+			and pass the extra data
+		*/
+		if (this.user_type || this.user_api_url || this.auth_obj) {		
+			App.Tweets.getRemoteUser(
+				this.userid,
+				function(r) {
+					jQuery(document).trigger('get_user_succeeded', [r]);
+				},
+				function(r) {
+					jQuery(document).trigger('get_user_failed', [r]);
+				},
+				{
+					'auth_obj':this.auth_obj,
+					'user_type':this.user_type,
+					'user_api_url':this.user_api_url
+				}
+			);
+			
+		/*
+			otherwise, just get it the "normal" way
+		*/
+		} else {
+			App.Tweets.getUser(
+				this.userid,
+				function(r) {
+					jQuery(document).trigger('get_user_succeeded', [r]);
+				},
+				function(r) {
+					jQuery(document).trigger('get_user_failed', [r]);
+				}
+			);
+		
+		}
+	
+	/*
+		just trigger the get_user_succeeded event with the object we already have
+	*/
+	} else {
+	    jQuery(document).trigger('get_user_succeeded', [this.userobj]);
+	}
 
 };
 
@@ -337,9 +531,6 @@ UserDetailAssistant.prototype.deactivate = function(event) {
 		We have to unbind our event listeners or weird/bad things happen
 	*/
 	jQuery('#user-detail-actions #view-user-posts', this.scroller).die(Mojo.Event.tap);
-	jQuery('#user-detail-actions #search-user', this.scroller).die(Mojo.Event.tap);
-	jQuery('#user-detail-actions #reply-to-user', this.scroller).die(Mojo.Event.tap);
-	jQuery('#user-detail-actions #dm-user', this.scroller).die(Mojo.Event.tap);
 	jQuery('#user-detail-actions #follow-user', this.scroller).die(Mojo.Event.tap);
 	jQuery('#user-detail-actions #block-user', this.scroller).die(Mojo.Event.tap);
 	
@@ -349,6 +540,10 @@ UserDetailAssistant.prototype.deactivate = function(event) {
 	jQuery('#user-timeline-trigger', this.scroller).die(Mojo.Event.tap);
 	jQuery('#user-detail-container div.timeline-entry', this.scroller).die(Mojo.Event.tap);
 	jQuery('#user-detail div.user-image', this.scroller).die(Mojo.Event.tap);
+	
+	jQuery('#user-detail .username.clickable', this.scroller).die(Mojo.Event.tap);
+	jQuery('#user-detail .hashtag.clickable', this.scroller).die(Mojo.Event.tap);
+	
 };
 
 UserDetailAssistant.prototype.cleanup = function(event) {
@@ -363,4 +558,52 @@ UserDetailAssistant.prototype.cleanup = function(event) {
 	jQuery(document).unbind('create_block_succeeded');
 	jQuery(document).unbind('destroy_block_succeeded');
 	
+};
+
+/**
+ * Sets the icon for the follow button
+ * 
+ * @param {string} current_state 'yes' or 'no'
+ */
+UserDetailAssistant.prototype.setFollowButtonIcon = function(current_state) {
+	Mojo.Log.error('this.cmdMenuModel.items[1].items[3]: %j', this.cmdMenuModel.items[1].items[3]);
+	if (current_state == 'yes') {
+		this.cmdMenuModel.items[1].items[3].iconPath = 'images/menu-icon-stop-following.png';
+	} else {
+		this.cmdMenuModel.items[1].items[3].iconPath = 'images/menu-icon-start-following.png';
+	}
+	this.controller.modelChanged(this.cmdMenuModel);
+};
+
+
+UserDetailAssistant.prototype.enableFollowButton = function(enabled) {
+	
+	if (enabled) {
+		this.cmdMenuModel.items[1].items[3].disabled = false;
+		this.controller.modelChanged(this.cmdMenuModel);
+	} else {
+		this.cmdMenuModel.items[1].items[3].disabled = true;
+		this.controller.modelChanged(this.cmdMenuModel);
+	}
+	
+};
+
+
+UserDetailAssistant.prototype.getUserTimeline = function(userobj) {
+	var thisA = this;
+	
+	if (!userobj) {
+		userobj = this.userobj;
+	}
+	
+	if ( this.user_type && (App.type !== this.user_type) ) {
+		Mojo.Log.error('Can\'t getUserTimeline because user type is not current App.type');
+		jQuery('#user-timeline-trigger').hide();
+		return;
+	}
+	
+	/*
+		get the user timeline
+	*/
+	this.twit.getUserTimeline(userobj.id);
 };

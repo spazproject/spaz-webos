@@ -11,6 +11,11 @@ function SearchTwitterAssistant(args) {
 	
 	scene_helpers.addCommonSceneMethods(this);
 	
+	/*
+		this connects App to this property of the appAssistant
+	*/
+	App = Spaz.getAppObj();
+	
 	if (args && args.searchterm) {
 		this.passedSearch = args.searchterm;
 	}
@@ -38,7 +43,9 @@ function SearchTwitterAssistant(args) {
 	this.lastQuery = '';
 }
 
-
+SearchTwitterAssistant.prototype.aboutToActivate = function(callback){
+	callback.defer(); //delays displaying scene, looks better
+};
 
 SearchTwitterAssistant.prototype.setup = function() {
 	/* this function is for setup tasks that have to happen when the scene is first created */
@@ -58,7 +65,7 @@ SearchTwitterAssistant.prototype.setup = function() {
 	/*
 		view and command menus
 	*/
-	if (sc.app.username && sc.app.password) {
+	if (App.username) {
 		this.setupCommonMenus({
 			viewMenuItems: [
 				{
@@ -79,7 +86,7 @@ SearchTwitterAssistant.prototype.setup = function() {
 			]
 		});
 		
-		this.initAppMenu({ 'items':loggedin_appmenu_items });	
+		this.initAppMenu({ 'items':LOGGEDIN_APPMENU_ITEMS });	
 	} else {
 		this.setupCommonMenus({
 			viewMenuItems: [
@@ -125,7 +132,7 @@ SearchTwitterAssistant.prototype.setup = function() {
 		search button
 	*/
 	jQuery('#submit-search-button').bind(Mojo.Event.tap, function() {
-		thisA.search.call(thisA, thisA.searchBoxModel.value);
+		thisA.search.call(thisA, thisA.searchBoxModel.value, null, 1);
 	});
 	
 	this.searchButtonAttributes = {
@@ -134,9 +141,30 @@ SearchTwitterAssistant.prototype.setup = function() {
 	this.searchButtonModel = {
 		"buttonLabel" : "Search",
 		"buttonClass" : 'Primary'
-	};
-	
+	};	
 	this.controller.setupWidget('submit-search-button', this.searchButtonAttributes, this.searchButtonModel);
+
+
+	this.controller.setupWidget("search-timeline",
+		this.timeline_attributes = {
+			itemTemplate: 'timeline-entry',
+			listTemplate: 'timeline-container',
+			emptyTemplate: 'timeline-container-empty',
+			swipeToDelete: false,
+			reorderable: false,
+			hasNoWidgets: true,
+			formatters: {
+				'data': function(value, model) {
+					return thisA.renderItem(value);
+				}
+			}
+		},
+		this.timeline_model = {
+			items : []
+		}
+	);	
+	this.timeline_list = this.controller.get('search-timeline');
+
 
 	// this.refresh();
 	
@@ -145,15 +173,30 @@ SearchTwitterAssistant.prototype.setup = function() {
 	} else {
 		this.fillStar(false);
 	}
-
+	
+	/*
+		more button
+	*/
+	jQuery('#more-search-button').bind(Mojo.Event.tap, function() {
+		thisA.loadMore.call(thisA);
+	});
+	this.moreButtonAttributes = {};
+	this.moreButtonModel = {
+		"buttonLabel" : "More",
+		"buttonClass" : 'Primary'
+	};
+	this.controller.setupWidget('more-search-button', this.moreButtonAttributes, this.moreButtonModel);
+	
+	this.listenForMetaTapScroll();
 };
 
 
 
 
 SearchTwitterAssistant.prototype.activate = function(event) {
-	/* put in event handlers here that should only be in effect when this scene is active. For
-	   example, key handlers that are observing the document */
+
+	var thisA = this; // for closures
+
 	
 	if (event && event.searchterm) {
 		this.passedSearch = event.searchterm;
@@ -168,177 +211,46 @@ SearchTwitterAssistant.prototype.activate = function(event) {
 	}
 	
 	
-	var thisA = this; // for closures below
-	
-	var tts = sc.app.prefs.get('timeline-text-size');
+	var tts = App.prefs.get('timeline-text-size');
 	this.setTimelineTextSize('#search-timeline', tts);
 	
+		
 	
-	jQuery().bind('error_search_timeline_data', { thisAssistant:this }, function(e, error_obj) {
-		
-		var error_msg = $L("There was an error retrieving search results");
-		thisA.displayErrorInfo(error_msg, error_obj);
-		
-		/*
-			Update relative dates
-		*/
-		sch.updateRelativeTimes('#search-timeline>div.timeline-entry .meta>.date', 'data-created_at');
-		e.data.thisAssistant.deactivateSpinner();
-		e.data.thisAssistant.startRefresher();
+	jQuery(document).bind('search_timeline_refresh', function(e) {
+		thisA.markAllAsRead();
+		thisA.refresh();
 	});
-	
-	jQuery().bind('new_search_timeline_data', { thisAssistant:this }, function(e, data) {
-		
-		/*
-			Check to see if the returned query matches what we are using. If not, ignore.
-		*/
-
-		/*
-			reverse the tweets for collection rendering (faster)
-		*/
-		var rendertweets = data[0];
-		var searchinfo   = data[1];
-		var new_count = 0;
-		if (rendertweets && rendertweets.length > 0) {
-			jQuery.each( rendertweets, function() {
-
-				if (!thisA.getEntryElementByStatusId(this.id)) {
-					new_count++;
-					this.text = Spaz.makeItemsClickable(this.text);
-
-					// var itemhtml = Mojo.View.render({object: this, template: 'search-twitter/search-item'});
-					var itemhtml = sc.app.tpl.parseTemplate('search-item', this);
-
-					/*
-						make jQuery obj
-					*/
-					var jqitem = jQuery(itemhtml);
-
-					/*
-						attach data object to item html
-					*/
-					jqitem.data('item', this);
-
-					/*
-						save this tweet to Depot
-					*/
-					sc.app.Tweets.save(this);
-
-
-					/*
-						put item on timeline
-					*/
-					jQuery('#search-timeline').prepend(jqitem);
-				}
-			});
-
-			sch.removeExtraElements('#search-timeline>div.timeline-entry', sc.app.prefs.get('timeline-maxentries'));
-			
-		}
-
-		/*
-			Update relative dates
-		*/
-		sch.updateRelativeTimes('#search-timeline>div.timeline-entry .meta>.date', 'data-created_at');
-		e.data.thisAssistant.deactivateSpinner();
-		e.data.thisAssistant.startRefresher();
-		
-		/*
-			show a banner if need be
-		*/
-		// alert(new_count);
-		// alert(thisA.isFullScreen);
-		// alert(sc.app.prefs.get('notify-searchresults'));
-		if (new_count > 0 && !thisA.isFullScreen && sc.app.prefs.get('notify-searchresults')) {
-			thisA.newSearchResultsBanner(new_count, e.data.thisAssistant.lastQuery);
-			// thisA.playAudioCue('newmsg');
-		} else if (thisA.isFullScreen) {
-			dump("I am not showing a banner! in "+thisA.controller.sceneElement.id);
-		}
-		
-	});
-	
-	
-	jQuery().bind('search_timeline_refresh', { thisAssistant:this }, function(e) {
-		sch.markAllAsRead('#search-timeline>div.timeline-entry');
-		e.data.thisAssistant.refresh();
-	});
-	
-	jQuery('#search-timeline div.timeline-entry', this.scroller).live(Mojo.Event.tap, function(e) {
-		var jqtarget = jQuery(e.target);
-
-		e.stopImmediatePropagation();
-		
-		if (jqtarget.is('div.timeline-entry>.user') || jqtarget.is('div.timeline-entry>.user img')) {
-			var userid = jQuery(this).attr('data-user-screen_name');
-			Mojo.Controller.stageController.pushScene('user-detail', '@'+userid);
-			return;
-			
-		} else if (jqtarget.is('.username.clickable')) {
-			var userid = jqtarget.attr('data-user-screen_name');
-			Mojo.Controller.stageController.pushScene('user-detail', '@'+userid);
-			return;
-			
-		} else if (jqtarget.is('.hashtag.clickable')) {
-			var hashtag = jqtarget.attr('data-hashtag');
-			thisA.searchFor('#'+hashtag);
-			return;
-			
-		} else if (jqtarget.is('div.timeline-entry .meta')) {
-			var status_id = jqtarget.attr('data-status-id');
-			var isdm = false;
-			var status_obj = null;
-
-			if (jqtarget.parent().parent().hasClass('dm')) {
-				isdm = true;
-			}
-
-			Mojo.Controller.stageController.pushScene('message-detail', {'status_id':status_id, 'isdm':isdm, 'status_obj':status_obj});
-			return;
-			
-		} else if (jqtarget.is('div.timeline-entry a[href]')) {
-			return;
-
-		} else {
-			var status_id = jQuery(this).attr('data-status-id');
-			var isdm = false;
-			var status_obj = null;
-
-			if (jQuery(this).hasClass('dm')) {
-				isdm = true;
-			}
-			
-			Mojo.Controller.stageController.pushScene('message-detail', {'status_id':status_id, 'isdm':isdm, 'status_obj':status_obj});
-			return;
-		}
-	});
-	
 	
 	this.listenForEnter('search-twitter-textfield', function() {
-		this.controller.get('submit-search-button').mojo.activate();
-		this.search(this.searchBoxModel.value);
+		thisA.controller.get('submit-search-button').mojo.activate();
+		thisA.search(thisA.searchBoxModel.value, null, 1);
 	});
+	
+	/*
+		Prepare for timeline entry taps
+	*/
+	this.bindTimelineEntryTaps('search-timeline');
 
 		
 };
 
 
 SearchTwitterAssistant.prototype.deactivate = function(event) {
-	/* remove any event handlers you added in activate and do any other cleanup that should happen before
-	   this scene is popped or another scene is pushed on top */
+	jQuery(document).unbind('search_timeline_refresh');	
 	
-	jQuery().unbind('new_search_timeline_data');
-	jQuery().unbind('error_search_timeline_data');
-	jQuery().unbind('search_timeline_refresh');	
-	jQuery('#search-timeline div.timeline-entry', this.scroller).die(Mojo.Event.tap);
+	Mojo.Log.error('DEACTIVATE');
+	
+	/*
+		stop listening for timeline entry taps
+	*/
+	this.unbindTimelineEntryTaps('search-timeline');
 };
 
 
 SearchTwitterAssistant.prototype.cleanup = function(event) {
-	/* this function should do any cleanup needed before the scene is destroyed as 
-	   a result of being popped off the scene stack */
-
 	jQuery('#submit-search-button').unbind(Mojo.Event.tap);
+	
+	jQuery('#more-search-button').unbind(Mojo.Event.tap);
 	
 	this.stopListeningForEnter('search-twitter-textfield');
 	
@@ -348,97 +260,255 @@ SearchTwitterAssistant.prototype.cleanup = function(event) {
 
 
 
-SearchTwitterAssistant.prototype.search = function(e, type) {
-	dump("search called");
+SearchTwitterAssistant.prototype.search = function(e, type, page) {
+	var thisA = this;
+	var search_string;
 	
-	if (type && type.toLowerCase() !== 'refresh') { // empty unless this is a refresh
-		this.clear();
+	if (type && type.toLowerCase() == 'refresh') { // empty unless this is a refresh
+		this.scrollToTop();
+		this.markAllAsRead();
+	} else if (type && type.toLowerCase() == 'loadmore') {
+		this.markAllAsRead();
 	} else {
-		sch.markAllAsRead('#search-timeline>div.timeline-entry');
-		dump('Marked all as read in #search-timeline>div.timeline-entry');
+		this.clear();		
 	}
-		
+	
 	if (sch.isString(e)) {
-		dump("Searching for:", e);
-		
-		/*
-			clear any existing results
-		*/
-		if (e !== this.lastQuery) {
-			this.clear();
-		}
-		
-		this.lastQuery = sch.fromHTMLSpecialChars(e);
-		this.twit.search(this.lastQuery);
-
-
-		
-		this.activateSpinner();
-		
-	} else if (e.value) {
-		this.lastQuery = e.value;
-		this.twit.search(e.value);		
-
-		/*
-			clear any existing results
-		*/
-		if (e.value !== this.lastQuery) {
-			this.clear();
-		}
-
-
-		this.activateSpinner();
-		
-		// jQuery('#submit-search-button').hide();
+		search_string = e;
+	} else if (e.value && sch.isString(e.value)) {
+		search_string = e.value;
 	}
+	
+	if (!page) {
+		page = 1;
+	}
+	
+
+	Mojo.Log.info("Searching for: %s", search_string);
+	
+	/*
+		clear any existing results
+	*/
+	if (search_string !== this.lastQuery) {
+		this.clear();
+	}
+	
+	this.lastQuery = sch.fromHTMLSpecialChars(search_string);
+
+	Mojo.Log.info('refresh()');
+
+	if (thisA.isTopmostScene()) {
+		thisA.markAllAsRead();
+	}
+
+	this.activateSpinner();
+	
+	/*
+		reset scrollstate to avoid white flash
+	*/
+	var scrollstate = this.scroller.mojo.getState();
+	this.scroller.mojo.setState(scrollstate, false);
+
+	function getSearchTimeline(statusobj) {
+
+		if ( statusobj.isInternetConnectionAvailable === true) {
+
+			thisA.twit.search(
+				thisA.lastQuery, // query
+				null, // since_id
+				100, // results_per_page
+				page, // page
+				null, // lang
+				null, // , geocode
+				function(data, searchinfo) { // onSuccess
+					
+					Mojo.Log.error('searchinfo: %j', searchinfo);
+					Mojo.Log.error('data: %j', data);
+					
+					/*
+						reverse the tweets for collection rendering (faster)
+					*/
+					var new_count = 0;
+					var no_dupes  = [];
+					if (sch.isArray(data)) {
+						for (var i=0; i < data.length; i++) {
+							if (!thisA.itemExistsInModel(data[i])) {
+								new_count++;
+
+								data[i].text = Spaz.makeItemsClickable(data[i].text);
+								data[i].Spaz_is_new = true;
+
+								no_dupes.push(data[i]);
+
+								new_count++;
+							}
+						}
+					}
+					
+					thisA.addItems(no_dupes);
+
+					thisA.deactivateSpinner();
+
+					/*
+						show a banner if need be
+					*/
+					if (new_count > 0 && !thisA.isFullScreen && App.prefs.get('notify-searchresults')) {
+						thisA.newSearchResultsBanner(new_count, thisA.lastQuery);
+						// thisA.playAudioCue('newmsg');
+					} else if (thisA.isFullScreen) {
+						dump("I am not showing a banner! in "+thisA.controller.sceneElement.id);
+					}
+
+				},
+				function(xhr, msg, exc) { // onFailure
+					var err_msg = $L("There was an error loading the search results");
+					thisA.displayErrorInfo(err_msg, null);
+					thisA.deactivateSpinner();
+				}
+			);
+
+		} else {
+			thisA.showBanner('Not connected to Internet');
+		}
+
+	}
+
+	/*
+		only get data if we're connected
+	*/
+	this.checkInternetStatus( getSearchTimeline );
+
+	
+
 };
 
 
-SearchTwitterAssistant.prototype.refresh = function() {
-	dump('Stopping refresher');
-	this.stopRefresher();
-	this.search(this.searchBoxModel.value, 'refresh');
+SearchTwitterAssistant.prototype.refresh = function(event) {
+	var page = 1;
+	
+	if (event && sch.isNumber(event)) { page = event; }
+	this.search(this.searchBoxModel.value, 'refresh', page);
 };
+
+
+SearchTwitterAssistant.prototype.loadMore = function(event) {
+	if (this.search_more_page) {
+		this.search_more_page++;
+	} else {
+		this.search_more_page = 2;
+	}
+	
+	this.search(this.searchBoxModel.value, 'loadmore', this.search_more_page);
+};
+
+
 
 SearchTwitterAssistant.prototype.clear = function() {
-	jQuery('#search-timeline').empty();
-	dump('Emptied #search-timeline');
+	this.timeline_model.items = [];
+	this.controller.modelChanged(this.timeline_model);
 };
 
 
-SearchTwitterAssistant.prototype.startRefresher = function() {
-	dump('Starting refresher');
-	/*
-		Set up refresher
-	*/
-	this.stopRefresher(); // in case one is already running
+/*
+	redefine addItems to work with list model
+*/
+SearchTwitterAssistant.prototype.addItems = function(new_items) {
 	
-	var time = sc.app.prefs.get('network-searchrefreshinterval');
+	Mojo.Log.error("addItems");
 	
-	if (time > 0) {
-		this.refresher = setInterval(
-			function() {
-				jQuery().trigger('search_timeline_refresh');
-			},
-			time
-		);
-	} else {
-		this.refresher = null;
+	// now we have all the existing items from the model
+	var model_items = this.timeline_model.items.clone();
+	
+	var model_item;
+	for (var i=0; i < new_items.length; i++) {
+		model_item = {
+			'id':new_items[i].id,
+			'data':sch.clone(new_items[i])
+		};
+		// add each item to the model
+		model_items.push(model_item);
+		
 	}
-};
-
-SearchTwitterAssistant.prototype.stopRefresher = function() {
-	dump('Stopping refresher');
+	
+	// sort, in reverse
+	model_items.sort(function(a,b){
+		return b.data.SC_created_at_unixtime - a.data.SC_created_at_unixtime; // newest first
+	});
+	
+	// re-assign the cloned items back to the model object
+	this.timeline_model.items = model_items;
+	
+	// this filters and updates the model
+	this.controller.modelChanged(this.timeline_model);
+	
 	/*
-		Clear refresher
+		reset scrollstate to avoid white flash
 	*/
-	clearInterval(this.refresher);
+	var scrollstate = this.scroller.mojo.getState();
+	this.scroller.mojo.setState(scrollstate, false);
 };
 
-SearchTwitterAssistant.prototype.getEntryElementByStatusId = function(id) {	
-	var el = jQuery('#search-timeline div.timeline-entry[data-status-id='+id+']', this.scroller).get(0);
-	return el;
+
+SearchTwitterAssistant.prototype.renderItem = function(obj) {
+    
+    var html = '';
+
+    Mojo.Timing.resume("timing_SearchTwitterAssistant.renderer");
+	try {
+		if (obj.SC_is_dm) {
+			html = App.tpl.parseTemplate('dm', obj);
+		} else {
+			html = App.tpl.parseTemplate('tweet', obj);
+		}
+		Mojo.Timing.pause("timing_SearchTwitterAssistant.renderer");
+		return html;
+		
+	} catch(err) {
+		sch.error("There was an error rendering the object: "+sch.enJSON(obj));
+		sch.error("Error:"+sch.enJSON(err));
+		Mojo.Timing.pause("timing_SearchTwitterAssistant.renderer");
+    	
+		return '';
+	}
+    
 };
+
+SearchTwitterAssistant.prototype.itemExistsInModel = function(obj) {
+	
+
+	for (var i=0; i < this.timeline_model.items.length; i++) {
+		if (this.timeline_model.items[i].id == obj.id) {
+			Mojo.Log.info(obj.id +' exists in model');
+			return true;
+		}
+	}
+	Mojo.Log.info(obj.id +' does not exist in model');
+	return false;
+};
+
+
+
+/**
+ * loop through items in timeline_model and set Spaz_is_new = false, Spaz_is_read = true
+ */
+SearchTwitterAssistant.prototype.markAllAsRead = function() {
+	
+	Mojo.Log.error("markAllAsRead");
+	
+	Mojo.Timing.resume("timing_html_markAllAsRead");
+	
+	for (var i=0; i < this.timeline_model.items.length; i++) {
+		this.timeline_model.items[i].data.Spaz_is_new = false;
+		this.timeline_model.items[i].data.Spaz_is_read = true;
+	}
+	
+	Mojo.Timing.pause("timing_html_markAllAsRead");
+	
+	Mojo.Log.error(Mojo.Timing.createTimingString("timing_html", "Updating HTML element times"));
+	
+	this.controller.modelChanged(this.timeline_model);
+};
+
 
 SearchTwitterAssistant.prototype.activateSpinner = function() {
 	this.buttonWidget = this.controller.get('submit-search-button');
@@ -454,13 +524,13 @@ SearchTwitterAssistant.prototype.saveSearch = function(searchstr) {
 	
 	var thisA = this;
 
-	jQuery().bind('create_saved_search_succeeded', {thisAssistant:this}, function(e, resp) {
+	jQuery(document).bind('create_saved_search_succeeded', {thisAssistant:this}, function(e, resp) {
 		thisA.isSavedSearch = true;
 		thisA.saved_id = resp.id;
 		thisA.showBanner('Saved search '+searchstr, 'saved_search');
 		thisA.fillStar(true);
 		thisA.twit.getSavedSearches(); // this will force a refresh on any listeners
-		jQuery().unbind('create_saved_search_succeeded');
+		jQuery(document).unbind('create_saved_search_succeeded');
 	});
 	
 	this.twit.addSavedSearch(searchstr);
@@ -472,13 +542,13 @@ SearchTwitterAssistant.prototype.removeSearch = function(searchstr) {
 	
 	var thisA = this;
 
-	jQuery().bind('destroy_saved_search_succeeded', {thisAssistant:this}, function(e, resp) {
+	jQuery(document).bind('destroy_saved_search_succeeded', {thisAssistant:this}, function(e, resp) {
 		thisA.isSavedSearch = false;
 		thisA.saved_id = null;
 		thisA.showBanner('Removed saved search '+searchstr, 'saved_search');
 		thisA.fillStar(false);
 		thisA.twit.getSavedSearches(); // this will force a refresh on any listeners
-		jQuery().unbind('destroy_saved_search_succeeded');
+		jQuery(document).unbind('destroy_saved_search_succeeded');
 	});
 
 	// alert(thisA.saved_id);
@@ -487,11 +557,13 @@ SearchTwitterAssistant.prototype.removeSearch = function(searchstr) {
 };
 
 SearchTwitterAssistant.prototype.fillStar = function(fill) {
-	if (fill) {
-		this.cmdMenuModel.items[2].iconPath = 'images/theme/menu-icon-favorite.png';
-	} else {
-		this.cmdMenuModel.items[2].iconPath = 'images/theme/menu-icon-favorite-outline.png';
+	if (App.username && this.cmdMenuModel.items[2]) {
+		if (fill) {
+			this.cmdMenuModel.items[2].iconPath = 'images/theme/menu-icon-favorite.png';
+		} else {
+			this.cmdMenuModel.items[2].iconPath = 'images/theme/menu-icon-favorite-outline.png';
+		}
+		this.controller.modelChanged(this.cmdMenuModel);
 	}
-	this.controller.modelChanged(this.cmdMenuModel);
 };
 

@@ -4,11 +4,16 @@ function StartsearchAssistant() {
 	   to the scene controller (this.controller) has not be established yet, so any initialization
 	   that needs the scene controller should be done in the setup function below. */
 	scene_helpers.addCommonSceneMethods(this);
+	
+	/*
+		this connects App to this property of the appAssistant
+	*/
+	App = Spaz.getAppObj();
 }
 
 StartsearchAssistant.prototype.aboutToActivate = function(callback){
 	callback.defer(); //delays displaying scene, looks better
-}
+};
 
 StartsearchAssistant.prototype.setup = function() {
 
@@ -21,13 +26,13 @@ StartsearchAssistant.prototype.setup = function() {
 
 	var thisA = this;
 
-	if (sc.app.username) {
+	if (App.username) {
 		this.setupCommonMenus({
 			viewMenuItems: [
 				{
 					items: [
 						{label: $L('Search & Explore'), command:'scroll-top', width:260},
-						{label: $L('Compose'),  icon:'compose', command:'compose', shortcut:'N'},
+						{label: $L('Compose'),  icon:'compose', command:'compose', shortcut:'N'}
 					]
 				}
 
@@ -41,10 +46,11 @@ StartsearchAssistant.prototype.setup = function() {
 					*/
 					toggleCmd:'search',
 					items: [
-						{label:$L('My Timeline'), icon:'conversation', command:'my-timeline', shortcut:'T', 'class':"palm-header left"},
+						{label:$L('My Timeline'), icon:'conversation', command:'filter-timeline-all', shortcut:'T', 'class':"palm-header left"},
 						{label:'@',	icon:'at', command:'filter-timeline-replies'}, 
 						{label:$L('DM'), icon: 'dms', secondaryIconPath:'', command:'filter-timeline-dms'},
 						{label:$L('Favorites'), iconPath:'images/theme/menu-icon-favorite.png', command:'favorites', shortcut:'F'},
+                        {label:$L('Friends and Followers'), iconPath:'images/theme/menu-icon-friends-followers.png', command:'friends-followers', shortcut:'L'},
 						{label:$L('Search'),    icon:'search', command:'search', shortcut:'S'}
 					]
 				},
@@ -123,7 +129,7 @@ StartsearchAssistant.prototype.setup = function() {
 	/*
 		Setup reload saved searches button
 	*/
-	if (sc.app.username) {
+	if (App.username) {
 		this.reloadSearchesButtonAttributes = {
 			type: Mojo.Widget.activityButton
 		};
@@ -147,26 +153,6 @@ StartsearchAssistant.prototype.setup = function() {
 	*/	
 	Mojo.Event.listen(jQuery('#search-button')[0], Mojo.Event.tap, this.handleSearch.bind(this));
 	
-	
-	/*
-		listen for trends data updates
-	*/
-	jQuery(document).bind('new_trends_data', {thisAssistant:this}, function(e, trends) {
-		thisA.deactivateTrendsSpinner();
-		
-		/*
-			some trends are wrapped in double-quotes, so we need to turn then into entities
-		*/
-		for (var k=0; k<trends.length; k++) {
-			trends[k].searchterm = trends[k].searchterm.replace(/"/gi, '&quot;');
-		}
-		
-		var trendshtml = Mojo.View.render({'collection':trends, template:'startsearch/trend-item'});
-		
-		jQuery('#trends-list .trend-item').remove();
-		jQuery('#trends-list').append(trendshtml);
-		jQuery('#trends-list .trend-item').fadeIn(500);
-	});
 	
 	
 	/*
@@ -213,7 +199,8 @@ StartsearchAssistant.prototype.activate = function(event) {
 	*/
 	jQuery('.trend-item, .search-item').live(Mojo.Event.tap, function() {
 		var term = jQuery(this).attr('data-searchterm');
-		var saved_id = parseInt(jQuery(this).attr('data-savedsearch-id'), 10);
+		// var saved_id = parseInt(jQuery(this).attr('data-savedsearch-id'), 10);
+		var saved_id = jQuery(this).attr('data-savedsearch-id');
 		thisA.searchFor(term, 'lightweight', saved_id);
 	});
 	
@@ -247,7 +234,7 @@ StartsearchAssistant.prototype.activate = function(event) {
 	/*
 		Prepare for timeline entry taps
 	*/
-	this.bindTimelineEntryTaps('#public-timeline');
+	this.bindTimelineEntryTaps('public-timeline');
 
 	/*
 		set up the public timeline
@@ -260,7 +247,7 @@ StartsearchAssistant.prototype.activate = function(event) {
 		'failure_event':'error_public_timeline_data',
 		'event_target' :document,
 		
-		'refresh_time':sc.app.prefs.get('network-searchrefreshinterval'),
+		'refresh_time':App.prefs.get('network-searchrefreshinterval'),
 		'max_items':50,
 
 		'request_data': function() {
@@ -279,7 +266,7 @@ StartsearchAssistant.prototype.activate = function(event) {
 			
 		},
 		'renderer': function(obj) {
-			return sc.app.tpl.parseTemplate('tweet', obj);
+			return App.tpl.parseTemplate('tweet', obj);
 			
 		}
 	});
@@ -305,7 +292,7 @@ StartsearchAssistant.prototype.deactivate = function(event) {
 	/*
 		stop listening for timeline entry taps
 	*/
-	this.unbindTimelineEntryTaps('#public-timeline');
+	this.unbindTimelineEntryTaps('public-timeline');
 	
 	/*
 		unbind and stop refresher for public timeline
@@ -330,8 +317,34 @@ StartsearchAssistant.prototype.cleanup = function(event) {
 
 
 StartsearchAssistant.prototype.refreshTrends = function() {
-	// this.showInlineSpinner('#trends-spinner-container', 'Loading…');
-	sc.app.twit.getTrends();
+	var thisA = this;
+	
+	App.twit.getTrends(
+		function(data) {
+			thisA.deactivateTrendsSpinner();
+			
+			sch.error(data);
+			
+			var trends = data;
+			
+			/*
+				some trends are wrapped in double-quotes, so we need to turn then into entities
+			*/
+			for (var k=0; k<trends.length; k++) {
+				trends[k].searchterm = trends[k].searchterm.replace(/"/gi, '&quot;');
+			}
+
+			var trendshtml = Mojo.View.render({'collection':trends, template:'startsearch/trend-item'});
+
+			jQuery('#trends-list .trend-item').remove();
+			jQuery('#trends-list').append(trendshtml);
+			jQuery('#trends-list .trend-item').fadeIn(500);
+			
+		},
+		function(xhr, msg, exc) {
+			sch.debug('getTrends failed');
+		}
+	);
 };
 
 StartsearchAssistant.prototype.refreshSearches = function() {

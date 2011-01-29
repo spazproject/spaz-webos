@@ -1,6 +1,6 @@
 {
 	"title": "Spaz",
-	"version": "1.2.0",
+	"version": "2.0.3",
 	"type": "web",
 	"main": "index.html",
 	"id": "com.funkatron.app.spaz",
@@ -9,5 +9,38 @@
 	"miniicon": "images/miniicon.png",
 	"vendor": "Funkatron Productions",
 	"vendorurl": "http://funkatron.com",
-	"noWindow":false
+	"copyright": "© Copyright 2010 Funkatron Productions",
+	"theme": "dark",
+	"noWindow":true,
+
+	"keywords":["Spaz", "spz", "Twitter", "Tweet", "Chat", "statusnet", "identica", "identi.ca", "status"],
+
+	"support": {
+		"url": "http://help.getspaz.com",
+		"email": {
+			"address": "spaz-webos@funkatron.com",
+			"subject": "Spaz Support"
+		},
+		"resources": [
+			{
+				"type": "web",
+				"label": "Spaz Homepage",
+				"url": "http://getspaz.com/"
+			}
+		]
+	},
+
+	
+	"universalSearch": {
+		"action" :  { 
+			"displayName" : "Post with Spaz",
+			"url"         : "com.funkatron.app.spaz",
+			"launchParam" : {"action":"prepPost", "msg":"#{searchTerms}"}
+		},
+		"search" : {
+			"displayName" : "Spaz",
+			"url"         : "com.funkatron.app.spaz",
+			"launchParam" : {"action":"search", "query":"#{searchTerms}"}
+		}
+	}
 }

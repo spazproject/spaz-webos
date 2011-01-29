@@ -1,23 +1,32 @@
 
 <div id="start-scene" class="palm-dark">
 
-	<div id="start-section" style="text-align:center">
+	<div id="start-section" style="text-align:center; overflow:auto">
 		<div class="palm-group palm-group-spaz">
-			<div class="palm-group-title" x-mojo-loc=''>Welcome to Spaz <spaz id="app-version"></spaz></div>
+			<div class="palm-group-title" x-mojo-loc=''>Welcome to <span id="app-title"></span> <span id="app-version"></spav></div>
 			<div class="palm-list">
 		   		<div class="palm-row single">
-					<button class="palm-button" id="start-login-button">Log-in to your account</button>
+		   		    <div x-mojo-element="Button" id='start-login-button'>
 				</div>
-		   		<div class="palm-row single">
-					<button class="palm-button" id="start-search-button">Search &amp; explore Twitter</button>
+		   		<div class="palm-row single" style="overflow:auto">
+		   		    <table width="100%">
+						<tbody>
+							<tr>
+							    <td width="50%"><div x-mojo-element="Button" id='start-search-button' class="buttonfloat"></div></td>
+								<td width="50%"><div x-mojo-element="Button" id='start-help-button' class="buttonfloat"></div></td>
+                            </tr>
+						</tbody>		
+					</table>
+				</div>
+				<div class="palm-row single">
+				    <div id="start-smallprint">
+            			&copy; 2010 <a href="http://funkatron.com" class="clickable">Funkatron Productions</a><br/>
+            			Powered by <a href="http://github.com/funkatron/spazcore" class="clickable">SpazCore</a>
+            		</div>
 				</div>
 			</div>
 		</div>
 	
-		<div id="start-smallprint">
-			&copy; 2010 <a href="http://funkatron.com" class="clickable">Funkatron Productions</a><br/>
-			Powered by <a href="http://github.com/funkatron/spazcore" class="clickable">SpazCore</a>
-		</div>
 	
 	</div> <!-- start-section end -->
 

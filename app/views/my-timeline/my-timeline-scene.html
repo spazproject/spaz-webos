@@ -1,19 +1,11 @@
-	<div id='panel' class="palm-menu-panel sliding" x-mojo-menupanel="" style='z-index: 11000'>
-		<div class="palm-menu-panel-wrapper">
-			<br/>
-			<div id="accountList" name="userlist" x-mojo-element='List'></div>
-		</div>	
-	</div>
-<div class="palm-dark">
-	<!-- <div class="palm-page-header spaz-page-header">
-		<div class="palm-page-header-wrapper">
-			<div id="appIcon" class="img_icon"></div>
-			<div class="title">
-				<span id="my-timeline-username"></span>
-			</div>
-		</div>		
-	</div> -->
-	
+<div id='panel' class="palm-menu-panel sliding palm-dark" x-mojo-menupanel="" style='z-index: 11000'>
+	<div class="palm-menu-panel-wrapper">
+		<br/>
+		<div id="accountList" name="userlist" x-mojo-element='List'></div>
+	</div>	
+</div>
+
+<div class="palm-dark">	
 	<div id="activity-spinner-my-timeline-container" class='spaz-activity-spinner-container'>
 		<div class="palm-row first">
 			<div class="palm-row-wrapper">
@@ -23,7 +15,6 @@
 		</div>
 	</div>
 
-<div id="my-timeline" class="timeline"></div>
-<div id="post-popup-container"></div>
-
+    <div id="my-timeline" class="timeline" x-mojo-element="List"></div>
+    <div x-mojo-element="Button" id='more-mytimeline-button' style="display:none">More</div>
 </div>

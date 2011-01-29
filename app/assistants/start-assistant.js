@@ -9,24 +9,24 @@ function StartAssistant(argFromPusher) {
 	jQuery('#start-scene').hide();
 	
 	if (argFromPusher && argFromPusher.firstload) {
-		if (sc.app.prefs.get('always-go-to-my-timeline')) {
+		if (App.prefs.get('always-go-to-my-timeline')) {
 			
 			/*
 				load users from prefs obj
 			*/
-			this.Users = new SpazAccounts(sc.app.prefs);
+			this.Users = new SpazAccounts(App.prefs);
 			this.Users.load();
 			
 			/*
 				get last user
 			*/
-			var last_userid = sc.app.prefs.get('last_userid');
+			var last_userid = App.prefs.get('last_userid');
 			var last_user_obj = this.Users.get(last_userid);
 			if (last_user_obj !== false) {
 				dump(last_user_obj);
-				sc.app.username = last_user_obj.username;
-				sc.app.type     = last_user_obj.type;
-				sc.app.userid   = last_user_obj.id;
+				App.username = last_user_obj.username;
+				App.type     = last_user_obj.type;
+				App.userid   = last_user_obj.id;
 				Mojo.Controller.stageController.pushScene('my-timeline');
 			} else {
 				dump("Tried to load last_user_object, but failed.");
@@ -49,9 +49,16 @@ function StartAssistant(argFromPusher) {
 	
 	scene_helpers.addCommonSceneMethods(this);
 	
+	/*
+		this connects App to this property of the appAssistant
+	*/
+	App = Spaz.getAppObj();
+	
 
 }
-
+StartAssistant.prototype.aboutToActivate = function(callback){
+	callback.defer(); //delays displaying scene, looks better
+};
 StartAssistant.prototype.setup = function() {
 	
 	Mojo.Log.info("Logging from StartAssistant Setup");
@@ -62,8 +69,27 @@ StartAssistant.prototype.setup = function() {
 	
 	this.initAppMenu();
 	
+	this.buttonAttributes = {};
+	this.loginButtonModel = {
+		buttonLabel : $L("Log-in to your account"),
+		buttonClass: 'primary'
+	};
+	this.searchButtonModel = {
+		buttonLabel : $L("Explore"),
+		buttonClass: 'secondary'
+	};
+	this.helpButtonModel = {
+		buttonLabel : $L("Get Help"),
+		buttonClass: 'secondary'
+	};
+	this.controller.setupWidget('start-login-button',	this.buttonAttributes, this.loginButtonModel);
+	this.controller.setupWidget('start-search-button',	this.buttonAttributes, this.searchButtonModel);
+	this.controller.setupWidget('start-help-button',	this.buttonAttributes, this.helpButtonModel);
+	
+	
 	Mojo.Event.listen(jQuery('#start-login-button')[0], Mojo.Event.tap, this.showLogin.bind(this));
 	Mojo.Event.listen(jQuery('#start-search-button')[0], Mojo.Event.tap, this.showSearch.bind(this));
+	Mojo.Event.listen(jQuery('#start-help-button')[0], Mojo.Event.tap, this.showHelp.bind(this));
 };
 
 
@@ -82,16 +108,24 @@ StartAssistant.prototype.activate = function(argFromPusher) {
 	/* put in event handlers here that should only be in effect when this scene is active. For
 	   example, key handlers that are observing the document */
 
+	jQuery('#app-title').text(Mojo.appInfo.title);
 	jQuery('#app-version').text("v"+Mojo.appInfo.version);
 	
 	/*
 		Get application news
 	*/
-	jQuery.get('http://funkatron.com/spaz-webos/appnews', function() {
-		// don't actually do anything with this yet
+	jQuery.ajax({
+		'url':'http://funkatron.com/spaz-webos/appnews?'+Mojo.Controller.appInfo.version,
+		'type':'GET',
+		beforeSend:function(xhr) {
+			var spaz_info = Mojo.Controller.appInfo.title.replace(/\s/, '-') + '/' + Mojo.Controller.appInfo.version;
+			sch.debug('spaz_info:' + spaz_info);
+			xhr.setRequestHeader('X-Spaz-Info', spaz_info);
+		},
+		complete:function(){}
 	});
 
-	
+	this.showBetaWarningAlert();
 };
 
 
@@ -107,13 +141,14 @@ StartAssistant.prototype.cleanup = function(event) {
 	   a result of being popped off the scene stack */
 	Mojo.Event.stopListening(jQuery('#start-login-button')[0], Mojo.Event.tap, this.showLogin);
 	Mojo.Event.stopListening(jQuery('#start-search-button')[0], Mojo.Event.tap, this.showSearch);
+	Mojo.Event.stopListening(jQuery('#start-help-button')[0], Mojo.Event.tap, this.showHelp);
 	
 };
 
 
 StartAssistant.prototype.refreshTrends = function() {
 	this.showInlineSpinner('#trends-spinner-container', 'Loading…');
-	sc.app.twit.getTrends();
+	App.twit.getTrends();
 };
 
 
@@ -128,6 +163,10 @@ StartAssistant.prototype.showSection = function(from, to) {
 
 StartAssistant.prototype.showSearch = function() {
 	Mojo.Controller.stageController.pushScene('startsearch');
+};
+
+StartAssistant.prototype.showHelp = function() {
+	Mojo.Controller.stageController.pushScene("help");
 };
 
 StartAssistant.prototype.showStart  = function() {

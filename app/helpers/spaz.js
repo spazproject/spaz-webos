@@ -10,6 +10,22 @@ if(typeof Spaz === "undefined") {
 }
 
 /**
+ * grabs the "App" container object and returns it. We use this container
+ * to store globally-used properties
+ */
+Spaz.getAppObj = function() {
+	var App = Mojo.Controller.getAppController().assistant.App;
+	return App;
+};
+
+
+Spaz.getActiveSceneAssistant = function() {
+	var appC = Mojo.Controller.getAppController();
+	var stageC = appC.getActiveStageController();
+	return stageC.activeScene().assistant;
+};
+
+/**
  * This helper looks through the array of scenes and looks for an existing instance of 
  * the given targetScene. If one exists, we pop all scenes before it to return to it. Otherwise
  * we swap to a new instance of the scene
@@ -17,7 +33,15 @@ if(typeof Spaz === "undefined") {
  * @param {string} targetScene the scene name
  * @param {many} returnValue a return value passed to the pop or swap call
  */
-Spaz.findAndSwapScene = function(targetScene, returnValue) {
+Spaz.findAndSwapScene = function(targetScene, returnValue, stageController) {
+	
+	if (!stageController) {
+		stageController = Mojo.Controller.stageController;
+	}
+	if (!stageController) {
+		stageController = Mojo.Controller.getAppController().getStageController(SPAZ_MAIN_STAGENAME);
+	}
+	
 	/*
 		initialize
 	*/
@@ -26,8 +50,15 @@ Spaz.findAndSwapScene = function(targetScene, returnValue) {
 	/*
 		get an array of existing scenes
 	*/
-	var scenes = Mojo.Controller.stageController.getScenes();
+	var scenes   = stageController.getScenes();
 	
+	var topscene = stageController.topScene();
+	
+	
+	if (topscene && topscene.sceneName && targetScene == topscene.sceneName) {
+		Mojo.Log.info('We are already on the scene %s', targetScene);
+		return;
+	}
 
 	for (var k=0; k<scenes.length; k++) {
 		if (scenes[k].sceneName == targetScene) { // this scene already exists, so popScenesTo it
@@ -36,18 +67,39 @@ Spaz.findAndSwapScene = function(targetScene, returnValue) {
 	}
 	
 	if (scene_exists) {
-		Mojo.Controller.stageController.popScenesTo({name: targetScene, transition: Mojo.Transition.crossFade}, returnValue);
+		stageController.popScenesTo({name: targetScene, transition: Mojo.Transition.crossFade}, returnValue);
 	} else {
-		Mojo.Controller.stageController.swapScene({name: targetScene, transition: Mojo.Transition.crossFade}, returnValue);
+		stageController.swapScene({name: targetScene, transition: Mojo.Transition.crossFade}, returnValue);
 	}
 };
 
 
 
 Spaz.popAllAndPushScene = function(targetScene, returnValue) {
-	Mojo.Controller.stageController.popScenesTo();
+	Mojo.Controller.stageController.popScenesTo(null, null);
 	Mojo.Controller.stageController.pushScene(targetScene, returnValue);
 };
+
+
+/**
+ * @param {String} targetScene the name of the scene we're looking for 
+ * @returns {Object|Boolean} the scene object, or false if not found
+ */
+Spaz.getSceneFromStack = function(targetScene) {
+	var stageController = Mojo.Controller.getAppController().getStageController(SPAZ_MAIN_STAGENAME);
+	
+	if (stageController) {
+		var scenes   = stageController.getScenes();
+		for (var k=0; k<scenes.length; k++) {
+			if (scenes[k].sceneName == targetScene) {
+				return scenes[k];
+			}
+		}
+	}
+	return false;
+};
+
+
 
 
 /**
@@ -230,11 +282,11 @@ Spaz.postToService = function(options) {
   
   var usernameObj = {};
   usernameObj.key = apis[options.api].usernameFieldName;
-  usernameObj.value = sc.app.username;
+  usernameObj.value = Spaz.getAppObj().username;
   
   var passwordObj = {};
   passwordObj.key = apis[options.api].passwordFieldName;
-  passwordObj.value = sc.app.password;
+  passwordObj.value = Spaz.getAppObj().password;
   
   var messageObj = {};
   messageObj.key = apis[options.api].messageFieldName;
@@ -269,6 +321,16 @@ Spaz.closeDashboard = function(name) {
 };
 
 
+Spaz.setTheme = function(theme) {
+	Mojo.Log.error('AppThemes: %j', AppThemes);
+	Mojo.Log.error('theme: %s', theme);
+	Mojo.Log.error('AppThemes[theme]: %j', AppThemes[theme]);
+	if (AppThemes && AppThemes[theme]) {
+		jQuery('link[title="apptheme"]').attr('href', 'stylesheets/'+AppThemes[theme].stylesheet);
+	}
+};
+
+
 
 /*
 	Namespace for prefs helpers
@@ -279,10 +341,14 @@ Spaz.Prefs = {};
 /**
  * retrieves the username for the current account 
  */
-Spaz.Prefs.getUsername = function() {
-	var currentAccountId = Spaz.Prefs.getCurrentAccountId();
-	if (currentAccountId) {
-		var accobj = sc.app.accounts.get(currentAccountId);
+Spaz.Prefs.getUsername = function(acc_id) {
+		
+	if (!acc_id) {
+		acc_id = Spaz.Prefs.getCurrentAccountId();
+	}
+
+	if (acc_id) {
+		var accobj = Spaz.getAppObj().accounts.get(acc_id);
 		return !!accobj ? accobj.username : null;
 	} else {
 		return null;
@@ -293,19 +359,22 @@ Spaz.Prefs.getUsername = function() {
 /**
  * DEPRECATED; calls Spaz.Prefs.getAuthKey
  */
-Spaz.Prefs.getPassword = function() {
+Spaz.Prefs.getPassword = function(acc_id) {
 	sch.error('Spaz.Prefs.getPassword is deprecated; use Spaz.Prefs.getAuthKey');
-	return Spaz.Prefs.getAuthKey();
+	return Spaz.Prefs.getAuthKey(acc_id);
 };
 
 /**
  * Returns the current account's auth key 
  */
-Spaz.Prefs.getAuthKey = function() {
-	var currentAccountId = Spaz.Prefs.getCurrentAccountId();
-	sch.debug('getAuthKey currentAccountId:'+currentAccountId);
-	if (currentAccountId) {
-		var accobj = sc.app.accounts.get(currentAccountId);
+Spaz.Prefs.getAuthKey = function(acc_id) {
+	if (!acc_id) {
+		acc_id = Spaz.Prefs.getCurrentAccountId();
+	}
+
+	sch.debug('getAuthKey acc_id:'+acc_id);
+	if (acc_id) {
+		var accobj = Spaz.getAppObj().accounts.get(acc_id);
 		return !!accobj ? accobj.auth : null;
 	} else {
 		return null;
@@ -315,11 +384,14 @@ Spaz.Prefs.getAuthKey = function() {
 /**
  * Returns a SpazAuth object based on the current user's type and auth key 
  */
-Spaz.Prefs.getAuthObject = function() {
-	var authkey = Spaz.Prefs.getAuthKey();
-	sch.debug('getAuthObject authkey:'+authkey);
+Spaz.Prefs.getAuthObject = function(acc_id) {
+	var authkey = Spaz.Prefs.getAuthKey(acc_id);
+	Mojo.Log.error('getAuthObject authkey: %s', authkey);
+	
 	if (authkey) {
-		var auth = new SpazAuth(Spaz.Prefs.getAccountType());
+		var auth = new SpazAuth(Spaz.Prefs.getAccountType(acc_id));
+		Mojo.Log.error('Spaz.Prefs.getAccountType(): %s', Spaz.Prefs.getAccountType(acc_id));
+		Mojo.Log.error('auth: %j', auth);
 		auth.load(authkey);
 		return auth;
 	} else {
@@ -328,12 +400,15 @@ Spaz.Prefs.getAuthObject = function() {
 };
 
 /**
- * Returns the current account's type 
+ * Returns the current account's type, or that of the passed id
  */
-Spaz.Prefs.getAccountType = function() {
-	var currentAccountId = Spaz.Prefs.getCurrentAccountId();
-	if (currentAccountId) {
-		var accobj = sc.app.accounts.get(currentAccountId);
+Spaz.Prefs.getAccountType = function(acc_id) {
+	if (!acc_id) {
+		acc_id = Spaz.Prefs.getCurrentAccountId();
+	}
+
+	if (acc_id) {
+		var accobj = Spaz.getAppObj().accounts.get(acc_id);
 		return !!accobj ? accobj.type : null;
 	} else {
 		return null;
@@ -341,13 +416,31 @@ Spaz.Prefs.getAccountType = function() {
 
 };
 
+
+/**
+ * Retrieves the custom API url for the current account, or the account with the passed id
+ */
+Spaz.Prefs.getCustomAPIUrl = function(acc_id) {
+	if (!acc_id) {
+		acc_id = Spaz.Prefs.getCurrentAccountId();
+	}
+	
+    var custom_api_url = Spaz.getAppObj().accounts.getMeta(acc_id, 'twitter-api-base-url');
+    if (!custom_api_url) {
+        // used to be called api-url, so try that
+        custom_api_url = Spaz.getAppObj().accounts.getMeta(acc_id, 'api-url');
+    }
+    return custom_api_url;
+};
+
+
 /**
  * Returns the current account object
  */
 Spaz.Prefs.getCurrentAccount = function() {
 	var currentAccountId = Spaz.Prefs.getCurrentAccountId();
 	if (currentAccountId) {
-		return sc.app.accounts.get(currentAccountId);
+		return Spaz.getAppObj().accounts.get(currentAccountId);
 	} else {
 		return null;
 	}
@@ -356,10 +449,10 @@ Spaz.Prefs.getCurrentAccount = function() {
 
 
 Spaz.Prefs.getCurrentAccountId = function() {
-	if (sc.app.userid) {
-		return sc.app.userid;
+	if (Spaz.getAppObj().userid) {
+		return Spaz.getAppObj().userid;
 	} else {
-		return sc.app.prefs.get('last_userid');
+		return Spaz.getAppObj().prefs.get('last_userid');
 	}
 	
 };

@@ -6,10 +6,15 @@
 	<div class="palm-list">
 		<div class="palm-row first" x-mojo-tap-highlight="momentary">
 			<div class="palm-row-wrapper">
+				<div id="app-theme" x-mojo-element="ListSelector"></div>                                                   
+			</div>
+		</div>
+		<div class="palm-row" x-mojo-tap-highlight="momentary">
+			<div class="palm-row-wrapper">
 				<div id="timeline-text-size" x-mojo-element="ListSelector"></div>                                                   
 			</div>
 		</div>
-		<div class="palm-row single">
+		<div class="palm-row last">
 			<div style="overflow:auto;" class="checkbox-container">
 				<div x-mojo-element="CheckBox" id="checkbox-timeline-scrollonupdate"></div>
 				<div class="checkbox-label">Scroll to 1st new item on refresh</div>
@@ -21,12 +26,13 @@
 <div class="palm-group palm-group-spaz">
 	<div class="palm-group-title" x-mojo-loc=''>Notification settings</div>
 	<div class="palm-list">
-		<div class="palm-row first">
-			<div style="overflow:auto;" class="checkbox-container">
-				<div x-mojo-element="CheckBox" id="checkbox-notify-newmessages"></div>
-				<div class="checkbox-label">New statuses</div>
-			</div>
-		</div>
+	    
+        <div class="palm-row first">
+            <div style="overflow:auto;" class="checkbox-container">
+                <div x-mojo-element="CheckBox" id="checkbox-notify-newmessages"></div>
+                <div class="checkbox-label">New statuses</div>
+            </div>
+        </div>
 		<div class="palm-row">
 			<div style="overflow:auto;">
 				<div x-mojo-element="CheckBox" id="checkbox-notify-mentions"></div>
@@ -49,9 +55,24 @@
 </div>
 
 <div class="palm-group palm-group-spaz">
-	<div class="palm-group-title" x-mojo-loc=''>Refresh rate</div>
+	<div class="palm-group-title" x-mojo-loc=''>Checking for new messages</div>
 	<div class="palm-list">
-		<div class="palm-row first" x-mojo-tap-highlight="momentary">
+	    <div class="palm-row first">
+            <div style="overflow:auto;" class="checkbox-container">
+                <div x-mojo-element="CheckBox" id="checkbox-network-refresh-auto"></div>
+                <div class="checkbox-label">Check automatically</div>
+            </div>
+        </div>
+
+	    <div class="palm-row">
+            <div style="overflow:auto;" class="checkbox-container">
+                <div x-mojo-element="CheckBox" id="checkbox-network-refresh-wake"></div>
+                <div class="checkbox-label">Wake from sleep</div>
+            </div>
+        </div>
+
+        
+		<div class="palm-row" x-mojo-tap-highlight="momentary">
 			<div class="palm-row-wrapper">
 				<div id="network-refreshinterval" x-mojo-element="ListSelector"></div>                                                   
 			</div>
@@ -129,33 +150,41 @@
 
 
 
-<!-- <div class="palm-group palm-group-spaz">
-	<div class="palm-group-title" x-mojo-loc=''>Other options</div>
-	<div class="palm-list">
-		<div class="palm-row single">
-			<div style="overflow:auto;" class="checkbox-container">
-				<div x-mojo-element="CheckBox" id="checkbox-sound-enabled"></div>
-				<div class="checkbox-label">Play sounds</div>
-			</div>
-		</div>
-		<div class="palm-row single" style="display:none">
-			<div style="overflow:auto;" class="checkbox-container">
-				<div x-mojo-element="CheckBox" id="checkbox-vibration-enabled"></div>
-				<div class="checkbox-label">Vibrate</div>
-			</div>
-		</div>
-		
+<div class="palm-group palm-group-spaz">
+    <div class="palm-group-title" x-mojo-loc=''>Other options</div>
+    <div class="palm-list">
+        <div class="palm-row single">
+            <div style="overflow:auto;" class="checkbox-container">
+                <div x-mojo-element="CheckBox" id="checkbox-sound-enabled"></div>
+                <div class="checkbox-label">Play sounds</div>
+            </div>
+        </div>
+        <!-- <div class="palm-row single" style="display:none">
+            <div style="overflow:auto;" class="checkbox-container">
+                <div x-mojo-element="CheckBox" id="checkbox-vibration-enabled"></div>
+                <div class="checkbox-label">Vibrate</div>
+            </div>
+        </div> -->
+        
       
-	</div>
-</div> -->
+    </div>
+</div>
 
 
 
 <div class="palm-group palm-group-spaz">
-	<div class="palm-group-title" x-mojo-loc=''>Message caches</div>
+	<div class="palm-group-title" x-mojo-loc=''>Timeline cache</div>
 	<div class="palm-list">
+
+		<div class="palm-row first" style="display:none">
+            <div style="overflow:auto;" class="checkbox-container">
+                <div x-mojo-element="CheckBox" id="checkbox-timeline-save-cache"></div>
+                <div class="checkbox-label">Cache timeline between sessions</div>
+            </div>
+        </div>
+        
 		<div class="palm-row single">
-			<button class="palm-button" id="clear-cache-button">Clear caches</button>
+			<button class="palm-button" id="clear-cache-button">Clear cache</button>
 		</div>        
 	</div>
 </div>

@@ -1,17 +1,42 @@
-function StartloginAssistant() {
+function StartloginAssistant(args) {
 	/* this is the creator function for your scene assistant object. It will be passed all the 
 	   additional parameters (after the scene name) that were passed to pushScene. The reference
 	   to the scene controller (this.controller) has not be established yet, so any initialization
 	   that needs the scene controller should be done in the setup function below. */
 	scene_helpers.addCommonSceneMethods(this);
+	
+	/*
+		this connects App to this property of the appAssistant
+	*/
+	App = Spaz.getAppObj();
+	
+	// default next scene is my-timeline
+	this.nextscene = 'my-timeline';
+	this.nextsceneargs = {};
+	
+	if (args) {
+		
+		if (args.nextscene) {
+			this.nextscene = args.nextscene;
+		}
+		
+		if (args.nextsceneargs) {
+			this.nextsceneargs = args.nextsceneargs;
+		}
+		
+	}
 }
+
+StartloginAssistant.prototype.aboutToActivate = function(callback){
+	callback.defer(); //delays displaying scene, looks better
+};
 
 StartloginAssistant.prototype.setup = function() {
 
 	var thisA = this;
 
 	Mojo.Log.info('StartloginAssistant setup!');
-	Mojo.Log.info('sc.app.prefs', sc.app.prefs);
+	Mojo.Log.info('App.prefs', App.prefs);
 
 	this.scroller = this.controller.getSceneScroller();
 	
@@ -57,7 +82,7 @@ StartloginAssistant.prototype.setup = function() {
 	/*
 		load users from prefs obj
 	*/
-	this.Users = new SpazAccounts(sc.app.prefs);
+	this.Users = new SpazAccounts(App.prefs);
 	this.Users.load();
 	
 	sch.error(this.Users);
@@ -89,19 +114,21 @@ StartloginAssistant.prototype.setup = function() {
 		sch.debug('CLICKED ON ITEM');
 		sch.debug(sch.enJSON(e.item));
 	
-		sc.app.username = e.item.username;
-		sc.app.auth		= e.item.auth;
-		sc.app.type     = e.item.type;
-		sc.app.userid	= e.item.id;
+		App.username = e.item.username;
+		App.auth		= e.item.auth;
+		App.type     = e.item.type;
+		App.userid	= e.item.id;
 		
-		sch.debug('sc.app.username:' + sc.app.username);
-		sch.debug('sc.app.auth:'     + sc.app.auth);  
-		sch.debug('sc.app.type:'     + sc.app.type);   
-		sch.debug('sc.app.userid:'	 + sc.app.userid);
+		sch.debug('App.username:' + App.username);
+		sch.debug('App.auth:'     + App.auth);  
+		sch.debug('App.type:'     + App.type);   
+		sch.debug('App.userid:'	 + App.userid);
 		
-		sc.app.prefs.set('last_userid', sc.app.userid);
-				
-		Spaz.popAllAndPushScene("my-timeline");
+		App.prefs.set('last_userid', App.userid);
+
+		Mojo.Log.error('nextscene: %s', thisA.nextscene);
+		Mojo.Log.error('nextsceneargs: %s', thisA.nextsceneargs);
+		Spaz.popAllAndPushScene(thisA.nextscene, thisA.nextsceneargs);
 	});
 	
 	/*
@@ -148,7 +175,7 @@ StartloginAssistant.prototype.setup = function() {
 	
 	this.controller.listen('goToMyTimelineCheckbox', Mojo.Event.propertyChange, function() {
 		var state = thisA.model['always-go-to-my-timeline'];
-		sc.app.prefs.set('always-go-to-my-timeline', state);
+		App.prefs.set('always-go-to-my-timeline', state);
 	});
 	
 	
@@ -166,7 +193,7 @@ StartloginAssistant.prototype.activate = function(event) {
 	this.model.username = 'foo';
 	this.model.password = 'foo';
 
-	this.model['always-go-to-my-timeline'] = sc.app.prefs.get('always-go-to-my-timeline');
+	this.model['always-go-to-my-timeline'] = App.prefs.get('always-go-to-my-timeline');
 	this.controller.modelChanged( this.model );
 
 };
@@ -196,7 +223,7 @@ StartloginAssistant.prototype.handleLogin = function(event) {
 
 	/**
 	 * - Get username and password from text fields
-	 * - initialize sc.app.twit
+	 * - initialize App.twit
 	 * - swap to my-timeline scene
 	 * 	
 	 */
@@ -211,7 +238,7 @@ StartloginAssistant.prototype.handleLogin = function(event) {
 		/*
 			now verify credentials against the Twitter API
 		*/
-		sc.app.twit.verifyCredentials(this.model.username, this.model.password);
+		App.twit.verifyCredentials(this.model.username, this.model.password);
 		
 	}
 	
@@ -247,7 +274,7 @@ var NewAccountDialogAssistant = Class.create({
 			'username':false,
 			'password':false,
 			'type':SPAZCORE_SERVICE_TWITTER,
-			'api-url':'http://'
+			'twitter-api-base-url':'http://'
 		};
 
 
@@ -314,11 +341,11 @@ var NewAccountDialogAssistant = Class.create({
 		/*
 			API URL
 		*/
-		this.controller.setupWidget('api-url',
+		this.controller.setupWidget('twitter-api-base-url',
 			this.atts = {
 				// hintText: 'enter username',
 				enterSubmits: true,
-				modelProperty:'api-url', 
+				modelProperty:'twitter-api-base-url', 
 				changeOnKeyPress: true,
 				focusMode:	Mojo.Widget.focusSelectMode,
 				multiline:		false,
@@ -339,7 +366,7 @@ var NewAccountDialogAssistant = Class.create({
 		var thisA = this;
 
 
-		jQuery('#api-url-row').hide();
+		jQuery('#twitter-api-base-url-row').hide();
 
 		/*
 			What to do if we succeed
@@ -356,9 +383,8 @@ var NewAccountDialogAssistant = Class.create({
 				type:thisA.newAccountModel.type.toLowerCase()
 			};
 			thisA.sceneAssistant.accountsModel.items.push(newItem);
-			thisA.sceneAssistant.Users.setAll(thisA.sceneAssistant.accountsModel.items);
-			
-			thisA.sceneAssistant.Users.setMeta(newItem.username, newItem.type, 'api-url', thisA.newAccountModel['api-url']);
+			thisA.sceneAssistant.Users.setAll(thisA.sceneAssistant.accountsModel.items);			
+			thisA.sceneAssistant.Users.setMeta(newItem.id, 'twitter-api-base-url', thisA.newAccountModel['twitter-api-base-url']);
 			
 			jQuery('#accountList')[0].mojo.noticeAddedItems(thisA.sceneAssistant.accountsModel.items.length, [newItem]);
 			thisA.widget.mojo.close();
@@ -438,10 +464,10 @@ var NewAccountDialogAssistant = Class.create({
 	
 	typePropertyChangeListener : function(event) {
 		if (this.newAccountModel.type === SPAZCORE_SERVICE_CUSTOM) {
-			jQuery('#api-url-row').show();
+			jQuery('#twitter-api-base-url-row').show();
 			jQuery('#type-row').removeClass('last');
 		} else {
-			jQuery('#api-url-row').hide();
+			jQuery('#twitter-api-base-url-row').hide();
 			jQuery('#type-row').addClass('last');
 		}
 	},
@@ -460,7 +486,6 @@ var NewAccountDialogAssistant = Class.create({
 			Turn on the spinner and set the message
 		*/
 		// this.sceneAssistant.showInlineSpinner('#new-account-spinner-container', 'Verifying credentials');
-		
 		sch.error("new account:");
 		sch.error(this.newAccountModel.username);
 		
@@ -469,13 +494,13 @@ var NewAccountDialogAssistant = Class.create({
 		*/
 		if (this.newAccountModel.username && this.newAccountModel.password) {
 			if (this.newAccountModel.type !== SPAZCORE_SERVICE_CUSTOM) {
-				sc.app.twit.setBaseURLByService(this.newAccountModel.type);
+				App.twit.setBaseURLByService(this.newAccountModel.type);
 			} else {
-				sc.app.twit.setBaseURL(this.newAccountModel['api-url']);
+				App.twit.setBaseURL(this.newAccountModel['twitter-api-base-url']);
 			}
 			
 			
-			
+			Mojo.Log.error(this.newAccountModel.type);
 			
 			var auth  = new SpazAuth(this.newAccountModel.type);
 			
@@ -507,8 +532,8 @@ var NewAccountDialogAssistant = Class.create({
 						that.sceneAssistant.accountsModel.items.push(newItem);
 						
 						// the accounts model
-						sc.app.accounts.setAll(that.sceneAssistant.accountsModel.items);
-						sc.app.accounts.setMeta(newaccid, 'api-url', that.newAccountModel['api-url']);
+						App.accounts.setAll(that.sceneAssistant.accountsModel.items);
+						App.accounts.setMeta(newaccid, 'twitter-api-base-url', that.newAccountModel['twitter-api-base-url']);
 
 						jQuery('#accountList')[0].mojo.noticeAddedItems(that.sceneAssistant.accountsModel.items.length, [newItem]);
 						that.widget.mojo.close();
