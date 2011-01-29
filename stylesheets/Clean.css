@@ -1,18 +1,18 @@
 /* Put Application specific CSS here. */
 
 BODY, BODY>div[x-mojo-element=Scroller] {
-    background-color:#111111;
-	color:#EEEEEE;
+    background-color:#FFFFFF;
+	color:#111111;
 }
 
 body.palm-default {
-/*	background: url('../images/dreadnaught/page-bg-darkgreen.png')  top left no-repeat;*/
-	background:#000;
+/*	background: url('Clean/page-bg-darkgreen.png')  top left no-repeat;*/
+	background:#FFFFFF;
 }
 
 
 .pull-to-refresh {
-	background-image:url(../images/dreadnaught/pull-to-refresh.png);
+	background-image:url(Clean/pull-to-refresh.png);
 	background-repeat: no-repeat;
 	background-position: center 50px;
 }
@@ -25,10 +25,10 @@ body.palm-default {
 	position: relative; z-index: 500;
 }
 .refresh-text {
-	margin-top: -33px; text-align: center; z-index: 200;
+	margin-top: -33px; text-align: center; z-index: 200; color: black !important;
 }
 .refresh-text-overlay {
-	height: 45px; width: 100%; background-color: #111111; position: fixed; top: 0px; z-index: 250;
+	height: 45px; width: 100%; background-color: #FFFFFF; position: fixed; top: 0px; z-index: 250;
 }
 
 BODY {
@@ -38,11 +38,12 @@ BODY {
 	The Accounts Panel
 */
 .palm-menu-panel {
-    -webkit-border-image: url('../images/dreadnaught/palm-menu-panel.png') 24 24 24 24 repeat stretch;
+    -webkit-border-image: url('Clean/palm-menu-panel.png') 24 24 24 24 repeat stretch;
 }
 
 .palm-menu-panel{
     -webkit-transition: all 175ms ease-in;
+	top:50px;
     opacity:1;
 }
 
@@ -51,38 +52,36 @@ BODY {
     opacity: 0;
 }
 
+.palm-menu-button, .palm-menu-text, .palm-menu-label {
+	-webkit-border-image: url(none) 50 25 150 25 repeat repeat !important;
+}
+.palm-menu-button.selected, .palm-menu-text.selected, .palm-menu-label.selected {
+	-webkit-border-image: url(none) 50 25 150 25 repeat repeat !important;
+	background-color:rgba(0,0,0,.5);
+}
+.palm-menu-text.palm-depressed,
+.palm-menu-label.palm-depressed,
+.palm-menu-button.palm-depressed {
+	background-color:rgba(32,32,32,.5);
+}
+
+
 /*DM's and @ Menu Icon*/
 .palm-menu-icon.dms 			{ background-image: url(../images/menu-icon-dms.png); }
 .palm-menu-icon.at 			{ background-image: url(../images/menu-icon-at.png); }
 
 
-/*
-	This is so we can have the view menu floating over the palm-page-header
-*/
 
-/*.palm-hasheader>.palm-menu-spacer {
-	height:0px !important;
-}
-*/	/*
-		view menu button needs to be smaller
-	*/
-/*	.view-menu .palm-menu-button {
-		-webkit-border-image: url(../images/dreadnaught/spaz-view-menu-button.png) 0 25 200 25 repeat repeat;
-	}
-		.view-menu .palm-menu-button.selected {
-			-webkit-border-image: url(../images/dreadnaught/spaz-view-menu-button.png) 50 25 150 25 repeat repeat;
-		}
-*/	
-.view-menu .palm-menu-fade {
-/*	background: transparent!important;*/
-	background-image: url('../images/dreadnaught/view-menu-gradient.png') !important;
+.view-menu {
 }
 .view-menu .palm-menu-text {
 	text-align:left;
 }
-.view-menu {
+.view-menu, .command-menu {
 	text-align:left;
-	background: url(../images/spaz-icon-alpha_32.png) no-repeat 84% 50%;
+	background-color:rgba(32,32,32,.7);
+	background-color:transparent;
+/*	-webkit-box-shadow: 0px 1px 5px #333333;*/
 }
 	.view-menu .palm-menu-text .truncating-text {
 /*		margin-left:38px;*/
@@ -90,29 +89,28 @@ BODY {
 		font-weight:normal;
 	}
 
-.command-menu .palm-menu-fade {
-	background-image: url('../images/dreadnaught/command-menu-gradient.png') !important;
-	background-repeat: repeat-x !important;
-	background-position-x: 0% !important;
-	background-position-y: 100% !important;
+.palm-default .palm-menu-fade, .palm-menu.command-menu.palm-default > .palm-menu-fade {
+	background:rgba(32,32,32,.7);
 }
 
 div.palm-page-header.spaz-page-header {
-	-webkit-border-image:url('../images/dreadnaught/palm-page-header.png') 35 24 13 24 repeat stretch !important;
+	-webkit-border-image:url(none) 35 24 13 24 repeat stretch !important;
+	background-color:rgba(32,32,32,.7);
+	-webkit-box-shadow: 0px 1px 5px #333333;
 }
 	div.palm-page-header.spaz-page-header .title {
-		color:#FFFFFF;
+		color:#222222;
 		text-shadow: rgb(0,0,0) 0px 1px 0px;
 		text-transform: none;
 	}
 	.palm-page-header.multi-line .subtitle {
-		color:#FFFFFF;
+		color:#222222;
 		text-shadow: rgb(0,0,0) 0px 1px 0px;
 		padding-left:56px;
 	}
 
 a:link, a:visited, .clickable {
-	color: #CCCCFF;
+	color: #222266;
 	text-decoration:underline;
 }
 
@@ -125,30 +123,127 @@ a:link, a:visited, .clickable {
 }
 
 
+/*
+	buttons
+*/
+.palm-dark .palm-button.primary,
+.palm-dark .palm-button {
+	-webkit-border-image: url(none) 0 17 104 17 repeat repeat;
+	border:2px solid #999;
+	background-color:#333333;
+	color:#DDDDDD;
+	-webkit-border-radius:1.5em;
+}
+
+.palm-dark .palm-button.selected.primary,
+.palm-dark .palm-button.selected {
+  -webkit-border-image: url(none) 52 17 52 17 repeat repeat;
+	background-color:#111111;
+	color:#FFFFFF;
+}
+
+.palm-dark .palm-button.disabled.primary,
+.palm-dark .palm-button.disabled {
+	background-color:#222222;
+	opacity:.5;
+	color:#DDDDDD;
+  -webkit-border-image: url(none) 104 17 0 17 repeat repeat;
+}
+
+.palm-dark .palm-button.secondary,
+.palm-dark .palm-button.dismiss {
+	background-color:#666666;
+	color:#DDDDDD;
+  -webkit-border-image: url(none) 0 17 104 17 repeat repeat;
+}
+
+.palm-dark .palm-button.secondary.selected,
+.palm-dark .palm-button.dismiss.selected {
+	background-color:#666666;
+	color:#FFFFFF;
+  -webkit-border-image: url(none) 52 17 52 17 repeat repeat;
+}
+
+.palm-dark .palm-button.disabled.secondary,
+.palm-dark .palm-button.disabled.dismiss {
+	background-color:#666666;
+	opacity:.5;
+	color:#FFFFFF;
+  -webkit-border-image: url(none) 104 17 0 17 repeat repeat;
+}
+
+.palm-dark .palm-button:active {
+	-webkit-border-image: url(none) 0 17 104 17 repeat repeat;
+	border:2px solid #333333;
+	background-color:#111111;
+	color:#FFFFFF;
+	-webkit-border-radius:1.5em;
+}
+
+.palm-button .activity-spinner {
+	margin-left:-10px;
+}
+
+
+
+.palm-dark .palm-group {
+	-webkit-border-image: url(none) 40 18 18 18 repeat repeat;
+}
+
+.palm-dark .palm-group.unlabeled {
+	-webkit-border-image: url(none) 18 18 18 18 repeat repeat;
+}
+
+.palm-dark .palm-group-title {
+  color: #333333 !important;
+  text-shadow: #000000 0px 1px 0px;
+}
+
+
+/*.palm-dark .palm-group .textfield-group {
+  border-width: 15px;
+  -webkit-border-image: url(Clean/textfield-shadow.png) 15 15 15 15 stretch stretch;
+}
+
+.palm-dark .palm-group .palm-row.first .textfield-group.focused {
+  border-width: 15px;
+  -webkit-border-image: url(Clean/group-textfield-shadow-first.png) 15 15 15 15 stretch stretch;
+}
+.palm-dark .palm-group .palm-row.last .textfield-group.focused {
+  border-width: 15px;
+  -webkit-border-image: url(Clean/group-textfield-shadow-last.png) 15 15 15 15 stretch stretch;
+}
+.palm-dark .palm-group .palm-row.single .textfield-group.focused {
+  border-width: 15px;
+  -webkit-border-image: url(Clean/group-textfield-shadow-single.png) 15 15 15 15 stretch stretch;
+}
+*/
 .palm-group-spaz {
-	-webkit-border-image: url(../images/dreadnaught/palm-group.png) 40 18 14 18;	
+	-webkit-border-image: url(none) 40 18 14 18;
+	background-color:#E0E0E0;
+	-webkit-border-radius:10px;
 }
 
 .palm-dark .palm-group-spaz .palm-group-title{
-	color:#CCC;
+	color:#333333;
 }
 
 
 .palm-popup-container {
-	color:#111111;
+/*	color:#666666;*/
 }
 
 
 .palm-row .list-selector-triangle {
-  background: url(../images/dreadnaught/list-selector-triangle-dark.png) top no-repeat;
+/*  background: url(Clean/list-selector-triangle-dark.png) top no-repeat;*/
 }
 
 .palm-row.selected .list-selector-triangle {
-  background: url(../images/dreadnaught/list-selector-triangle-dark.png) bottom no-repeat;
+/*  background: url(Clean/list-selector-triangle-dark.png) bottom no-repeat;*/
 }
 
 .palm-popup-container {
-  -webkit-border-image: url(../images/dreadnaught/palm-popup-background-dark.png) 24 24 24 24 stretch stretch;
+/*  -webkit-border-image: url(Clean/palm-popup-background-dark.png) 24 24 24 24 stretch stretch;*/
 }
 
 .palm-popup-container .palm-popup-content {
@@ -163,25 +258,28 @@ a:link, a:visited, .clickable {
   top: -16px;
 }
 .palm-popup-container .palm-popup-fade-top > .fade-background {
-  -webkit-border-image: url(../images/dreadnaught/palm-popup-fade-top-dark.png) 0 24 0 24 repeat repeat;
+/*  -webkit-border-image: url(Clean/palm-popup-fade-top-dark.png) 0 24 0 24 repeat repeat;*/
 }
 .palm-popup-container .palm-popup-fade-top > .fade-arrow {
-  background: url(../images/dreadnaught/palm-popup-fade-arrow-up-dark.png) center center no-repeat;
+/*  background: url(Clean/palm-popup-fade-arrow-up-dark.png) center center no-repeat;*/
 }
 
 .palm-popup-container .palm-popup-fade-bottom {
   bottom: -17px;
 }
 .palm-popup-container .palm-popup-fade-bottom > .fade-background {
-  -webkit-border-image: url(../images/dreadnaught/palm-popup-fade-bottom-dark.png) 0 24 0 24 repeat repeat;
+/*  -webkit-border-image: url(Clean/palm-popup-fade-bottom-dark.png) 0 24 0 24 repeat repeat;*/
 }
 .palm-popup-container .palm-popup-fade-bottom > .fade-arrow {
-  background: url(../images/dreadnaught/palm-popup-fade-arrow-down-dark.png) center center no-repeat;
+/*  background: url(Clean/palm-popup-fade-arrow-down-dark.png) center center no-repeat;*/
 }
 
-.palm-row {
-  color: #fff;
-  background: url(../images/dreadnaught/list-separator-dark.png) bottom left repeat-x;
+/*
+	rows
+*/
+.palm-dark .palm-row {
+	color: #222222;
+	background: url(Clean/list-separator-light.png) bottom left repeat-x;
 }
 
 
@@ -196,27 +294,19 @@ div.rounded-user-image {
 */
 
 div.timeline {
-	-khtml-border-radius:10px;
 }
 
 div.timeline-entry {
 	padding: 2px 6px 6px;
-	border-bottom:solid 5px black;
-/*	-khtml-border-radius: 10px;*/
-/*	border-bottom: 1px solid #222;*/
 	clear:both;
 	overflow:hidden;
 	min-height:64px;
-	color:#FFF;
+	color:#222222;
 	position:relative;
-	background-image: url('../images/dreadnaught/entry-gradient-bg_short.png');
-	background-repeat: repeat-x;
-	background-color:#101010;
-	background-position: 0px -3px;
 }
 
 	div.timeline-entry.new {
-		color:#FFFF88;
+		color:#222200;
 	}
 
 
@@ -224,20 +314,20 @@ div.timeline-entry {
 		Entries that are replies directed at the user
 	*/
 	div.timeline-entry.reply {
-		background-color: #2B3235;
+		background-color:#fdf7c6;
 	}
 	/*
 		Entries that are direct messages to the user
 	*/
 	div.timeline-entry.dm {
-		background-color: #301616;
+		background-color:#ffcbcb;
 	}
 
 	div.timeline-entry.reply:active,
 	div.timeline-entry.dm:active,
 	div.timeline-entry:active {	
-		background-color:#222222;
-		color:#FFFFCC;
+		background-color:#DDDDDD;
+		color:#000000;
 	}
 	
 
@@ -276,8 +366,19 @@ div.timeline-entry {
 	div.timeline-entry .text-status {
 		margin-left:64px;
 		margin-top:0px;
+		background:transparent right bottom no-repeat;
 	}
-	
+		div.timeline-entry.reply .text-status {
+			background-image:url(Clean/timeline-mention-bg.png);
+		}
+		div.timeline-entry.dm .text-status {
+			background-image:url(Clean/timeline-dm-bg.png);
+		}
+		div.timeline-entry.favorite .text-status {
+			background-image:url(Clean/timeline-favorite-bg.png);
+		}
+		
+		
 		div.timeline-entry .text-status .meta-wrapper {
 			overflow:hidden;
 			margin-top:5px;
@@ -287,7 +388,7 @@ div.timeline-entry {
 			float:left;
 			font-size:11pt;
 /*			font-weight:bold;*/
-			color:#CCCCFF;
+			color:#666666;
 			text-transform: uppercase;
 			font-family:"Prelude-CondensedMedium";
 			position:relative;
@@ -302,26 +403,6 @@ div.timeline-entry {
 			font-size:11pt;
 			line-height:15pt;
 		}
-		.text-status .text a:link,
-		.text-status .text a:visited,
-		.text-status .text a:active,
-		.text-status .text .clickable {
-/*			color:#3333CC;
-			text-decoration:underline;
-*/		}
-			.text-status .text a:active,
-			.text-status .text .clickable:active {
-/*				-webkit-border-image: url(../images/dreadnaught/text-link-bg-active.png) 0 7 0 7;*/
-			}
-			
-		div.timeline-entry .text-status .rt-screen-name {
-/*			margin:-2px auto 2px;
-			color:#CCCCFF;
-			font-size:9pt;
-			text-transform: uppercase;
-			font-family:"Prelude-CondensedMedium";
-			position:relative;
-*/		}
 		
 	div.timeline-entry .text-status .meta {
 		float:right;
@@ -329,19 +410,17 @@ div.timeline-entry {
 		height:20px;
 		padding:1px 0px;
 		font-size:	10pt;
-/*		font-weight:bold;*/
 		text-transform:uppercase;
 		font-family:"Prelude-CondensedMedium";
 		text-align:	right;
-		color:#CCCCFF;
+		color:#666666;
 		background-position: right center;
 		border-width: 0 7px 0 7px;
-/*		-webkit-border-image: url(../images/dreadnaught/meta-link-bg.png) 0 7 0 7;*/
 	}
 
 			div.timeline-entry:active .text-status .meta,
 			div.timeline-entry .text-status .meta:active {
-				color:#FFFFCC;
+				color:#333333;
 			}
 	
 	div.timeline-entry div.protected-icon {
@@ -349,7 +428,7 @@ div.timeline-entry {
 		width: 11px;
 		display:inline-block;
 		margin-left:5px;
-		background-image: url(../images/dreadnaught/tiny-lock-icon.png);
+		background-image: url(Clean/tiny-lock-icon.png);
 		background-repeat: no-repeat;
 	}
 	
@@ -405,7 +484,7 @@ div.timeline-entry {
 	clear:both;
 	overflow:hidden;
 	min-height:64px;
-	color:#FFF;
+	color:#000000;
 	position:relative;
 	margin:0;
 	background-image: none !important;
@@ -427,8 +506,7 @@ div.timeline-entry.follower {}
 	login scene stuff
 */
 #mojo-scene-start-scene-scroller {
-/*	border:1px solid green;*/
-	background-image: url('../images/dreadnaught/page-bg-darkgreen-start.png');
+
 }
 
 #mojo-scene-start {
@@ -437,12 +515,9 @@ div.timeline-entry.follower {}
 }
 
 #start-scene {
-	color:#EEEEEE;
-/*	position:relative !important;*/
-/*	top:0px;*/
+	color:#111111;
 	bottom:0px;
 	vertical-align: bottom;
-/*	border:1px solid yellow;*/
 	height:175px;
 }
 
@@ -460,8 +535,7 @@ div.timeline-entry.follower {}
 	padding:10px;
 	border:1px solid rgba(255,255,204,.8);
 	background: rgba(255,255,204,.3);
-	color:#CCC;
-/*	-webkit-border-radius:10px;*/
+	color:#333333;
 	display:none;
 	overflow: auto;
 	height:30px;
@@ -478,19 +552,22 @@ div.timeline-entry.follower {}
 	}
 
 	.palm-row .label {
-/*		color:#9BB8CF;*/
+		color:#333333;
 		text-shadow: none;
 	}
 	
+	.palm-row .title {
+		color:#333333;
+	}
+	
 	.palm-row .truncating-text {
-/*		color:#FFF;*/
+/*		color:#333333;*/
 	}
 		.palm-row .focused input[type='text'] {
-/*			color:#000;*/
 		}
 	
 	.add-item .title {
-		color:#FFFFEE;
+		color:#111100;
 	}
 	
 	.checkbox-container {
@@ -503,7 +580,7 @@ div.timeline-entry.follower {}
 		.checkbox-label {
 			margin:13px 0 0 0;
 			font-size:12pt;
-			color:#FFF;
+			color:#000000;
 		}
 
 	#trends-list {}
@@ -515,7 +592,7 @@ div.timeline-entry.follower {}
 	simple styling widgets
 */
 div.spaz-drawer-header {
-	color:#CCC;
+	color:#333333;
 	display:block;
 	margin:0;
 	padding:12px 6px 12px 25px;
@@ -525,14 +602,14 @@ div.spaz-drawer-header {
 /*	-webkit-border-image: url(http://localhost:8888/usr/lib/mojo/framework/submissions/91/images/palm-menu-button.png) 0 25 150 25 stretch stretch;*/
 }
 	div.spaz-drawer-header.open {
-		color:#FFC;
+		color:#333300;
 	}
 	div.spaz-drawer-header.closed {
 		
 	}
 	
 div.spaz-drawer {
-	-webkit-border-image: url(../images/dreadnaught/drawer-background-9tile-opaque.png) 20 1 20 1 stretch stretch;
+	-webkit-border-image: url(Clean/drawer-background-9tile-opaque.png) 20 1 20 1 stretch stretch;
 	-webkit-box-sizing: border-box;
 	width:100%;
 	padding:0;
@@ -540,10 +617,11 @@ div.spaz-drawer {
 }
 
 #login-button, #search-button {
-	margin:0px !important;
+	margin:0px;
 }
 .palm-list .palm-row .palm-button {
-	margin:0px !important;
+	margin:5px 0 5px 0;
+	color:#DDDDDD;
 }
 
 
@@ -552,18 +630,11 @@ div.spaz-drawer {
 	Message detail styles
 */
 .message-detail-scene {
-/*	background-image: url(../images/dreadnaught/bg-message-detail.png);
-	background-attachment: fixed;
-	min-height:480px;
-*/}
+}
 
 #message-detail-container {
-	background-image: url('../images/dreadnaught/entry-gradient-bg_short.png');
-	background-repeat: repeat-x;
-	background-color:#2B3235;
 	min-height:480px;
 	padding:0 0 7px 0;
-	-khtml-border-radius:10px;
 	overflow:auto;
 }
 
@@ -572,20 +643,15 @@ div.spaz-drawer {
 	padding: 0px 0px;
 	clear:both;
 	overflow:hidden;
-/*	color:#000;*/
-/*	background-color: rgba(50,50,14,.9) !important;*/
 }
 
 	#message-detail div.user {
 		display:block;
 		clear:both;
 		overflow:visible;
-		background-color:rgba(0,0,0,.5);
+		background-color:rgba(128,128,128,.5);
 		padding:8px;
 		min-height:48px;
-		-khtml-border-top-left-radius: 10px;
-		-khtml-border-top-right-radius:10px;
-		border-bottom:2px solid #000000;
 	}
 
 	#message-detail div.user .screen_name {
@@ -617,10 +683,6 @@ div.spaz-drawer {
 	}
 		#message-detail .text-status .thumbnails {
 			margin:5px 0 0;
-/*			padding:7px;*/
-/*			background-color:#222;*/
-/*			-khtml-border-radius:10px;*/
-/*			text-align:center;*/
 		}
 			#message-detail .text-status .thumbnail {
 				border:1px solid #999999;
@@ -634,12 +696,9 @@ div.spaz-drawer {
 		}
 
 		#message-detail .text-status .meta {
-/*			background-color:rgba(0,0,0,.5);*/
-/*			padding:3px 0px;*/
-/*			-khtml-border-radius: 1em;*/
 			font-size:11pt;
 			margin: .7em 0;
-			color:#CCCCCC;
+			color:#333333;
 			font-family:"Prelude";
 		}
 		
@@ -647,41 +706,19 @@ div.spaz-drawer {
 			#message-detail .text-status .meta .date {
 			}
 
-	        #message-detail .text-status .meta .clickable,
-			#message-detail .text-status .meta a:link,
-			#message-detail .text-status .meta a:visited {
-/*				color:#3333CC;
-				text-decoration:underline;
-*/			}
-				#message-detail .text-status .meta .clickable:active,
-				#message-detail .text-status .meta a:active, {
-/*					-webkit-border-image: url(../images/dreadnaught/text-link-bg-active.png) 0 7 0 7;*/
-				}
-
 			#message-detail .protected-icon {
 				display:inline-block;
 				margin:0px 0px;
 				padding-left:18px;
-				background-image: url(../images/dreadnaught/tiny-lock-icon.png);
+				background-image: url(Clean/tiny-lock-icon.png);
 				background-repeat: no-repeat;
 				background-position: 0px 6px;
 			}
 
 
-	#message-detail-actions {
-/*		clear:both;
-		margin:8px 0px;
-		left:0px;
-		right:0px;
-		background-color:rgba(0,0,0,.5);
-		border-top: 3px solid #333333;
-		border-bottom: 3px solid #333333;
-		padding:0 0 5px 0;
-*/	}
-		
 #timeline-conversation {
 	margin:0px 7px;
-	background-color:rgba(16,16,16,.5);
+	background-color:rgba(128,128,128,.5);
 	-webkit-border-radius:10px;
 	padding:5px 10px;
 	overflow:auto;
@@ -689,7 +726,7 @@ div.spaz-drawer {
 	display:none;
 }
 	#timeline-conversation:active {
-		background-color:rgba(64,64,64,.5);
+		background-color:rgba(224,224,224,.5);
 	}
 	
 
@@ -697,10 +734,10 @@ div.spaz-drawer {
 	border-bottom:none;
 	background-image:none;
 	background-color:transparent;
-	color:#FFFFFF;
+	color:#000000;
 }
 #timeline-conversation div.timeline-entry.new {
-	color:#FFFFFF;
+	color:#000000;
 }
 
 
@@ -711,20 +748,13 @@ div.spaz-drawer {
 */
 
 .user-detail-scene {
-/*	background-image: url(../images/dreadnaught/bg-user-detail.png);
-	background-attachment: fixed;
-*/	min-height:480px;
-
+	min-height:480px;
 }
 
 
 #user-detail-container {
 	padding:0px 0px;
-	background-image: url('../images/dreadnaught/entry-gradient-bg_short.png');
-	background-repeat: repeat-x;
-	background-color:#301616;
 	min-height:480px;
-	-khtml-border-radius:10px;
 }
 
 
@@ -732,21 +762,15 @@ div.spaz-drawer {
 	padding: 0px 0px;
 	clear:both;
 	overflow:hidden;
-/*	color:#000;*/
-/*	margin:0 0px px;*/
-/*	background-color: rgba(50,50,14,.9) !important;*/
 }
 
 	#user-detail div.user {
 		display:block;
 		clear:both;
 		overflow:visible;
-		background-color:rgba(0,0,0,.5);
+		background-color:rgba(128,128,128,.5);
 		padding:8px;
 		min-height:48px;
-		-khtml-border-top-left-radius: 10px;
-		-khtml-border-top-right-radius:10px;
-		border-bottom:2px solid #000000;
 	}
 
 	#user-detail div.user .screen_name {
@@ -773,38 +797,26 @@ div.spaz-drawer {
 		display:inline-block;
 		margin:0px 0px;
 		padding-left:18px;
-		background-image: url(../images/dreadnaught/tiny-lock-icon.png);
+		background-image: url(Clean/tiny-lock-icon.png);
 		background-repeat: no-repeat;
 		background-position: 0px 6px;
 	}
 
 	#user-detail .user-info, #user-detail .user-info-stats {
-		margin-left: 8px;
-		margin-right:8px;
 		overflow:visible;		
 	}
 
 
-		#user-detail .user-info a:link,
-		#user-detail .user-info a:visited,
-		#user-detail .user-info a:active,
-		#user-detail .user-info .clickable {
-/*			color:#3333CC;
-			text-decoration:underline;
-*/		}
-			#user-detail .user-info a:active,
-			#user-detail .user-info .clickable:active {
-/*				-webkit-border-image: url(../images/dreadnaught/text-link-bg-active.png) 0 7 0 7;*/
-			}
-
         #user-detail .user-location, #user-detail .user-homepage {
-			color:#CCCCFF;
+			color: #222266;
+			text-decoration:underline;
 		}
 		#user-detail .user-description {
+			margin-left: 8px;
+			margin-right:8px;
 			margin-top:.3em;
 			line-height:140%;
 			font-size:  13pt;
-			margin-left:0px;
 		}
 		
 		#user-detail div.user-info-stats {
@@ -813,8 +825,7 @@ div.spaz-drawer {
 		}
 		
 		#user-detail div.user-info-stats div.row {
-			background-color:rgba(16,16,16,.5);
-			-webkit-border-radius:10px;
+			background-color:rgba(224,224,224,.5);
 			margin-bottom:3px;
 			padding:5px;
 			overflow:auto;
@@ -825,7 +836,6 @@ div.spaz-drawer {
 				font-family:"Prelude-CondensedMedium";
 				margin:0;
 				border:0;
-/*				display:inline-block;*/
 				float:left;
 				overflow:      hidden;
 				text-overflow: ellipsis;
@@ -837,7 +847,7 @@ div.spaz-drawer {
 					text-align:right;
 					font-weight:bold;
 					padding-right:8px;
-					color:#aaa;
+					color:#333333;
 				}
 				#user-detail div.user-info-stats div.value {
 					max-width:220px;
@@ -853,12 +863,12 @@ div.spaz-drawer {
 		#user-timeline div.timeline-entry {
 			border-bottom:none;
 			min-height:24px;
-			padding: 6px 12px;
+			margin-bottom:3px;
+			padding:5px;
 			border-width: 0px;
 			border-style: solid;
 			border-color: transparent !important;
-			background:none !important;
-/*			-webkit-box-shadow:none;*/
+			background-color:rgba(224,224,224,.5);
 		}
 			#user-timeline div.user {
 				display:none !important;
@@ -870,17 +880,10 @@ div.spaz-drawer {
 				display:none;
 			}
 			#user-timeline div.timeline-entry .text-status .meta {
-				color:#FFFFCC;
-/*				-webkit-border-top-right-radius:6pt;
-				-webkit-border-bottom-right-radius:6pt;
-*/				padding:2pt 4pt 2pt 6pt;
-/*				background-color: rgba(34,34,0,.5);*/
+				color:#666666;
+				padding:2pt 4pt 2pt 6pt;
 				
 			}
-					#user-timeline div.timeline-entry .text-status .meta:active {
-						color:#444444;
-/*						background-color: rgba(153,153,102,.5);*/
-					}
 			
 
 
@@ -989,71 +992,15 @@ div.spaz-drawer {
 /*
 	misc
 */
-div.spaz-view-menu-spacer {
-	height:38px;
-}
 
 #activity-spinner {
 	position:absolute;
 	right:5px;
 	top:  38px;
+	color:  rgba(16,16,16,.7);
 }
 
-div.spaz-view-menu-container {
-	top:0px;
-	height: 38px;
-	z-index:11001;
-	position:fixed;	
-	width:  100%;
-	background-color:rgba(0,0,0,1);
-/*	-webkit-box-shadow:0px 1px 5px #000;*/
 
-}
-
-	div.spaz-view-menu {
-		top: 6px;
-		left:5px;
-		position:relative;
-/*		border:1px solid yellow;*/
-	
-	}
-		div.spaz-view-menu-label {
-			-webkit-border-image: url(../images/dreadnaught/spaz-viewmenu-label-bg.png) 2 0 2 5;
-			height:19px;
-			color:white;
-			font-size:14px;
-			font-weight:bold;
-			text-transform: uppercase;
-			float:left;
-			padding:0px;
-			margin-right: -3px;
-			min-width:225px;
-		}
-			div.spaz-view-menu-label-text { 
-				position:relative;
-				top: 3px;
-				left:7px;
-			}
-	
-		div.spaz-view-menu-separator {
-			background-image: url(../images/dreadnaught/spaz-viewmenu-separator.png);
-			height:24px;
-			width:  1px;
-			float:left;
-			padding:0px;
-			margin: 0px;
-
-		}
-		div.spaz-view-menu-button {
-			-webkit-border-image: url(../images/dreadnaught/spaz-viewmenu-button-bg.png) 2 5 2 0;
-			border-color:yellow;
-			height:19px;
-			width: 25px;
-			float:left;
-			padding:0;
-			margin-left: -3px;
-			text-align:center;
-		}
 
 
 div.spaz-button-group {
@@ -1062,43 +1009,39 @@ div.spaz-button-group {
 	div.spaz-button-wide {
 		height: 32px;
 		margin:5px 8px;
-
-/*		background-color: rgba(51,51,51,.8);*/
-/*		padding: 8px 16px;*/
-		color:  #FFECCD;
+		color:  #DDDDDD;
 		font-family:"Prelude-CondensedMedium";
 		font-size:12pt;
 		line-height:24pt;
-/*		-khtml-border-radius:16px;*/
 		border-width: 0 18px 0 17px;
-		-webkit-border-image: url(../images/dreadnaught/spaz-button-bg.png) 0 18 0 17;
+		-webkit-border-image: url(Clean/spaz-button-bg.png) 0 18 0 17;
 	}
 	div.spaz-button-wide:active {
-		-webkit-border-image: url(../images/dreadnaught/spaz-button-bg-active.png) 0 18 0 17;
+		-webkit-border-image: url(Clean/spaz-button-bg-active.png) 0 18 0 17;
 	}
 	div.spaz-button-wide.open {
-		-webkit-border-image: url(../images/dreadnaught/spaz-button-reveal.png) 0 18 0 17;
+		-webkit-border-image: url(Clean/spaz-button-reveal.png) 0 18 0 17;
 	}
 		div.spaz-button-wide.open:active {
-			-webkit-border-image: url(../images/dreadnaught/spaz-button-reveal-active.png) 0 18 0 17;
+			-webkit-border-image: url(Clean/spaz-button-reveal-active.png) 0 18 0 17;
 		}
 
 
 div.spaz-row {
 	height: 48px;
 	margin: 2px 2px;
-	color:  #FFECCD;
+	color:  #333333;
 	font-family:"Prelude-CondensedMedium";
 	font-size:16pt;
 	line-height:35pt;
 	border-width: 0 21px 0 21px;
-	-webkit-border-image: url(../images/dreadnaught/spaz-button-large-bg.png) 0 21 0 21;
+	-webkit-border-image: url(none) 0 21 0 21;
 	overflow:hidden;
 	text-overflow:ellipsis;
 	white-space:nowrap;
 }
 	div.spaz-row:active {
-		-webkit-border-image: url(../images/dreadnaught/spaz-button-large-active-bg.png) 0 21 0 21;
+		-webkit-border-image: url(none) 0 21 0 21;
 	}
 	div.spaz-row-title {
 		font-size:15pt;
@@ -1111,9 +1054,9 @@ div.spaz-row {
 
 #accountList div.spaz-row {
 	height: 48px;
-	-webkit-border-radius:12px;
+	-webkit-border-radius:10px;
 	margin: 2px 2px;
-	color:  #FFECCD;
+	color:  #333333;
 	font-family:"Prelude-CondensedMedium";
 	font-size:16pt;
 	line-height:35pt;
@@ -1122,15 +1065,14 @@ div.spaz-row {
 	overflow:hidden;
 	text-overflow:ellipsis;
 	white-space:nowrap;
-	background-image: url('../images/dreadnaught/entry-gradient-bg_short.png');
+	background-image: none;
 	background-repeat: repeat-x;
-	background-color:#101010;
+	background-color:#FEFEFE;
 	background-position: 0px -3px;
 }
 	#accountList div.spaz-row:active {
 		background-color:rgba(64,64,64,.8);
 		-webkit-border-image:none;
-/*		-webkit-border-image: url(../images/dreadnaught/spaz-button-large-active-bg.png) 0 21 0 21;*/
 	}
 	#accountList div.spaz-row .label{
 		float:left;
@@ -1148,10 +1090,10 @@ div.spaz-row {
 		width: 32px;
 		height:32px;
 		margin-top:7px;
-		background-image: url(../images/dreadnaught/icon-info.png);
+		background-image: url(Clean/icon-info.png);
 	}
 		#accountList div.spaz-row .info:active {
-			background-image: url(../images/dreadnaught/icon-info-active.png);
+			background-image: url(Clean/icon-info-active.png);
 		}
 
 
@@ -1161,7 +1103,6 @@ div.spaz-row {
 .spaz-activity-spinner {
 	z-index:11002;
 	width:auto;
-/*	height:auto;*/
 	right:5px;
 	left: 5px;
 	top:150px;
@@ -1169,15 +1110,14 @@ div.spaz-row {
 	background-repeat: no-repeat;
 	background-position: center center;
 	position:fixed;
-/*	-khtml-border-radius:14px;*/
 	height:  24px;
 	padding: 6px 0px 0px 35px;
 	display:block;
-	color:  rgba(255,255,255,.7);
+	color:  rgba(16,16,16,.7);
 	font-family:"Prelude-CondensedMedium";
 	font-size:12pt;
 	border-width: 0 17 0 17;
-	-webkit-border-image: url(../images/dreadnaught/spaz-button-reveal-active.png) 0 17 0 17;
+	-webkit-border-image: url(Clean/spaz-button-reveal-active.png) 0 17 0 17;
 }
 
 
@@ -1186,9 +1126,8 @@ div.inline-spinner {
 	margin:5px 8px;
 	padding: 6px 16px 10px;
 	border-width: 0 18px 0 18px;
-	-webkit-border-image: url(../images/dreadnaught/spaz-roundeditem-darker-bg.png) 0 18 0 18;
-	
-/*	-khtml-border-radius:16px;*/
+	color:  rgba(16,16,16,.7);
+	-webkit-border-image: url(Clean/spaz-roundeditem-darker-bg.png) 0 18 0 18;
 }
 	div.inline-spinner span.inline-spinner-spinner {
 		position:relative;
@@ -1198,7 +1137,7 @@ div.inline-spinner {
 	}
 	div.inline-spinner span.inline-spinner-label {
 		margin-left:1em;
-		color:  #FFFFFF;
+		color:  #000000;
 		font-family:"Prelude-CondensedMedium";
 		font-size:12pt;
 
@@ -1210,6 +1149,7 @@ div.inline-spinner {
 */	
 .palm-dark  .spaz-activity-spinner-container .palm-row {
 	background:none;
+	color:  rgba(16,16,16,.7);
 }
 	
 
@@ -1260,16 +1200,8 @@ div.error_info {
 	margin-top:.2em;
 	line-height:1.2em;
 }
-	#start-smallprint a:link,
-	#start-smallprint a:visited {
-/*		color:#3333CC;
-		text-decoration:underline;
-*/	}
-		#start-smallprint a:active, {
-/*			-webkit-border-image: url(../images/dreadnaught/text-link-bg-active.png) 0 7 0 7;*/
-		}
 #new-username, #new-password {
-	color:#333333;
+	color:#FFFFFF;
 }
 		
 /*
@@ -1279,15 +1211,6 @@ div.error_info {
 	font-size:75%;
 	line-height:1.3em;
 }
-	#about-content a:link,
-	#about-content a:visited {
-/*		color:#3333CC;
-		text-decoration:underline;
-*/
-	}
-		#about-content a:active, {
-/*			-webkit-border-image: url(../images/dreadnaught/text-link-bg-active.png) 0 7 0 7;*/
-		}
 		
 		
 /*
@@ -1295,7 +1218,7 @@ div.error_info {
 */
 
 #help-scene .palm-body-text {
-	color:#BBB;
+	color:#222222;
 }
 
 .img_icon {
@@ -1446,8 +1369,6 @@ BODY.palm-dashboard-notification, BODY.palm-dashboard-notification>div[x-mojo-el
 */
 /* root element for accordion. decorated with rounded borders and gradient background image */
 #search-accordion {
-/*	background:#333 url(/img/global/gradient/h600.png) 0 0;*/
-/*	border:1px solid #333;*/
 }
 
 /* accordion header */
@@ -1468,11 +1389,3 @@ BODY.palm-dashboard-notification, BODY.palm-dashboard-notification>div[x-mojo-el
 #search-accordion div.pane {
 	display:none;
 }
-
-/* a title inside pane */
-#search-accordion div.pane h3 {
-/*	font-weight:normal;
-	margin:0 0 -5px 0;
-	font-size:16px;
-	color:#999;
-*/}
