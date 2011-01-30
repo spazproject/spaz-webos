@@ -338,7 +338,8 @@ MyTimelineAssistant.prototype.activate = function(params) {
 				thisA.cacheLoaded = true;
 			}
 			thisA.cacheLoaded = true;
-		});
+			
+		}.bind(this));
 	}
 
 	/*
@@ -365,6 +366,12 @@ MyTimelineAssistant.prototype.deactivate = function(event) {
 	this.unbindTimelineEntryTaps('my-timeline');
 	
 	thisA.unbindScrollToRefresh();
+	
+	if(!this.scroller){
+		this.scroller = this.controller.getSceneScroller();
+	}
+	App[this._filterState + "-scroll-position"] = this.scroller.mojo.getState();
+	
 };
 
 
@@ -380,6 +387,7 @@ MyTimelineAssistant.prototype.cleanup = function(event) {
 
 	jQuery('#more-mytimeline-button').unbind(Mojo.Event.tap);
 
+	
 	this.stopTrackingStageActiveState();
 	
 	// this.stopRefresher();
@@ -698,7 +706,7 @@ MyTimelineAssistant.prototype.loadTimelineCache = function() {
 			App.master_timeline_model.items = [];
 		}
 		
-		this.filterTimeline(null, true, false);
+		this.filterTimeline(null, true, false, true);
 		
 	}
 
@@ -718,7 +726,7 @@ MyTimelineAssistant.prototype.saveTimelineCache = function() {
 /**
  * this filters and updates the model
  */
-MyTimelineAssistant.prototype.filterTimeline = function(command, scroll_to_top, scroll_to_new) {
+MyTimelineAssistant.prototype.filterTimeline = function(command, scroll_to_top, scroll_to_new, loadingCache) {
 	
 	if (!command) {
 		if (this._filterState) {
@@ -727,7 +735,12 @@ MyTimelineAssistant.prototype.filterTimeline = function(command, scroll_to_top, 
 			command = 'filter-timeline-all';
 		}
 	}
-	
+	if(!loadingCache && !scroll_to_new){
+		if(!this.scroller){
+			this.scroller = this.controller.getSceneScroller();
+		}
+		App[this._filterState + "-scroll-position"] = this.scroller.mojo.getState();
+	}
 	Mojo.Log.error('COMMAND:'+command);
 	
 	var states = [
@@ -803,11 +816,16 @@ MyTimelineAssistant.prototype.filterTimeline = function(command, scroll_to_top, 
 	/*
 		scroll me!
 	*/
+	
 	if (scroll_to_top || scroll_to_new) {
 		this.resetScrollstate();
 
 		if (scroll_to_top) {
-			this.scrollToTop();
+			if(App[command + "-scroll-position"]){
+				this.scroller.mojo.setState(App[command + "-scroll-position"], false);
+			}else {
+				this.scrollToTop();
+			}
 		}
 		if (App.prefs.get('timeline-scrollonupdate') && scroll_to_new) {
 			if (this.isTopmostScene()) {
