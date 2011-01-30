@@ -1,11 +1,10 @@
 var AppThemes = {
 	"Dreadnaught":{
-		"stylesheet":"Dreadnaught.css"
+		"stylesheet":"Dreadnaught.css",
+		"palmtheme":'dark'
 	},
 	"Clean":{
-		"stylesheet":"Clean.css"
+		"stylesheet":"Clean.css",
+		"palmtheme":'light'
 	}
-	// "Whiteknight":{
-	// 	"stylesheet":"Whiteknight.css"
-	// }
 };
