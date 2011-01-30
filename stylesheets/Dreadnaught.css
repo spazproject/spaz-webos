@@ -21,6 +21,16 @@ body.palm-default {
     background: url('../images/splash.jpeg') top left no-repeat;
 }
 
+.timeline-content {
+	position: relative; z-index: 500;
+}
+.refresh-text {
+	margin-top: -33px; text-align: center; z-index: 200;
+}
+.refresh-text-overlay {
+	height: 45px; width: 100%; background-color: #111111; position: fixed; top: 0px; z-index: 250;
+}
+
 BODY {
 }
 
