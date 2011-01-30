@@ -340,6 +340,14 @@ div.timeline-entry {
 			white-space:   nowrap;
 			
 		}
+		
+		div.timeline-entry div.retweeted-indicator {
+			width:  20px;
+			height: 13px;
+			background-image:url(Clean/retweeted.png);
+			display:inline-block;
+		}
+		
 		div.timeline-entry .text-status .text {
 			font-size:11pt;
 			line-height:15pt;
