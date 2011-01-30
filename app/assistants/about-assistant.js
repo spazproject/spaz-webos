@@ -35,9 +35,7 @@ AboutAssistant.prototype.setup = function() {
 				]
 			}
 
-		],
-		cmdMenuItems: []
-		
+		]
 	});
 	jQuery('#about-version').text("v"+Mojo.appInfo.version);
 };

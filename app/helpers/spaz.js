@@ -325,7 +325,15 @@ Spaz.setTheme = function(theme) {
 	Mojo.Log.error('AppThemes: %j', AppThemes);
 	Mojo.Log.error('theme: %s', theme);
 	Mojo.Log.error('AppThemes[theme]: %j', AppThemes[theme]);
+
 	if (AppThemes && AppThemes[theme]) {
+	    
+	    if (AppThemes[theme].palmtheme == 'dark') {
+	        jQuery('body').addClass('palm-dark');
+	    } else {
+	        jQuery('body').removeClass('palm-dark');
+	    }
+	    
 		jQuery('link[title="apptheme"]').attr('href', 'stylesheets/'+AppThemes[theme].stylesheet);
 	}
 };

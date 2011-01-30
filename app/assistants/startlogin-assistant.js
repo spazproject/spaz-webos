@@ -50,9 +50,7 @@ StartloginAssistant.prototype.setup = function() {
 				]
 			}
 
-		],
-		cmdMenuItems: []
-		
+		]
 	});
 
 	/*

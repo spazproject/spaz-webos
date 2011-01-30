@@ -31,9 +31,7 @@ HelpAssistant.prototype.setup = function(){
 				]
 			}
 
-		],
-		cmdMenuItems: []
-		
+		]
 	});
 
 	this.controller.setupWidget(Mojo.Menu.appMenu, this.attributes = {
