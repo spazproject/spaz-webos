@@ -6,13 +6,13 @@ BODY, BODY>div[x-mojo-element=Scroller] {
 }
 
 body.palm-default {
-/*	background: url('../images/dreadnaught/page-bg-darkgreen.png')  top left no-repeat;*/
+/*	background: url('Dreadnaught/page-bg-darkgreen.png')  top left no-repeat;*/
 	background:#000;
 }
 
 
 .pull-to-refresh {
-	background-image:url(../images/dreadnaught/pull-to-refresh.png);
+	background-image:url(Dreadnaught/pull-to-refresh.png);
 	background-repeat: no-repeat;
 	background-position: center 50px;
 }
@@ -28,7 +28,7 @@ BODY {
 	The Accounts Panel
 */
 .palm-menu-panel {
-    -webkit-border-image: url('../images/dreadnaught/palm-menu-panel.png') 24 24 24 24 repeat stretch;
+    -webkit-border-image: url('Dreadnaught/palm-menu-panel.png') 24 24 24 24 repeat stretch;
 }
 
 .palm-menu-panel{
@@ -57,15 +57,15 @@ BODY {
 		view menu button needs to be smaller
 	*/
 /*	.view-menu .palm-menu-button {
-		-webkit-border-image: url(../images/dreadnaught/spaz-view-menu-button.png) 0 25 200 25 repeat repeat;
+		-webkit-border-image: url(Dreadnaught/spaz-view-menu-button.png) 0 25 200 25 repeat repeat;
 	}
 		.view-menu .palm-menu-button.selected {
-			-webkit-border-image: url(../images/dreadnaught/spaz-view-menu-button.png) 50 25 150 25 repeat repeat;
+			-webkit-border-image: url(Dreadnaught/spaz-view-menu-button.png) 50 25 150 25 repeat repeat;
 		}
 */	
 .view-menu .palm-menu-fade {
 /*	background: transparent!important;*/
-	background-image: url('../images/dreadnaught/view-menu-gradient.png') !important;
+	background-image: url('Dreadnaught/view-menu-gradient.png') !important;
 }
 .view-menu .palm-menu-text {
 	text-align:left;
@@ -81,14 +81,14 @@ BODY {
 	}
 
 .command-menu .palm-menu-fade {
-	background-image: url('../images/dreadnaught/command-menu-gradient.png') !important;
+	background-image: url('Dreadnaught/command-menu-gradient.png') !important;
 	background-repeat: repeat-x !important;
 	background-position-x: 0% !important;
 	background-position-y: 100% !important;
 }
 
 div.palm-page-header.spaz-page-header {
-	-webkit-border-image:url('../images/dreadnaught/palm-page-header.png') 35 24 13 24 repeat stretch !important;
+	-webkit-border-image:url('Dreadnaught/palm-page-header.png') 35 24 13 24 repeat stretch !important;
 }
 	div.palm-page-header.spaz-page-header .title {
 		color:#FFFFFF;
@@ -116,7 +116,7 @@ a:link, a:visited, .clickable {
 
 
 .palm-group-spaz {
-	-webkit-border-image: url(../images/dreadnaught/palm-group.png) 40 18 14 18;	
+	-webkit-border-image: url(Dreadnaught/palm-group.png) 40 18 14 18;	
 }
 
 .palm-dark .palm-group-spaz .palm-group-title{
@@ -130,15 +130,15 @@ a:link, a:visited, .clickable {
 
 
 .palm-row .list-selector-triangle {
-  background: url(../images/dreadnaught/list-selector-triangle-dark.png) top no-repeat;
+  background: url(Dreadnaught/list-selector-triangle-dark.png) top no-repeat;
 }
 
 .palm-row.selected .list-selector-triangle {
-  background: url(../images/dreadnaught/list-selector-triangle-dark.png) bottom no-repeat;
+  background: url(Dreadnaught/list-selector-triangle-dark.png) bottom no-repeat;
 }
 
 .palm-popup-container {
-  -webkit-border-image: url(../images/dreadnaught/palm-popup-background-dark.png) 24 24 24 24 stretch stretch;
+  -webkit-border-image: url(Dreadnaught/palm-popup-background-dark.png) 24 24 24 24 stretch stretch;
 }
 
 .palm-popup-container .palm-popup-content {
@@ -153,25 +153,25 @@ a:link, a:visited, .clickable {
   top: -16px;
 }
 .palm-popup-container .palm-popup-fade-top > .fade-background {
-  -webkit-border-image: url(../images/dreadnaught/palm-popup-fade-top-dark.png) 0 24 0 24 repeat repeat;
+  -webkit-border-image: url(Dreadnaught/palm-popup-fade-top-dark.png) 0 24 0 24 repeat repeat;
 }
 .palm-popup-container .palm-popup-fade-top > .fade-arrow {
-  background: url(../images/dreadnaught/palm-popup-fade-arrow-up-dark.png) center center no-repeat;
+  background: url(Dreadnaught/palm-popup-fade-arrow-up-dark.png) center center no-repeat;
 }
 
 .palm-popup-container .palm-popup-fade-bottom {
   bottom: -17px;
 }
 .palm-popup-container .palm-popup-fade-bottom > .fade-background {
-  -webkit-border-image: url(../images/dreadnaught/palm-popup-fade-bottom-dark.png) 0 24 0 24 repeat repeat;
+  -webkit-border-image: url(Dreadnaught/palm-popup-fade-bottom-dark.png) 0 24 0 24 repeat repeat;
 }
 .palm-popup-container .palm-popup-fade-bottom > .fade-arrow {
-  background: url(../images/dreadnaught/palm-popup-fade-arrow-down-dark.png) center center no-repeat;
+  background: url(Dreadnaught/palm-popup-fade-arrow-down-dark.png) center center no-repeat;
 }
 
 .palm-row {
   color: #fff;
-  background: url(../images/dreadnaught/list-separator-dark.png) bottom left repeat-x;
+  background: url(Dreadnaught/list-separator-dark.png) bottom left repeat-x;
 }
 
 
@@ -199,7 +199,7 @@ div.timeline-entry {
 	min-height:64px;
 	color:#FFF;
 	position:relative;
-	background-image: url('../images/dreadnaught/entry-gradient-bg_short.png');
+	background-image: url('Dreadnaught/entry-gradient-bg_short.png');
 	background-repeat: repeat-x;
 	background-color:#101010;
 	background-position: 0px -3px;
@@ -301,7 +301,7 @@ div.timeline-entry {
 */		}
 			.text-status .text a:active,
 			.text-status .text .clickable:active {
-/*				-webkit-border-image: url(../images/dreadnaught/text-link-bg-active.png) 0 7 0 7;*/
+/*				-webkit-border-image: url(Dreadnaught/text-link-bg-active.png) 0 7 0 7;*/
 			}
 			
 		div.timeline-entry .text-status .rt-screen-name {
@@ -326,7 +326,7 @@ div.timeline-entry {
 		color:#CCCCFF;
 		background-position: right center;
 		border-width: 0 7px 0 7px;
-/*		-webkit-border-image: url(../images/dreadnaught/meta-link-bg.png) 0 7 0 7;*/
+/*		-webkit-border-image: url(Dreadnaught/meta-link-bg.png) 0 7 0 7;*/
 	}
 
 			div.timeline-entry:active .text-status .meta,
@@ -339,7 +339,7 @@ div.timeline-entry {
 		width: 11px;
 		display:inline-block;
 		margin-left:5px;
-		background-image: url(../images/dreadnaught/tiny-lock-icon.png);
+		background-image: url(Dreadnaught/tiny-lock-icon.png);
 		background-repeat: no-repeat;
 	}
 	
@@ -418,7 +418,7 @@ div.timeline-entry.follower {}
 */
 #mojo-scene-start-scene-scroller {
 /*	border:1px solid green;*/
-	background-image: url('../images/dreadnaught/page-bg-darkgreen-start.png');
+	background-image: url('Dreadnaught/page-bg-darkgreen-start.png');
 }
 
 #mojo-scene-start {
@@ -522,7 +522,7 @@ div.spaz-drawer-header {
 	}
 	
 div.spaz-drawer {
-	-webkit-border-image: url(../images/dreadnaught/drawer-background-9tile-opaque.png) 20 1 20 1 stretch stretch;
+	-webkit-border-image: url(Dreadnaught/drawer-background-9tile-opaque.png) 20 1 20 1 stretch stretch;
 	-webkit-box-sizing: border-box;
 	width:100%;
 	padding:0;
@@ -542,13 +542,13 @@ div.spaz-drawer {
 	Message detail styles
 */
 .message-detail-scene {
-/*	background-image: url(../images/dreadnaught/bg-message-detail.png);
+/*	background-image: url(Dreadnaught/bg-message-detail.png);
 	background-attachment: fixed;
 	min-height:480px;
 */}
 
 #message-detail-container {
-	background-image: url('../images/dreadnaught/entry-gradient-bg_short.png');
+	background-image: url('Dreadnaught/entry-gradient-bg_short.png');
 	background-repeat: repeat-x;
 	background-color:#2B3235;
 	min-height:480px;
@@ -645,14 +645,14 @@ div.spaz-drawer {
 */			}
 				#message-detail .text-status .meta .clickable:active,
 				#message-detail .text-status .meta a:active, {
-/*					-webkit-border-image: url(../images/dreadnaught/text-link-bg-active.png) 0 7 0 7;*/
+/*					-webkit-border-image: url(Dreadnaught/text-link-bg-active.png) 0 7 0 7;*/
 				}
 
 			#message-detail .protected-icon {
 				display:inline-block;
 				margin:0px 0px;
 				padding-left:18px;
-				background-image: url(../images/dreadnaught/tiny-lock-icon.png);
+				background-image: url(Dreadnaught/tiny-lock-icon.png);
 				background-repeat: no-repeat;
 				background-position: 0px 6px;
 			}
@@ -701,7 +701,7 @@ div.spaz-drawer {
 */
 
 .user-detail-scene {
-/*	background-image: url(../images/dreadnaught/bg-user-detail.png);
+/*	background-image: url(Dreadnaught/bg-user-detail.png);
 	background-attachment: fixed;
 */	min-height:480px;
 
@@ -710,7 +710,7 @@ div.spaz-drawer {
 
 #user-detail-container {
 	padding:0px 0px;
-	background-image: url('../images/dreadnaught/entry-gradient-bg_short.png');
+	background-image: url('Dreadnaught/entry-gradient-bg_short.png');
 	background-repeat: repeat-x;
 	background-color:#301616;
 	min-height:480px;
@@ -763,7 +763,7 @@ div.spaz-drawer {
 		display:inline-block;
 		margin:0px 0px;
 		padding-left:18px;
-		background-image: url(../images/dreadnaught/tiny-lock-icon.png);
+		background-image: url(Dreadnaught/tiny-lock-icon.png);
 		background-repeat: no-repeat;
 		background-position: 0px 6px;
 	}
@@ -784,7 +784,7 @@ div.spaz-drawer {
 */		}
 			#user-detail .user-info a:active,
 			#user-detail .user-info .clickable:active {
-/*				-webkit-border-image: url(../images/dreadnaught/text-link-bg-active.png) 0 7 0 7;*/
+/*				-webkit-border-image: url(Dreadnaught/text-link-bg-active.png) 0 7 0 7;*/
 			}
 
         #user-detail .user-location, #user-detail .user-homepage {
@@ -1008,7 +1008,7 @@ div.spaz-view-menu-container {
 	
 	}
 		div.spaz-view-menu-label {
-			-webkit-border-image: url(../images/dreadnaught/spaz-viewmenu-label-bg.png) 2 0 2 5;
+			-webkit-border-image: url(Dreadnaught/spaz-viewmenu-label-bg.png) 2 0 2 5;
 			height:19px;
 			color:white;
 			font-size:14px;
@@ -1026,7 +1026,7 @@ div.spaz-view-menu-container {
 			}
 	
 		div.spaz-view-menu-separator {
-			background-image: url(../images/dreadnaught/spaz-viewmenu-separator.png);
+			background-image: url(Dreadnaught/spaz-viewmenu-separator.png);
 			height:24px;
 			width:  1px;
 			float:left;
@@ -1035,7 +1035,7 @@ div.spaz-view-menu-container {
 
 		}
 		div.spaz-view-menu-button {
-			-webkit-border-image: url(../images/dreadnaught/spaz-viewmenu-button-bg.png) 2 5 2 0;
+			-webkit-border-image: url(Dreadnaught/spaz-viewmenu-button-bg.png) 2 5 2 0;
 			border-color:yellow;
 			height:19px;
 			width: 25px;
@@ -1061,16 +1061,16 @@ div.spaz-button-group {
 		line-height:24pt;
 /*		-khtml-border-radius:16px;*/
 		border-width: 0 18px 0 17px;
-		-webkit-border-image: url(../images/dreadnaught/spaz-button-bg.png) 0 18 0 17;
+		-webkit-border-image: url(Dreadnaught/spaz-button-bg.png) 0 18 0 17;
 	}
 	div.spaz-button-wide:active {
-		-webkit-border-image: url(../images/dreadnaught/spaz-button-bg-active.png) 0 18 0 17;
+		-webkit-border-image: url(Dreadnaught/spaz-button-bg-active.png) 0 18 0 17;
 	}
 	div.spaz-button-wide.open {
-		-webkit-border-image: url(../images/dreadnaught/spaz-button-reveal.png) 0 18 0 17;
+		-webkit-border-image: url(Dreadnaught/spaz-button-reveal.png) 0 18 0 17;
 	}
 		div.spaz-button-wide.open:active {
-			-webkit-border-image: url(../images/dreadnaught/spaz-button-reveal-active.png) 0 18 0 17;
+			-webkit-border-image: url(Dreadnaught/spaz-button-reveal-active.png) 0 18 0 17;
 		}
 
 
@@ -1082,13 +1082,13 @@ div.spaz-row {
 	font-size:16pt;
 	line-height:35pt;
 	border-width: 0 21px 0 21px;
-	-webkit-border-image: url(../images/dreadnaught/spaz-button-large-bg.png) 0 21 0 21;
+	-webkit-border-image: url(Dreadnaught/spaz-button-large-bg.png) 0 21 0 21;
 	overflow:hidden;
 	text-overflow:ellipsis;
 	white-space:nowrap;
 }
 	div.spaz-row:active {
-		-webkit-border-image: url(../images/dreadnaught/spaz-button-large-active-bg.png) 0 21 0 21;
+		-webkit-border-image: url(Dreadnaught/spaz-button-large-active-bg.png) 0 21 0 21;
 	}
 	div.spaz-row-title {
 		font-size:15pt;
@@ -1112,7 +1112,7 @@ div.spaz-row {
 	overflow:hidden;
 	text-overflow:ellipsis;
 	white-space:nowrap;
-	background-image: url('../images/dreadnaught/entry-gradient-bg_short.png');
+	background-image: url('Dreadnaught/entry-gradient-bg_short.png');
 	background-repeat: repeat-x;
 	background-color:#101010;
 	background-position: 0px -3px;
@@ -1120,7 +1120,7 @@ div.spaz-row {
 	#accountList div.spaz-row:active {
 		background-color:rgba(64,64,64,.8);
 		-webkit-border-image:none;
-/*		-webkit-border-image: url(../images/dreadnaught/spaz-button-large-active-bg.png) 0 21 0 21;*/
+/*		-webkit-border-image: url(Dreadnaught/spaz-button-large-active-bg.png) 0 21 0 21;*/
 	}
 	#accountList div.spaz-row .label{
 		float:left;
@@ -1138,10 +1138,10 @@ div.spaz-row {
 		width: 32px;
 		height:32px;
 		margin-top:7px;
-		background-image: url(../images/dreadnaught/icon-info.png);
+		background-image: url(Dreadnaught/icon-info.png);
 	}
 		#accountList div.spaz-row .info:active {
-			background-image: url(../images/dreadnaught/icon-info-active.png);
+			background-image: url(Dreadnaught/icon-info-active.png);
 		}
 
 
@@ -1167,7 +1167,7 @@ div.spaz-row {
 	font-family:"Prelude-CondensedMedium";
 	font-size:12pt;
 	border-width: 0 17 0 17;
-	-webkit-border-image: url(../images/dreadnaught/spaz-button-reveal-active.png) 0 17 0 17;
+	-webkit-border-image: url(Dreadnaught/spaz-button-reveal-active.png) 0 17 0 17;
 }
 
 
@@ -1176,7 +1176,7 @@ div.inline-spinner {
 	margin:5px 8px;
 	padding: 6px 16px 10px;
 	border-width: 0 18px 0 18px;
-	-webkit-border-image: url(../images/dreadnaught/spaz-roundeditem-darker-bg.png) 0 18 0 18;
+	-webkit-border-image: url(Dreadnaught/spaz-roundeditem-darker-bg.png) 0 18 0 18;
 	
 /*	-khtml-border-radius:16px;*/
 }
@@ -1256,7 +1256,7 @@ div.error_info {
 		text-decoration:underline;
 */	}
 		#start-smallprint a:active, {
-/*			-webkit-border-image: url(../images/dreadnaught/text-link-bg-active.png) 0 7 0 7;*/
+/*			-webkit-border-image: url(Dreadnaught/text-link-bg-active.png) 0 7 0 7;*/
 		}
 #new-username, #new-password {
 	color:#333333;
@@ -1276,7 +1276,7 @@ div.error_info {
 */
 	}
 		#about-content a:active, {
-/*			-webkit-border-image: url(../images/dreadnaught/text-link-bg-active.png) 0 7 0 7;*/
+/*			-webkit-border-image: url(Dreadnaught/text-link-bg-active.png) 0 7 0 7;*/
 		}
 		
 		
