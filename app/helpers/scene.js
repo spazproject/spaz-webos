@@ -325,10 +325,6 @@ scene_helpers.addCommonSceneMethods = function(assistant) {
 		this.releaseScroll = this.releaseScroll.bind(this);
 		this._handleScrollStarting = this.handleScrollStarting.bindAsEventListener(this);
 		this.controller.listen(this.scroller, Mojo.Event.scrollStarting, this._handleScrollStarting);
-
-
-		//this._handleScrollStarting = this.handleScrollStarting.bindAsEventListener(this);
-		//this.controller.listen(this.scroller, Mojo.Event.scrollStarting, this._handleScrollStarting);
 	};
 	
 	
@@ -338,7 +334,6 @@ scene_helpers.addCommonSceneMethods = function(assistant) {
 	assistant.unbindScrollToRefresh = function() {
 		Mojo.Log.info('UNBINDING');
 		this.controller.stopListening(this.scroller, Mojo.Event.scrollStarting, this._handleScrollStarting);
-		//this.controller.stopListening(this.scroller, Mojo.Event.scrollStarting, this._handleScrollStarting);
 	};
 	
 	
@@ -350,25 +345,6 @@ scene_helpers.addCommonSceneMethods = function(assistant) {
 		}else {
 			this.releaseText.hide();		
 		}
-		/*setTimeout(function() {
-			var scrollY = this.scroller.mojo.getScrollPosition().top;
-			if(scrollY <= 20) {
-				this.hideInlineSpinner();
-			}
-		}.bind(this), 300);*/
-		/*var thisA = this;
-		
-		this._longestPull = 0;
-		
-		Mojo.Log.error('this.scroller.mojo.getScrollPosition(): %j', this.scroller.mojo.getScrollPosition());
-		
-		if (this.scroller.mojo.getScrollPosition().top === 0) {
-			jQuery(this.scroller).addClass('pull-to-refresh');
-			e.scroller.addListener({
-				moved:this.handleScrollMoved.bind(this)	
-			});
-		}*/
-		
 		
 	};
 	
@@ -377,27 +353,21 @@ scene_helpers.addCommonSceneMethods = function(assistant) {
 		if(scrollY >= 65) {
 			
 		   // Make sure the user REALLY meant to refresh by making them hold it there for 50ms.
-			//this.showInlineSpinner('activity-spinner-my-timeline', "Release to Refresh");
 			setTimeout(function() {
-				//this.hideInlineSpinner();
 				Mojo.Event.listen(this.scroller, "mouseup", this.releaseScroll);
 
-				//this.refreshText.innerHTML = this.releaseMsg;
-				//this.refreshArrow.style["-webkit-transform"] = "rotate(180deg)";
 			}.bind(this), 50);
 			
 		}
 	};
 	assistant.releaseScroll = releaseScroll = function(event) {
 		var scrollY = this.scroller.mojo.getScrollPosition().top;
+		
 		this.releaseText.hide();
-
 		if(scrollY <= 20) {
 			//webOS did the thing that doesn't let you hold the list past the regular scroll limit :(
 			//Don't refresh because it's possible that it wasn't the user's intention to refresh...
 			// reset the message
-			//this.hideInlineSpinner();
-			//this.refreshText.innerHTML = this.pullDownMsg;
 		}
 		
 	   // otherwise it's a valid refresh
@@ -405,61 +375,13 @@ scene_helpers.addCommonSceneMethods = function(assistant) {
 			Mojo.Controller.stageController.sendEventToCommanders({
 				'type':Mojo.Event.command,
 				'command':'refresh'
-			});
-		   //this.refreshContent();
-		   
+			});		   
 		}
 
-		
 		// whether it's a real refresh or not, remove the listeners
 		this.controller.stopListening(this.scroller, Mojo.Event.dragging, this.scrolling);
 		this.controller.stopListening(this.scroller, "mouseup", this.releaseScroll);
 	};
-
-	
-	assistant.handleScrollMoved = function(done, position) {
-		
-		if (!this._longestPull) {
-			this._longestPull = 0;
-		}
-		if (!this._pullThreshold) {
-			this._pullThreshold = 100;
-		}
-		
-		if ((position.y <= -5 && this._longestPull == 0)
-			|| (!jQuery(this.scroller).hasClass('pull-to-refresh'))) { // we're not pulling down, so kill it
-			jQuery(this.scroller).removeClass('pull-to-refresh');
-			done = true;
-			this._longestPull = 0;
-		}
-		
-	   	Mojo.Log.error("DONE:%s; POSITION:%j; this._longestPull:", done, position, this._longestPull);
-       
-		if (!done) { // not done
-			if (this._longestPull < position.y) {
-				this._longestPull = position.y;
-				Mojo.Log.error("NOW THIS._LONGESTPULL:", this._longestPull);
-			}
-		} else { // done, so check if we refresh
-			if (this._longestPull >= this._pullThreshold) {
-				this._longestPull = 0;
-				Mojo.Controller.stageController.sendEventToCommanders({
-					'type':Mojo.Event.command,
-					'command':'refresh'
-				});
-			} else {
-				this._longestPull = 0;
-			}
-			
-			jQuery(this.scroller).removeClass('pull-to-refresh');
-
-			Mojo.Log.error("RESET THIS._LONGESTPULL:", this._longestPull);
-		}
-
-	};
-	
-	
-	
 	
 	assistant.setTimelineTextSize = function(tl_id, size) {
 		size = size.toLowerCase();
@@ -474,16 +396,13 @@ scene_helpers.addCommonSceneMethods = function(assistant) {
 		tl.addClass(size);
 	};
 	
-	
-	
 	assistant.showLocationPanel = function(event) {
 		this.controller.showDialog({
 	          template: 'shared/location-popup',
 	          assistant: new LocationDialogAssistant(this),
 	          preventCancel:false
 	    });
-	};
-	
+	};	
 	
 
 	/**
