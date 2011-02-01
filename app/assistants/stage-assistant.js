@@ -352,7 +352,7 @@ StageAssistant.prototype.loadTemplates = function() {
 		+ '		<div class="meta-wrapper">'
 		+ '			<div class="screen-name">'+d.user.screen_name;
 		if (d.SC_is_retweet && d.retweeting_user) {
-			html += ' <img src="images/dreadnaught/retweeted.png" width="20" height="13"> '+d.retweeting_user.screen_name;
+			html += ' <div class="retweeted-indicator"></div> '+d.retweeting_user.screen_name;
 		}
 		if (d.user["protected"]) {
 			html += '			<div class="protected-icon"></div>';

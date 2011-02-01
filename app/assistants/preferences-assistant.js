@@ -39,8 +39,7 @@ PreferencesAssistant.prototype.setup = function() {
 				]
 			}
 
-		],
-		cmdMenuItems: []
+		]
 	});
 	
 	
