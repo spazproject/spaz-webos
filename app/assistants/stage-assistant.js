@@ -33,6 +33,11 @@ StageAssistant.prototype.setup = function() {
 	Mojo.Log.info("Logging from StageAssistant Setup");
 	
 	var thisSA = this;
+	
+	this.gestureStartHandler = this.gestureStart.bindAsEventListener(this);
+	Mojo.Event.listen(this.controller.document, "gesturestart", this.gestureStartHandler);
+	this.gestureEndHandler = this.gestureEnd.bindAsEventListener(this);
+	Mojo.Event.listen(this.controller.document, "gestureend", this.gestureEndHandler);
 };
 
 
@@ -42,12 +47,28 @@ StageAssistant.prototype.cleanup = function() {
 
 	var sc = null;
 	
+	Mojo.Event.stopListening(this.controller.document, "gesturestart", this.gestureStartHandler);
+	Mojo.Event.stopListening(this.controller.document, "gestureend", this.gestureEndHandler);
 	/*
 		try to clean up ALL jQuery listeners everywhere
 	*/
 	jQuery(document).unbind();
 	jQuery(document).die();
 };
+
+StageAssistant.prototype.gestureStart = function(event) {
+	this.gestureStartY = event.centerY;
+};
+ 
+StageAssistant.prototype.gestureEnd = function(event) {
+	var gestureDistanceY = event.centerY - this.gestureStartY;
+	if (gestureDistanceY > 0) {
+		this.controller.activeScene().getSceneScroller().mojo.revealTop();
+	} else if (gestureDistanceY < 0) {
+		this.controller.activeScene().getSceneScroller().mojo.revealBottom();
+	}
+};
+
 
 StageAssistant.prototype.considerForNotification = function(params){   
 	Mojo.Log.error('NOTIFICATION RECEIVED in StageAssistant:%j ', params);
