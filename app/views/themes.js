@@ -6,5 +6,9 @@ var AppThemes = {
 	"Clean":{
 		"stylesheet":"Clean.css",
 		"palmtheme":'light'
+	},
+	"Koto":{
+		"stylesheet":"Koto.css",
+		"palmtheme":'dark'
 	}
 };
