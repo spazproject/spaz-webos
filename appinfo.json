@@ -1,9 +1,9 @@
 {
-	"title": "Spaz",
+	"title": "Spaz Beta",
 	"version": "2.0.4",
 	"type": "web",
 	"main": "index.html",
-	"id": "com.funkatron.app.spaz",
+	"id": "com.funkatron.app.spaz-beta",
 	"splashicon": "images/splash-icon.png",
 	"splashBackground":"images/splash-bg.png",
 	"miniicon": "images/miniicon.png",
