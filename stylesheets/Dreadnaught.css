@@ -51,10 +51,16 @@ BODY {
     opacity: 0;
 }
 
-/*DM's and @ Menu Icon*/
-.palm-menu-icon.dms 			{ background-image: url(../images/menu-icon-dms.png); }
-.palm-menu-icon.at 			{ background-image: url(../images/menu-icon-at.png); }
-
+/*Menu Icon Overrides*/
+.palm-menu-icon.dms 			{ background-image: url(../images/theme/menu-icon-dms.png); }
+.palm-menu-icon.at 			{ background-image: url(../images/theme/menu-icon-at.png); }
+.palm-menu-icon.favorite 			{ background-image: url(../images/theme/menu-icon-favorite.png); }
+.palm-menu-icon.favorite-outline 			{ background-image: url(../images/theme/menu-icon-favorite-outline.png); } 
+.palm-menu-icon.friends-followers 			{ background-image: url(../images/theme/menu-icon-friends-followers.png); }
+.palm-menu-icon.search-person 			{ background-image: url(../images/theme/menu-icon-search-person.png); }
+.palm-menu-icon.start-following			{ background-image: url(../images/theme/menu-icon-start-following.png); } 
+.palm-menu-icon.stop-following			{ background-image: url(../images/theme/menu-icon-stop-following.png); } 
+.palm-menu-icon.more					{ background-image: url(../images/theme/menu-icon-triangle-up.png); }
 
 /*
 	This is so we can have the view menu floating over the palm-page-header

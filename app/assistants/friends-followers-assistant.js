@@ -45,8 +45,8 @@ FriendsFollowersAssistant.prototype.setup = function() {
 					{label:$L('My Timeline'), icon:'conversation', command:'filter-timeline-all', shortcut:'T', 'class':"palm-header left"},
 					{label:'@',	icon:'at', command:'filter-timeline-replies'}, 
 					{label:$L('DM'), icon: 'dms', secondaryIconPath:'', command:'filter-timeline-dms'},
-					{label:$L('Favorites'), iconPath:'images/theme/menu-icon-favorite.png', command:'favorites', shortcut:'F'},
-					{label:$L('Friends and Followers'), iconPath:'images/theme/menu-icon-friends-followers.png', command:'friends-followers', shortcut:'L'},
+					{label:$L('Favorites'), icon:'favorite', command:'favorites', shortcut:'F'},
+					{label:$L('Friends and Followers'), icon:'friends-followers', command:'friends-followers', shortcut:'L'},
 					{label:$L('Search'),    icon:'search', command:'search', shortcut:'S'}
 				]
 			},

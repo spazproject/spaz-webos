@@ -62,7 +62,7 @@ MessageDetailAssistant.prototype.setup = function() {
 					items:[
 						{label:$L('Reply'),  icon:'reply', command:'reply', shortcut:'R'},
 						{label:$L('Share'),  icon:'forward-email',  command:'share', shortcut:'S'},
-						{label:$L('Favorite'), iconPath:'images/theme/menu-icon-favorite-outline.png', command:'favorite', disabled:true, shortcut:'F'},
+						{label:$L('Favorite'), icon:'favorite-outline', command:'favorite', disabled:true, shortcut:'F'},
 						{label:$L('Delete'),  icon:'stop', command:'delete', disabled:true, shortcut:'D'}
 					]
 				},
@@ -496,10 +496,10 @@ MessageDetailAssistant.prototype.setFavButtonState = function(is_favorite) {
 		Mojo.Log.error('is_favorite: %s', is_favorite);
 			
 		if (is_favorite) {
-			menu_item.iconPath = 'images/theme/menu-icon-favorite.png';
+			menu_item.icon = 'favorite';
 			this.controller.modelChanged(this.cmdMenuModel);
 		} else {
-			menu_item.iconPath = 'images/theme/menu-icon-favorite-outline.png';
+			menu_item.icon = 'favorite-outline';
 			this.controller.modelChanged(this.cmdMenuModel);
 		}
 		
@@ -549,7 +549,7 @@ MessageDetailAssistant.prototype.buildConversationView = function(statusid) {
 
 	var initWindow = function() {
 		$container
-		    .html('<div class="loading"><img src="images/dreadnaught/tiny-spinner-191C1D.gif" style="display:inline-block; margin-bottom:-2px"> Loading…</div>')
+		    .html('<div class="loading"><img src="images/theme/tiny-spinner-191C1D.gif" style="display:inline-block; margin-bottom:-2px"> Loading…</div>')
 		    .find('.loading')
 		    .fadeIn(250);	
 	};

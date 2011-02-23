@@ -81,7 +81,7 @@ SearchTwitterAssistant.prototype.setup = function() {
 			cmdMenuItems: this.cmdMenuItems = [
 				{label:$L('Compose'),  icon:'compose', command:'compose', shortcut:'N'},
 				{},
-				{label:$L('Save search'), iconPath:'images/theme/menu-icon-favorite-outline.png', command:'save-search', shortcut:'S'},
+				{label:$L('Save search'), icon:'favorite-outline', command:'save-search', shortcut:'S'},
 				{label:$L('Refresh'),   icon:'sync', command:'refresh', shortcut:'R'}					
 			]
 		});
@@ -559,9 +559,9 @@ SearchTwitterAssistant.prototype.removeSearch = function(searchstr) {
 SearchTwitterAssistant.prototype.fillStar = function(fill) {
 	if (App.username && this.cmdMenuModel.items[2]) {
 		if (fill) {
-			this.cmdMenuModel.items[2].iconPath = 'images/theme/menu-icon-favorite.png';
+			this.cmdMenuModel.items[2].icon = 'favorite';
 		} else {
-			this.cmdMenuModel.items[2].iconPath = 'images/theme/menu-icon-favorite-outline.png';
+			this.cmdMenuModel.items[2].icon = 'favorite-outline';
 		}
 		this.controller.modelChanged(this.cmdMenuModel);
 	}

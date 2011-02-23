@@ -68,11 +68,11 @@ UserDetailAssistant.prototype.setup = function() {
 				{},
 				{
 					items: [
-						{label:$L('Search for User'),  iconPath: 'images/menu-icon-search-person.png', command:'search-for-user', shortcut:'R'},
+						{label:$L('Search for User'),  icon:'search-person', command:'search-for-user', shortcut:'R'},
 						{label:$L('Mention'),  icon:'at', command:'mention', shortcut:'M'},
 						{label:$L('DM'),  icon:'dms', command:'dm', shortcut:'D'},
-						{label:$L('Follow/Unfollow'), disabled:true, iconPath: 'images/menu-icon-start-following.png', command:'follow', shortcut:'F'},
-						{label:$L('Block'), iconPath: 'images/theme/menu-icon-triangle-up.png', command:'more', shortcut:'B'}
+						{label:$L('Follow/Unfollow'), disabled:true, icon:'start-following', command:'follow', shortcut:'F'},
+						{label:$L('Block'), icon:'more', command:'more', shortcut:'B'}
 					]
 				},
 				{}
@@ -568,9 +568,9 @@ UserDetailAssistant.prototype.cleanup = function(event) {
 UserDetailAssistant.prototype.setFollowButtonIcon = function(current_state) {
 	Mojo.Log.error('this.cmdMenuModel.items[1].items[3]: %j', this.cmdMenuModel.items[1].items[3]);
 	if (current_state == 'yes') {
-		this.cmdMenuModel.items[1].items[3].iconPath = 'images/menu-icon-stop-following.png';
+		this.cmdMenuModel.items[1].items[3].icon = 'stop-following';
 	} else {
-		this.cmdMenuModel.items[1].items[3].iconPath = 'images/menu-icon-start-following.png';
+		this.cmdMenuModel.items[1].items[3].icon = 'start-following';
 	}
 	this.controller.modelChanged(this.cmdMenuModel);
 };
