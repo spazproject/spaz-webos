@@ -182,8 +182,8 @@ body * {
 .palm-menu-icon.conversation 			{ background-image: url(OSXX/menu-icon-conversation.png); }
 .palm-menu-icon.dms 			{ background-image: url(OSXX/menu-icon-dms.png); }
 .palm-menu-icon.at 			{ background-image: url(OSXX/menu-icon-at.png); }
-.palm-menu-icon.favorite 			{ background-image: url(OSXX/menu-icon-favorite.png) !important; }
-.palm-menu-icon.friends-followers 			{ background-image: url(OSXX/menu-icon-friends-followers.png) !important; }
+.palm-menu-icon.favorite 			{ background-image: url(OSXX/menu-icon-favorite.png); }
+.palm-menu-icon.friends-followers 			{ background-image: url(OSXX/menu-icon-friends-followers.png); }
 .palm-menu-icon.search 			{ background-image: url(OSXX/menu-icon-search.png); }
 /*
 .palm-menu-icon.dms 			{ background-image: url(../images/theme/menu-icon-dms.png); }
