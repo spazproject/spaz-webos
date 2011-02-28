@@ -9,7 +9,7 @@ var AppThemes = {
 	},
 	"OSXX":{
 		"stylesheet":"OSXX.css",
-		"palmtheme":'light'
+		"palmtheme":'dark'
 	},
 	"Koto":{
 		"stylesheet":"Koto.css",
