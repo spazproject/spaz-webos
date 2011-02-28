@@ -1,4 +1,4 @@
-/*********** Built 2011-02-12 15:18:04 EST ***********/
+/*********** Built 2011-02-27 19:16:43 EST ***********/
 /*jslint 
 browser: true,
 nomen: false,
@@ -10479,16 +10479,48 @@ SpazShortURL.prototype.getAPIObj = function(service) {
 	var apis = {};
 	
 	apis[SPAZCORE_SHORTURL_SERVICE_BITLY] = {
-		'url'	  : 'http://bit.ly/api',
+		'url'	  : 'http://api.bit.ly/v3/shorten',
 		'getData' : function(longurl, opts) {
-			return { 'url':longurl };				
+		    var data = {
+		        'longurl':longurl,
+		        'login':opts.login,
+		        'apiKey':opts.apiKey,
+		        'format':'json'
+		    };
+			return data;
+		},
+		'method':'GET',
+		'processResult' : function(data) {
+			var result = sc.helpers.deJSON(data);
+			
+			if (result.data && result.data.long_url) {
+			    result.longurl = result.data.long_url;
+    			result.shorturl = result.data.url;
+			}
+			return result;
 		}
 	};
 		
 	apis[SPAZCORE_SHORTURL_SERVICE_JMP] = {
-		'url'	  : 'http://j.mp/api',
+		'url'	  : 'http://api.j.mp/v3/shorten',
 		'getData' : function(longurl, opts){
-			return { 'url':longurl };				
+		    var data = {
+		        'longurl':longurl,
+		        'login':opts.login,
+		        'apiKey':opts.apiKey,
+		        'format':'json'
+		    };
+			return data;
+		},
+		'method':'GET',
+		'processResult' : function(data) {
+			var result = sc.helpers.deJSON(data);
+			
+			if (result.data && result.data.long_url) {
+			    result.longurl = result.data.long_url;
+    			result.shorturl = result.data.url;
+			}
+			return result;
 		}
 	};
 		
@@ -10561,6 +10593,7 @@ SpazShortURL.prototype.shorten = function(longurl, opts) {
 	}
 	
 	function getShortURL(longurl, shortener, apidata, opts, self) {
+	    
 		jQuery.ajax({
 			'traditional':true, // so we don't use square brackets on arrays in data. Bit.ly doesn't like it
 			'dataType':'text',
@@ -10699,14 +10732,18 @@ SpazShortURL.prototype._onExpandResponseFailure = function(errobj, target) {
 
 
 SpazShortURL.prototype.findExpandableURLs = function(str) {
-	var x, i, matches = [], re_matches, key, thisdomain, thisregex, regexes = [];
+	var x, i, j, matches = [], key, thisdomain, thisregex, regexes = [];
+	
+	var all_urls = sch.extractURLs(str);
 	
 	for (i=0; i < SPAZCORE_EXPANDABLE_DOMAINS.length; i++) {
 		thisdomain = SPAZCORE_EXPANDABLE_DOMAINS[i];
 		if (thisdomain == 'ff.im') {
 			regexes.push(new RegExp("http://"+thisdomain+"/(-?[a-zA-Z0-9]+)", "gi"));
+		} else if (thisdomain == 'ow.ly') { // we have to skip ow.ly/i/XXX links
+			regexes.push(new RegExp("http://"+thisdomain+"/(-?[a-zA-Z0-9]{2,})", "gi"));
 		} else {
-			regexes.push(new RegExp("http://"+thisdomain+"/([a-zA-Z0-9]+)", "gi"));
+			regexes.push(new RegExp("http://"+thisdomain+"/([a-zA-Z0-9-_]+)", "gi"));
 		}
 		
 	};
