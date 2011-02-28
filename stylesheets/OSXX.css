@@ -734,6 +734,7 @@ div.spaz-drawer {
 }
 #post-textfield, #post-textfield textarea {
   font-size: 18px;
+  color: #ffffff;
 }
 #post-panel-meta {
   overflow: auto;
@@ -910,7 +911,7 @@ div.inline-spinner span.inline-spinner-label {
 	Remove row separator background
 */.spaz-activity-spinner-container .palm-row {
   background: none;
-  color: rgba(16, 16, 16, 0.7);
+  color: #cccccc;
 }
 div.error_info {
   font-size: 9pt;
