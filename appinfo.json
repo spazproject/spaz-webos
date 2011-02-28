@@ -33,12 +33,12 @@
 	
 	"universalSearch": {
 		"action" :  { 
-			"displayName" : "Post with Spaz",
+			"displayName" : "Post with Spaz Beta",
 			"url"         : "com.funkatron.app.spaz",
 			"launchParam" : {"action":"prepPost", "msg":"#{searchTerms}"}
 		},
 		"search" : {
-			"displayName" : "Spaz",
+			"displayName" : "Spaz Beta",
 			"url"         : "com.funkatron.app.spaz",
 			"launchParam" : {"action":"search", "query":"#{searchTerms}"}
 		}
