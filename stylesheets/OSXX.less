@@ -1,5 +1,8 @@
 /* Put Application specific CSS here. */
 
+/******************************
+	LESS macros and stuff
+*******************************/
 @IMG_DIR: "OSXX";
 @SHARED_IMG_DIR: "..images/";
 
@@ -18,7 +21,7 @@
 @color_bg_group: fadeout(@color_bg, 50%);
 @color_bg_group_hi: fadeout(@color_bg_2, 30%);
 
-@font_1:     "arial, sans-serif";
+@font_1:     arial, helvetica, sans-serif;
 
 @border_radius: 15px;
 
@@ -37,6 +40,12 @@
 }
 
 .border_bottom_separator(@image: url(OSXX/list-separator-dark.png) 0 0 2 0 stretch) {
+	-webkit-border-image: @image;
+	-moz-border-image: @image;
+	border-image: @image;
+}
+
+.border_top_separator(@image: url(OSXX/list-separator-dark.png) 2 0 0 0 stretch) {
 	-webkit-border-image: @image;
 	-moz-border-image: @image;
 	border-image: @image;
@@ -88,6 +97,8 @@ body * {
 }
 .refresh-text {
 	margin-top: -33px; text-align: center; z-index: 200; color: @color_text_hi !important;
+	background-color:@color_bg_group;
+	.border_radius;
 }
 .refresh-text-overlay {
 	height: 45px; width: 100%; background-color: @color_bg; color: @color_text_hi ;position: fixed; top: 0px; z-index: 250;
@@ -97,12 +108,12 @@ body * {
 	The Accounts Panel
 */
 .palm-menu-panel {
-    -webkit-border-image: url(OSXX/palm-menu-panel.png) 24 24 24 24 repeat stretch;
+    -webkit-border-image: url(OSXX/palm-menu-panel.png) 24 24 24 24 round round;
 }
 
 .palm-menu-panel{
     -webkit-transition: all 175ms ease-in;
-	top:50px;
+	top:0px;
     opacity:1;
 }
 
@@ -113,13 +124,13 @@ body * {
 
 .palm-menu-button, .palm-menu-text, .palm-menu-label {
 	-webkit-border-image: url(none) 50 25 150 25 repeat repeat !important;
-	opacity: .5;
-	color:@color_text;
+	opacity: .7;
+	color:@color_text_2;
 }
 .palm-menu-button.selected, .palm-menu-text.selected, .palm-menu-label.selected {
 	opacity: 1.0;
 	-webkit-border-image: url(none) 50 25 150 25 repeat repeat !important;
-	color:@color_text;
+	color:@color_text_hi;
 }
 .palm-menu-text.palm-depressed,
 .palm-menu-label.palm-depressed,
@@ -145,6 +156,9 @@ body * {
 
 
 
+
+
+
 .view-menu {
 	background-image:url(OSXX/viewmenu-bg.png);
 	background-repeat:repeat-x;
@@ -157,15 +171,35 @@ body * {
 	text-align:left;
 }
 	.view-menu .palm-menu-text .truncating-text {
-/*		margin-left:38px;*/
 		font-size:13pt;
 		font-weight:normal;
+		color:@color_text_2
+	}
+	.view-menu .palm-menu-text.palm-depressed .truncating-text {
+		font-weight:bold;
+		opacity:1.0;
+		color:@color_text_hi;
 	}
 
 .command-menu {
 	background-image:url(OSXX/commandmenu-bg.png);
 	background-repeat:repeat-x;
 }
+
+
+.command-menu .palm-menu-button.palm-depressed {
+	background-color:@color_bg_2;
+	background-repeat:no-repeat;
+	background-position:6px 0px
+}
+/*.command-menu .palm-menu-button.palm-depressed .palm-menu-icon {
+	background-color:@color_bg_2;
+	padding: 6px;
+	.border_radius;
+	background-repeat:no-repeat;
+	background-position:6px 0px
+}
+*/
 
 
 .palm-default .palm-menu-fade, .palm-menu.command-menu.palm-default > .palm-menu-fade {
@@ -541,7 +575,7 @@ div.timeline-entry.follower {}
 		.checkbox-label {
 			margin:13px 0 0 0;
 			font-size:12pt;
-			color:@color_text_rev;
+			color:@color_text_2;
 		}
 
 	#trends-list {}

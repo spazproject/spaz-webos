@@ -1,4 +1,7 @@
 /* Put Application specific CSS here. */
+/******************************
+	LESS macros and stuff
+*******************************/
 .thumbnail_border {
   border: 1px solid #cccccc;
 }
@@ -18,7 +21,7 @@ body.palm-default {
   background: url(OSXX/stage-bg.png) top left no-repeat;
 }
 body * {
-  font-family: "arial, sans-serif" !important;
+  font-family: arial, helvetica, sans-serif !important;
 }
 .pull-to-refresh {
   background-image: url(OSXX/pull-to-refresh.png);
@@ -37,6 +40,10 @@ body * {
   text-align: center;
   z-index: 200;
   color: #ffffff !important;
+  background-color: rgba(34, 34, 34, 0.5);
+  -webkit-border-radius: 15px;
+  -moz-border-radius: 15px;
+  border-radius: 15px;
 }
 .refresh-text-overlay {
   height: 45px;
@@ -51,11 +58,11 @@ body * {
 	The Accounts Panel
 */
 .palm-menu-panel {
-  -webkit-border-image: url(OSXX/palm-menu-panel.png) 24 24 24 24 repeat stretch;
+  -webkit-border-image: url(OSXX/palm-menu-panel.png) 24 24 24 24 round round;
 }
 .palm-menu-panel {
   -webkit-transition: all 175ms ease-in;
-  top: 50px;
+  top: 0px;
   opacity: 1;
 }
 .palm-menu-panel.sliding {
@@ -64,13 +71,13 @@ body * {
 }
 .palm-menu-button, .palm-menu-text, .palm-menu-label {
   -webkit-border-image: url(none) 50 25 150 25 repeat repeat !important;
-  opacity: .5;
-  color: #cccccc;
+  opacity: .7;
+  color: #aaaaaa;
 }
 .palm-menu-button.selected, .palm-menu-text.selected, .palm-menu-label.selected {
   opacity: 1.0;
   -webkit-border-image: url(none) 50 25 150 25 repeat repeat !important;
-  color: #cccccc;
+  color: #ffffff;
 }
 .palm-menu-text.palm-depressed, .palm-menu-label.palm-depressed, .palm-menu-button.palm-depressed {
   opacity: 1.0;
@@ -116,15 +123,32 @@ body * {
   text-align: left;
 }
 .view-menu .palm-menu-text .truncating-text {
-  /*		margin-left:38px;*/
-
   font-size: 13pt;
   font-weight: normal;
+  color: #aaaaaa;
+}
+.view-menu .palm-menu-text.palm-depressed .truncating-text {
+  font-weight: bold;
+  opacity: 1.0;
+  color: #ffffff;
 }
 .command-menu {
   background-image: url(OSXX/commandmenu-bg.png);
   background-repeat: repeat-x;
 }
+.command-menu .palm-menu-button.palm-depressed {
+  background-color: #000000;
+  background-repeat: no-repeat;
+  background-position: 6px 0px;
+}
+/*.command-menu .palm-menu-button.palm-depressed .palm-menu-icon {
+	background-color:@color_bg_2;
+	padding: 6px;
+	.border_radius;
+	background-repeat:no-repeat;
+	background-position:6px 0px
+}
+*/
 .palm-default .palm-menu-fade, .palm-menu.command-menu.palm-default > .palm-menu-fade {
   background: none;
 }
@@ -437,7 +461,7 @@ div.timeline-entry.follower div.user-name-screen {
 .checkbox-label {
   margin: 13px 0 0 0;
   font-size: 12pt;
-  color: #222222;
+  color: #aaaaaa;
 }
 /*
 	simple styling widgets
