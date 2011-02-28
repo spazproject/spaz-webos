@@ -452,12 +452,12 @@ PostAssistant.prototype.shortenURLs = function(event) {
 	var that = this;
 	
 	function onShortURLSuccess(e, data) {
-		Mojo.Log.debug('that.postTextFieldModel.value: %s', that.postTextFieldModel.value);
-		Mojo.Log.debug('data: %j', data);
+		Mojo.Log.info('that.postTextFieldModel.value: %s', that.postTextFieldModel.value);
+		Mojo.Log.info('data: %j', data);
 		that.postTextFieldModel.value = that.postTextFieldModel.value.replace(data.longurl, data.shorturl);
 		that.controller.modelChanged(that.postTextFieldModel);
-		Mojo.Log.debug('that.postTextFieldModel.value: %s', that.postTextFieldModel.value);
-		Mojo.Log.debug('data: %j', data);
+		Mojo.Log.info('that.postTextFieldModel.value: %s', that.postTextFieldModel.value);
+		Mojo.Log.info('data: %j', data);
 		that.deactivateButtonSpinner('post-shorten-urls-button');
 		that._updateCharCount();
 	}
