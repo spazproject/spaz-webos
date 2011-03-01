@@ -14,5 +14,9 @@ var AppThemes = {
 	"Koto":{
 		"stylesheet":"Koto.css",
 		"palmtheme":'dark'
+	},
+	"Preware":{
+		"stylesheet":"Preware.css",
+		"palmtheme":'light'
 	}
 };
