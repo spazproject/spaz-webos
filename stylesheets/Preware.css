@@ -40,7 +40,7 @@ body * {
   text-align: center;
   z-index: 200;
   color: #000000 !important;
-  background-color: rgba(204, 204, 204, 0.5);
+  background-color: rgba(255, 255, 255, 0.5);
   -webkit-border-radius: auto;
   -moz-border-radius: auto;
   border-radius: auto;
@@ -134,6 +134,11 @@ div.timeline-entry {
   -webkit-border-image: url(Preware/list-separator-light.png) 0 0 2 0 stretch;
   -moz-border-image: url(Preware/list-separator-light.png) 0 0 2 0 stretch;
   border-image: url(Preware/list-separator-light.png) 0 0 2 0 stretch;
+}
+div.timeline-entry:last-of-type {
+  -webkit-border-image: url(none) 0 0 2 0 stretch;
+  -moz-border-image: url(none) 0 0 2 0 stretch;
+  border-image: url(none) 0 0 2 0 stretch;
 }
 div.timeline-entry.new {
   color: #000000;
@@ -433,14 +438,14 @@ div.spaz-drawer {
   -moz-border-radius: auto;
   border-radius: auto;
   margin: 0px 7px;
-  background-color: rgba(204, 204, 204, 0.5);
+  background-color: #bbbbbb;
   padding: 5px 10px;
   overflow: auto;
   font-size: 11pt;
   display: none;
 }
 #timeline-conversation:active {
-  background-color: rgba(255, 255, 255, 0.7);
+  background-color: #eeeeee;
 }
 #timeline-conversation div.timeline-entry {
   border-bottom: none;
@@ -516,7 +521,7 @@ div.spaz-drawer {
   overflow: auto;
 }
 #user-detail div.user-info-stats div.row {
-  background-color: rgba(204, 204, 204, 0.5);
+  background-color: rgba(255, 255, 255, 0.5);
   margin-bottom: 3px;
   padding: 5px;
   overflow: auto;

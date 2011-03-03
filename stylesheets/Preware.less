@@ -19,9 +19,11 @@
 @color_bg_2: #FFFFFF;
 @color_bg_rev:   #333333;
 @color_bg_rev_2: #101010;
+@color_bg_convo: #BBBBBB;
+@color_bg_convo_hi: #EEEEEE;
 
-@color_bg_group: fadeout(@color_bg, 50%);
-@color_bg_group_hi: fadeout(@color_bg_2, 30%);
+@color_bg_group: fadeout(@color_bg_2, 50%);
+@color_bg_group_hi: fadeout(@color_bg_2, 80%);
 
 @font_1:     inherit;
 @font_2:     "Prelude-CondensedMedium";
@@ -208,6 +210,9 @@ div.timeline-entry {
 	position:relative;
 	.border_bottom_separator;
 }
+	div.timeline-entry:last-of-type {
+		.border_bottom_separator_NONE;
+	}
 
 	div.timeline-entry.new {
 		color:@color_text_hi;
@@ -559,14 +564,14 @@ div.spaz-drawer {
 #timeline-conversation {
 	.border_radius(auto);
 	margin:0px 7px;
-	background-color:@color_bg_group;
+	background-color:@color_bg_convo;
 	padding:5px 10px;
 	overflow:auto;
 	font-size:11pt;
 	display:none;
 }
 	#timeline-conversation:active {
-		background-color:@color_bg_group_hi;
+		background-color:@color_bg_convo_hi;
 	}
 	
 
