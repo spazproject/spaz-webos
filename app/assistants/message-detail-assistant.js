@@ -549,7 +549,7 @@ MessageDetailAssistant.prototype.buildConversationView = function(statusid) {
 
 	var initWindow = function() {
 		$container
-		    .html('<div class="loading"><img src="images/theme/tiny-spinner-191C1D.gif" style="display:inline-block; margin-bottom:-2px"> Loading…</div>')
+		    .html('<div class="loading"><img src="images/theme/loading-tiny.gif" style="display:inline-block; margin-bottom:-2px"> Loading…</div>')
 		    .find('.loading')
 		    .fadeIn(250);	
 	};
