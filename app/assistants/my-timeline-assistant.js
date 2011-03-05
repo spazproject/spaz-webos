@@ -281,7 +281,11 @@ MyTimelineAssistant.prototype.setup = function() {
 	};
 	
 	
+	this.showFollowSpazPopup();
 	
+	this.showDonationPopup();
+	
+	this.showNewVersionPopup();
 };
 
 

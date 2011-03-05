@@ -90,6 +90,9 @@ StartAssistant.prototype.setup = function() {
 	Mojo.Event.listen(jQuery('#start-login-button')[0], Mojo.Event.tap, this.showLogin.bind(this));
 	Mojo.Event.listen(jQuery('#start-search-button')[0], Mojo.Event.tap, this.showSearch.bind(this));
 	Mojo.Event.listen(jQuery('#start-help-button')[0], Mojo.Event.tap, this.showHelp.bind(this));
+	
+	
+	this.showFirstRunPopup();
 };
 
 
