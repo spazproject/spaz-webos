@@ -1524,7 +1524,7 @@ scene_helpers.addCommonSceneMethods = function(assistant) {
 	 * A helper to easily display JS alert()-style popups
 	 * @param {string} msg	required 
 	 * @param {string} title  optional 
-	 * @param {function} ok_cb	callback like function(value) where value is value assigned to OK button. Optional
+	 * @param {function} [ok_cb] callback like function(value) where value is value assigned to OK button. Optional
 	 * @param {array} [choices] an array of choice objects. Ex: {label:$L('Okay'), value:"okay", type:'dismiss'}
 	 */
 	assistant.showAlert = function(msg, title, ok_cb, choices) {
@@ -1668,6 +1668,121 @@ scene_helpers.addCommonSceneMethods = function(assistant) {
 			}
 		}
 	};
+	
+	
+
+
+	assistant.showFirstRunPopup = function() {
+		// first run
+		if (Spaz.getAppObj().versionCookie.isFirst) {
+			this.showAlert(
+				$L("Remember to visit help.getspaz.com to get help and make suggestions\n\nThanks for supporting open source software!"),
+				$L("Thanks for trying Spaz!"),
+				function(value) {
+					switch(value) {
+						case "help":
+							this.openInBrowser('http://getspaz.com/webos/whatsnew');
+							return true;
+						case "cl":
+							this.openInBrowser('http://help.getspaz.com');
+							return true;
+						default:
+							return true;
+					}
+				}, [
+					{label:$L('Visit help.getspaz.com'), value:"help", type:'affirmative'},
+					{label:$L('View Changelog'), value:"cl", type:'affirmative'},
+					{label:$L('Continue'), value:"ok", type:'dismiss'}
+				]
+			);
+		}
+	};
+
+
+
+	assistant.showNewVersionPopup = function() {
+		// new version
+ 		if (Spaz.getAppObj().versionCookie.isNew && !Spaz.getAppObj().versionCookie.isFirst) {
+
+			this.showAlert(
+				$L("You're running a new version of Spaz. Read the Changelog to find out what's new."),
+				$L("New Version"),
+				function(value) {
+					switch(value) {
+						case "www":
+							this.openInBrowser('http://getspaz.com/webos/whatsnew');
+							return true;
+						default:
+							return true;
+					}
+				}, [
+					{label:$L('View Changelog'), value:"www", type:'affirmative'},
+					{label:$L('Continue'), value:"ok", type:'dismiss'}
+				]
+			);
+		}
+	};
+
+
+	
+	assistant.showFollowSpazPopup = function() {
+		// first run
+		if (Spaz.getAppObj().versionCookie.isFirst) {
+			this.showAlert(
+				$L("To keep up with new info, make sure to follow @Spaz"),
+				$L("Follow @Spaz"),
+				function(value) {
+					switch(value) {
+						case "follow":
+							Mojo.Controller.stageController.pushScene('user-detail', '@spaz');
+							return true;
+						default:
+							return true;
+					}
+				}, [
+					{label:$L('Go to @spaz\'s profile'), value:"follow", type:'affirmative'},
+					{label:$L('Continue'), value:"ok", type:'dismiss'}
+				]
+			);
+		}
+	};
+	
+	
+	
+	assistant.showDonationPopup = function() {
+		var runs = Spaz.getAppObj().versionCookie.runs;
+		
+		// bug them at certain run counts
+		if ( [10,100,250,500,1000].indexOf(runs) !== -1 ) {
+			this.showAlert(
+				$L("Spaz is free, open-source software, and relies on donations to support the work we do."),
+				$L("Help Support Spaz"),
+				function(value) {
+					switch(value) {
+						case "swag":
+							this.openInBrowser('http://getspaz.com/swag');
+							return true;
+						case "specialed":
+							this.openInBrowser('http://getspaz.com/webos/special-ed');
+							return true;
+						case "donate":
+							this.openInBrowser('http://getspaz.com/donate');
+							return true;
+						default:
+							return true;
+					}
+				}, [
+					{label:$L('Buy t-shirts and buttons'), value:"swag", type:'affirmative'},
+					{label:$L('Buy the Spaz Special Edition'), value:"specialed", type:'affirmative'},
+					{label:$L('Make a donation'), value:"donate", type:'affirmative'},
+					{label:$L('I hate you, spaz'), value:"ok", type:'negative'}
+				]
+			);
+		}
+		
+		
+	};
+	
 	
 };
 
