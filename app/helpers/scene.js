@@ -1696,7 +1696,7 @@ scene_helpers.addCommonSceneMethods = function(assistant) {
 				]
 			);
 		}
-	}
+	};
 
 
 
@@ -1746,6 +1746,44 @@ scene_helpers.addCommonSceneMethods = function(assistant) {
 			);
 		}
 	};
+	
+	
+	
+	assistant.showDonationPopup = function() {
+		var runs = Spaz.getAppObj().versionCookie.runs;
+		
+		// bug them at certain run counts
+		if ( [10,100,250,500,1000].indexOf(runs) !== -1 ) {
+			this.showAlert(
+				$L("Spaz is free, open-source software, and relies on donations to support the work we do."),
+				$L("Help Support Spaz"),
+				function(value) {
+					switch(value) {
+						case "swag":
+							this.openInBrowser('http://getspaz.com/swag');
+							return true;
+						case "specialed":
+							this.openInBrowser('http://getspaz.com/webos/special-ed');
+							return true;
+						case "donate":
+							this.openInBrowser('http://getspaz.com/donate');
+							return true;
+						default:
+							return true;
+					}
+				}, [
+					{label:$L('Buy t-shirts and buttons'), value:"swag", type:'affirmative'},
+					{label:$L('Buy the Spaz Special Edition'), value:"specialed", type:'affirmative'},
+					{label:$L('Make a donation'), value:"donate", type:'affirmative'},
+					{label:$L('I hate you, spaz'), value:"ok", type:'negative'}
+				]
+			);
+		}
+		
+		
+	};
+	
+	
 };
 
 

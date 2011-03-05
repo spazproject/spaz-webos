@@ -283,7 +283,9 @@ MyTimelineAssistant.prototype.setup = function() {
 	
 	this.showFollowSpazPopup();
 	
-	this.showNewVersionPopup();	
+	this.showDonationPopup();
+	
+	this.showNewVersionPopup();
 };
 
 

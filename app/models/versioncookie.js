@@ -362,6 +362,7 @@ function VersionCookie()
 	this.cookie = false;
 	this.isFirst = false;
 	this.isNew = false;
+	this.runs = 0;
 	//this.init();
 };
 VersionCookie.prototype.init = function()
@@ -372,6 +373,7 @@ VersionCookie.prototype.init = function()
 		this.cookie = false;
 		this.isFirst = false;
 		this.isNew = false;
+		this.runs = 0;
 		
 		this.cookie = new Mojo.Model.Cookie('version');
 		// uncomment to delete cookie for testing
@@ -379,6 +381,10 @@ VersionCookie.prototype.init = function()
 		var data = this.cookie.get();
 		if (data)
 		{
+			
+			this.runs = data.runs||0;
+			Mojo.Log.error('Runs %s', this.runs);
+			
 			if (data.version == Mojo.appInfo.version)
 			{
 				Mojo.Log.error('Same Version %s', data.version, Mojo.appInfo.version);
@@ -387,14 +393,15 @@ VersionCookie.prototype.init = function()
 			{
 				Mojo.Log.error('New Version %s %s', data.version, Mojo.appInfo.version);
 				this.isNew = true;
-				this.put();
 			}
+			this.put();
 		}
 		else
 		{
 			Mojo.Log.error('First Launch (no cookie data)');
 			this.isFirst = true;
 			this.isNew = true;
+			this.runs = 0;
 			this.put();
 		}
 		// uncomment to delete cookie for testing
@@ -407,9 +414,9 @@ VersionCookie.prototype.init = function()
 };
 VersionCookie.prototype.put = function()
 {
-	this.cookie.put({version: Mojo.appInfo.version});
+	this.cookie.put({version: Mojo.appInfo.version, runs: (this.runs+1)});
 	// uncomment to set lower version for testing
-	// this.cookie.put({version: '0.0.1'});
+	// this.cookie.put({version: '0.0.1', runs:9});
 };
 VersionCookie.prototype.showStartupScene = function()
 {
