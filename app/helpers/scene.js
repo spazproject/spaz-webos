@@ -1775,7 +1775,7 @@ scene_helpers.addCommonSceneMethods = function(assistant) {
 					{label:$L('Buy t-shirts and buttons'), value:"swag", type:'affirmative'},
 					{label:$L('Buy the Spaz Special Edition'), value:"specialed", type:'affirmative'},
 					{label:$L('Make a donation'), value:"donate", type:'affirmative'},
-					{label:$L('I hate you, spaz'), value:"ok", type:'negative'}
+					{label:$L('I hate you, Spaz'), value:"ok", type:'negative'}
 				]
 			);
 		}
