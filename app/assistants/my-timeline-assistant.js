@@ -281,7 +281,9 @@ MyTimelineAssistant.prototype.setup = function() {
 	};
 	
 	
+	this.showFollowSpazPopup();
 	
+	this.showNewVersionPopup();	
 };
 
 
