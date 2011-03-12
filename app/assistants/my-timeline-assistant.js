@@ -107,9 +107,6 @@ MyTimelineAssistant.prototype.setup = function() {
 					{label: $L('Refresh'),  icon:'sync', command:'refresh', shortcut:'R'},
 					{label: App.username, command:'toggle-accounts-panel', width:200},
 					{label: $L('Compose'),  icon:'compose', command:'compose', shortcut:'N'}
-
-					//{label: $L('Filter timeline'), iconPath:'images/theme/menu-icon-triangle-down.png', submenu:'filter-menu'}
-				
 				]
 			}
 			
@@ -126,9 +123,9 @@ MyTimelineAssistant.prototype.setup = function() {
 					{label:$L('My Timeline'), icon:'conversation', command:'filter-timeline-all', shortcut:'T', 'class':"palm-header left"},
 					{label:'@',	icon:'at', command:'filter-timeline-replies'}, 
 					{label:$L('DM'), icon: 'dms', secondaryIconPath:'', command:'filter-timeline-dms'},
-					{label:$L('Favorites'), iconPath:'images/theme/menu-icon-favorite.png', command:'favorites', shortcut:'F'},
-					{label:$L('Friends and Followers'), iconPath:'images/theme/menu-icon-friends-followers.png', command:'friends-followers', shortcut:'L'},
-					{label:$L('Search'),    icon:'search', command:'search', shortcut:'S'}
+					{label:$L('Favorites'), icon:'favorite', command:'favorites', shortcut:'F'},
+					{label:$L('Friends and Followers'), icon:'friends-followers', command:'friends-followers', shortcut:'L'},
+					{label:$L('Search'), icon:'search', command:'search', shortcut:'S'}
 				]
 			},
 			{}
@@ -284,7 +281,11 @@ MyTimelineAssistant.prototype.setup = function() {
 	};
 	
 	
+	this.showFollowSpazPopup();
 	
+	this.showDonationPopup();
+	
+	this.showNewVersionPopup();
 };
 
 

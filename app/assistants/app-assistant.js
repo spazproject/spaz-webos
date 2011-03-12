@@ -184,6 +184,10 @@ AppAssistant.prototype.initialize = function() {
 		});
 	}
 	
+	
+	this.App.versionCookie = new VersionCookie();
+	this.App.versionCookie.init();
+	
 };
 
 
@@ -432,15 +436,7 @@ AppAssistant.prototype.handleCommand = function(event){
 				break;
 				
 			case 'donate':
-				var sr = new Mojo.Service.Request("palm://com.palm.applicationManager", {
-				  method: "open",
-				  parameters:  {
-				      id: 'com.palm.app.browser',
-				      params: {
-				          target: SPAZ_DONATION_URL
-				      }
-				  }
-				});
+				Spaz.getActiveSceneAssistant().showDonationPopup(true);
 				
 				break;
 

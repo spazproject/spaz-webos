@@ -1,0 +1,476 @@
+/*
+ * List Headers
+ */
+
+.spaz-header {
+  line-height: 48px;
+  height: 50px;
+  text-align: center;
+  z-index: 20000;
+  font-size: 16px;
+  text-transform: none;
+  position: fixed;
+  top: 0px;
+  left: 0px;
+  right: 0px;
+  border-width: 0 25px 0 25px;
+  -webkit-border-image: url(Preware/palm-menu-button.png) 0 25 200 25 repeat repeat;
+  -webkit-box-sizing: border-box;
+  padding: 0px;
+  font-weight: bold;
+  cursor: default;
+}
+
+.spaz-header.selected {
+  -webkit-border-image: url(Preware/palm-menu-button.png) 50 25 150 25 repeat repeat;
+}
+
+.spaz-header,
+.spaz-header a {
+  color: #FFF;
+  text-decoration: none;
+}
+
+.spaz-header.left {
+  text-align: left;
+  padding-left: 0px;
+}
+
+.spaz-header.right {
+  text-align: right;
+  padding-right: 0px;
+}
+
+.spaz-header-spacer {
+  height: 58px;
+}
+
+#main.spaz-hasheader {
+  margin-top: 58px;
+}
+
+/*
+ * Page Headers
+ */
+
+.spaz-page-header {
+  background: none;
+  padding: 0;
+  border-width: 35px 24px 13px 24px;
+  -webkit-border-image: url(Preware/palm-page-header.png) 35 24 13 24 repeat stretch;
+  -webkit-box-sizing: border-box;
+  min-height: 50px;
+}
+
+.spaz-page-header.multi-line {
+  background: none;
+  padding: 0;
+  border-width: 35px 24px 13px 24px;
+  -webkit-border-image: url(Preware/palm-page-header.png) 35 24 13 24 repeat stretch;
+  -webkit-box-sizing: border-box;
+  min-height: 50px;
+  overflow: visible;
+  white-space: normal;
+}
+
+.spaz-filter-open .spaz-page-header {
+  -webkit-border-image: url(Preware/palm-page-header-square.png) 35 24 13 24 repeat stretch;
+}
+
+.spaz-page-header-wrapper {
+  position: relative;
+  min-height: 52px;
+  margin: -35px -24px -13px -24px;
+}
+.spaz-page-header .icon {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 56px;
+  min-height: 52px;
+  background: url(Preware/header-icon-prefs.png) center center no-repeat;
+}
+
+.spaz-page-header .title {
+  min-width: 240px;
+  left: 0px;
+  right: 0px;
+  padding: 13px 16px 13px 56px;
+  font-size: 20px;
+  color: #444;
+  text-transform: capitalize;
+  text-shadow: #f2f2f2 0px 1px 0px;
+  -webkit-palm-mouse-target: ignore;
+}
+
+.spaz-page-header:not(.multi-line) .title,
+.spaz-page-header.multi-line .title.truncating-text {
+  position: absolute;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.spaz-page-header.multi-line .title {
+  position: relative;
+}
+
+.spaz-page-header .title.left {
+  padding-left: 16px;
+}
+
+.spaz-page-header .title.right {
+  text-align: right;
+}
+
+.spaz-page-header.multi-line .subtitle {
+  margin-top: -8px;
+  padding: 0 16px 16px 16px;
+  font-size: 14px;
+  color: #555;
+  text-shadow: none;
+}
+
+/*
+ * Lists
+ */
+
+/* single-line list */
+
+.spaz-list {
+  width: 100%;
+  margin: 0;
+  -webkit-user-select: none;
+}
+
+.spaz-list .title, /* dep */
+.spaz-row .title {
+  margin: 0px;
+  padding: 0px 14px;
+  font-size: 20px;
+  font-weight: normal;
+  word-wrap: break-word;
+}
+
+.spaz-list .subtitle, /* dep */
+.spaz-row .subtitle {
+  margin: 0px;
+  padding: 0px 14px;
+  font-size: 16px;
+}
+
+.spaz-list .preview, /* dep */
+.spaz-row .preview {
+  font-size: 14px;
+  padding: 0px 15px 10px 15px;
+  color: #333;
+}
+
+.spaz-group .spaz-list .title,
+.spaz-group .spaz-list .subtitle,
+.spaz-group .spaz-list .preview {
+  padding: 0px 14px;
+}
+
+span.list-highlight {
+  height: 3px;
+  background: url(Preware/filter-search-highlight.png) bottom left repeat-x;
+}
+  
+.list-item-remove-button,  /* dep */
+.spaz-row .list-item-remove-button {
+  height: 44px;
+  width: 44px;
+  background: url(Preware/list-icon-remove-item.png) center center no-repeat;
+  float: left;
+}
+
+.spaz-row .list-item-remove-button {
+  height: 52px;
+}
+
+.list-item-add-button {
+  margin-top: -13px;
+  height: 50px;
+  width: 44px;
+  background: url(Preware/list-icon-add-item.png) center center no-repeat;
+  float: left;
+}
+
+.spaz-row .list-item-add-button {
+  margin-top: -1px;
+}
+
+.add-item .title {
+  color:#555552;
+}
+
+/*
+ * Collapsible List Headers
+ */
+
+.spaz-collapsible-header {
+  display: block;
+  background: url(Preware/backdrop-inset.png) bottom left repeat-x;
+}
+
+.spaz-collapsible-header.selected {
+  display: block;
+}
+
+/*
+ * Grouped Lists
+ */
+
+.spaz-group {
+  margin: 7px;                                          
+  border-width: 40px 18px 18px 18px;                              
+  -webkit-border-image: url(Preware/palm-group.png) 40 18 18 18 repeat repeat;
+}
+
+.spaz-dialog-box .spaz-dialog-wrapper .spaz-group {
+  margin: 15px 0 0 0;
+}
+
+.spaz-group-title {
+  margin: -40px -18px 0 -18px;
+  padding: 0px 0 14px 12px;
+  text-transform: uppercase;
+  font-size: 14px;
+  color: #ffffff;
+  text-shadow: #646454 0px 1px 0px;
+  font-weight: bold;
+  height: 26px;
+  vertical-align: middle;
+  line-height: 26px;
+  -webkit-user-select: none;
+}
+
+.spaz-group .spaz-list label {
+  right: 30px;
+}
+
+.spaz-group > .spaz-list {
+  width: auto;
+  margin: -14px -16px -17px -16px;
+  padding-bottom: 3px;
+}
+
+.spaz-group.unlabeled > .spaz-list {
+  margin-top: -16px;
+}
+
+/*
+ * Unlabeled Group Box
+ */
+
+.spaz-group.unlabeled {
+  border-width: 18px 18px 18px 18px;
+  -webkit-border-image: url(Preware/palm-group-unlabeled.png) 18 18 18 18 repeat repeat;
+}
+
+.spaz-group.unlabeled .spaz-group-title {
+  display: none;
+}
+
+
+
+/*
+ * Rows
+ */
+
+.spaz-row {                              
+  /* preload images */
+  background-image: url(Preware/row-divider-first.png);
+  background-image: url(Preware/row-divider-single.png);
+  background-image: url(Preware/row-divider-last.png);
+  background-image: url(Preware/selection-gradient-default.png);
+  background-image: url(Preware/selection-gradient-first.png);
+  background-image: url(Preware/selection-gradient-single.png);
+  background-image: url(Preware/selection-gradient-last.png);
+  /* set defaults images */
+  margin: 0;
+  padding: 0;
+  border: none;
+  border-width: 0px;
+  -webkit-box-sizing: border-box;
+  -webkit-border-image: none;
+  min-height: 51px; /* 50px when negative margin-bottom factored in */
+  width: auto;
+  clear: both;
+  background: url(Preware/list-separator-light.png) bottom left repeat-x; /* bevel shadow and highlight at bottom */
+  margin-bottom: -1px; /* negative margin to compensate for bevel highlight */
+}
+
+.spaz-row.no-divider,
+.spaz-row.no-separator,
+.spaz-row.single,
+.spaz-row.last {
+  background: none;
+  -webkit-border-image: none;
+}
+
+.spaz-row.selected {
+  border: none;
+  background: none;
+  border-width: 24px 20px;
+  -webkit-border-image: url(Preware/selection-gradient-default.png) 24 20 24 20 repeat repeat;
+}
+
+.spaz-group .spaz-row.selected.first {
+  -webkit-border-image: url(Preware/selection-gradient-first.png) 24 20 24 20 repeat repeat;
+}
+
+.spaz-group .spaz-row.selected.single {
+  -webkit-border-image: url(Preware/selection-gradient-single.png) 24 20 24 20 repeat repeat;
+}
+
+.spaz-group .spaz-row.selected.last {
+  -webkit-border-image: url(Preware/selection-gradient-last.png) 24 20 24 20 repeat repeat;
+}
+
+.spaz-row .spaz-row-wrapper {
+  margin: 0;
+}
+
+.spaz-row.selected > .spaz-row-wrapper,
+.spaz-row.spaz-delete-element > .spaz-row-wrapper,
+.spaz-row.spaz-reorder-element > .spaz-row-wrapper,
+.spaz-row.spaz-swipe-delete > .spaz-row-wrapper {
+  /* negative margin is applied to negate the offset created by the
+  -webkit-border-image used to style the row and its highlight */
+  margin: -24px -20px;
+}
+
+.spaz-group .spaz-list .spaz-row .title, /* dep */
+.spaz-list .spaz-row .title, /* dep */
+.spaz-row .title {
+  /* for non-truncating text */
+  padding: 13px 14px 15px 14px;
+  margin: 0; /* inv */
+}
+
+.spaz-row.multi-line .title {
+  padding: 8px 14px;
+}
+
+.spaz-list-selector .title,
+.spaz-row .title.truncating-text {
+  line-height: 24px;
+}
+
+.spaz-row.removable .title {
+  padding-left: 0;
+}
+
+.spaz-row.disabled,
+.spaz-list-selector.disabled .title,
+.spaz-row .title.disabled {
+  color: #898989;
+}
+
+.spaz-textfield-disabled {
+  color: #888;
+}
+
+.label.mv-picker-label,
+.spaz-row .label {
+  float: right;
+  color: #1f75bf;
+  text-shadow: #ffffff 0px 1px 0px;
+  font-size: 14px;
+  margin: 18px 12px 0 0;
+  text-transform: uppercase;
+}
+
+.spaz-row .label {
+  margin-left: 6px;
+}
+
+.spaz-row .label.right {
+  float: right;
+}
+
+.spaz-row .label.left {
+  float: left;
+  margin-left: 12px;
+  margin-right: 0;
+}
+
+.spaz-row .title.right {
+  text-align: right;
+}
+
+.spaz-row .title.left {
+  text-align: left;
+}
+
+.spaz-row .title.center {
+  text-align: center;
+}
+
+/* adjust label styling when placed inside title div */
+.spaz-row .title .label,
+.spaz-row .title .label.right {
+  margin: 1px 0 0 4px;
+}
+
+.spaz-row .title .label.left {
+  margin: 1px 4px 0 0;
+}
+
+.spaz-list-selector .label,
+.spaz-row .truncating-text .label,
+.spaz-row .truncating-text.label {
+  max-width: 40%;
+}
+
+.spaz-row .truncating-text .label,
+.spaz-row .truncating-text.label {
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.spaz-row.selected .title,
+.spaz-row.selected .subtitle,
+.spaz-row.selected .preview,
+.spaz-row.selected .label {
+  color: #FFF;
+  text-shadow: none;
+}
+
+.spaz-group .spaz-list .spaz-row,
+.spaz-group .spaz-list .spaz-row.selected {
+  /* inv */
+  margin-right: 1px;
+}
+
+.spaz-row .icon {
+  /* specify background-image and
+  background-position in use-specific class */
+  background-repeat: no-repeat;
+  width: 40px; /* default */
+  height: 50px; /* default */
+}
+
+.spaz-row .icon.left {
+  float: left;
+}
+     
+.spaz-row .icon.right {
+  float: right;
+}
+
+.spaz-row .checkbox,
+.spaz-row .left .checkbox {
+  float: left;
+  margin: 12px 4px 0 12px;
+}
+
+.spaz-row .right .checkbox {
+  float: right;
+  margin: 12px 8px 0 8px;
+}
+
+

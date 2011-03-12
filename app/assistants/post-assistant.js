@@ -424,7 +424,6 @@ PostAssistant.prototype.shortenURLs = function(event) {
 	
 	var event_target = jQuery('#post-shorten-urls-button')[0];
 	
-	// var surl = new SpazShortURL(SPAZCORE_SHORTURL_SERVICE_BITLY);
 	var surl = new SpazShortURL(SPAZCORE_SHORTURL_SERVICE_JMP);
 	var longurls = sc.helpers.extractURLs(this.postTextFieldModel.value);
 
@@ -453,19 +452,23 @@ PostAssistant.prototype.shortenURLs = function(event) {
 	var that = this;
 	
 	function onShortURLSuccess(e, data) {
-		that.postTextFieldModel.value = sc.helpers.replaceMultiple(that.postTextFieldModel.value, data);
+		Mojo.Log.info('that.postTextFieldModel.value: %s', that.postTextFieldModel.value);
+		Mojo.Log.info('data: %j', data);
+		that.postTextFieldModel.value = that.postTextFieldModel.value.replace(data.longurl, data.shorturl);
 		that.controller.modelChanged(that.postTextFieldModel);
+		Mojo.Log.info('that.postTextFieldModel.value: %s', that.postTextFieldModel.value);
+		Mojo.Log.info('data: %j', data);
 		that.deactivateButtonSpinner('post-shorten-urls-button');
 		that._updateCharCount();
-		sch.unlisten(event_target, sc.events.newShortURLSuccess, onShortURLSuccess, that);
-		sch.unlisten(event_target, sc.events.newShortURLFailure, onShortURLFailure, that);
 	}
 	function onShortURLFailure(e, error_obj) {
 		that.deactivateButtonSpinner('post-shorten-urls-button');
 		that._updateCharCount();
-		sch.unlisten(event_target, sc.events.newShortURLSuccess, onShortURLSuccess, that);
-		sch.unlisten(event_target, sc.events.newShortURLFailure, onShortURLFailure, that);
 	}
+
+	// unbind first so we don't get dupes
+	sch.unlisten(event_target, sc.events.newShortURLSuccess, onShortURLSuccess, this);
+	sch.unlisten(event_target, sc.events.newShortURLFailure, onShortURLFailure, this);
 	
 	sch.listen(event_target, sc.events.newShortURLSuccess, onShortURLSuccess, this);
 	sch.listen(event_target, sc.events.newShortURLFailure, onShortURLFailure, this);
@@ -587,7 +590,7 @@ PostAssistant.prototype.sendPost = function(event) {
 				
 				image_uploader_opts = {
 					'auth_obj': auth,
-					'service' : this.imageUploaderModel['image-uploader'],
+					'service' : App.prefs.get('image-uploader') || this.imageUploaderModel['image-uploader'],
 					'file_url': this.model.attachment,
 					'extra': {
 						'message':image_upl_status

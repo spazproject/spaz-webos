@@ -16,6 +16,7 @@
 	{"source": "app/models/tempcache.js"},
 	{"source": "app/models/users.js"},
 	{"source": "app/models/tweets.js"},
+	{"source": "app/models/versioncookie.js"},	
 	{"source": "libs/BackgroundNotifier.js"},
 
 	

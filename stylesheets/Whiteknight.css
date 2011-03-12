@@ -54,8 +54,8 @@ BODY {
 }
 
 /*DM's and @ Menu Icon*/
-.palm-menu-icon.dms 			{ background-image: url(../images/menu-icon-dms.png); }
-.palm-menu-icon.at 			{ background-image: url(../images/menu-icon-at.png); }
+.palm-menu-icon.dms 			{ background-image: url(../images/theme/menu-icon-dms.png); }
+.palm-menu-icon.at 			{ background-image: url(../images/theme/menu-icon-at.png); }
 
 
 .view-menu .palm-menu-fade {

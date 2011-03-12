@@ -15,8 +15,8 @@ scene_helpers.addCommonSceneMethods = function(assistant) {
 
 		var default_items = [
 			Mojo.Menu.editItem,
-			{ label: $L('New Search Card'),	command: 'new-search-card' },
-			{ label: $L('Preferences'),	command:Mojo.Menu.prefsCmd },
+			{ label: $L('New Search Card'), command: 'new-search-card' },
+			{ label: $L('Preferences'), command:Mojo.Menu.prefsCmd },
 			{ label: $L('About Spaz'),		command: 'appmenu-about' },
 			{ label: $L('Donate'),		command:'donate' },
 			{ label: $L('Help'),			command:Mojo.Menu.helpCmd }
@@ -121,7 +121,7 @@ scene_helpers.addCommonSceneMethods = function(assistant) {
 		}
 	};
 	
-	    
+		
 	assistant.setCommand = function(label, func) {
 		this._commands[label] = func;
 	};
@@ -240,7 +240,7 @@ scene_helpers.addCommonSceneMethods = function(assistant) {
 				Mojo.Log.error('`this.refresh` DNE; ignoring');
 			}
 			
-		},
+		},			
 		
 		/*
 			This is only in the search-twitter-assistant scene
@@ -256,7 +256,7 @@ scene_helpers.addCommonSceneMethods = function(assistant) {
 	
 	
 	/**
-	 *  
+	 *	
 	 */
 	assistant.scrollToTop = function() {
 		if (!this.controller) {
@@ -272,14 +272,14 @@ scene_helpers.addCommonSceneMethods = function(assistant) {
 	};
 	
 	/**
-	 *  
+	 *	
 	 */
 	assistant.scrollToBottom = function() {
 		this.scroller.mojo.revealBottom();
 	};
 	
 	/**
-	 *  
+	 *	
 	 */
 	assistant.scrollToNew = function() {
 		
@@ -316,11 +316,12 @@ scene_helpers.addCommonSceneMethods = function(assistant) {
 		var thisA = this;
 		
 		Mojo.Log.info('BINDING');
-		
+				
 		if (!this.scroller) {
 			this.scroller = this.controller.getSceneScroller();
 		}
 		this.releaseText = this.controller.get("releaseText");
+		jQuery(this.releaseText).html($L("Release to Refresh"));
 		this.scrolling = this.scrolling.bind(this);
 		this.releaseScroll = this.releaseScroll.bind(this);
 		this._handleScrollStarting = this.handleScrollStarting.bindAsEventListener(this);
@@ -351,16 +352,14 @@ scene_helpers.addCommonSceneMethods = function(assistant) {
 	assistant.scrolling = function(event) {
 		var scrollY = this.scroller.mojo.getScrollPosition().top;
 		if(scrollY >= 65) {
+			// don't make the user hold for 50ms -- just makes it harder to pull off. #twss
 			
-		   // Make sure the user REALLY meant to refresh by making them hold it there for 50ms.
-			setTimeout(function() {
-				Mojo.Event.listen(this.scroller, "mouseup", this.releaseScroll);
-
-			}.bind(this), 50);
+			this._releaseScroll = this.releaseScroll.bindAsEventListener();
 			
-		}
+			this.controller.listen(this.scroller, "mouseup", this._releaseScroll);
+		};
 	};
-	assistant.releaseScroll = releaseScroll = function(event) {
+	assistant.releaseScroll = function(event) {
 		var scrollY = this.scroller.mojo.getScrollPosition().top;
 		
 		this.releaseText.hide();
@@ -383,6 +382,8 @@ scene_helpers.addCommonSceneMethods = function(assistant) {
 		this.controller.stopListening(this.scroller, "mouseup", this.releaseScroll);
 	};
 	
+	
+	
 	assistant.setTimelineTextSize = function(tl_id, size) {
 		size = size.toLowerCase();
 		
@@ -398,15 +399,15 @@ scene_helpers.addCommonSceneMethods = function(assistant) {
 	
 	assistant.showLocationPanel = function(event) {
 		this.controller.showDialog({
-	          template: 'shared/location-popup',
-	          assistant: new LocationDialogAssistant(this),
-	          preventCancel:false
-	    });
+			  template: 'shared/location-popup',
+			  assistant: new LocationDialogAssistant(this),
+			  preventCancel:false
+		});
 	};	
 	
 
 	/**
-	 *  
+	 *	
 	 */
 	assistant.addPostPopup = function(event) {
 
@@ -435,9 +436,9 @@ scene_helpers.addCommonSceneMethods = function(assistant) {
 		if ( (auth = Spaz.Prefs.getAuthObject()) ) {
 			this.twit.setCredentials(auth);
 			if (Spaz.Prefs.getAccountType() === SPAZCORE_ACCOUNT_CUSTOM) {
-			    this.twit.setBaseURL(Spaz.Prefs.getCustomAPIUrl());
+				this.twit.setBaseURL(Spaz.Prefs.getCustomAPIUrl());
 			} else {
-			    this.twit.setBaseURLByService(Spaz.Prefs.getAccountType());
+				this.twit.setBaseURLByService(Spaz.Prefs.getAccountType());
 			}
 		} else {
 			// alert('NOT seetting credentials for!');
@@ -459,7 +460,7 @@ scene_helpers.addCommonSceneMethods = function(assistant) {
 	
 	
 	/**
-	 *  
+	 *	
 	 */
 	assistant.removePostPopup = function(event) {
 		
@@ -470,17 +471,17 @@ scene_helpers.addCommonSceneMethods = function(assistant) {
 
 	assistant.showLocationPanel = function(event) {
 		this.controller.showDialog({
-	          template: 'shared/location-popup',
-	          assistant: new LocationDialogAssistant(this),
-	          preventCancel:false
-	    });
+			  template: 'shared/location-popup',
+			  assistant: new LocationDialogAssistant(this),
+			  preventCancel:false
+		});
 	};
 	
 	assistant.showPostPanel = function(opts) {
 		
 		opts = sch.defaults({
-		    'text'         : '',
-			'type'         : null,
+			'text'		   : '',
+			'type'		   : null,
 			'select_start' : 0,
 			'select_length': 0,
 			'irt_status'   : null,
@@ -496,12 +497,12 @@ scene_helpers.addCommonSceneMethods = function(assistant) {
 	
 	
 	/**
-	 *  
+	 *	
 	 */
 	assistant.prepMessage = function() {
 		this.showPostPanel({
-			'text'         : '',
-			'type'         : null,
+			'text'		   : '',
+			'type'		   : null,
 			'select_start' : 0,
 			'select_length': 0
 		});
@@ -509,7 +510,7 @@ scene_helpers.addCommonSceneMethods = function(assistant) {
 
 
 	/**
-	 *  
+	 *	
 	 */
 	assistant.retweet = function(entryobj) {
 		var that = this;
@@ -527,7 +528,7 @@ scene_helpers.addCommonSceneMethods = function(assistant) {
 
 	
 	/**
-	 *  
+	 *	
 	 */
 	assistant.prepRetweet = function(entryobj) {
 		var text = entryobj.SC_text_raw;
@@ -536,15 +537,15 @@ scene_helpers.addCommonSceneMethods = function(assistant) {
 		text = 'RT @' + screenname + ': '+text+'';
 		
 		this.showPostPanel({
-			'text'         : text,
-			'type'         : 'rt',
+			'text'		   : text,
+			'type'		   : 'rt',
 			'select_start' : text.length,
 			'select_length': text.length
 		});
 	};
 
 	/**
-	 *  
+	 *	
 	 */
 	assistant.prepQuote = function(entryobj) {
 		var text = entryobj.SC_text_raw;
@@ -553,8 +554,8 @@ scene_helpers.addCommonSceneMethods = function(assistant) {
 		text = text+' /via @' + screenname;
 		
 		this.showPostPanel({
-			'text'         : text,
-			'type'         : 'quote',
+			'text'		   : text,
+			'type'		   : 'quote',
 			'select_start' : text.length,
 			'select_length': text.length
 		});
@@ -562,7 +563,7 @@ scene_helpers.addCommonSceneMethods = function(assistant) {
 
 
 	/**
-	 *  
+	 *	
 	 */
 	assistant.facebookTweet = function(tweetobj) {
 		
@@ -585,8 +586,8 @@ scene_helpers.addCommonSceneMethods = function(assistant) {
 				Mojo.Log.info('Trying to post with appid %s', appids[index]);
 				
 				that.controller.serviceRequest("palm://com.palm.applicationManager", {
-					method:      'launch',
-					parameters:  {
+					method:		 'launch',
+					parameters:	 {
 						id: appids[index],
 						params: { status: message }
 					},
@@ -611,7 +612,7 @@ scene_helpers.addCommonSceneMethods = function(assistant) {
 	};
 
 	/**
-	 *  
+	 *	
 	 */
 	assistant.emailTweet = function(tweetobj) {
 		
@@ -623,15 +624,15 @@ scene_helpers.addCommonSceneMethods = function(assistant) {
 			+ sch.autolink("Shared from Spaz http://getspaz.com")+"\n\n";
 		
 		Spaz.sendEmail({
-	      msg: message,
-	      subject: "A tweet by @"+tweetobj.user.screen_name+" shared from Spaz",
-	      controller: this.controller
-	    });
+		  msg: message,
+		  subject: "A tweet by @"+tweetobj.user.screen_name+" shared from Spaz",
+		  controller: this.controller
+		});
 	};
 
 
 	/**
-	 *  
+	 *	
 	 */
 	assistant.SMSTweet = function(tweetobj) {
 		
@@ -654,15 +655,15 @@ scene_helpers.addCommonSceneMethods = function(assistant) {
 	};
 
 	/**
-	 *  
+	 *	
 	 */
 	assistant.prepDirectMessage = function(username, irt_text) {
 		
 		var text = '';
 		
 		this.showPostPanel({
-			'text'         : text,
-			'type'         : 'dm',
+			'text'		   : text,
+			'type'		   : 'dm',
 			'dm_irt_text'  : irt_text,
 			'dm_recipient' : username
 		});
@@ -672,10 +673,10 @@ scene_helpers.addCommonSceneMethods = function(assistant) {
 
 
 	/**
-	 *  
+	 *	
 	 */
 	assistant.prepPhotoPost = function(url) {
-	    
+		
 		if (!url) {
 			return false;
 		}
@@ -683,8 +684,8 @@ scene_helpers.addCommonSceneMethods = function(assistant) {
 		var text = url + ' ';
 		
 		this.showPostPanel({
-			'text'         : text,
-			'type'         : 'photo',
+			'text'		   : text,
+			'type'		   : 'photo',
 			'select_start' : url.length+1,
 			'select_length': text.length
 		});
@@ -695,7 +696,7 @@ scene_helpers.addCommonSceneMethods = function(assistant) {
 
 
 	/**
-	 *  
+	 *	
 	 */
 	assistant.prepReply = function(username, status_id, statusobj) {
 		var text = '@', screenname = null, unique_usernames = [];
@@ -712,8 +713,8 @@ scene_helpers.addCommonSceneMethods = function(assistant) {
 		}
 	
 		this.showPostPanel({
-			'text'         : text,
-			'type'         : 'reply',
+			'text'		   : text,
+			'type'		   : 'reply',
 			'select_start' : text.length,
 			'select_length': text.length,
 			'irt_status'   : statusobj,
@@ -723,7 +724,7 @@ scene_helpers.addCommonSceneMethods = function(assistant) {
 	};
 
 	/**
-	 *  
+	 *	
 	 */
 	assistant.deleteStatus = function(id) {
 		var that = this;
@@ -743,7 +744,7 @@ scene_helpers.addCommonSceneMethods = function(assistant) {
 	};
 	
 	/**
-	 *  
+	 *	
 	 */
 	assistant.deleteDirectMessage = function(id) {
 		var that = this;
@@ -815,7 +816,7 @@ scene_helpers.addCommonSceneMethods = function(assistant) {
 
 
 	/**
-	 *  stops, but does not remove, the spinner
+	 *	stops, but does not remove, the spinner
 	 */
 	assistant.stopInlineSpinner = function(id, message) {
 		jQuery('#'+id+'-title').text(message);
@@ -824,7 +825,7 @@ scene_helpers.addCommonSceneMethods = function(assistant) {
 
 
 	/**
-	 *  starts an existing spinner
+	 *	starts an existing spinner
 	 */
 	assistant.startInlineSpinner = function(id, message) {
 		jQuery('#'+id+'-title').text(message);
@@ -845,7 +846,7 @@ scene_helpers.addCommonSceneMethods = function(assistant) {
 	
 
 	/**
-	 *  immediately DESTROYS an existing spinner
+	 *	immediately DESTROYS an existing spinner
 	 */
 	assistant.clearInlineSpinner = function(container) {
 		dump("clearing inline spinner");
@@ -866,11 +867,11 @@ scene_helpers.addCommonSceneMethods = function(assistant) {
 	};
 	
 	
-    /**
-     * helper to easily show banners 
-     * 
-     * @param {string} soundClass default false (no sound). (alerts|notifications|vibrate)
-     */
+	/**
+	 * helper to easily show banners 
+	 * 
+	 * @param {string} soundClass default false (no sound). (alerts|notifications|vibrate)
+	 */
 	assistant.showBanner = function(text, category, soundClass) {
 		
 		if (!soundClass) { soundClass = false; }
@@ -908,15 +909,15 @@ scene_helpers.addCommonSceneMethods = function(assistant) {
 		switch(category) {
 			case 'newMessages':
 				title = 'New Message(s)';
-				msg   = "You have "+count+" new message(s)";
+				msg	  = "You have "+count+" new message(s)";
 				break;
 			case 'newMentions':
 				title = 'New @Mention(s)';
-				msg   = "You have "+count+" new mention(s)";
+				msg	  = "You have "+count+" new mention(s)";
 				break;
 			case 'newDirectMessages':
 				title = 'New Direct Message(s)';
-				msg   = "You have "+count+" new direct message(s)";
+				msg	  = "You have "+count+" new direct message(s)";
 				break;
 		}
 		
@@ -968,8 +969,8 @@ scene_helpers.addCommonSceneMethods = function(assistant) {
 	/**
 	 * generalized method to show a dashboard notification 
 	 */
-	assistant.showDashboard   = function(title, message, count, fromstage) {
- 		
+	assistant.showDashboard	  = function(title, message, count, fromstage) {
+		
 		var sceneArgs;
 
 		/*
@@ -1037,7 +1038,7 @@ scene_helpers.addCommonSceneMethods = function(assistant) {
 		
 		this.audioCues = {
 			'newmsg':  makeCue(Mojo.appPath + 'sounds/New.mp3'),
-			'send':    makeCue(Mojo.appPath + 'sounds/CSnd.mp3'),
+			'send':	   makeCue(Mojo.appPath + 'sounds/CSnd.mp3'),
 			'receive': makeCue(Mojo.appPath + 'sounds/CRcv.mp3'),
 			'startup': makeCue(Mojo.appPath + 'sounds/On.mp3'),
 			'shutdown':makeCue(Mojo.appPath + 'sounds/Off.mp3'),
@@ -1133,7 +1134,7 @@ scene_helpers.addCommonSceneMethods = function(assistant) {
 			error_processed = {
 				'status':		errobj.xhr.status,
 				'statusText':	errobj.xhr.statusText,
-				'responseText':	errobj.xhr.responseText,
+				'responseText': errobj.xhr.responseText,
 				'url':			errobj.url,
 				'msg':			errobj.msg,
 				'human_msg':	twiterr_msg||human_msg,
@@ -1144,7 +1145,7 @@ scene_helpers.addCommonSceneMethods = function(assistant) {
 			error_processed = {
 				'status':		'',
 				'statusText':	'',
-				'responseText':	'',
+				'responseText': '',
 				'url':			errobj.url,
 				'msg':			errobj.msg,
 				'human_msg':	twiterr_msg||human_msg,
@@ -1164,10 +1165,10 @@ scene_helpers.addCommonSceneMethods = function(assistant) {
 	 */
 	assistant.checkInternetStatus = function(on_success, on_failure) {
 		this.controller.serviceRequest('palm://com.palm.connectionmanager', {
-		    method: 'getstatus',
+			method: 'getstatus',
 			parameters: {},
-		    onSuccess: on_success,
-		    onFailure: on_failure
+			onSuccess: on_success,
+			onFailure: on_failure
 		});
 	};
 
@@ -1201,7 +1202,7 @@ scene_helpers.addCommonSceneMethods = function(assistant) {
 		
 		if ( errors ) {
 			for (var i = 0; i < errors.length; i++) {
-				error_info  = this.processAjaxError(errors[i]);
+				error_info	= this.processAjaxError(errors[i]);
 				error_str += App.tpl.parseTemplate(template, error_info);
 			}
 		}
@@ -1278,7 +1279,7 @@ scene_helpers.addCommonSceneMethods = function(assistant) {
 			*/			
 			return;
 
-             
+			 
 		} else if (jqtarget.is('div.timeline-entry .meta')) {
 			Mojo.Log.info('tap on .meta, ignoring');
 			/*
@@ -1329,13 +1330,13 @@ scene_helpers.addCommonSceneMethods = function(assistant) {
 					if (status_obj.SC_is_dm) {
 						username  = status_obj.sender.screen_name;
 						status_id = status_obj.id;
-						is_dm     = true;
+						is_dm	  = true;
 						
 						
 					} else {
 						username  = status_obj.user.screen_name;
 						status_id = status_obj.id;
-						is_dm     = false;
+						is_dm	  = false;
 						screen_names = sch.extractScreenNames(status_obj.SC_text_raw, [username, Spaz.Prefs.getUsername()]);
 						screen_names.unshift(username);
 					}
@@ -1402,15 +1403,15 @@ scene_helpers.addCommonSceneMethods = function(assistant) {
 		if (!status_obj.SC_is_dm) {
 			items = [
 				{label: $L('ReTweet'), command: 'retweet'},
-				{label: $L('RT @…'), command:   'RT'},
-				{label: $L('Quote'), command:   'quote'},
-				{label: $L('Email'), command:   'email'},
-				{label: $L('SMS/IM'), command:  'sms'},
+				{label: $L('RT @…'), command:	'RT'},
+				{label: $L('Quote'), command:	'quote'},
+				{label: $L('Email'), command:	'email'},
+				{label: $L('SMS/IM'), command:	'sms'},
 				{label: $L('Facebook'), command:  'facebook'}
 			];
 		} else {
 			items = [
-				{label: $L('Email'), command:   'email'}
+				{label: $L('Email'), command:	'email'}
 			];			
 		}
 		
@@ -1521,9 +1522,9 @@ scene_helpers.addCommonSceneMethods = function(assistant) {
 	
 	/**
 	 * A helper to easily display JS alert()-style popups
-	 * @param {string} msg  required 
+	 * @param {string} msg	required 
 	 * @param {string} title  optional 
-	 * @param {function} ok_cb  callback like function(value) where value is value assigned to OK button. Optional
+	 * @param {function} [ok_cb] callback like function(value) where value is value assigned to OK button. Optional
 	 * @param {array} [choices] an array of choice objects. Ex: {label:$L('Okay'), value:"okay", type:'dismiss'}
 	 */
 	assistant.showAlert = function(msg, title, ok_cb, choices) {
@@ -1532,12 +1533,12 @@ scene_helpers.addCommonSceneMethods = function(assistant) {
 			{label:$L('Okay'), value:"okay", type:'dismiss'}
 		];
 		
-		title    = title   || 'Alert';
-		msg      = msg     || '';
+		title	 = title   || 'Alert';
+		msg		 = msg	   || '';
 		var onChoose = ok_cb   || function(choice) {
 			return true;
 		};
-		choices  = choices || default_choices;
+		choices	 = choices || default_choices;
 		
 		this.controller.showAlertDialog({
 			'onChoose':onChoose,
@@ -1550,7 +1551,7 @@ scene_helpers.addCommonSceneMethods = function(assistant) {
 	
 	
 	assistant.getStageName = function() {
-	    var stagename;
+		var stagename;
 		if (window.name) {
 			stagename = window.name;
 		} else {
@@ -1595,13 +1596,13 @@ scene_helpers.addCommonSceneMethods = function(assistant) {
 
 
 	/**
-	 *  
+	 *	
 	 */
 	assistant.isTopmostScene = function() {
 		// console.log(this.controller);
 		
 		
-		var topmost  = this.controller.stageController.topScene();
+		var topmost	 = this.controller.stageController.topScene();
 
 		// console.log(topmost);
 		
@@ -1617,10 +1618,10 @@ scene_helpers.addCommonSceneMethods = function(assistant) {
 		this.controller.serviceRequest("palm://com.palm.applicationManager", {
 		  method: "open",
 		  parameters:  {
-		      id: 'com.palm.app.browser',
-		      params: {
-		          target: url
-		      }
+			  id: 'com.palm.app.browser',
+			  params: {
+				  target: url
+			  }
 		  }
 		});
 	};
@@ -1652,7 +1653,7 @@ scene_helpers.addCommonSceneMethods = function(assistant) {
 	assistant.listenForMetaTapScroll = function() {
 		this.controller.listen(this.controller.sceneElement, "mousedown", handleMeta.bindAsEventListener(this));
 		this.controller.listen(this.controller.sceneElement, "mouseup", handleMeta.bindAsEventListener(this));
-		this.controller.listen(this.controller.sceneElement, Mojo.Event.flick, handleScroll.bindAsEventListener(this));      
+		this.controller.listen(this.controller.sceneElement, Mojo.Event.flick, handleScroll.bindAsEventListener(this));		 
 		function handleMeta(event){
 			this.metaKey = event.metaKey;
 		}
@@ -1667,6 +1668,121 @@ scene_helpers.addCommonSceneMethods = function(assistant) {
 			}
 		}
 	};
+	
+	
+
+
+	assistant.showFirstRunPopup = function() {
+		// first run
+		if (Spaz.getAppObj().versionCookie.isFirst) {
+			this.showAlert(
+				$L("Remember to visit help.getspaz.com to get help and make suggestions\n\nThanks for supporting open source software!"),
+				$L("Thanks for trying Spaz!"),
+				function(value) {
+					switch(value) {
+						case "help":
+							this.openInBrowser('http://getspaz.com/webos/whatsnew');
+							return true;
+						case "cl":
+							this.openInBrowser('http://help.getspaz.com');
+							return true;
+						default:
+							return true;
+					}
+				}, [
+					{label:$L('Visit help.getspaz.com'), value:"help", type:'affirmative'},
+					{label:$L('View Changelog'), value:"cl", type:'affirmative'},
+					{label:$L('Continue'), value:"ok", type:'dismiss'}
+				]
+			);
+		}
+	};
+
+
+
+	assistant.showNewVersionPopup = function() {
+		// new version
+ 		if (Spaz.getAppObj().versionCookie.isNew && !Spaz.getAppObj().versionCookie.isFirst) {
+
+			this.showAlert(
+				$L("You're running a new version of Spaz. Read the Changelog to find out what's new."),
+				$L("New Version"),
+				function(value) {
+					switch(value) {
+						case "www":
+							this.openInBrowser('http://getspaz.com/webos/whatsnew');
+							return true;
+						default:
+							return true;
+					}
+				}, [
+					{label:$L('View Changelog'), value:"www", type:'affirmative'},
+					{label:$L('Continue'), value:"ok", type:'dismiss'}
+				]
+			);
+		}
+	};
+
+
+	
+	assistant.showFollowSpazPopup = function() {
+		// first run
+		if (Spaz.getAppObj().versionCookie.isFirst) {
+			this.showAlert(
+				$L("To keep up with new info, make sure to follow @Spaz"),
+				$L("Follow @Spaz"),
+				function(value) {
+					switch(value) {
+						case "follow":
+							Mojo.Controller.stageController.pushScene('user-detail', '@spaz');
+							return true;
+						default:
+							return true;
+					}
+				}, [
+					{label:$L('Go to @spaz\'s profile'), value:"follow", type:'affirmative'},
+					{label:$L('Continue'), value:"ok", type:'dismiss'}
+				]
+			);
+		}
+	};
+	
+	
+	
+	assistant.showDonationPopup = function(force) {
+		var runs = Spaz.getAppObj().versionCookie.runs;
+		
+		// bug them at certain run counts
+		if ( ([10,100,250,500,1000].indexOf(runs) !== -1 ) || force === true) {
+			this.showAlert(
+				$L("Spaz is free, open-source software, and relies on donations to support the work we do."),
+				$L("Help Support Spaz"),
+				function(value) {
+					switch(value) {
+						case "swag":
+							this.openInBrowser('http://getspaz.com/swag');
+							return true;
+						case "specialed":
+							this.openInBrowser('http://getspaz.com/webos/special-ed');
+							return true;
+						case "donate":
+							this.openInBrowser('http://getspaz.com/donate');
+							return true;
+						default:
+							return true;
+					}
+				}, [
+					{label:$L('Buy t-shirts and buttons'), value:"swag", type:'affirmative'},
+					{label:$L('Buy the Spaz Special Edition'), value:"specialed", type:'affirmative'},
+					{label:$L('Make a donation'), value:"donate", type:'affirmative'},
+					{label:$L('I hate you, Spaz'), value:"ok", type:'negative'}
+				]
+			);
+		}
+		
+		
+	};
+	
 	
 };
 
@@ -1723,16 +1839,16 @@ var LocationDialogAssistant = Class.create({
 			location text field
 		*/
 		this.locationBoxAttr = {
-			"hintText":	      'Enter new location',
-			"focusMode":      Mojo.Widget.focusSelectMode,
-			"fieldName": 	  'update-location-textfield',
+			"hintText":		  'Enter new location',
+			"focusMode":	  Mojo.Widget.focusSelectMode,
+			"fieldName":	  'update-location-textfield',
 			"changeOnKeyPress": true,
-			"maxLength":      30,
-			"autoReplace":    false
+			"maxLength":	  30,
+			"autoReplace":	  false
 		};
 		this.locationBoxModel = {
-			'value':     '',
-			'disabled':  false
+			'value':	 '',
+			'disabled':	 false
 		};
 		this.controller.setupWidget('update-location-textfield', this.locationBoxAttr, this.locationBoxModel);
 		
@@ -1772,7 +1888,7 @@ var LocationDialogAssistant = Class.create({
 		var loc = new Mojo.Service.Request('palm://com.palm.location', {
 				method:"getCurrentPosition",
 				parameters:{
-					'accuracy':     1,
+					'accuracy':		1,
 					'responseTime': 1,
 					'maximumAge':  60 // seconds
 				},
