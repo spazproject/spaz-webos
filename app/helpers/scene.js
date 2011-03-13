@@ -1673,10 +1673,17 @@ scene_helpers.addCommonSceneMethods = function(assistant) {
 
 
 	assistant.showFirstRunPopup = function() {
+	    
+	    if (Spaz.getAppObj().shownFirstRunPopup) { // only run once in a session
+	        return;
+	    }
+	    
+	    
 		// first run
 		if (Spaz.getAppObj().versionCookie.isFirst) {
+		    Spaz.getAppObj().shownFirstRunPopup = true;
 			this.showAlert(
-				$L("Remember to visit help.getspaz.com to get help and make suggestions\n\nThanks for supporting open source software!"),
+				$L("Remember to visit help.getspaz.com to get help and make suggestions.\n\nThanks for supporting open source software!"),
 				$L("Thanks for trying Spaz!"),
 				function(value) {
 					switch(value) {
@@ -1701,9 +1708,14 @@ scene_helpers.addCommonSceneMethods = function(assistant) {
 
 
 	assistant.showNewVersionPopup = function() {
+	    
+	    if (Spaz.getAppObj().shownNewVersionPopup) { // only run once in a session
+	        return;
+	    }
+	    
 		// new version
  		if (Spaz.getAppObj().versionCookie.isNew && !Spaz.getAppObj().versionCookie.isFirst) {
-
+            Spaz.getAppObj().shownNewVersionPopup = true;
 			this.showAlert(
 				$L("You're running a new version of Spaz. Read the Changelog to find out what's new."),
 				$L("New Version"),
@@ -1726,8 +1738,14 @@ scene_helpers.addCommonSceneMethods = function(assistant) {
 
 	
 	assistant.showFollowSpazPopup = function() {
+	    
+	    if (Spaz.getAppObj().shownFollowSpazPopup) { // only run once in a session
+	        return;
+	    }
+	    
 		// first run
 		if (Spaz.getAppObj().versionCookie.isFirst) {
+		    Spaz.getAppObj().shownFollowSpazPopup = true;
 			this.showAlert(
 				$L("To keep up with new info, make sure to follow @Spaz"),
 				$L("Follow @Spaz"),
@@ -1750,10 +1768,20 @@ scene_helpers.addCommonSceneMethods = function(assistant) {
 	
 	
 	assistant.showDonationPopup = function(force) {
+		
+		if (Spaz.getAppObj().showbDonationPopup) { // only run once in a session
+		    return;
+		}
+		
+		if (Mojo.appInfo.id == 'com.funkatron.app.spaz-sped') { // don't show this if they paid for the Special Ed.
+		    return;
+		}
+		
 		var runs = Spaz.getAppObj().versionCookie.runs;
 		
 		// bug them at certain run counts
 		if ( ([10,100,250,500,1000].indexOf(runs) !== -1 ) || force === true) {
+		    Spaz.getAppObj().showbDonationPopup = true;
 			this.showAlert(
 				$L("Spaz is free, open-source software, and relies on donations to support the work we do."),
 				$L("Help Support Spaz"),
