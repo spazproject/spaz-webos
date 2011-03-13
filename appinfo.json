@@ -1,15 +1,15 @@
 {
-	"title": "Spaz",
-	"version": "2.0.9",
+	"title": "Spaz Beta",
+	"version": "2.0.10",
 	"type": "web",
 	"main": "index.html",
-	"id": "com.funkatron.app.spaz",
+	"id": "com.funkatron.app.spaz-beta",
 	"splashicon": "images/splash-icon.png",
 	"splashBackground":"images/splash-bg.png",
 	"miniicon": "images/miniicon.png",
 	"vendor": "Funkatron Productions",
 	"vendorurl": "http://funkatron.com",
-	"copyright": "© Copyright 2010 Funkatron Productions",
+	"copyright": "© Copyright 2009-2011 Funkatron Productions",
 	"theme": "dark",
 	"noWindow":true,
 
@@ -33,13 +33,13 @@
 	
 	"universalSearch": {
 		"action" :  { 
-			"displayName" : "Post with Spaz",
+			"displayName" : "Post with Spaz spaz-beta",
 			"url"         : "com.funkatron.app.spaz",
 			"launchParam" : {"action":"prepPost", "msg":"#{searchTerms}"}
 		},
 		"search" : {
-			"displayName" : "Spaz",
-			"url"         : "com.funkatron.app.spaz",
+			"displayName" : "Spaz Beta",
+			"url"         : "com.funkatron.app.spaz-beta",
 			"launchParam" : {"action":"search", "query":"#{searchTerms}"}
 		}
 	}
