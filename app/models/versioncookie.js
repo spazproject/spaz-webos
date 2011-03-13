@@ -6,9 +6,6 @@
  * distribute it under our "New BSD"-stype license. The original license is
  * included for reference purposes.
  * 
- * Changes:
- * - I changed the capitalization to VersionControl to indicate it's a constructor
- *   function. Tuesday; December 21, 2010
  * 
  * 
  * LICENSE
@@ -377,12 +374,14 @@ VersionCookie.prototype.init = function()
 		
 		this.cookie = new Mojo.Model.Cookie('version');
 		// uncomment to delete cookie for testing
-		// this.cookie.remove();
+        // this.cookie.remove();
+
 		var data = this.cookie.get();
 		if (data)
 		{
 			
-			this.runs = data.runs||0;
+            this.runs = data.runs||0;
+
 			Mojo.Log.error('Runs %s', this.runs);
 			
 			if (data.version == Mojo.appInfo.version)
