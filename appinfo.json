@@ -1,6 +1,6 @@
 {
 	"title": "Spaz",
-	"version": "2.0.10",
+	"version": "2.0.9",
 	"type": "web",
 	"main": "index.html",
 	"id": "com.funkatron.app.spaz",
@@ -9,7 +9,7 @@
 	"miniicon": "images/miniicon.png",
 	"vendor": "Funkatron Productions",
 	"vendorurl": "http://funkatron.com",
-	"copyright": "© Copyright 2009-2011 Funkatron Productions",
+	"copyright": "© Copyright 2010 Funkatron Productions",
 	"theme": "dark",
 	"noWindow":true,
 
