@@ -1,6 +1,6 @@
 {
-	"title": "Spaz Special Ed,",
-	"version": "2.0.9",
+	"title": "Spaz Special Edition",
+	"version": "2.0.10",
 	"type": "web",
 	"main": "index.html",
 	"id": "com.funkatron.app.spaz-sped",
@@ -9,7 +9,7 @@
 	"miniicon": "images/miniicon.png",
 	"vendor": "Funkatron Productions",
 	"vendorurl": "http://funkatron.com",
-	"copyright": "© Copyright 2011 Funkatron Productions",
+	"copyright": "© Copyright 2009-2011 Funkatron Productions",
 	"theme": "dark",
 	"noWindow":true,
 
@@ -33,12 +33,12 @@
 	
 	"universalSearch": {
 		"action" :  { 
-			"displayName" : "Post with Spaz Special Ed.",
+			"displayName" : "Post with Special Edition",
 			"url"         : "com.funkatron.app.spaz-sped",
 			"launchParam" : {"action":"prepPost", "msg":"#{searchTerms}"}
 		},
 		"search" : {
-			"displayName" : "Spaz Special Ed.",
+			"displayName" : "Spaz Special Edition",
 			"url"         : "com.funkatron.app.spaz-sped",
 			"launchParam" : {"action":"search", "query":"#{searchTerms}"}
 		}
