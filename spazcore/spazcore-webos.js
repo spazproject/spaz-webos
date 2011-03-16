@@ -1,4 +1,4 @@
-/*********** Built 2011-02-27 19:16:43 EST ***********/
+/*********** Built 2011-03-16 12:26:46 EDT ***********/
 /*jslint 
 browser: true,
 nomen: false,
@@ -11462,6 +11462,9 @@ SpazTMDB.prototype.callMethod = function(opts) {
 	});
 };
 
+//= require <libs/spazauth>
+//= require <libs/spaztwitterstream>
+
 /*jslint 
 browser: true,
 nomen: false,
@@ -11475,15 +11478,6 @@ white: false,
 onevar: false 
  */
 var sc, jQuery, Mojo, use_palmhost_proxy;
-
-/**
- * @depends ../helpers/string.js 
- * @depends ../helpers/datetime.js 
- * @depends ../helpers/event.js 
- * @depends ../helpers/json.js 
- * @depends ../helpers/sys.js 
- */
-
 
 /**
  * various constant definitions
