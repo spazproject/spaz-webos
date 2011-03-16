@@ -50,7 +50,7 @@ Spaz.findAndSwapScene = function(targetScene, returnValue, stageController) {
 	/*
 		get an array of existing scenes
 	*/
-	var scenes   = stageController.getScenes();
+	var scenes	 = stageController.getScenes();
 	
 	var topscene = stageController.topScene();
 	
@@ -89,7 +89,7 @@ Spaz.getSceneFromStack = function(targetScene) {
 	var stageController = Mojo.Controller.getAppController().getStageController(SPAZ_MAIN_STAGENAME);
 	
 	if (stageController) {
-		var scenes   = stageController.getScenes();
+		var scenes	 = stageController.getScenes();
 		for (var k=0; k<scenes.length; k++) {
 			if (scenes[k].sceneName == targetScene) {
 				return scenes[k];
@@ -122,24 +122,24 @@ Spaz.makeItemsClickable = function(str) {
  * 
  * the opts object passed should be of a format like:
  * {
- * 	account:{integer, optional},
- * 	attachments:{array of file paths, optional},
- * 	subject:{string, optional},
- * 	msg:{string, optional},
- * 	to:{array of email addresses},
- * 	cc:{array of email addresses},
- *  bcc:{array of email addresses}
+ *	account:{integer, optional},
+ *	attachments:{array of file paths, optional},
+ *	subject:{string, optional},
+ *	msg:{string, optional},
+ *	to:{array of email addresses},
+ *	cc:{array of email addresses},
+ *	bcc:{array of email addresses}
  * }
  * 
  * @param {object} opts
- *  
+ *	
  */
 Spaz.sendEmail = function(opts) {
 	
 	
 	function makeRecipientObj(address, type, contactDisplay) {
-		var to_role  = 1;
-		var cc_role  = 2;
+		var to_role	 = 1;
+		var cc_role	 = 2;
 		var bcc_role = 3;
 		
 		var role = null;
@@ -168,8 +168,8 @@ Spaz.sendEmail = function(opts) {
 		return re_obj;
 	};
 	
-	var to_addresses  = opts.to  || null;
-	var cc_addresses  = opts.cc  || null;
+	var to_addresses  = opts.to	 || null;
+	var cc_addresses  = opts.cc	 || null;
 	var bcc_addresses = opts.bcc || null;
 	
 	var recipients = [];
@@ -177,25 +177,25 @@ Spaz.sendEmail = function(opts) {
 	if (to_addresses) {
 		for (var i=0; i < to_addresses.length; i++) {
 			recipients.push( makeRecipientObj(to_addresses[i].address, 'to', to_addresses[i].name) );
-		};                                                  
-	}                                                       
-	                                                        
-	if (cc_addresses) {                                     
-		for (i=0; i < cc_addresses.length; i++) {       
+		};													
+	}														
+															
+	if (cc_addresses) {										
+		for (i=0; i < cc_addresses.length; i++) {		
 			recipients.push( makeRecipientObj(cc_addresses[i].address, 'cc', cc_addresses[i].name) );
-		};                                                  
-	}                                                       
-	                                                        
-	if (bcc_addresses) {                                    
-		for (i=0; i < bcc_addresses.length; i++) {      
+		};													
+	}														
+															
+	if (bcc_addresses) {									
+		for (i=0; i < bcc_addresses.length; i++) {		
 			recipients.push( makeRecipientObj(bcc_addresses[i].address, 'bcc', bcc_addresses[i].name) );
 		};
 	}
 	
-	var account     = opts.account     || null; // an integer or null
+	var account		= opts.account	   || null; // an integer or null
 	var attachments = opts.attachments || null; // an array or null
-	var summary     = opts.subject     || null; // a string or null
-	var text        = opts.msg         || null; // a string or null
+	var summary		= opts.subject	   || null; // a string or null
+	var text		= opts.msg		   || null; // a string or null
 	
 	
 	var email_params = {
@@ -221,63 +221,63 @@ Spaz.sendEmail = function(opts) {
 
 Spaz.postToService = function(options) {
   var defaultOptions = {
-    api: "twitpic",
-    fileName: "",
-    message: "",
-    controller: null
+	api: "twitpic",
+	fileName: "",
+	message: "",
+	controller: null
   };
   
   for(var opt in defaultOptions) {
-    if(!options[opt])
-      options[opt] = defaultOptions[opt];
+	if(!options[opt])
+	  options[opt] = defaultOptions[opt];
   }
   
   if(!options.controller)
-    throw "Without a controller no service request possible";
+	throw "Without a controller no service request possible";
   
   var apis = {
-    twitpic: {
-      url: "http://twitpic.com/api/uploadAndPost",
-      usernameFieldName: "username",
-      passwordFieldName: "password",
-      messageFieldName: "message",
-      fileLabelName: "media"
-    },
-    yfrog: {
-      url: "",
-      usernameFieldName: "username",
-      passwordFieldName: "password",
-      messageFieldName: "message",
-      fileLabel: "media"
-    },
-    twitgoo: {
-      url: "",
-      usernameFieldName: "username",
-      passwordFieldName: "password",
-      messageFieldName: "message",
-      fileLabelName: "media"
-    },
-    pikchur: {
-      url: "",
-      usernameFieldName: "username",
-      passwordFieldName: "password",
-      messageFieldName: "message",
-      fileLabel: "media"
-    },
-    tweetphoto: {
-      url: "",
-      usernameFieldName: "username",
-      passwordFieldName: "password",
-      messageFieldName: "message",
-      fileLabelName: "media"
-    },
-    "pic.gd": {
-      url: "",
-      usernameFieldName: "username",
-      passwordFieldName: "password",
-      messageFieldName: "message",
-      fileLabel: "media"
-    }
+	twitpic: {
+	  url: "http://twitpic.com/api/uploadAndPost",
+	  usernameFieldName: "username",
+	  passwordFieldName: "password",
+	  messageFieldName: "message",
+	  fileLabelName: "media"
+	},
+	yfrog: {
+	  url: "",
+	  usernameFieldName: "username",
+	  passwordFieldName: "password",
+	  messageFieldName: "message",
+	  fileLabel: "media"
+	},
+	twitgoo: {
+	  url: "",
+	  usernameFieldName: "username",
+	  passwordFieldName: "password",
+	  messageFieldName: "message",
+	  fileLabelName: "media"
+	},
+	pikchur: {
+	  url: "",
+	  usernameFieldName: "username",
+	  passwordFieldName: "password",
+	  messageFieldName: "message",
+	  fileLabel: "media"
+	},
+	tweetphoto: {
+	  url: "",
+	  usernameFieldName: "username",
+	  passwordFieldName: "password",
+	  messageFieldName: "message",
+	  fileLabelName: "media"
+	},
+	"pic.gd": {
+	  url: "",
+	  usernameFieldName: "username",
+	  passwordFieldName: "password",
+	  messageFieldName: "message",
+	  fileLabel: "media"
+	}
   };
   
   var usernameObj = {};
@@ -295,20 +295,20 @@ Spaz.postToService = function(options) {
   var postParams = [usernameObj, passwordObj, messageObj];
   
   options.controller.serviceRequest('palm://com.palm.downloadmanager/', {
-    method: 'upload',
-    parameters: {
-      fileName: options.fileName,
-      fileLabel: apis[options.api].fileLabelName,
-      url: apis[options.api].url,
-      contentType: 'img',
-      postParameters: postParams
-    },
-    onSuccess : function (resp){
-      Mojo.Log.info('Successfully uploading message');
-    },
-    onFailure : function (e){
-      Mojo.Log.info('Failed uploading image');
-    }.bind(this)
+	method: 'upload',
+	parameters: {
+	  fileName: options.fileName,
+	  fileLabel: apis[options.api].fileLabelName,
+	  url: apis[options.api].url,
+	  contentType: 'img',
+	  postParameters: postParams
+	},
+	onSuccess : function (resp){
+	  Mojo.Log.info('Successfully uploading message');
+	},
+	onFailure : function (e){
+	  Mojo.Log.info('Failed uploading image');
+	}.bind(this)
   });
 };
 
@@ -327,16 +327,45 @@ Spaz.setTheme = function(theme) {
 	Mojo.Log.error('AppThemes[theme]: %j', AppThemes[theme]);
 
 	if (AppThemes && AppThemes[theme]) {
-	    
-	    if (AppThemes[theme].palmtheme == 'dark') {
-	        jQuery('body').addClass('palm-dark');
-	    } else {
-	        jQuery('body').removeClass('palm-dark');
-	    }
-	    
+		
+		if (AppThemes[theme].palmtheme == 'dark') {
+			jQuery('body').addClass('palm-dark');
+		} else {
+			jQuery('body').removeClass('palm-dark');
+		}
+		
 		jQuery('link[title="apptheme"]').attr('href', 'stylesheets/'+AppThemes[theme].stylesheet);
 	}
 };
+
+
+
+Spaz.getFancyTime = function(time_value, labels, use_dateparse) {
+
+	if (sc.helpers.iswebOS() && App.prefs.get('timeline-absolute-timestamps')) {
+
+		if (use_dateparse === true) {
+			parsed_date = new Date.parse(time_value);
+		} else {
+			parsed_date = new Date(time_value);
+		}
+		
+		var now = new Date();
+		var delta = parseInt( (now.getTime() - parsed_date.getTime()) / 1000, 10);
+		
+		if(delta < (24*60*60)) {
+			return Mojo.Format.formatDate(parsed_date, {time: 'short'});
+		} else {
+			return Mojo.Format.formatDate(parsed_date, 'short');
+		}
+
+	} else {
+	
+		return sch.getRelativeTime(time_value, labels, use_dateparse);
+		
+	}
+};
+
 
 
 
@@ -433,12 +462,12 @@ Spaz.Prefs.getCustomAPIUrl = function(acc_id) {
 		acc_id = Spaz.Prefs.getCurrentAccountId();
 	}
 	
-    var custom_api_url = Spaz.getAppObj().accounts.getMeta(acc_id, 'twitter-api-base-url');
-    if (!custom_api_url) {
-        // used to be called api-url, so try that
-        custom_api_url = Spaz.getAppObj().accounts.getMeta(acc_id, 'api-url');
-    }
-    return custom_api_url;
+	var custom_api_url = Spaz.getAppObj().accounts.getMeta(acc_id, 'twitter-api-base-url');
+	if (!custom_api_url) {
+		// used to be called api-url, so try that
+		custom_api_url = Spaz.getAppObj().accounts.getMeta(acc_id, 'api-url');
+	}
+	return custom_api_url;
 };
 
 
