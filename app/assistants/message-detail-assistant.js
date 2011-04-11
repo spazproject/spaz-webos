@@ -307,10 +307,10 @@ MessageDetailAssistant.prototype.activate = function(event) {
 		thisA.searchFor('#'+hashtag);
 	});
 
-    jQuery('#message-detail div.timeline-entry>.status>.meta', this.scroller).live(Mojo.Event.tap, function(e) {
-        var statusid = jQuery(this).attr('data-status-id');
-        Mojo.Controller.stageController.pushScene('message-detail', statusid);
-    });
+	jQuery('#message-detail div.timeline-entry>.status>.meta', this.scroller).live(Mojo.Event.tap, function(e) {
+		var statusid = jQuery(this).attr('data-status-id');
+		Mojo.Controller.stageController.pushScene('message-detail', statusid);
+	});
 
 	jQuery('#message-detail img.thumbnail', this.scroller).live(Mojo.Event.tap, function(e) {
 		var siu = new SpazImageURL();
@@ -322,18 +322,18 @@ MessageDetailAssistant.prototype.activate = function(event) {
 	});
 	
 	/*
-	    Because I didn't want to use a Mojo List due to laziness, we use the
-	    OLD SKOOL way from the user detail timeline
+		Because I didn't want to use a Mojo List due to laziness, we use the
+		OLD SKOOL way from the user detail timeline
 	*/
-    jQuery('#timeline-conversation div.timeline-entry', this.scroller).live(Mojo.Event.tap, function(e) {
+	jQuery('#timeline-conversation div.timeline-entry', this.scroller).live(Mojo.Event.tap, function(e) {
 		var jqtarget = jQuery(e.target);
 
 		e.stopImmediatePropagation();
 		
 		var userid,
-		    status_id,
-		    isdm,
-		    status_obj;
+			status_id,
+			isdm,
+			status_obj;
 
 		if (jqtarget.is('div.timeline-entry>.user') || jqtarget.is('div.timeline-entry>.user img')) {
 			userid = jQuery(this).attr('data-user-id');
@@ -397,7 +397,7 @@ MessageDetailAssistant.prototype.deactivate = function(event) {
 	/*
 		stop listening for timeline entry taps
 	*/
-    jQuery('#timeline-conversation div.timeline-entry', this.scroller).die(Mojo.Event.tap);
+	jQuery('#timeline-conversation div.timeline-entry', this.scroller).die(Mojo.Event.tap);
 	
 	
 };
@@ -449,15 +449,43 @@ MessageDetailAssistant.prototype.processStatusReturn = function(e, statusobj) {
 			itemhtml = App.tpl.parseTemplate('message-detail', thisA.statusobj);
 		}
 
+		
+		var embed = function() {
+			jQuery('#message-detail .text').embedly({
+				maxWidth: 300,
+				maxHeight:300,
+				'method':'afterParent',
+				'wrapElement':'div',
+				'className':'thumbnails'
+			});
+		}
 
+		
 		jQuery('#message-detail').html(itemhtml);
-		jQuery('#message-detail .text').embedly({
-			maxWidth: 300,
-			maxHeight:300,
-			'method':'afterParent',
-			'wrapElement':'div',
-			'className':'thumbnails'
-		});
+
+		/*
+			expand URLs and get embed.ly previews
+		*/
+		var $messagetxt = jQuery('#message-detail .text');
+		var msghtml = $messagetxt.html();
+		var shurl = new SpazShortURL();
+		var urls = shurl.findExpandableURLs(msghtml);
+		if (urls) {
+			for (var i = 0; i < urls.length; i++) {
+				shurl.expand(urls[i], {
+					'onSuccess':function(data) {
+						msghtml = shurl.replaceExpandableURL(msghtml, data.shorturl, data.longurl)
+						$messagetxt.html(msghtml);
+						if ((i + 1) >= urls.length) {
+							embed();
+						}
+					}
+				});
+			}
+		} else {
+			embed();
+		}
+
 
 
 		
@@ -544,11 +572,11 @@ MessageDetailAssistant.prototype.enableDeleteButton = function(enabled) {
 
 MessageDetailAssistant.prototype.buildConversationView = function(statusid) {
 
-    var thisA = this;
+	var thisA = this;
 
 	if (!this.conversation_rendered) { this.conversation_rendered = false; }
 
-    var $container = jQuery('#timeline-conversation');
+	var $container = jQuery('#timeline-conversation');
 	
 	if (this.conversation_rendered) {
 		Mojo.Log.error('timeline-conversation has already been set-up. returning.');
@@ -557,9 +585,9 @@ MessageDetailAssistant.prototype.buildConversationView = function(statusid) {
 
 	var initWindow = function() {
 		$container
-		    .html('<div class="loading"><img src="images/theme/loading-tiny.gif" style="display:inline-block; margin-bottom:-2px"> Loading…</div>')
-		    .find('.loading')
-		    .fadeIn(250);	
+			.html('<div class="loading"><img src="images/theme/loading-tiny.gif" style="display:inline-block; margin-bottom:-2px"> Loading…</div>')
+			.find('.loading')
+			.fadeIn(250);	
 	};
 
 
@@ -570,10 +598,10 @@ MessageDetailAssistant.prototype.buildConversationView = function(statusid) {
 
 		Mojo.Log.error("==========Retrieving base_id "+base_id+' =======================');
 		App.Tweets.get(
-		    base_id, // status_id
-		    false, // isdm
-		    onRetrieved, // success
-		    function(message) { // failure
+			base_id, // status_id
+			false, // isdm
+			onRetrieved, // success
+			function(message) { // failure
 				Mojo.Log.error('Couldn\'t retrieve message from Depot:'+message);
 				thisA.showAlert($L('There was an error retrieving the message data'));
 			}
@@ -582,14 +610,14 @@ MessageDetailAssistant.prototype.buildConversationView = function(statusid) {
 
 
 		function onRetrieved(status_obj) {		
-            
-            // add newly retrieved message
-            Mojo.Log.error("Adding "+status_obj.id);
+			
+			// add newly retrieved message
+			Mojo.Log.error("Adding "+status_obj.id);
 			status_obj.db_id = status_obj.id;
 			status_obj.id    = status_obj.id;
 			status_obj.text = Spaz.makeItemsClickable(status_obj.text);
 			var $status_html  = jQuery(App.tpl.parseTemplate('tweet', status_obj));
-            // Mojo.Log.error("Adding %s", status_html);
+			// Mojo.Log.error("Adding %s", status_html);
 			$container.append($status_html.fadeIn(400));
 
 
@@ -612,13 +640,13 @@ MessageDetailAssistant.prototype.buildConversationView = function(statusid) {
 						&& (status_obj.in_reply_to_status_id != status_obj.id)
 						) {
 					App.Tweets.get(
-					    status_obj.in_reply_to_status_id, // status_id
-					    false, // isdm
-					    onRetrieved, // success
-					    function(message) { // failure
-        					Mojo.Log.error('Couldn\'t retrieve message from Depot:'+message);
-        					thisA.showAlert($L('There was an error retrieving the message data'));
-        				}
+						status_obj.in_reply_to_status_id, // status_id
+						false, // isdm
+						onRetrieved, // success
+						function(message) { // failure
+							Mojo.Log.error('Couldn\'t retrieve message from Depot:'+message);
+							thisA.showAlert($L('There was an error retrieving the message data'));
+						}
 					);
 				} else {
 					finishLoadingConvo();
@@ -630,9 +658,9 @@ MessageDetailAssistant.prototype.buildConversationView = function(statusid) {
 
 
 		function finishLoadingConvo() {
-            $container.find('.loading').fadeOut(400, function() {
-                jQuery(this).remove();
-            });
+			$container.find('.loading').fadeOut(400, function() {
+				jQuery(this).remove();
+			});
 			thisA.conversation_rendered = true;
 		}
 
