@@ -451,7 +451,15 @@ MessageDetailAssistant.prototype.processStatusReturn = function(e, statusobj) {
 
 
 		jQuery('#message-detail').html(itemhtml);
-		
+		jQuery('#message-detail .text').embedly({
+			maxWidth: 300,
+			maxHeight:300,
+			'method':'afterParent',
+			'wrapElement':'div',
+			'className':'thumbnails'
+		});
+
+
 		
 		if (thisA.statusobj.isSent || thisA.statusobj.SC_is_dm) {
 			thisA.enableDeleteButton(true);

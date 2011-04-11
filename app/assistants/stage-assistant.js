@@ -176,14 +176,14 @@ StageAssistant.prototype.loadTemplates = function() {
 
 		var html = '', thumbHTML = '';
 
-		if (d.SC_thumbnail_urls) {
-			thumbHTML += '<div class="thumbnails">';
-			for (var key in d.SC_thumbnail_urls) {
-				// thumbHTML += '<a href="'+key+'"><img class="thumbnail" data-img-url="'+key+'" src="'+d.SC_thumbnail_urls[key]+'"></a>';
-				thumbHTML += '<img class="thumbnail" data-img-url="'+key+'" src="'+d.SC_thumbnail_urls[key]+'">';
-			}
-			thumbHTML += '</div>';
-		}
+		// if (d.SC_thumbnail_urls) {
+		// 	thumbHTML += '<div class="thumbnails">';
+		// 	for (var key in d.SC_thumbnail_urls) {
+		// 		// thumbHTML += '<a href="'+key+'"><img class="thumbnail" data-img-url="'+key+'" src="'+d.SC_thumbnail_urls[key]+'"></a>';
+		// 		thumbHTML += '<img class="thumbnail" data-img-url="'+key+'" src="'+d.SC_thumbnail_urls[key]+'">';
+		// 	}
+		// 	thumbHTML += '</div>';
+		// }
 
 		html += ''
 		+ '	<div class="user" data-user-screen_name="'+d.user.screen_name+'" data-user-id="'+d.user.id+'" data-status-id="'+d.id+'">'
@@ -199,7 +199,7 @@ StageAssistant.prototype.loadTemplates = function() {
 		}
 		html += '	</div>'
 		+ '	<div class="text-status">'
-		+ '		'+thumbHTML
+		// + '		'+thumbHTML
 		+ '		<div class="text">'+d.text+'</div>'
 		+ '		<div class="meta" data-status-id="'+d.id+'">'
 		+ '			<div class="date">'
