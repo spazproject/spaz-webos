@@ -1,4 +1,4 @@
-/*********** Built 2011-03-16 12:26:46 EDT ***********/
+/*********** Built 2011-04-10 23:15:34 EDT ***********/
 /*jslint 
 browser: true,
 nomen: false,
@@ -101,6 +101,48 @@ var sch = sc.helpers;
 sc.events = {};
 
 
+
+/**
+ * various constant definitions that aren't specific to a single library
+ */
+
+/**
+ * @constant 
+ */
+var SPAZCORE_SERVICE_TWITTER = 'twitter';
+/**
+ * @constant 
+ */
+var SPAZCORE_SERVICE_IDENTICA = 'identi.ca';
+/**
+ * @constant 
+ */
+var SPAZCORE_SERVICE_FREELISHUS = 'freelish.us';
+/**
+ * @constant 
+ */
+var SPAZCORE_SERVICE_WORDPRESS_TWITTER = 'wordpress-twitter';
+/**
+ * @constant 
+ */
+var SPAZCORE_SERVICE_TUMBLR_TWITTER = 'tumblr-twitter';
+/**
+ * @constant 
+ */
+var SPAZCORE_SERVICE_CUSTOM = 'custom';
+
+/**
+ * @constant 
+ */
+var SPAZCORE_BASEURL_TWITTER = 'https://twitter.com/';
+/**
+ * @constant 
+ */
+var SPAZCORE_BASEURL_IDENTICA = 'https://identi.ca/';
+/**
+ * @constant 
+ */
+var SPAZCORE_BASEURL_FREELISHUS = 'http://freelish.us/';
 
 
 
@@ -7028,6 +7070,93 @@ sc.helpers.isLinux = function() {
 sc.helpers.isMacOS = function() {
 	return sc.helpers.isOS(SPAZCORE_OS_MACOS);
 };
+/**
+ * Takes a key/val pair object and returns a query string 
+ * @member sc.helpers 
+ */
+sc.helpers.objectToQueryString = function(object) {
+	var query_string, key, val, pieces = [];
+	
+	for(key in object) {
+		val = object[key];
+		pieces.push(encodeURIComponent(key)+'='+encodeURIComponent(val));
+	}
+	query_string = pieces.join('&');
+	return query_string;
+};
+
+
+
+/**
+ * takes a username and service, and returns the profile URL on that service 
+ */
+sc.helpers.getServiceBaseUrl = function(service) {
+	
+	var url = null;
+	
+	switch(service) {
+		case SPAZCORE_SERVICE_TWITTER:
+			url = SPAZCORE_BASEURL_TWITTER;
+			break;
+		case SPAZCORE_SERVICE_IDENTICA:
+			url = SPAZCORE_BASEURL_IDENTICA;
+			break;
+		case SPAZCORE_SERVICE_FREELISHUS:
+			url = SPAZCORE_BASEURL_FREELISHUS;
+			break;
+	}
+	
+	return url;
+	
+};
+
+
+/**
+ * takes a username and service, and returns the profile URL on that service 
+ */
+sc.helpers.getServiceProfileUrl = function(username, service) {
+	
+	var url = null;
+	
+	switch(service) {
+		case SPAZCORE_SERVICE_TWITTER:
+			url = SPAZCORE_BASEURL_TWITTER+"/"+username;
+			break;
+		case SPAZCORE_SERVICE_IDENTICA:
+			url = SPAZCORE_BASEURL_IDENTICA+"/"+username;
+			break;
+		case SPAZCORE_SERVICE_FREELISHUS:
+			url = SPAZCORE_BASEURL_FREELISHUS+"/"+username;
+			break;
+	}
+	
+	return url;
+	
+};
+
+
+/**
+ * takes a status id, username and service, and returns the status URL on that service 
+ */
+sc.helpers.getStatusUrl = function(id, username, service) {
+	
+	var url = null;
+
+	switch(service) {
+		case SPAZCORE_SERVICE_TWITTER:
+			url = SPAZCORE_BASEURL_TWITTER+username+'/statuses/'+id;
+			break;
+		case SPAZCORE_SERVICE_IDENTICA:
+			url = SPAZCORE_BASEURL_IDENTICA+'notice/'+id;
+			break;
+		case SPAZCORE_SERVICE_FREELISHUS:
+			url = SPAZCORE_BASEURL_FREELISHUS+'notice/'+id;
+			break;
+	}
+	
+	return url;
+	
+};
 /*jslint 
 browser: true,
 nomen: false,
@@ -7176,6 +7305,10 @@ var SPAZCORE_ACCOUNT_TWITTER	= 'twitter';
  * @constant 
  */
 var SPAZCORE_ACCOUNT_IDENTICA	= 'identi.ca';
+/**
+ * @constant 
+ */
+var SPAZCORE_ACCOUNT_FREELISHUS	= 'freelish.us';
 /**
  * @constant 
  */
@@ -7449,6 +7582,25 @@ SpazAccounts.prototype.get = function(id) {
 };
 
 
+SpazAccounts.prototype.getLabel = function(id) {
+	
+	var index = this._findUserIndex(id);
+	var label = '';
+	
+	if (index !== false) {
+		label = this._accounts[i].username+'@'+this._accounts[i].type;
+		if (this._accounts[i].type === SPAZCORE_ACCOUNT_STATUSNET
+			|| this._accounts[i].type === SPAZCORE_ACCOUNT_CUSTOM) {
+			
+		}
+		return label;
+	}
+
+	return false;
+	
+};
+
+
 /**
  * a private function to find the user's array index by their UUID
  * @param {string} id the user's UUID
@@ -7486,7 +7638,7 @@ SpazAccounts.prototype.generateID = function() {
  * @returns {String|Object|Array|Boolean|Number} returns the set value, or null if user ID or meta entry is not found
  */
 SpazAccounts.prototype.getMeta = function(id, key) {
-	
+	var user;
 	if ( (user = this.get(id)) ) {
 		if (user.meta && user.meta[key] !== null ) {
 			return user.meta[key];
@@ -7548,6 +7700,9 @@ SPAZAUTH_SERVICES[SPAZCORE_ACCOUNT_WORDPRESS_TWITTER] = {
 	'authType': SPAZCORE_AUTHTYPE_BASIC
 };
 SPAZAUTH_SERVICES[SPAZCORE_ACCOUNT_IDENTICA] = {
+    'authType': SPAZCORE_AUTHTYPE_BASIC
+};
+SPAZAUTH_SERVICES[SPAZCORE_ACCOUNT_FREELISHUS] = {
     'authType': SPAZCORE_AUTHTYPE_BASIC
 };
 SPAZAUTH_SERVICES[SPAZCORE_ACCOUNT_CUSTOM] = {
@@ -9014,7 +9169,7 @@ SpazImageUploader.prototype.services = {
 		}
 	},
 	'identi.ca' : {
-		'url'  : 'http://identi.ca/api/statusnet/media/upload',
+		'url'  : 'https://identi.ca/api/statusnet/media/upload',
 		'parseResponse': function(data) {
 			
 			var parser=new DOMParser();
@@ -9040,11 +9195,11 @@ SpazImageUploader.prototype.services = {
 			}
 		}
 	},
-	'statusnet' : {
+	'StatusNet' : {
 		'url'  : '/statusnet/media/upload',
 		'prepForUpload':function() {
 			if (this.opts.statusnet_api_base) {
-				this.services.statusnet.url = this.opts.statusnet_api_base + this.services.statusnet.url;
+				this.services.StatusNet.url = this.opts.statusnet_api_base + this.services.StatusNet.url;
 			} else {
 				sch.error('opts.statusnet_api_base must be set to use statusnet uploader service');
 			}
@@ -9161,18 +9316,19 @@ SpazImageUploader.prototype.upload = function() {
 		auth_header = this.getAuthHeader();
 	}
 	
-	sch.error(auth_header);
 	if (auth_header.indexOf('Basic ') === 0) {
 		
 		opts.username = this.opts.auth_obj.getUsername();
 		opts.password = this.opts.auth_obj.getPassword();
+		
+		if (!opts.headers) { opts.headers = {}; }
+		opts.headers['Authorization'] = auth_header;
 
 	} else {
-		opts.headers = {
-			'X-Auth-Service-Provider': verify_url,
-			'X-Verify-Credentials-Authorization':auth_header
-		};
-		
+	
+		if (!opts.headers) { opts.headers = {}; }
+		opts.headers['X-Auth-Service-Provider'] = verify_url;
+		opts.headers['X-Verify-Credentials-Authorization'] = auth_header;
 	}
 	
 	sc.helpers.HTTPUploadFile(opts, onSuccess, opts.onFailure);
@@ -10361,6 +10517,10 @@ var SPAZCORE_SHORTURL_SERVICE_JMP     = 'j.mp';
  * @constant 
  */
 var SPAZCORE_SHORTURL_SERVICE_GOOGLE  = 'goo.gl';
+/**
+ * @constant 
+ */
+var SPAZCORE_SHORTURL_SERVICE_GOLOOKAT  = 'go.ly';
 
 /**
  * @constant 
@@ -10382,12 +10542,15 @@ var SPAZCORE_EXPANDABLE_DOMAINS = [
 	"bacn.me",
 	"bloat.me",
 	"budurl.com",
+	"chzb.gr",
 	"clipurl.us",
 	"cort.as",
 	"dwarfurl.com",
 	"ff.im",
 	"fff.to",
+	"goo.gl",
 	"href.in",
+	"ht.ly",
 	"idek.net",
 	"korta.nu",
 	"lin.cr",
@@ -10422,6 +10585,7 @@ var SPAZCORE_EXPANDABLE_DOMAINS = [
 	"snipr.com",
 	"snipurl.com",
 	"snurl.com",
+	"t.co",
 	"tiny.cc",
 	"tinysong.com",
 	"togoto.us",
@@ -10432,6 +10596,7 @@ var SPAZCORE_EXPANDABLE_DOMAINS = [
 	"twurl.nl",
 	"u.mavrev.com",
 	"u.nu",
+	"un.cr",
 	"ur1.ca",
 	"url.az",
 	"url.ie",
@@ -10474,86 +10639,133 @@ function SpazShortURL(service) {
 	
 }
 
+
+SpazShortURL.prototype.services = {};
+	
+SpazShortURL.prototype.services[SPAZCORE_SHORTURL_SERVICE_BITLY] = {
+		'url'	  : 'http://api.bit.ly/v3/shorten',
+	'getData' : function(longurl, opts) {
+	    var data = {
+	        'longurl':longurl,
+	        'login':opts.login,
+	        'apiKey':opts.apiKey,
+	        'format':'json'
+	    };
+		return data;
+	},
+	'method':'GET',
+	'processResult' : function(data, longurl) {
+		var result = sc.helpers.deJSON(data);
+
+		if (result.data && result.data.long_url) {
+		    result.longurl = result.data.long_url;
+			result.shorturl = result.data.url;
+		}
+		return result;
+	}
+};
+
+SpazShortURL.prototype.services[SPAZCORE_SHORTURL_SERVICE_JMP] = {
+	'url'	  : 'http://api.j.mp/v3/shorten',
+	'getData' : function(longurl, opts){
+	    var data = {
+	        'longurl':longurl,
+	        'login':opts.login,
+	        'apiKey':opts.apiKey,
+	        'format':'json'
+	    };
+		return data;
+	},
+	'method':'GET',
+	'processResult' : function(data, longurl) {
+		var result = sc.helpers.deJSON(data);
+
+		if (result.data && result.data.long_url) {
+		    result.longurl = result.data.long_url;
+			result.shorturl = result.data.url;
+		}
+		return result;
+	}
+};
+
+SpazShortURL.prototype.services[SPAZCORE_SHORTURL_SERVICE_ISGD] = {
+	'url'	  : 'http://is.gd/create.php',
+	'getData' : function(longurl, opts) {
+		return { 'url':longurl, 'format':'simple' };
+	}
+};
+
+SpazShortURL.prototype.services[SPAZCORE_SHORTURL_SERVICE_GOLOOKAT] = {
+	'url'	  : 'http://api.golook.at/',
+	'getData' : function(longurl, opts) {
+		return { 'url':longurl, 'output_format':'json', 'anybase':1 };
+	},
+	'method':'GET',
+	'processResult' : function(data, longurl) {
+		var result = sc.helpers.deJSON(data);
+
+		if (result.orig_url && result.short_url) {
+		    result.longurl = result.orig_url;
+			result.shorturl = result.short_url;
+		}
+		return result;
+	}
+};
+
+SpazShortURL.prototype.services[SPAZCORE_SHORTURL_SERVICE_GOOGLE] = {
+	'url'	  : 'https://www.googleapis.com/urlshortener/v1/url?key=AIzaSyBMFTY7VjWGoXeFwbiY7vXoqAssjTr0od0',
+	// 'url'	  : 'https://www.googleapis.com/urlshortener/v1/url',
+	'contentType':'application/json',
+	'getData' : function(longurl, opts) {
+		return JSON.stringify({ 'longUrl':longurl  });
+	},
+	'processResult' : function(data, longurl) {
+		var result = sc.helpers.deJSON(data);
+		
+		if (result.longUrl && result.id) {
+			result.longurl = longurl; // google re-encodes characters so we need to use the original we passed
+			result.shorturl = result.id;
+		}
+		return result;
+	}
+};
+
+
+
+
+
+/**
+ * returns an array of labels for the services 
+ * @return array
+ */
+SpazShortURL.prototype.getServiceLabels = function() {
+	var labels = [];
+	for(var key in this.services) {
+		labels.push(key);
+	}
+	return labels;
+};
+
+
+
+
+
 SpazShortURL.prototype.getAPIObj = function(service) {
 	
-	var apis = {};
+
 	
-	apis[SPAZCORE_SHORTURL_SERVICE_BITLY] = {
-		'url'	  : 'http://api.bit.ly/v3/shorten',
-		'getData' : function(longurl, opts) {
-		    var data = {
-		        'longurl':longurl,
-		        'login':opts.login,
-		        'apiKey':opts.apiKey,
-		        'format':'json'
-		    };
-			return data;
-		},
-		'method':'GET',
-		'processResult' : function(data) {
-			var result = sc.helpers.deJSON(data);
-			
-			if (result.data && result.data.long_url) {
-			    result.longurl = result.data.long_url;
-    			result.shorturl = result.data.url;
-			}
-			return result;
-		}
-	};
-		
-	apis[SPAZCORE_SHORTURL_SERVICE_JMP] = {
-		'url'	  : 'http://api.j.mp/v3/shorten',
-		'getData' : function(longurl, opts){
-		    var data = {
-		        'longurl':longurl,
-		        'login':opts.login,
-		        'apiKey':opts.apiKey,
-		        'format':'json'
-		    };
-			return data;
-		},
-		'method':'GET',
-		'processResult' : function(data) {
-			var result = sc.helpers.deJSON(data);
-			
-			if (result.data && result.data.long_url) {
-			    result.longurl = result.data.long_url;
-    			result.shorturl = result.data.url;
-			}
-			return result;
-		}
-	};
-		
-	apis[SPAZCORE_SHORTURL_SERVICE_ISGD] = {
-		'url'	  : 'http://is.gd/create.php',
-		'getData' : function(longurl, opts) {
-			return { 'url':longurl, 'format':'simple' };
-		}
-	};
-	
-	apis[SPAZCORE_SHORTURL_SERVICE_GOOGLE] = {
-		'url'	  : 'https://www.googleapis.com/urlshortener/v1/url?key=AIzaSyBMFTY7VjWGoXeFwbiY7vXoqAssjTr0od0',
-		// 'url'	  : 'https://www.googleapis.com/urlshortener/v1/url',
-		'contentType':'application/json',
-		'getData' : function(longurl, opts) {
-			return JSON.stringify({ 'longUrl':longurl  });
-		},
-		'processResult' : function(data) {
-			var result = sc.helpers.deJSON(data);
-			result.longurl = result.longUrl;
-			result.shorturl = result.id;
-			return result;
-		}
-	};
-	
-	return apis[service];
+	return this.services[service];
 };
 
 
 /**
  * shortens a URL by making an ajax call
  * @param {string} longurl
- * @param {object} opts   right now opts.event_target (a DOMelement) and opts.apiopts (passed to api's getData() call) are supported
+ * @param {object} [opts]   right now opts.event_target (a DOMelement) and opts.apiopts (passed to api's getData() call) are supported
+ * @param {DOMElement} [opts.event_target]
+ * @param {Object} [opts.apiopts]
+ * @param {Function} [opts.onSuccess]
+ * @param {Function} [opts.onError]
  */
 SpazShortURL.prototype.shorten = function(longurl, opts) {
 	
@@ -10612,12 +10824,16 @@ SpazShortURL.prototype.shorten = function(longurl, opts) {
 					errobj.msg = 'Unknown Error';
 				}
 				shortener._onShortenResponseFailure(errobj, opts.event_target);
+				if (opts.onError) {
+					opts.onError(errobj);
+				}
+				
 			},
 			success:function(data) {
 				// var shorturl = trim(data);
 				var return_data = {};
 				if (shortener.api.processResult) {
-					return_data = shortener.api.processResult(data);
+					return_data = shortener.api.processResult(data, longurl);
 				} else {
 					return_data = {
 						'shorturl':data,
@@ -10626,6 +10842,9 @@ SpazShortURL.prototype.shorten = function(longurl, opts) {
 				}
 				sch.error(return_data);
 				shortener._onShortenResponseSuccess(return_data, opts.event_target);
+				if (opts.onSuccess) {
+					opts.onSuccess(return_data);
+				}
 			},
 
 			'type':self.api.method || "POST",
@@ -10691,28 +10910,34 @@ SpazShortURL.prototype.expand = function(shorturl, opts) {
 				errobj.msg = 'Unknown Error';
 			}
 			shortener._onExpandResponseFailure(errobj, opts.event_target);
+			if (opts.onError) {
+				opts.onError(errobj);
+			}
+			
 		},
 		success:function(data) {
-			// var shorturl = trim(data);
-			data = sc.helpers.deJSON(data);
-			var longurl = data[shorturl];
+			data = sch.deJSON(data);
+			var longurl = data['final_url'];
 			
 			/*
 				save it to cache
 			*/
 			shortener.saveExpandedURLToCache(shorturl, longurl);
 			
-			shortener._onExpandResponseSuccess({
-					'shorturl':shorturl,
-					'longurl' :longurl
-				},
-				opts.event_target
-			);
+			var resp = {
+				'shorturl':shorturl,
+				'longurl' :longurl
+			};
+			
+			shortener._onExpandResponseSuccess(resp, opts.event_target);
+			if (opts.onSuccess) {
+				opts.onSuccess(resp);
+			}
 		},
 		beforeSend:function(xhr) {},
 		type:"GET",
-		url :'http://longurlplease.appspot.com/api/v1.1',
-		data:{ 'q':shorturl }
+		url :'http://api.getspaz.com/url/resolve',
+		data:{ 'url':shorturl }
 	});
 };
 
@@ -10742,6 +10967,8 @@ SpazShortURL.prototype.findExpandableURLs = function(str) {
 			regexes.push(new RegExp("http://"+thisdomain+"/(-?[a-zA-Z0-9]+)", "gi"));
 		} else if (thisdomain == 'ow.ly') { // we have to skip ow.ly/i/XXX links
 			regexes.push(new RegExp("http://"+thisdomain+"/(-?[a-zA-Z0-9]{2,})", "gi"));
+		} else if (thisdomain == 'goo.gl') { // we have to skip ow.ly/i/XXX links
+			regexes.push(new RegExp("http://"+thisdomain+"/(?:fb/|)(-?[a-zA-Z0-9]+)", "gi"));
 		} else {
 			regexes.push(new RegExp("http://"+thisdomain+"/([a-zA-Z0-9-_]+)", "gi"));
 		}
@@ -10767,11 +10994,11 @@ SpazShortURL.prototype.findExpandableURLs = function(str) {
 };
 
 
-SpazShortURL.prototype.expandURLs = function(urls, target) {
+SpazShortURL.prototype.expandURLs = function(urls, target, onSuccess, onFailure) {
 	for (var i=0; i < urls.length; i++) {
 		var thisurl = urls[i];
 		sch.dump('expanding '+thisurl);
-		this.expand(thisurl, { 'event_target':target });
+		this.expand(thisurl, { 'event_target':target, 'onSuccess':onSuccess, 'onFailure':onFailure });
 	};
 };
 
@@ -11534,31 +11761,15 @@ var SPAZCORE_SECTION_USERLISTS = 'userlists';
 /**
  * @constant 
  */
-var SPAZCORE_SERVICE_TWITTER = 'twitter';
-/**
- * @constant 
- */
-var SPAZCORE_SERVICE_IDENTICA = 'identi.ca';
-/**
- * @constant 
- */
-var SPAZCORE_SERVICE_WORDPRESS_TWITTER = 'wordpress-twitter';
-/**
- * @constant 
- */
-var SPAZCORE_SERVICE_TUMBLR_TWITTER = 'tumblr-twitter';
-/**
- * @constant 
- */
-var SPAZCORE_SERVICE_CUSTOM = 'custom';
-/**
- * @constant 
- */
 var SPAZCORE_SERVICEURL_TWITTER = 'https://api.twitter.com/1/';
 /**
  * @constant 
  */
 var SPAZCORE_SERVICEURL_IDENTICA = 'https://identi.ca/api/';
+/**
+ * @constant 
+ */
+var SPAZCORE_SERVICEURL_FREELISHUS = 'http://freelish.us/api/';
 /**
  * @constant 
  */
@@ -11898,6 +12109,9 @@ SpazTwit.prototype.setBaseURLByService= function(service) {
 		case SPAZCORE_SERVICE_IDENTICA:
 			baseurl = SPAZCORE_SERVICEURL_IDENTICA;
 			break;
+		case SPAZCORE_SERVICE_FREELISHUS:
+			baseurl = SPAZCORE_SERVICEURL_FREELISHUS;
+			break;
 		case SPAZCORE_SERVICE_WORDPRESS_TWITTER:
 			baseurl = SPAZCORE_SERVICEURL_WORDPRESS_TWITTER;
 			break;
@@ -11910,6 +12124,37 @@ SpazTwit.prototype.setBaseURLByService= function(service) {
 	}
 	
 	this.baseurl = baseurl;
+};
+
+
+SpazTwit.prototype.getServiceFromBaseURL = function(baseurl) {
+	var service;
+
+	if (!baseurl) { baseurl = this.baseurl; }
+	
+	switch (baseurl) {
+		case SPAZCORE_SERVICEURL_TWITTER:
+			service = SPAZCORE_SERVICE_TWITTER;
+			break;
+		case SPAZCORE_SERVICEURL_IDENTICA:
+			service = SPAZCORE_SERVICE_IDENTICA;
+			break;
+		case SPAZCORE_SERVICEURL_FREELISHUS:
+			service = SPAZCORE_SERVICE_FREELISHUS;
+			break;
+		case SPAZCORE_SERVICEURL_WORDPRESS_TWITTER:
+			service = SPAZCORE_SERVICE_WORDPRESS_TWITTER;
+			break;
+		case SPAZCORE_SERVICEURL_TUMBLR_TWITTER:
+			service = SPAZCORE_SERVICE_TUMBLR_TWITTER;
+			break;
+		default:
+			service = SPAZCORE_SERVICE_CUSTOM;
+			break;
+	}
+	
+	return service;
+	
 };
 
 
@@ -11947,7 +12192,7 @@ SpazTwit.prototype.getAPIURL = function(key, urldata) {
 	urls.user_timeline      = "statuses/user_timeline.json";
 	urls.replies_timeline   = "statuses/replies.json";
 	urls.show		= "statuses/show/{{ID}}.json";
-	urls.show_related	= "related_results/show/{{ID}}.json"
+	urls.show_related	= "related_results/show/{{ID}}.json";
 	urls.favorites          = "favorites.json";
 	urls.user_favorites     = "favorites/{{ID}}.json"; // use this to retrieve favs of a user other than yourself
 	urls.dm_timeline        = "direct_messages.json";
@@ -12007,12 +12252,7 @@ SpazTwit.prototype.getAPIURL = function(key, urldata) {
 	urls.retweeted_to_me	= "statuses/retweeted_to_me.json";
 	urls.retweets_of_me		= "statuses/retweets_of_me.json";
 	
-	// search
-	if (this.baseurl === SPAZCORE_SERVICEURL_TWITTER) {
-		urls.search				= "http://search.twitter.com/search.json";
-	} else {
-		urls.search				= "search.json";
-	}
+	urls.search				= "search.json";
 
 	// misc
 	urls.test 			  	= "help/test.json";
@@ -12048,13 +12288,9 @@ SpazTwit.prototype.getAPIURL = function(key, urldata) {
 		} else {
 			urldata = '';
 		}
+
+		return this._postProcessURL(this.baseurl + urls[key] + urldata);
 		
-		if (this.baseurl === SPAZCORE_SERVICEURL_TWITTER && (key === 'search')) {
-			return this._postProcessURL(urls[key] + urldata);
-		} else {
-			return this._postProcessURL(this.baseurl + urls[key] + urldata);
-		}
-        
     } else {
         return false;
     }
@@ -12653,6 +12889,10 @@ SpazTwit.prototype._processSearchItem = function(item, section_name) {
 	// remove snowflakeyness
 	item = this.deSnowFlake(item);
 	
+	// set service data
+	item.SC_service_baseurl = this.baseurl;
+	item.SC_service = this.getServiceFromBaseURL(this.baseurl);
+	
 	
 	item.SC_timeline_from = section_name;
 	if (this.username) {
@@ -13106,6 +13346,10 @@ SpazTwit.prototype._processItem = function(item, section_name) {
 	// remove snowflakeyness
 	item = this.deSnowFlake(item);
 	
+	// set service data
+	item.SC_service_baseurl = this.baseurl;
+	item.SC_service = this.getServiceFromBaseURL(this.baseurl);
+	
 	item.SC_timeline_from = section_name;
 	if (this.username) {
 		item.SC_user_received_by = this.username;
@@ -13141,11 +13385,25 @@ SpazTwit.prototype._processItem = function(item, section_name) {
 		item.SC_is_reply = true;
 	}
 	
+	if (item.user) {
+		item.user = this._processUser(item.user);
+	}
+	
+	
 	/*
 		is dm?
 	*/
 	if (item.recipient_id && item.sender_id) {
 		item.SC_is_dm = true;
+		
+		if (item.sender) {
+			item.sender = this._processUser(item.sender);
+		}
+		if (item.recipient) {
+			item.recipient = this._processUser(item.recipient);
+		}
+		
+		
 	}
 	
 	
@@ -13194,6 +13452,10 @@ SpazTwit.prototype._processUser = function(item, section_name) {
 	
 	// remove snowflakeyness
 	item = this.deSnowFlake(item);
+	
+	// set service data
+	item.SC_service_baseurl = this.baseurl;
+	item.SC_service = this.getServiceFromBaseURL(this.baseurl);
 	
 	
 	item.SC_timeline_from = section_name;
@@ -13371,6 +13633,7 @@ SpazTwit.prototype._callMethod = function(opts) {
 
 SpazTwit.prototype.getUser = function(user_id, onSuccess, onFailure) {
 	var data = {};
+	var that = this;
 
 	if (sch.isString(user_id) && user_id.indexOf('@') === 0) {
 		data.screen_name = user_id.substr(1);
@@ -13385,7 +13648,14 @@ SpazTwit.prototype.getUser = function(user_id, onSuccess, onFailure) {
 		'data':data,
 		'success_event_type':'get_user_succeeded',
 		'failure_event_type':'get_user_failed',
-		'success_callback':onSuccess,
+		'success_callback': function(data) {
+			sch.error('BEFORE PROCESSING');
+			sch.error(data);
+			data = that._processUser(data, SPAZCORE_SECTION_HOME);
+			sch.error('AFTER PROCESSING');
+			sch.error(data);
+			onSuccess(data);
+		},
 		'failure_callback':onFailure,
 		'method':'GET'
 	};
@@ -13481,7 +13751,7 @@ SpazTwit.prototype._processFollowersList = function(ret_items, opts, processing_
 
 
 /**
- * general processor for timeline data. results are not sorted
+ * general processor for userlist data. results are not sorted
  * @private
  */
 SpazTwit.prototype._processUserList = function(section_name, ret_items, opts, processing_opts) {
@@ -13889,7 +14159,7 @@ SpazTwit.prototype.sendDirectMessage = function(user_id, text, onSuccess, onFail
 		Perform a request and get true or false back
 	*/
 	var xhr = this._callMethod(opts);
-}
+};
 
 
 /**
@@ -15189,7 +15459,7 @@ SpazTwit.prototype.deSnowFlake = function(obj) {
 	}
 	
 	return obj;
-}
+};
 
 
 /**
