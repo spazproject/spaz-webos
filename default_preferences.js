@@ -42,7 +42,7 @@ var default_preferences = {
 
     'url-shortener': 'bitly',
 
-    'image-uploader': 'drippic',
+    'image-uploader': 'twitpic',
 
     'services-twitpic-sharepassword': false,
 

@@ -222,10 +222,10 @@ PostAssistant.prototype.activate = function(args) {
 		Tweetphoto is no longer valid, so we need to change that
 	*/
 	if (this.imageUploaderModel['image-uploader'] == ('tweetphoto'||'yfrog')) {
-		this.imageUploaderModel['image-uploader'] = 'drippic';
-		App.prefs.set('image-uploader', 'drippic');
+		this.imageUploaderModel['image-uploader'] = 'twitpic';
+		App.prefs.set('image-uploader', 'twitpic');
 		this.showAlert(
-			$L('Tweetphoto is no longer supported by Spaz, so I\'ve changed your image hosting preference to drippic. You can pick a different service under the App menu in Preferences.'),
+			$L('Tweetphoto is no longer supported by Spaz, so I\'ve changed your image hosting preference to TwitPic. You can pick a different service under the App menu in Preferences.'),
 			$L('Change in image hosting service')
 		);
 	}
