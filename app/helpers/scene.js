@@ -251,6 +251,26 @@ scene_helpers.addCommonSceneMethods = function(assistant) {
 			} else {
 				this.removeSearch(this.searchBoxModel.value);
 			}			
+		},
+		
+		//Post scene stuff
+		"sendPost": function(e){
+			this.sendPost();
+		},
+		"attachImage": function(e){
+			this.attachImage();
+		},
+		"shortenText": function(e){
+			this.shortenText();
+		},
+		"shortenURLs": function(e){
+			this.shortenURLs();
+		},
+		"getKotoData": function(e){
+			this.getKotoData();		
+		},
+		"addTextToPost": function(e){
+			this.addTextToPost(e.text);
 		}
 	};
 	

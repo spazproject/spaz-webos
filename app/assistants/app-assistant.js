@@ -337,8 +337,23 @@ AppAssistant.prototype.handleLaunch = function(launchParams) {
 				
 				stageController.activate();
 				break;				
-
-
+			case "tweetNowPlaying":
+				if(launchParams.returnValue === true){
+					var tweet = "#NowPlaying " + launchParams.nowPlaying.title
+					if(launchParams.nowPlaying.artist !== ""){
+						tweet += " by " + launchParams.nowPlaying.artist;
+					}
+					if(tweet.length > 114){
+						tweet.truncate(114, ' [...]');
+					}
+					var suffix = " on #KotoPlayer, via @Spaz";
+					stageController.sendEventToCommanders({'type':Mojo.Event.command, 'command':'addTextToPost', text: tweet + suffix});
+				} else {
+					//Mojo.Controller.getAppController().getStageController(SPAZ_MAIN_STAGENAME).activeScene().showBanner("Not Playing Anything");
+					//banner error?
+					Mojo.Log.error("not playing anything");
+				}
+				break;
 			case 'bgcheck':
 				Mojo.Log.error('BGCHECK action');
 				Mojo.Log.error('sendToNotificationChain refresh');
