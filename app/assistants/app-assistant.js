@@ -343,10 +343,11 @@ AppAssistant.prototype.handleLaunch = function(launchParams) {
 					if(launchParams.nowPlaying.artist !== ""){
 						tweet += " by " + launchParams.nowPlaying.artist;
 					}
-					if(tweet.length > 114){
-						tweet.truncate(114, ' [...]');
+					if (tweet.length > 112){
+						tweet = tweet.truncate(112, ' [...]');//truncate is a prototype function
 					}
-					var suffix = " on #KotoPlayer, via @Spaz";
+					
+					var suffix = " on @Koto_Player, via @Spaz";
 					stageController.sendEventToCommanders({'type':Mojo.Event.command, 'command':'addTextToPost', text: tweet + suffix});
 				} else {
 					//Mojo.Controller.getAppController().getStageController(SPAZ_MAIN_STAGENAME).activeScene().showBanner("Not Playing Anything");

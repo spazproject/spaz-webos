@@ -44,7 +44,7 @@ PostAssistant.prototype.setup = function() {
 		{label: $L("Post"), icon: "send", command: "sendPost"},
 	
 	]
-	if(parseInt(Mojo.Environment.DeviceInfo.platformVersionMajor) >= 2){
+	if(parseInt(Mojo.Environment.DeviceInfo.platformVersionMajor, 10) >= 2){
 		cmdMenuItems.splice(2, 0, {label: $L("Get Now Playing"), iconPath: "images/theme/menu-icon-koto.png", command: "getKotoData"});
 	}
 	this.setupCommonMenus({cmdMenuItems: cmdMenuItems})
