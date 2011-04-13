@@ -41,13 +41,13 @@ PostAssistant.prototype.setup = function() {
 		//
 		{},
 		{},
-		{label: $L("Post"), icon: "send", command: "sendPost"},
+		{label: $L("Post"), icon: "send", command: "sendPost"}
 	
-	]
-	if(parseInt(Mojo.Environment.DeviceInfo.platformVersionMajor, 10) >= 2){
+	];
+	if(parseInt(Mojo.Environment.DeviceInfo.platformVersionMajor, 10) >= 2) {
 		cmdMenuItems.splice(2, 0, {label: $L("Get Now Playing"), iconPath: "images/theme/menu-icon-koto.png", command: "getKotoData"});
 	}
-	this.setupCommonMenus({cmdMenuItems: cmdMenuItems})
+	this.setupCommonMenus({cmdMenuItems: cmdMenuItems});
 	
 	this.postMode = 'normal'; // 'normal' or 'email'
 	
@@ -199,15 +199,15 @@ PostAssistant.prototype.setup = function() {
 	/*
 		if update succeeds
 	*/
-	jQuery(document).bind('update_succeeded', { thisAssistant:this }, function(e, data) {
-		e.data.thisAssistant.renderSuccessfulPost(e, data);
+	jQuery(document).bind('update_succeeded', function(e, data) {
+		thisA.renderSuccessfulPost(e, data);
 	});
 
 	/*
 		if update fails
 	*/
-	jQuery(document).bind('update_failed', { thisAssistant:this }, function(e, error_obj) {
-		e.data.thisAssistant.reportFailedPost(error_obj);
+	jQuery(document).bind('update_failed', function(e, error_obj) {
+		thisA.reportFailedPost(error_obj);
 	});
 
 
@@ -560,13 +560,13 @@ PostAssistant.prototype.getKotoData = function(e) {
 
 	}
     makeCall();
-}
+};
 
 PostAssistant.prototype.addTextToPost = function(text) {
 	this.postTextFieldModel.value += text;
 	this.controller.modelChanged(this.postTextFieldModel);
 	this._updateCharCount();
-}
+};
 
 /**
  * saves the new image uploader label and loads up the appropriate email address for that api
@@ -952,12 +952,7 @@ PostAssistant.prototype.onReturnFromFilePicker = function() {
  * just passes to renderSuccessfulPost 
  */
 PostAssistant.prototype.onDMSuccess = function(data) {
-	this.showBanner('Posted!');
-	
-	this.popScene();
-
-	this.deactivateSpinner();
-	
+	this.renderSuccessfulPost(null, data);
 };
 
 
