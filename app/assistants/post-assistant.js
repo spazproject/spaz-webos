@@ -29,6 +29,26 @@ PostAssistant.prototype.setup = function() {
 	
 	this.initAppMenu({ 'items':LOGGEDIN_APPMENU_ITEMS });
 	
+	this.controller.setupWidget('shorten-menu', undefined, {
+		items: [
+			{label: $L("Shorten URLs"), command: "shortenURLs"},
+			{label: $L("Shorten Text"), command: "shortenText"}
+		]
+	});
+	var cmdMenuItems = [
+		{label: $L("Attach"), icon: "attach", command: "attachImage"},
+		{label: $L("Shorten"), iconPath: "images/theme/menu-icon-shorten.png", submenu: "shorten-menu"},
+		//
+		{},
+		{},
+		{label: $L("Post"), icon: "send", command: "sendPost"},
+	
+	]
+	if(parseInt(Mojo.Environment.DeviceInfo.platformVersionMajor, 10) >= 2){
+		cmdMenuItems.splice(2, 0, {label: $L("Get Now Playing"), iconPath: "images/theme/menu-icon-koto.png", command: "getKotoData"});
+	}
+	this.setupCommonMenus({cmdMenuItems: cmdMenuItems})
+	
 	this.postMode = 'normal'; // 'normal' or 'email'
 	
 	this.postTextField = jQuery('#post-textfield')[0];
@@ -39,7 +59,7 @@ PostAssistant.prototype.setup = function() {
 		'attachment':null,
 		'attachment_icon':null
 	};
-	
+	/*
 	this.buttonAttributes = {
 		type: Mojo.Widget.activityButton
 	};
@@ -58,16 +78,16 @@ PostAssistant.prototype.setup = function() {
 	this.shortenURLsButtonModel = {
 		buttonLabel : $L("Shorten URLs"),
 		buttonClass: 'secondary'
-	};
+	};*/
 	this.postTextFieldModel = {
 		value:'',
 		disabled:false
 	};
 	
-	this.controller.setupWidget('post-send-button',			this.buttonAttributes, this.postButtonModel);
-	this.controller.setupWidget('attach-image-button',		{}, this.attachImageButtonModel);
-	this.controller.setupWidget('post-shorten-text-button', this.buttonAttributes, this.shortenTextButtonModel);
-	this.controller.setupWidget('post-shorten-urls-button', this.buttonAttributes, this.shortenURLsButtonModel);
+	//this.controller.setupWidget('post-send-button',			this.buttonAttributes, this.postButtonModel);
+	//this.controller.setupWidget('attach-image-button',		{}, this.attachImageButtonModel);
+	//this.controller.setupWidget('post-shorten-text-button', this.buttonAttributes, this.shortenTextButtonModel);
+	//this.controller.setupWidget('post-shorten-urls-button', this.buttonAttributes, this.shortenURLsButtonModel);
 	this.controller.setupWidget('post-textfield', {
 			'multiline':true,
 			'enterSubmits':App.prefs.get('post-send-on-enter'),
@@ -76,8 +96,6 @@ PostAssistant.prototype.setup = function() {
 		},
 	this.postTextFieldModel);
 	
-	
-
 	
 	
 	
@@ -163,10 +181,10 @@ PostAssistant.prototype.setup = function() {
 	/*
 		Bind listeners for UI stuff 
 	*/
-	Mojo.Event.listen(jQuery('#post-send-button')[0], Mojo.Event.tap, this.sendPost.bindAsEventListener(this));
-	Mojo.Event.listen(jQuery('#attach-image-button')[0], Mojo.Event.tap, this.attachImage.bindAsEventListener(this));
-	Mojo.Event.listen(jQuery('#post-shorten-text-button')[0], Mojo.Event.tap, this.shortenText.bindAsEventListener(this));
-	Mojo.Event.listen(jQuery('#post-shorten-urls-button')[0], Mojo.Event.tap, this.shortenURLs.bindAsEventListener(this));
+	//Mojo.Event.listen(jQuery('#post-send-button')[0], Mojo.Event.tap, this.sendPost.bindAsEventListener(this));
+	//Mojo.Event.listen(jQuery('#attach-image-button')[0], Mojo.Event.tap, this.attachImage.bindAsEventListener(this));
+	//Mojo.Event.listen(jQuery('#post-shorten-text-button')[0], Mojo.Event.tap, this.shortenText.bindAsEventListener(this));
+	//Mojo.Event.listen(jQuery('#post-shorten-urls-button')[0], Mojo.Event.tap, this.shortenURLs.bindAsEventListener(this));
 	this.listenForEnter('post-textfield', function() {
 		if (App.prefs.get('post-send-on-enter')) {
 			this.controller.get('post-send-button').mojo.activate();
@@ -309,9 +327,9 @@ PostAssistant.prototype.cleanup = function(event) {
 	var thisA = this;
 	
 	Mojo.Event.stopListening(jQuery('#post-send-button')[0], Mojo.Event.tap, this.sendPost); 
-	Mojo.Event.stopListening(jQuery('#attach-image-button')[0], Mojo.Event.tap, this.attachImage);
-	Mojo.Event.stopListening(jQuery('#post-shorten-text-button')[0], Mojo.Event.tap, this.shortenText);
-	Mojo.Event.stopListening(jQuery('#post-shorten-urls-button')[0], Mojo.Event.tap, this.shortenURLs);
+	//Mojo.Event.stopListening(jQuery('#attach-image-button')[0], Mojo.Event.tap, this.attachImage);
+	//Mojo.Event.stopListening(jQuery('#post-shorten-text-button')[0], Mojo.Event.tap, this.shortenText);
+	//Mojo.Event.stopListening(jQuery('#post-shorten-urls-button')[0], Mojo.Event.tap, this.shortenURLs);
 	Mojo.Event.stopListening(jQuery('#image-uploader')[0], Mojo.Event.propertyChange, this.changeImageUploader);	
 	Mojo.Event.stopListening(jQuery('#image-uploader-email')[0], Mojo.Event.propertyChange, this.setImageUploaderEmail);	
 	
@@ -417,12 +435,12 @@ PostAssistant.prototype.shortenText = function(event) {
 	this.postTextFieldModel.value = stxt.shorten(this.postTextFieldModel.value);
 	this.controller.modelChanged(this.postTextFieldModel);
 	this._updateCharCount();
-	this.deactivateButtonSpinner('post-shorten-text-button');
+	//this.deactivateButtonSpinner('post-shorten-text-button');
 };
 
 PostAssistant.prototype.shortenURLs = function(event) {
 	
-	var event_target = jQuery('#post-shorten-urls-button')[0];
+	var event_target = jQuery('#post-buttons-standard')[0];
 	
 	var surl = new SpazShortURL(SPAZCORE_SHORTURL_SERVICE_JMP);
 	var longurls = sc.helpers.extractURLs(this.postTextFieldModel.value);
@@ -442,7 +460,7 @@ PostAssistant.prototype.shortenURLs = function(event) {
 		drop out if we don't have any URLs
 	*/
 	if (reallylongurls.length < 1) {
-		this.deactivateButtonSpinner('post-shorten-urls-button');
+		//this.deactivateButtonSpinner('post-shorten-urls-button');
 		this._updateCharCount();
 		sch.error('No Long URLs');
 		return;
@@ -458,11 +476,11 @@ PostAssistant.prototype.shortenURLs = function(event) {
 		that.controller.modelChanged(that.postTextFieldModel);
 		Mojo.Log.info('that.postTextFieldModel.value: %s', that.postTextFieldModel.value);
 		Mojo.Log.info('data: %j', data);
-		that.deactivateButtonSpinner('post-shorten-urls-button');
+		//that.deactivateButtonSpinner('post-shorten-urls-button');
 		that._updateCharCount();
 	}
 	function onShortURLFailure(e, error_obj) {
-		that.deactivateButtonSpinner('post-shorten-urls-button');
+		//that.deactivateButtonSpinner('post-shorten-urls-button');
 		that._updateCharCount();
 	}
 
@@ -487,6 +505,68 @@ PostAssistant.prototype.shortenURLs = function(event) {
 	
 };
 
+PostAssistant.prototype.getKotoData = function(e) {
+	var appids = ['com.tibfib.app.koto.alt', 'com.tibfib.app.koto', 'com.tibfib.app.koto.lite'], index = 0, that = this;
+	function makeCall() {
+		if (index < appids.length) {
+			Mojo.Log.info('Trying to post with appid %s', appids[index]);
+			var request = new Mojo.Service.Request("palm://com.palm.applicationManager", {
+				method: 'launch',
+				parameters: {
+					id: appids[index],
+					params: {
+						action: "getNowPlayingData", 
+						callback: {
+							id: Mojo.Controller.appInfo.id,
+							action: "tweetNowPlaying"
+						}
+					}
+				},
+				onFailure: function() {
+					Mojo.Log.info('Failed to post with appid %s', appids[index]);
+					index++; // go to next appid
+					makeCall(); // retry
+				}.bind(this)
+			});
+		} else {
+			that.showAlert("Want to tweet what you're listening to directly from Spaz? Download Koto Player now!", 
+				"Koto Player not installed",
+				function(value) {
+					if (value == "lite") {
+						that.controller.serviceRequest("palm://com.palm.applicationManager", {
+							method: "open",
+							parameters: {
+								id: 'com.palm.app.browser',
+								params: {target: "http://developer.palm.com/appredirect/?packageid=com.tibfib.app.koto.lite"}
+							}
+						});
+					} else if (value == "full") {
+						that.controller.serviceRequest("palm://com.palm.applicationManager", {
+							method: "open",
+							parameters: {
+								id: 'com.palm.app.browser',
+								params: {target: "http://developer.palm.com/appredirect/?packageid=com.tibfib.app.koto"}
+							}
+						});
+					}
+				}.bind(that),
+				[
+					{label:$L('Buy Full Version'), value:"full"},
+					{label:$L('Try Lite Version'), value:"lite"},
+					{label:$L('cancel'), type: "dismiss"}
+				]
+			);
+		}
+
+	}
+    makeCall();
+}
+
+PostAssistant.prototype.addTextToPost = function(text) {
+	this.postTextFieldModel.value += text;
+	this.controller.modelChanged(this.postTextFieldModel);
+	this._updateCharCount();
+}
 
 /**
  * saves the new image uploader label and loads up the appropriate email address for that api
@@ -613,7 +693,7 @@ PostAssistant.prototype.sendPost = function(event) {
 							status = status + ' ' + img_url;
 							
 							sch.debug('Posting message…');
-							that.setPostButtonLabel('Posting message…');
+							that.showBanner('Posting message…');
 
                             if (that.args.type === 'dm') {
                                 that.twit.sendDirectMessage(dm_recipient, status,
@@ -632,11 +712,11 @@ PostAssistant.prototype.sendPost = function(event) {
 						} else if (event_data.error) {
 							Mojo.Controller.errorDialog($L("Posting image failed:") + " " + event_data.error);
 							that.deactivateSpinner();
-							that.setPostButtonLabel($L('Retry post'));
+							//that.setPostButtonLabel($L('Retry post'));
 						} else {
 							Mojo.Controller.errorDialog($L("Posting image failed"));
 							that.deactivateSpinner();
-							that.setPostButtonLabel($L('Retry post'));
+							//that.setPostButtonLabel($L('Retry post'));
 						}
 					},
 					'onFailure':function(response_data) { // onFailure
@@ -660,7 +740,7 @@ PostAssistant.prototype.sendPost = function(event) {
 				image_uploader.setOpts(image_uploader_opts);
 				
 				sch.debug('Uploading image…');
-				this.setPostButtonLabel('Uploading image…');
+				that.showBanner('Uploading image…');
 				image_uploader.upload();
 
 
@@ -763,17 +843,18 @@ PostAssistant.prototype.cancelAttachImage = function() {
 		});
 	}
 	if (this.postMode === 'email') {
-		this.setPostButtonLabel($L('Email Image Post'));
+		//this.setPostButtonLabel($L('Email Image Post'));
 	} else {
-		this.setPostButtonLabel($L('Post'));
+		//this.setPostButtonLabel($L('Post'));
 	}
 	
 };
 
 
 PostAssistant.prototype.setPostButtonLabel = function(label) {
-	this.postButtonModel.buttonLabel = label;
-	this.controller.modelChanged(this.postButtonModel);
+	//this.postButtonModel.buttonLabel = label;
+	//this.controller.modelChanged(this.postButtonModel);
+	
 };
 
 
@@ -871,11 +952,12 @@ PostAssistant.prototype.onReturnFromFilePicker = function() {
  * just passes to renderSuccessfulPost 
  */
 PostAssistant.prototype.onDMSuccess = function(data) {
-	this.setPostButtonLabel('Posted!');
-	
-	this.deactivateSpinner();
+	this.showBanner('Posted!');
 	
 	this.popScene();
+
+	this.deactivateSpinner();
+	
 };
 
 
@@ -895,7 +977,7 @@ PostAssistant.prototype.onDMFailure = function(xhr, msg, exc) {
 PostAssistant.prototype.renderSuccessfulPost = function(event, data) {
 	Mojo.Log.error('RENDERSUCCESSFULPOST');
 	
-	this.setPostButtonLabel('Posted!');
+	this.showBanner('Posted!');
 	
 	this.deactivateSpinner();
 	
@@ -916,8 +998,8 @@ PostAssistant.prototype.reportFailedPost = function(error_obj) {
 };
 
 PostAssistant.prototype.deactivateSpinner = function() {
-	this.buttonWidget = jQuery('#post-send-button').get(0);
-	this.buttonWidget.mojo.deactivate();
+	//this.buttonWidget = jQuery('#post-send-button').get(0);
+	//this.buttonWidget.mojo.deactivate();
 };
 
 
