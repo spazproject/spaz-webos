@@ -20,9 +20,15 @@ Spaz.getAppObj = function() {
 
 
 Spaz.getActiveSceneAssistant = function() {
+	return Spaz.getStageController().activeScene().assistant;
+};
+
+
+Spaz.getStageController = function() {
+
 	var appC = Mojo.Controller.getAppController();
 	var stageC = appC.getActiveStageController();
-	return stageC.activeScene().assistant;
+	return stageC;
 };
 
 /**
