@@ -59,35 +59,12 @@ PostAssistant.prototype.setup = function() {
 		'attachment':null,
 		'attachment_icon':null
 	};
-	/*
-	this.buttonAttributes = {
-		type: Mojo.Widget.activityButton
-	};
-	this.postButtonModel = {
-		buttonLabel : $L("Send"),
-		buttonClass: 'primary'
-	};
-	this.attachImageButtonModel = {
-		buttonLabel : $L("Attach Image"),
-		buttonClass: 'secondary'
-	};
-	this.shortenTextButtonModel = {
-		buttonLabel : $L("Shorten text"),
-		buttonClass: 'secondary'
-	};
-	this.shortenURLsButtonModel = {
-		buttonLabel : $L("Shorten URLs"),
-		buttonClass: 'secondary'
-	};*/
+
 	this.postTextFieldModel = {
 		value:'',
 		disabled:false
 	};
 	
-	//this.controller.setupWidget('post-send-button',			this.buttonAttributes, this.postButtonModel);
-	//this.controller.setupWidget('attach-image-button',		{}, this.attachImageButtonModel);
-	//this.controller.setupWidget('post-shorten-text-button', this.buttonAttributes, this.shortenTextButtonModel);
-	//this.controller.setupWidget('post-shorten-urls-button', this.buttonAttributes, this.shortenURLsButtonModel);
 	this.controller.setupWidget('post-textfield', {
 			'multiline':true,
 			'enterSubmits':App.prefs.get('post-send-on-enter'),
@@ -181,14 +158,10 @@ PostAssistant.prototype.setup = function() {
 	/*
 		Bind listeners for UI stuff 
 	*/
-	//Mojo.Event.listen(jQuery('#post-send-button')[0], Mojo.Event.tap, this.sendPost.bindAsEventListener(this));
-	//Mojo.Event.listen(jQuery('#attach-image-button')[0], Mojo.Event.tap, this.attachImage.bindAsEventListener(this));
-	//Mojo.Event.listen(jQuery('#post-shorten-text-button')[0], Mojo.Event.tap, this.shortenText.bindAsEventListener(this));
-	//Mojo.Event.listen(jQuery('#post-shorten-urls-button')[0], Mojo.Event.tap, this.shortenURLs.bindAsEventListener(this));
 	this.listenForEnter('post-textfield', function() {
 		if (App.prefs.get('post-send-on-enter')) {
-			this.controller.get('post-send-button').mojo.activate();
-			this.sendPost();
+			thisA.activateSpinner();
+			thisA.sendPost();
 		}
 	});
 	Mojo.Event.listen(jQuery('#image-uploader')[0], Mojo.Event.propertyChange, this.changeImageUploader.bindAsEventListener(this)); 
@@ -326,10 +299,10 @@ PostAssistant.prototype.cleanup = function(event) {
 	
 	var thisA = this;
 	
-	Mojo.Event.stopListening(jQuery('#post-send-button')[0], Mojo.Event.tap, this.sendPost); 
-	//Mojo.Event.stopListening(jQuery('#attach-image-button')[0], Mojo.Event.tap, this.attachImage);
-	//Mojo.Event.stopListening(jQuery('#post-shorten-text-button')[0], Mojo.Event.tap, this.shortenText);
-	//Mojo.Event.stopListening(jQuery('#post-shorten-urls-button')[0], Mojo.Event.tap, this.shortenURLs);
+	// Mojo.Event.stopListening(jQuery('#post-send-button')[0], Mojo.Event.tap, this.sendPost); 
+	// Mojo.Event.stopListening(jQuery('#attach-image-button')[0], Mojo.Event.tap, this.attachImage);
+	// Mojo.Event.stopListening(jQuery('#post-shorten-text-button')[0], Mojo.Event.tap, this.shortenText);
+	// Mojo.Event.stopListening(jQuery('#post-shorten-urls-button')[0], Mojo.Event.tap, this.shortenURLs);
 	Mojo.Event.stopListening(jQuery('#image-uploader')[0], Mojo.Event.propertyChange, this.changeImageUploader);	
 	Mojo.Event.stopListening(jQuery('#image-uploader-email')[0], Mojo.Event.propertyChange, this.setImageUploaderEmail);	
 	
@@ -748,6 +721,7 @@ PostAssistant.prototype.sendPost = function(event) {
 				
 			} else { // normal post without attachment
 				if (this.args.type === 'dm') {
+					that.showBanner('Sending message…');
                     that.twit.sendDirectMessage(dm_recipient, status,
                         function(data) {
                           that.onDMSuccess.call(that, data);
@@ -758,8 +732,10 @@ PostAssistant.prototype.sendPost = function(event) {
                     );
                     
 				} else if (in_reply_to > 0) {
+					that.showBanner('Posting reply…');
 					this.twit.update(status, null, in_reply_to);
 				} else {
+					that.showBanner('Posting message…');
 					this.twit.update(status, null, null);
 				}
 				
@@ -976,7 +952,8 @@ PostAssistant.prototype.renderSuccessfulPost = function(event, data) {
 	
 	this.deactivateSpinner();
 	
-	this.popScene();
+	var popper = _.bind(this.popScene, this);
+	popper();
 };
 
 
@@ -986,10 +963,14 @@ PostAssistant.prototype.renderSuccessfulPost = function(event, data) {
 PostAssistant.prototype.reportFailedPost = function(error_obj) {
 	this.deactivateSpinner();
 	this.postTextFieldModel.disabled = false;
-	this.controller.modelChanged(this.postTextFieldModel);
+	Spaz.getActiveSceneAssistant().controller.modelChanged(this.postTextFieldModel);
 	
 	var err_msg = $L("There was a problem posting your status");
 	this.displayErrorInfo(err_msg, error_obj);
+};
+
+PostAssistant.prototype.activateSpinner = function() {
+	Mojo.Log.error('activating spinner');
 };
 
 PostAssistant.prototype.deactivateSpinner = function() {
@@ -1087,14 +1068,15 @@ PostAssistant.prototype.popScene = function() {
 	/*
 		only pop if we have a scene to pop to
 	*/
-	Mojo.Log.error('this.controller.stageController.getScenes().length: %s', this.controller.stageController.getScenes().length);
-	if (this.controller.stageController.getScenes().length > 1) {
-		this.controller.stageController.popScene({'returnFromPop': true});
+	Mojo.Log.error('Spaz.getStageController().getScenes().length: %s', Spaz.getStageController().getScenes().length);
+	if (Spaz.getStageController().getScenes().length > 1) {
+		Mojo.Log.error('About to returnFromPop');
+		Spaz.getStageController().popScene({'returnFromPop': true});
 	} else {
 		if (this.args.xapp === true) { // if we launched with post args, just close the stage when done
 			window.close();
 		} else {
-			this.controller.stageController.swapScene({name: 'start'});
+			Spaz.getStageController().swapScene({name: 'start'});
 		}
 		
 	}
