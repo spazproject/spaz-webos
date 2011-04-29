@@ -185,7 +185,7 @@ AppAssistant.prototype.initialize = function() {
 	}
 	
 	
-	this.App.versionCookie = new VersionCookie();
+	this.App.versionCookie = new VersionCookie(this.App.prefs);
 	this.App.versionCookie.init();
 	
 };
