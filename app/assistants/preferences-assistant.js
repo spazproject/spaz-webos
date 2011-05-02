@@ -410,7 +410,7 @@ PreferencesAssistant.prototype.setupChoices = function(){
 	this.validImageUploaders = [];
 	for (var key in image_uploader.services) {
         var val = image_uploader.services[key];
-		this.validImageUploaders.push({label:$L(key),  value:key});
+		this.validImageUploaders.push({label:key,  value:key});
     }
 };
 

@@ -101,7 +101,7 @@ PostAssistant.prototype.setup = function() {
 	var emailers = this.SPM.getAPILabels();
 	this.validImageEmailers = [];
 	for (i=0; i < emailers.length; i++) {
-		this.validImageEmailers.push({label:$L(emailers[i]),  value:emailers[i]});
+		this.validImageEmailers.push({label:emailers[i],  value:emailers[i]});
 	};
 
 	/*
@@ -111,7 +111,7 @@ PostAssistant.prototype.setup = function() {
 	var uploaders = this.SFU.getAPILabels();
 	this.validImageUploaders = [];
 	for (i=0; i < uploaders.length; i++) {
-		this.validImageUploaders.push({label:$L(uploaders[i]),	value:uploaders[i]});
+		this.validImageUploaders.push({label:uploaders[i],	value:uploaders[i]});
 	};
 	
 	/*
@@ -502,8 +502,8 @@ PostAssistant.prototype.getKotoData = function(e) {
 				}.bind(this)
 			});
 		} else {
-			that.showAlert("Want to tweet what you're listening to directly from Spaz? Download Koto Player now!", 
-				"Koto Player not installed",
+			that.showAlert($L("Want to tweet what you're listening to directly from Spaz? Download Koto Player now!"), 
+				$L("Koto Player not installed"),
 				function(value) {
 					if (value == "lite") {
 						that.controller.serviceRequest("palm://com.palm.applicationManager", {
@@ -764,41 +764,7 @@ PostAssistant.prototype.attachImage = function() {
 	
 	var thisA = this;
 	
-	if (this.postMode === 'email') {
-		jQuery('#post-buttons-standard').slideUp('200', function() {
-			jQuery('#post-buttons-image').slideDown('200');
-		});
-
-		this.loadImageUploaderEmail();
-
-		jQuery('#post-image-lookup-email').bind(Mojo.Event.tap, function(e) {
-			var api_label = thisA.imageUploaderModel['image-uploader'];
-			var help_text = $L(thisA.SPM.apis[api_label].help_text);
-			var email_info_url = $L(thisA.SPM.apis[api_label].email_info_url);
-
-			thisA.showAlert(
-				$L(help_text),
-				jQuery('#Look-Up Posting Email Address')[0],
-				function(choice) {
-					if (choice === 'Open Browser') {
-						thisA.openInBrowser(email_info_url);
-					}
-				}, 
-				[{label:$L('Open')+' '+api_label, value:"Open Browser", type:'affirmative'}]
-			);
-		});
-
-		jQuery('#post-image-choose').bind(Mojo.Event.tap, function(e) {
-			thisA.chooseImage();
-		});
-		jQuery('#post-image-cancel').one('click', this.cancelAttachImage);
-
-
-	} else { // direct upload posting
-		
-		thisA.chooseImage();
-		
-	}
+	thisA.chooseImage();
 
 	
 };

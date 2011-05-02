@@ -928,16 +928,16 @@ scene_helpers.addCommonSceneMethods = function(assistant) {
 		
 		switch(category) {
 			case 'newMessages':
-				title = 'New Message(s)';
-				msg	  = "You have "+count+" new message(s)";
+				title = $L('New Message(s)');
+				msg	  = $L("You have #{count} new message(s)").interpolate({count:count});
 				break;
 			case 'newMentions':
-				title = 'New @Mention(s)';
-				msg	  = "You have "+count+" new mention(s)";
+				title = $L('New @Mention(s)');
+				msg	  = $L("You have #{count} new mention(s)").interpolate({count:count});
 				break;
 			case 'newDirectMessages':
-				title = 'New Direct Message(s)';
-				msg	  = "You have "+count+" new direct message(s)";
+				title = $L('New Direct Message(s)');
+				msg	  = $L("You have #{count} new direct message(s)").interpolate({count:count});
 				break;
 		}
 		
@@ -956,7 +956,7 @@ scene_helpers.addCommonSceneMethods = function(assistant) {
 		var appController = Mojo.Controller.getAppController();
 		
 		appController.showBanner(bannerArgs, launchArgs, category);
-		this.showDashboard($L(title), bannerArgs.messageText, count, this.getStageName());
+		this.showDashboard(title, bannerArgs.messageText, count, this.getStageName());
 	};
 
 
@@ -972,13 +972,14 @@ scene_helpers.addCommonSceneMethods = function(assistant) {
 		var launchArgs = {
 			'fromstage':this.getStageName()
 		};
+		
 		var bannerArgs = {
-			'messageText':count+" new result(s) for '"+query+"'"
+			'messageText':$L("#{count} new result(s) for '#{query}'").interpolate({'count':count, 'query':query})
 		};
+
 		if (App.prefs.get('sound-enabled')) {
 			bannerArgs.soundClass = 'notification';
 		}
-		
 		
 		appController.showBanner(bannerArgs, launchArgs, category);
 		this.showDashboard($L('New Search Results'), bannerArgs.messageText, count, this.getStageName());
@@ -1562,8 +1563,8 @@ scene_helpers.addCommonSceneMethods = function(assistant) {
 		
 		this.controller.showAlertDialog({
 			'onChoose':onChoose,
-			'title':   $L(title),
-			'message': $L(msg),
+			'title':   title,
+			'message': msg,
 			'choices': choices
 		});
 	};
