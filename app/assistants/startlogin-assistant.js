@@ -135,11 +135,13 @@ StartloginAssistant.prototype.setup = function() {
     Mojo.Event.listen(jQuery('#accountList')[0], Mojo.Event.listAdd, function(e) {
 		// alert("This would show a popup for input of a username and password. When submitted, the popup would verify the credentials. If successful, it would be added to the list");
 		
-		thisA.controller.showDialog({
-	          template: 'startlogin/new-account-dialog',
-	          assistant: new NewAccountDialogAssistant(thisA),
-	          preventCancel:false
-	    });
+        thisA.controller.showDialog({
+                     template: 'startlogin/new-account-dialog',
+                     assistant: new NewAccountDialogAssistant(thisA),
+                     preventCancel:false
+               });
+	    
+	    //Mojo.Controller.stageController.pushScene('new-account', {});
 	 
 	});
 	
@@ -264,9 +266,13 @@ var NewAccountDialogAssistant = Class.create({
 		this.widget = widget;
 		
 		jQuery('#saveAccountButton')[0].addEventListener(
-							Mojo.Event.tap,
-							this.handleVerifyPassword.bindAsEventListener(this)
-						);
+			Mojo.Event.tap,
+			this.handleVerifyPassword.bindAsEventListener(this)
+		);
+        jQuery('#getPin')[0].addEventListener(
+			Mojo.Event.tap,
+			this.handleTwitterPin.bindAsEventListener(this)
+		);
 		
 		this.newAccountModel = {
 			'username':false,
@@ -352,6 +358,13 @@ var NewAccountDialogAssistant = Class.create({
 			},
 			this.newAccountModel
 		);
+		
+		this.controller.setupWidget('getPin', this.getPinAttributes = {
+		    
+		}, this.getPinModel = {
+		    buttonLabel: "Log In and Get Pin",
+		    buttonClass: "Primary"
+		});
 
 		
 		this.controller.setupWidget('saveAccountButton', this.verifyButtonAttributes, this.verifyButtonModel);
@@ -416,6 +429,13 @@ var NewAccountDialogAssistant = Class.create({
 			true
 		);
 		
+		Mojo.Event.listen(this.controller.get('getPin'),
+		    Mojo.Event.tap,
+		    this.handleTwitterPin.bindAsEventListener(this),
+		    true
+		);
+		
+		this.typePropertyChangeListener();
 	},
 	
 	
@@ -432,7 +452,11 @@ var NewAccountDialogAssistant = Class.create({
 			this.typePropertyChangeListener,
 			true
 		);
-		
+		Mojo.Event.stopListening(this.controller.get('getPin'),
+		    Mojo.Event.tap,
+		    this.handleTwitterPin,
+		    true
+		);
 		
 	},
 	
@@ -468,6 +492,16 @@ var NewAccountDialogAssistant = Class.create({
 			jQuery('#twitter-api-base-url-row').hide();
 			jQuery('#type-row').addClass('last');
 		}
+		
+		if (this.newAccountModel.type === SPAZCORE_SERVICE_TWITTER) {
+		    jQuery('#twitter-get-pin-row').show();
+		    jQuery('#user-row').hide();
+		    jQuery('#password-row').hide();
+	    } else {
+	        jQuery('#twitter-get-pin-row').hide();
+		    jQuery('#user-row').show();
+		    jQuery('#password-row').show();
+	    }
 	},
 	
 	
@@ -543,6 +577,11 @@ var NewAccountDialogAssistant = Class.create({
 				}
 			);
 		}
+	},
+	
+	handleTwitterPin: function() {
+	    Mojo.Log.info("handling twitter pin");
+	    Mojo.Controller.stageController.pushScene('get-twitter-pin', {});
 	},
 	
 	activateSpinner: function() {
