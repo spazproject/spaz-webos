@@ -29,15 +29,34 @@ function GetTwitterPinAssistant(args) {
 
 GetTwitterPinAssistant.prototype.setup = function() {
 	/* this function is for setup tasks that have to happen when the scene is first created */
+	this.model = {
+	    pin: null
+	};
 		
 	/* use Mojo.View.render to render view templates and add them to the scene, if needed */
 	
 	/* setup widgets here */
-	this.controller.setupWidget('pinWebView', {
-	    url: "http://m.twitter.com/",
+	this.controller.setupWidget('pin', this.pinAttributes = {
+	    label: "pin",
+		enterSubmits: true,
+		requiresEnterKey: true,
+		modelProperty:		'pin',
+		changeOnKeyPress: true, 
+		focusMode:		Mojo.Widget.focusSelectMode,
+		multiline:		false
+	}, this.model);
+	
+	this.controller.setupWidget('verifyPin', this.verifyPinAttributes = {
+	    type: Mojo.Widget.activityButton
+	}, this.verifyPinModel = {
+		buttonLabel : "Verify and Save Pin",
+		buttonClass: 'Primary'
 	});
 	
+	this.controller.setupWidget('pinWebView', {});
+	
 	/* add event handlers to listen to events from widgets */
+	this.controller.listen('verifyPin', Mojo.Event.tap, this.handleVerifyPin.bind(this));
 };
 
 GetTwitterPinAssistant.prototype.activate = function(event) {
@@ -62,7 +81,7 @@ GetTwitterPinAssistant.prototype.gotoNewPinUrl = function() {
 		'consumerSecret':SPAZCORE_CONSUMERSECRET_TWITTER,
 		'requestTokenUrl':'https://twitter.com/oauth/request_token',
 		'authorizationUrl':'https://twitter.com/oauth/authorize',
-		'accessTokenUrl':'https://twitter.com/oauth/access_token',
+		'accessTokenUrl':'https://twitter.com/oauth/access_token'
 	});
 	
 	this.oauth.fetchRequestToken(function(url) {
@@ -73,4 +92,12 @@ GetTwitterPinAssistant.prototype.gotoNewPinUrl = function() {
 			//AppUtils.showBanner($L('Problem getting Request Token from Twitter'));
 		}.bind(this)
 	);
-}
+};
+
+GetTwitterPinAssistant.prototype.handleVerifyPin = function(event) {
+    this.controller.get('verifyPin').mojo.activate();
+    
+    //Verify Pin Here
+    
+    this.controller.get('verifyPin').mojo.deactivate();
+};
