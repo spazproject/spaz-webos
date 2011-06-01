@@ -27,12 +27,22 @@ function GetTwitterPinAssistant(args) {
 	}
 }
 
+GetTwitterPinAssistant.prototype.aboutToActivate = function(callback){
+	callback.defer(); //delays displaying scene, looks better
+};
+
 GetTwitterPinAssistant.prototype.setup = function() {
 	/* this function is for setup tasks that have to happen when the scene is first created */
 	this.model = {
 	    pin: null
 	};
-		
+	
+	/*
+		load users from prefs obj
+	*/
+	this.Users = new SpazAccounts(App.prefs);
+	this.Users.load();
+	
 	/* use Mojo.View.render to render view templates and add them to the scene, if needed */
 	
 	/* setup widgets here */
@@ -117,27 +127,44 @@ GetTwitterPinAssistant.prototype.handleVerifyPin = function(event) {
 			var qvars = Spaz.getQueryVars(data.text);
 			var auth_pickle = qvars.screen_name+':'+qvars.oauth_token+':'+qvars.oauth_token_secret;
 			
+			var newaccid = that.Users.generateID(qvars.screen_name.username, SPAZCORE_SERVICE_TWITTER);
+            
+			var newItem = {
+				id:       newaccid,
+				username: qvars.screen_name.toLowerCase(),
+				auth:     auth_pickle,
+				type:     SPAZCORE_SERVICE_TWITTER
+			};
+			
 			if (that.editing_acc_id) { // edit existing
 				//EDIT ACCOUNT
 			} else { // add new
 			    //ADD NEW ACCOUNT
-			    Mojo.Log.info("ADD NEW ACCOUNT HERE");
+			    var accounts = that.Users.getAll();
+			    accounts.push(newItem);
+			    
+			    App.accounts.setAll(accounts);
+				App.accounts.setMeta(newaccid, 'twitter-api-base-url', null);
+                that.Users.setAll(accounts);
 			}
 			
             that._toggleVerifyPinActivity(false);
             
             
             // MOVE FORWARD
-            
+            Spaz.popAllAndPushScene(that.nextscene, that.nextsceneargs);
             
         },
         function(data) {
             that.model.pin = "";
             that.controller.modelChanged(that.model);
             
+            that._toggleVerifyPinActivity(false);
+            that.controller.get('inputDrawer').mojo.setOpenState(false);
+            
             that.gotoNewPinUrl();
             
-            that._toggleVerifyPinActivity(false);
+            Mojo.Controller.errorDialog("Invalid PIN, please reauthorize Spaz and try again");
         });
     }
 };

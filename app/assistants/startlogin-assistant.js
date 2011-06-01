@@ -580,7 +580,10 @@ var NewAccountDialogAssistant = Class.create({
 	
 	handleTwitterPin: function() {
 	    Mojo.Log.info("handling twitter pin");
-	    Mojo.Controller.stageController.pushScene('get-twitter-pin', {});
+	    Mojo.Controller.stageController.pushScene('get-twitter-pin', {
+	        nextscene: this.sceneAssistant.nextscene,
+	        nextsceneargs: this.sceneAssistant.nextsceneargs
+	    });
 	},
 	
 	activateSpinner: function() {
