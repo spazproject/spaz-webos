@@ -340,7 +340,8 @@ var NewAccountDialogAssistant = Class.create({
 			},
 			this.newAccountModel
 		);
-
+        
+		this.typePropertyChangeListener();
 
 		/*
 			API URL
@@ -375,8 +376,6 @@ var NewAccountDialogAssistant = Class.create({
 	
 	activate: function() {
 		var thisA = this;
-        
-		this.typePropertyChangeListener();
 
 		jQuery('#twitter-api-base-url-row').hide();
 

@@ -45,6 +45,29 @@ GetTwitterPinAssistant.prototype.setup = function() {
 	
 	/* use Mojo.View.render to render view templates and add them to the scene, if needed */
 	
+	this.controller.setupWidget(Mojo.Menu.commandMenu,
+	    this.commandMenuAttributes = {
+	        spacerHeight: 0,
+	        menuClass: 'no-fade'
+	    },
+	    this.commandMenuModel = {
+	        visible: true,
+	        items: [
+	            {},
+	            {label: "Help", command: "do-help"}
+	        ]
+	    });
+	
+	this._commands['do-help'] = function(event) {
+	    this.controller.showAlertDialog({
+            title: $L("Twitter PIN Authentication"),
+            message: $L("To use your Twitter account with Spaz, first log in, then tap \"Authorize app\". You will be presented with a 7 digit PIN number that you must re-type to confirm."),
+            choices: [
+                {label: $L("Okay")}
+            ]
+        });
+	};
+	
 	/* setup widgets here */
 	this.controller.setupWidget('inputDrawer', this.inputDrawerAttributes = {
 	    
@@ -146,6 +169,18 @@ GetTwitterPinAssistant.prototype.handleVerifyPin = function(event) {
 			    App.accounts.setAll(accounts);
 				App.accounts.setMeta(newaccid, 'twitter-api-base-url', null);
                 that.Users.setAll(accounts);
+                
+                App.username = newItem.username;
+        		App.auth     = newItem.auth;
+        		App.type     = newItem.type;
+        		App.userid	 = newItem.id;
+
+        		sch.debug('App.username:' + App.username);
+        		sch.debug('App.auth:'     + App.auth);  
+        		sch.debug('App.type:'     + App.type);   
+        		sch.debug('App.userid:'	 + App.userid);
+
+        		App.prefs.set('last_userid', App.userid);
 			}
 			
             that._toggleVerifyPinActivity(false);
