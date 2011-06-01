@@ -92,12 +92,21 @@ GetTwitterPinAssistant.prototype.setup = function() {
 		buttonClass: 'Primary'
 	});
 	
+	this.controller.setupWidget('pinWebViewSpinner', this.pinWebViewSpinnerAttributes = {
+	    spinnerSize: "large"
+	}, this.pinWebViewSpinnerModel = {
+	    spinning: true
+	})
+	
 	this.controller.setupWidget('pinWebView', {});
 	
 	/* add event handlers to listen to events from widgets */
 	this.controller.listen('verifyPin', Mojo.Event.tap, this.handleVerifyPin.bind(this));
 	
 	this.controller.listen('pinWebView', Mojo.Event.webViewTitleUrlChanged, this.handlePageChange.bind(this));
+	this.controller.listen('pinWebView', Mojo.Event.webViewLoadStarted, this.handleLoadStart.bind(this));
+	this.controller.listen('pinWebView', Mojo.Event.webViewLoadStopped, this.handleLoadStop.bind(this));
+	this.controller.listen('pinWebView', Mojo.Event.webViewLoadFailed, this.handleLoadFailed.bind(this));
 };
 
 GetTwitterPinAssistant.prototype.activate = function(event) {
@@ -139,6 +148,8 @@ GetTwitterPinAssistant.prototype.handleVerifyPin = function(event) {
     //Verify Pin Here
     var that = this
       , pin = this.model.pin;
+      
+    this._toggleVerifyPinActivity(false);
     
     if (pin && this.oauth) {
         this._toggleVerifyPinActivity(true);
@@ -211,6 +222,20 @@ GetTwitterPinAssistant.prototype.handlePageChange = function(event) {
         this.controller.get('inputDrawer').mojo.setOpenState(true);
         this.controller.get('pin').mojo.focus();
     }
+};
+
+GetTwitterPinAssistant.prototype.handleLoadStart = function(event) {
+    this.controller.get('pinWebViewScrim').show();
+};
+
+GetTwitterPinAssistant.prototype.handleLoadStop = function(event) {
+    this.controller.get('pinWebViewScrim').hide();
+};
+
+GetTwitterPinAssistant.prototype.handleLoadFailed = function(event) {
+    this.controller.get('pinWebViewScrim').hide();
+    
+    this.controller.errorDialog("Error connecting to Twitter to authenticate, check your internet connection!");
 };
 
 GetTwitterPinAssistant.prototype._toggleVerifyPinActivity = function(state) {
