@@ -372,7 +372,15 @@ Spaz.getFancyTime = function(time_value, labels, use_dateparse) {
 	}
 };
 
-
+Spaz.getQueryVars = function(qstring) {
+	var qvars = [];
+	var qvars_tmp = qstring.split('&');
+	for (var i = 0; i < qvars_tmp.length; i++) {;
+		var y = qvars_tmp[i].split('=');
+		qvars[y[0]] = decodeURIComponent(y[1]);
+	};
+	return qvars;
+};
 
 
 /*

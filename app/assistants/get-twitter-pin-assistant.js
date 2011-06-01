@@ -36,20 +36,26 @@ GetTwitterPinAssistant.prototype.setup = function() {
 	/* use Mojo.View.render to render view templates and add them to the scene, if needed */
 	
 	/* setup widgets here */
+	this.controller.setupWidget('inputDrawer', this.inputDrawerAttributes = {
+	    
+	}, this.inputDrawerModel = {
+	    open: false
+	});
+	
 	this.controller.setupWidget('pin', this.pinAttributes = {
 	    label: "pin",
 		enterSubmits: true,
 		requiresEnterKey: true,
-		modelProperty:		'pin',
+		modelProperty: 'pin',
 		changeOnKeyPress: true, 
-		focusMode:		Mojo.Widget.focusSelectMode,
-		multiline:		false
+		focusMode: Mojo.Widget.focusSelectMode,
+		multiline: false
 	}, this.model);
 	
 	this.controller.setupWidget('verifyPin', this.verifyPinAttributes = {
 	    type: Mojo.Widget.activityButton
 	}, this.verifyPinModel = {
-		buttonLabel : "Verify and Save Pin",
+		buttonLabel: "Verify and Save Pin",
 		buttonClass: 'Primary'
 	});
 	
@@ -57,6 +63,8 @@ GetTwitterPinAssistant.prototype.setup = function() {
 	
 	/* add event handlers to listen to events from widgets */
 	this.controller.listen('verifyPin', Mojo.Event.tap, this.handleVerifyPin.bind(this));
+	
+	this.controller.listen('pinWebView', Mojo.Event.webViewTitleUrlChanged, this.handlePageChange.bind(this));
 };
 
 GetTwitterPinAssistant.prototype.activate = function(event) {
@@ -95,9 +103,62 @@ GetTwitterPinAssistant.prototype.gotoNewPinUrl = function() {
 };
 
 GetTwitterPinAssistant.prototype.handleVerifyPin = function(event) {
-    this.controller.get('verifyPin').mojo.activate();
-    
     //Verify Pin Here
+    var that = this
+      , pin = this.model.pin;
     
-    this.controller.get('verifyPin').mojo.deactivate();
+    if (pin && this.oauth) {
+        this._toggleVerifyPinActivity(true);
+        
+        this.oauth.setVerifier(pin);
+        this.oauth.fetchAccessToken(function(data) {
+            Mojo.Log.error("%j", data);
+    
+			var qvars = Spaz.getQueryVars(data.text);
+			var auth_pickle = qvars.screen_name+':'+qvars.oauth_token+':'+qvars.oauth_token_secret;
+			
+			if (that.editing_acc_id) { // edit existing
+				//EDIT ACCOUNT
+			} else { // add new
+			    //ADD NEW ACCOUNT
+			    Mojo.Log.info("ADD NEW ACCOUNT HERE");
+			}
+			
+            that._toggleVerifyPinActivity(false);
+            
+            
+            // MOVE FORWARD
+            
+            
+        },
+        function(data) {
+            that.model.pin = "";
+            that.controller.modelChanged(that.model);
+            
+            that.gotoNewPinUrl();
+            
+            that._toggleVerifyPinActivity(false);
+        });
+    }
+};
+
+GetTwitterPinAssistant.prototype.handlePageChange = function(event) {
+    var re = /twitter\.com\/oauth\/authorize$/i;
+    
+    if( event.url.match(re) ) {
+        this.controller.get('inputDrawer').mojo.setOpenState(true);
+        this.controller.get('pin').mojo.focus();
+    }
+};
+
+GetTwitterPinAssistant.prototype._toggleVerifyPinActivity = function(state) {
+    if (state) {
+        this.verifyPinModel.disabled = true;
+        this.controller.get('verifyPin').mojo.activate();
+    } else {
+        this.verifyPinModel.disabled = false;
+        this.controller.get('verifyPin').mojo.deactivate();
+    }
+    
+    this.controller.modelChanged(this.verifyPinModel);
 };

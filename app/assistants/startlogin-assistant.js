@@ -375,7 +375,8 @@ var NewAccountDialogAssistant = Class.create({
 	
 	activate: function() {
 		var thisA = this;
-
+        
+		this.typePropertyChangeListener();
 
 		jQuery('#twitter-api-base-url-row').hide();
 
@@ -434,8 +435,6 @@ var NewAccountDialogAssistant = Class.create({
 		    this.handleTwitterPin.bindAsEventListener(this),
 		    true
 		);
-		
-		this.typePropertyChangeListener();
 	},
 	
 	
