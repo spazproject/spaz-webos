@@ -235,7 +235,26 @@ GetTwitterPinAssistant.prototype.handleLoadStop = function(event) {
 GetTwitterPinAssistant.prototype.handleLoadFailed = function(event) {
     this.controller.get('pinWebViewScrim').hide();
     
-    this.controller.errorDialog("Error connecting to Twitter to authenticate, check your internet connection!");
+    //1000 - load cancelled, want to ignore this.
+    if (event.errorCode == 1000) {
+        return false;
+    }
+    
+    Mojo.Log.error("Error Loading Page: " + event.errorCode + " :: " + event.message);
+    
+    var that = this;
+    
+    this.controller.showAlertDialog({
+        onChoose: function(value) {
+            that.controller.stageController.popScene();
+            that.controller.stageController.popScene();
+        },
+        title: $L("Error"),
+        message: $L("Error connecting to Twitter to authenticate, check your internet connection!"),
+        choices: [
+            {label:$L("Okay")}
+        ]
+    });
 };
 
 GetTwitterPinAssistant.prototype._toggleVerifyPinActivity = function(state) {
