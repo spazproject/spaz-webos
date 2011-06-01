@@ -127,7 +127,7 @@ GetTwitterPinAssistant.prototype.handleVerifyPin = function(event) {
 			var qvars = Spaz.getQueryVars(data.text);
 			var auth_pickle = qvars.screen_name+':'+qvars.oauth_token+':'+qvars.oauth_token_secret;
 			
-			var newaccid = that.Users.generateID(qvars.screen_name.username, SPAZCORE_SERVICE_TWITTER);
+			var newaccid = that.Users.generateID(qvars.screen_name, SPAZCORE_SERVICE_TWITTER);
             
 			var newItem = {
 				id:       newaccid,
