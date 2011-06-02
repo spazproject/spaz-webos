@@ -1,0 +1,22 @@
+<!-- TODO: replace the contents of this file with your own html -->
+<div id="inputDrawer" x-mojo-element="Drawer">
+	<div class='palm-row single' id="search-row" style="border:none;">
+    	<div class="palm-row-wrapper">
+    		<div class="textfield-group" x-mojo-focus-highlight="true">
+    			<div class="title">
+    				<div class="label">
+        				input pin below
+        			</div>
+        			<div id="pin" name="pin" x-mojo-element="TextField"></div>
+    			</div>
+    		</div>
+    		<div x-mojo-element="Button" id='verifyPin'></div>
+    	</div>
+    </div>
+</div>
+
+<div class="palm-scrim" id="pinWebViewScrim" style="display:none;">  
+  <div id="pinWebViewSpinner" x-mojo-element="Spinner"></div>  
+</div>
+
+<div id="pinWebView" x-mojo-element="WebView"></div> 
