@@ -42,7 +42,7 @@ var default_preferences = {
 
     'url-shortener': 'bitly',
 
-    'image-uploader': 'drippic',
+    'image-uploader': 'twitpic',
 
     'services-twitpic-sharepassword': false,
 
@@ -63,5 +63,11 @@ var default_preferences = {
 	'timeline-text-size': 'tall', // also grande, venti
 	
 	'post-rt-cursor-position': 'beginning', // 'beginning' or 'end'
-	'post-send-on-enter': true
+	'post-send-on-enter': true,
+
+	// track run data that was once in VersionCookie
+	'run-lastVersion':'0.0.1',
+	'run-isFirst':true,
+	'run-isNew':true,
+	'run-count':0 
 };

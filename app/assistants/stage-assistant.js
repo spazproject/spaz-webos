@@ -15,7 +15,7 @@ function StageAssistant () {
 	        authType: SPAZCORE_AUTHTYPE_OAUTH,
 	        consumerKey: SPAZCORE_CONSUMERKEY_TWITTER,
 	        consumerSecret: SPAZCORE_CONSUMERSECRET_TWITTER,
-	        accessURL: 'http://twitter.com/oauth/access_token'
+	        accessURL: 'https://twitter.com/oauth/access_token'
 	    });
 	
 	/*
@@ -176,14 +176,14 @@ StageAssistant.prototype.loadTemplates = function() {
 
 		var html = '', thumbHTML = '';
 
-		if (d.SC_thumbnail_urls) {
-			thumbHTML += '<div class="thumbnails">';
-			for (var key in d.SC_thumbnail_urls) {
-				// thumbHTML += '<a href="'+key+'"><img class="thumbnail" data-img-url="'+key+'" src="'+d.SC_thumbnail_urls[key]+'"></a>';
-				thumbHTML += '<img class="thumbnail" data-img-url="'+key+'" src="'+d.SC_thumbnail_urls[key]+'">';
-			}
-			thumbHTML += '</div>';
-		}
+		// if (d.SC_thumbnail_urls) {
+		// 	thumbHTML += '<div class="thumbnails">';
+		// 	for (var key in d.SC_thumbnail_urls) {
+		// 		// thumbHTML += '<a href="'+key+'"><img class="thumbnail" data-img-url="'+key+'" src="'+d.SC_thumbnail_urls[key]+'"></a>';
+		// 		thumbHTML += '<img class="thumbnail" data-img-url="'+key+'" src="'+d.SC_thumbnail_urls[key]+'">';
+		// 	}
+		// 	thumbHTML += '</div>';
+		// }
 
 		html += ''
 		+ '	<div class="user" data-user-screen_name="'+d.user.screen_name+'" data-user-id="'+d.user.id+'" data-status-id="'+d.id+'">'
@@ -199,11 +199,11 @@ StageAssistant.prototype.loadTemplates = function() {
 		}
 		html += '	</div>'
 		+ '	<div class="text-status">'
-		+ '		'+thumbHTML
+		// + '		'+thumbHTML
 		+ '		<div class="text">'+d.text+'</div>'
 		+ '		<div class="meta" data-status-id="'+d.id+'">'
 		+ '			<div class="date">'
-		+ '             <strong>Posted</strong> <span class="date-relative" data-created_at="'+d.created_at+'">'+sch.getRelativeTime(d.created_at)+'</span>'
+		+ '             <strong>Posted</strong> <span class="date-relative" data-created_at="'+d.created_at+'">'+Spaz.getFancyTime(d.created_at)+'</span>'
 		+ '             from <span class="source-link">'+d.source+'</span></div>'
 		+ '		</div>'
 		+ '	</div>';
@@ -239,7 +239,7 @@ StageAssistant.prototype.loadTemplates = function() {
 		html += '	<div class="text-status">'
 		+ '		<div class="text">'+d.text+'</div>'
 		+ '		<div class="meta" data-status-id="'+d.id+'">'
-		+ '			<div class="date"><strong>Direct message sent</strong> <span class="date-relative" data-created_at="'+d.created_at+'">'+sch.getRelativeTime(d.created_at)+'</span></div>'
+		+ '			<div class="date"><strong>Direct message sent</strong> <span class="date-relative" data-created_at="'+d.created_at+'">'+Spaz.getFancyTime(d.created_at)+'</span></div>'
 		+ '		</div>'
 		+ '	</div>';
 		+ '</div>';
@@ -379,7 +379,7 @@ StageAssistant.prototype.loadTemplates = function() {
 			html += '			<div class="protected-icon"></div>';
 		}
 		html += '			</div>'
-		+ '			<div class="meta" data-status-id="'+d.id+'"><span class="date" data-created_at="'+d.created_at+'">'+sch.getRelativeTime(d.created_at, RELATIVE_TIME_LABELS)+'</span></div>'
+		+ '			<div class="meta" data-status-id="'+d.id+'"><span class="date" data-created_at="'+d.created_at+'">'+Spaz.getFancyTime(d.created_at, RELATIVE_TIME_LABELS)+'</span></div>'
 		+ '		</div>'
 		+ '	 	<div class="text">'
 		+ '			'+d.text+''
@@ -404,7 +404,7 @@ StageAssistant.prototype.loadTemplates = function() {
 		+ '	<div class="text-status">'
 		+ '		<div class="meta-wrapper">'
 		+ '			<div class="screen-name">'+d.sender.screen_name+'</div>'
-		+ '			<div class="meta" data-status-id="'+d.id+'"><span class="date" data-created_at="'+d.created_at+'">'+sch.getRelativeTime(d.created_at, RELATIVE_TIME_LABELS)+'</span></div>'
+		+ '			<div class="meta" data-status-id="'+d.id+'"><span class="date" data-created_at="'+d.created_at+'">'+Spaz.getFancyTime(d.created_at, RELATIVE_TIME_LABELS)+'</span></div>'
 		+ '		</div>'
 		+ '	 	<div class="text">'
 		+ '			'+d.text+''
@@ -425,7 +425,7 @@ StageAssistant.prototype.loadTemplates = function() {
 		+ '	<div class="text-status">'
 		+ '		<div class="meta-wrapper">'
 		+ '			<div class="screen-name">'+d.from_user+'</div>'
-		+ '			<div class="meta" data-status-id="'+d.id+'"><span class="date" data-created_at="'+d.created_at+'">'+sch.getRelativeTime(d.created_at, RELATIVE_TIME_LABELS)+'</span></div>'
+		+ '			<div class="meta" data-status-id="'+d.id+'"><span class="date" data-created_at="'+d.created_at+'">'+Spaz.getFancyTime(d.created_at, RELATIVE_TIME_LABELS)+'</span></div>'
 		+ '		</div>'
 		+ '	 	<div class="text">'
 		+ '			'+d.text+''

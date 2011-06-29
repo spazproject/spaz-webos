@@ -67,7 +67,8 @@ PreferencesAssistant.prototype.setup = function() {
 		'notify-dms':               App.prefs.get('notify-dms'),
 		'notify-searchresults':     App.prefs.get('notify-searchresults'),
 		'post-rt-cursor-position':  App.prefs.get('post-rt-cursor-position'),
-		'post-send-on-enter':       App.prefs.get('post-send-on-enter')
+		'post-send-on-enter':       App.prefs.get('post-send-on-enter'),
+		'timeline-absolute-timestamps':  App.prefs.get('timeline-absolute-timestamps')
 		
 	};
 	
@@ -177,6 +178,15 @@ PreferencesAssistant.prototype.setup = function() {
 		this.model
 	);
 	
+	this.controller.setupWidget("checkbox-timeline-absolute-timestamps",
+		this.soundEnabledAtts = {
+			fieldName: 'timeline-absolute-timestamps',
+			modelProperty: 'timeline-absolute-timestamps',
+			disabledProperty: 'timeline-absolute-timestamps_disabled'
+		},
+		this.model
+	);
+	
 	/*
 		temporarily disabling sound and vibration prefs until we can sort out how to tell if sound is off
 	*/
@@ -190,6 +200,7 @@ PreferencesAssistant.prototype.setup = function() {
 	this.controller.listen('checkbox-notify-dms', Mojo.Event.propertyChange, this.saveSettings.bindAsEventListener(this));
 	this.controller.listen('checkbox-notify-searchresults', Mojo.Event.propertyChange, this.saveSettings.bindAsEventListener(this));
 	this.controller.listen('checkbox-post-send-on-enter', Mojo.Event.propertyChange, this.saveSettings.bindAsEventListener(this));
+	this.controller.listen('checkbox-timeline-absolute-timestamps', Mojo.Event.propertyChange, this.saveSettings.bindAsEventListener(this));
 
 
 	/*
@@ -399,7 +410,7 @@ PreferencesAssistant.prototype.setupChoices = function(){
 	this.validImageUploaders = [];
 	for (var key in image_uploader.services) {
         var val = image_uploader.services[key];
-		this.validImageUploaders.push({label:$L(key),  value:key});
+		this.validImageUploaders.push({label:key,  value:key});
     }
 };
 

@@ -23,10 +23,10 @@ function DashboardAssistant(args) {
         authType: SPAZCORE_AUTHTYPE_OAUTH,
         consumerKey: SPAZCORE_CONSUMERKEY_TWITTER,
         consumerSecret: SPAZCORE_CONSUMERSECRET_TWITTER,
-        accessURL: 'http://twitter.com/oauth/access_token'
+        accessURL: 'https://twitter.com/oauth/access_token'
     });
 	
-};
+}
 
 
 DashboardAssistant.prototype.setup = function() {
@@ -98,120 +98,3 @@ DashboardAssistant.prototype.launchMain = function() {
 	}); 
 	this.controller.window.close(); 
 }; 
-
-
-// DashboardAssistant.prototype.initTwit = function() {
-// 	var event_mode = 'jquery'; // default this to jquery because we have so much using it
-// 	
-// 	Mojo.Log.error('Loading users');
-// 	var users = new SpazAccounts(Spaz.getAppObj().prefs);
-// 	
-// 	Mojo.Log.error('Loading twit');
-// 	this.twit = new SpazTwit({
-// 	    'event_mode':event_mode,
-// 		'timeout':1000*60
-// 	});
-// 	this.twit.setSource(Spaz.getAppObj().prefs.get('twitter-source'));
-// 	
-// 	Mojo.Log.error('Loading auth');
-// 	var auth;
-// 	if ( (auth = Spaz.Prefs.getAuthObject()) ) {
-// 	    Mojo.Log.error('AuthObject: %j', auth);
-// 		this.twit.setCredentials(auth);
-// 		if (Spaz.Prefs.getAccountType() === SPAZCORE_ACCOUNT_CUSTOM) {
-// 		    this.twit.setBaseURL(Spaz.Prefs.getCustomAPIUrl());
-// 		} else {
-// 		    this.twit.setBaseURLByService(Spaz.Prefs.getAccountType());
-// 		}
-// 	} else {
-//         Mojo.Log.error('NOT LOADING CREDENTIALS INTO TWIT');
-// 	}
-// };
-// 
-// 
-// DashboardAssistant.prototype.checkForUpdates = function() {
-// 	var that = this;
-// 	
-// 	Mojo.Log.error("setting counts");
-// 	this.counts = {
-// 		'home':0,
-// 		'mention':0,
-// 		'dm':0
-// 	};
-// 	
-// 	Mojo.Log.error("setting last_ids");
-// 	var last_ids = Mojo.Controller.getAppController().assistant.loadLastIDs();
-// 	
-// 	this.twit.setLastId(SPAZCORE_SECTION_HOME,    last_ids.home);
-// 	this.twit.setLastId(SPAZCORE_SECTION_REPLIES, last_ids.mention);
-// 	this.twit.setLastId(SPAZCORE_SECTION_DMS,     last_ids.dm);
-// 	
-// 	Mojo.Log.error("getting combined timeline");
-// 	this.twit.getCombinedTimeline(
-// 		{
-// 			'friends_count':200,
-// 			'replies_count':200,
-// 			'dm_count':200
-// 		},
-// 		function(data) {
-// 			
-// 			Mojo.Log.error('BackgroundNotifier getCombinedTimeline success');
-// 			
-// 			var new_count = 0, new_mention_count = 0, new_dm_count = 0, previous_count = 0;
-// 
-// 			previous_count = Spaz.getAppObj().master_timeline_model.items.length;
-// 			
-// 			var no_dupes = [];
-// 			for (var i=0; i < data.length; i++) {
-// 
-// 				new_count++;
-// 
-// 				if (data[i].SC_is_reply) {
-// 					new_mention_count++;
-// 				} else if (data[i].SC_is_dm) {
-// 					new_dm_count++;
-// 				}
-// 			}
-// 
-// 
-// 			that.counts.dm = parseInt(that.counts.dm, 10) + parseInt(new_dm_count, 10);
-// 
-// 			that.counts.mention  = parseInt(that.counts.mention, 10) + parseInt(new_mention_count, 10);
-// 			
-// 			Mojo.Log.error('new, @mention, dm: %s %s %s', new_count, new_mention_count, new_dm_count);
-// 			
-// 			that.counts.home = parseInt(that.counts.home, 10) + parseInt((new_count - (new_mention_count + new_dm_count)), 10);
-// 
-// 			Mojo.Log.error('that.counts.home: %s', that.counts.home);
-// 			
-// 			if (that.counts.home > 0 && Spaz.getAppObj().prefs.get('bgnotify-on-home')) {
-// 				
-// 				jQuery('div.dashboard-newitem span').text(that.counts.home);
-// 				jQuery('div.dashboard-title').html($L('New messages'));
-// 				jQuery('#dashboard-text').html('New home shit!');
-// 				
-// 			} else if (that.counts.dm > 0 && Spaz.getAppObj().prefs.get('bgnotify-on-dm')) {
-// 			
-// 				jQuery('div.dashboard-newitem span').text(that.counts.dm);
-// 				jQuery('div.dashboard-title').html($L('New messages'));
-// 				jQuery('#dashboard-text').html('New Direct Message');
-// 				
-// 			} else if (that.counts.mention > 0 && Spaz.getAppObj().prefs.get('bgnotify-on-mention')) {
-// 		
-// 				jQuery('div.dashboard-newitem span').text(that.counts.mention);
-// 				jQuery('div.dashboard-title').html($L('New messages'));
-// 				jQuery('#dashboard-text').html('New mention shit!');
-// 			
-// 			} else {
-// 				that.controller.window.close();
-// 			}
-// 
-// 		},
-// 		function(errors) {
-// 		    Mojo.Log.error('ERRORS: %j', errors);
-// 		    Mojo.Log.error('Error loading new messages in BackgroundNotifier');
-// 			var err_msg = $L("There was an error loading new messages");
-// 			that.controller.window.close();
-// 		}
-// 	);
-// };

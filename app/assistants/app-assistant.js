@@ -63,7 +63,7 @@ AppAssistant.prototype.initialize = function() {
         authType: SPAZCORE_AUTHTYPE_OAUTH,
         consumerKey: SPAZCORE_CONSUMERKEY_TWITTER,
         consumerSecret: SPAZCORE_CONSUMERSECRET_TWITTER,
-        accessURL: 'http://twitter.com/oauth/access_token'
+        accessURL: 'https://twitter.com/oauth/access_token'
     });
 	
 	/*
@@ -185,7 +185,7 @@ AppAssistant.prototype.initialize = function() {
 	}
 	
 	
-	this.App.versionCookie = new VersionCookie();
+	this.App.versionCookie = new VersionCookie(this.App.prefs);
 	this.App.versionCookie.init();
 	
 };
@@ -337,8 +337,24 @@ AppAssistant.prototype.handleLaunch = function(launchParams) {
 				
 				stageController.activate();
 				break;				
-
-
+			case "tweetNowPlaying":
+				if(launchParams.returnValue === true){
+					var tweet = "#NowPlaying " + launchParams.nowPlaying.title
+					if(launchParams.nowPlaying.artist !== ""){
+						tweet += " by " + launchParams.nowPlaying.artist;
+					}
+					if (tweet.length > 112){
+						tweet = tweet.truncate(112, ' [...]');//truncate is a prototype function
+					}
+					
+					var suffix = " on @Koto_Player, via @Spaz";
+					stageController.sendEventToCommanders({'type':Mojo.Event.command, 'command':'addTextToPost', text: tweet + suffix});
+				} else {
+					//Mojo.Controller.getAppController().getStageController(SPAZ_MAIN_STAGENAME).activeScene().showBanner("Not Playing Anything");
+					//banner error?
+					Mojo.Log.error("not playing anything");
+				}
+				break;
 			case 'bgcheck':
 				Mojo.Log.error('BGCHECK action');
 				Mojo.Log.error('sendToNotificationChain refresh');
@@ -358,14 +374,25 @@ AppAssistant.prototype.handleLaunch = function(launchParams) {
 				
 				var topscene = stageController.topScene();
 				
-				if (topscene) {
-					stageController.activate(); // just activate
-				} else if (appAssistant.App.prefs.get('always-go-to-my-timeline') && appAssistant.App.username) {
-					stageController.pushScene('my-timeline');
+				// check need to upgrade
+				var to_upgrade = Spaz.Prefs.findOldTwitterAccounts();
+				if (to_upgrade.length > 0) {
+					
+					stageController.pushScene('startlogin');
 					stageController.activate();
+
 				} else {
-					stageController.pushScene('start');
-					stageController.activate();
+
+					if (topscene) {
+						stageController.activate(); // just activate
+					} else if (appAssistant.App.prefs.get('always-go-to-my-timeline') && appAssistant.App.username) {
+						stageController.pushScene('my-timeline');
+						stageController.activate();
+					} else {
+						stageController.pushScene('start');
+						stageController.activate();
+					}
+				
 				}
 				break;
 				
