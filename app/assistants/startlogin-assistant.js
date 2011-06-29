@@ -83,7 +83,7 @@ StartloginAssistant.prototype.setup = function() {
 	this.Users = new SpazAccounts(App.prefs);
 	this.Users.load();
 	
-	sch.error(this.Users);
+	// sch.error(this.Users);
 	
 	this.controller.setupWidget("accountList",
 		this.accountsAtts = {
@@ -101,7 +101,7 @@ StartloginAssistant.prototype.setup = function() {
 		}
 	);
 	
-	sch.error(this.accountsModel.items);
+	// sch.error(this.accountsModel.items);
 	
 	
 	/*
@@ -124,8 +124,8 @@ StartloginAssistant.prototype.setup = function() {
 		
 		App.prefs.set('last_userid', App.userid);
 
-		Mojo.Log.error('nextscene: %s', thisA.nextscene);
-		Mojo.Log.error('nextsceneargs: %s', thisA.nextsceneargs);
+		// Mojo.Log.error('nextscene: %s', thisA.nextscene);
+		// Mojo.Log.error('nextsceneargs: %s', thisA.nextsceneargs);
 		Spaz.popAllAndPushScene(thisA.nextscene, thisA.nextsceneargs);
 	});
 	
@@ -197,30 +197,7 @@ StartloginAssistant.prototype.activate = function(event) {
 	this.controller.modelChanged( this.model );
 	
 	
-	/**
-	 * check twitter accounts 
-	 */
-	var to_upgrade = Spaz.Prefs.findOldTwitterAccounts();
-	if (to_upgrade.length > 0) {
-		assistant.showAlert(
-			"To continue accessing direct messages, you should delete and re-create the following accounts:\n"+to_upgrade.join("\n"),
-			"Action Required",
-			function(choice) {
-				switch(choice) {
-					case 'more_info':
-						this.openInBrowser('http://j.mp/spazwebosshitsandwich');
-						break;
-					default:
-						break;
-				}
-				return true;
-			},
-			[
-				{label:$L('More info'), value:"more_info", type:'affirmative'},
-				{label:$L('Okay'), value:"okay", type:'dismiss'}
-			]
-		);
-	}
+	this.checkForOldAccounts();
 
 };
 
@@ -276,6 +253,34 @@ StartloginAssistant.prototype.propertyChanged = function(event) {
 	dump("********* property Change *************");
 };
 
+
+
+StartloginAssistant.prototype.checkForOldAccounts = function() {
+	/**
+	 * check twitter accounts 
+	 */
+	var to_upgrade = Spaz.Prefs.findOldTwitterAccounts();
+	if (to_upgrade.length > 0) {
+		this.showAlert(
+			"To continue accessing direct messages, you should delete and re-create the following accounts:\n"+to_upgrade.join(",\n"),
+			"Action Required",
+			function(choice) {
+				switch(choice) {
+					case 'more_info':
+						this.openInBrowser('http://j.mp/spazwebosshitsandwich');
+						break;
+					default:
+						break;
+				}
+				return true;
+			},
+			[
+				{label:$L('More info'), value:"more_info", type:'affirmative'},
+				{label:$L('Okay'), value:"okay", type:'dismiss'}
+			]
+		);
+	}
+};
 
 
 /*
@@ -417,11 +422,13 @@ var NewAccountDialogAssistant = Class.create({
 				id:thisA.sceneAssistant.Users.generateID(thisA.newAccountModel.username, thisA.newAccountModel.type),
 				username:thisA.newAccountModel.username.toLowerCase(),
 				password:thisA.newAccountModel.password,
-				type:thisA.newAccountModel.type.toLowerCase()
+				type:thisA.newAccountModel.type.toLowerCase(),
+				twitter_dm_access:true
 			};
 			thisA.sceneAssistant.accountsModel.items.push(newItem);
 			thisA.sceneAssistant.Users.setAll(thisA.sceneAssistant.accountsModel.items);			
 			thisA.sceneAssistant.Users.setMeta(newItem.id, 'twitter-api-base-url', thisA.newAccountModel['twitter-api-base-url']);
+			thisA.sceneAssistant.Users.setMeta(newItem.id, 'twitter_dm_access', true);
 			
 			jQuery('#accountList')[0].mojo.noticeAddedItems(thisA.sceneAssistant.accountsModel.items.length, [newItem]);
 			thisA.widget.mojo.close();
@@ -542,8 +549,8 @@ var NewAccountDialogAssistant = Class.create({
 			Turn on the spinner and set the message
 		*/
 		// this.sceneAssistant.showInlineSpinner('#new-account-spinner-container', 'Verifying credentials');
-		sch.error("new account:");
-		sch.error(this.newAccountModel.username);
+		// sch.error("new account:");
+		// sch.error(this.newAccountModel.username);
 		
 		/*
 			now verify credentials against the Twitter API
@@ -556,7 +563,7 @@ var NewAccountDialogAssistant = Class.create({
 			}
 			
 			
-			Mojo.Log.error(this.newAccountModel.type);
+			// Mojo.Log.error(this.newAccountModel.type);
 			
 			var auth  = new SpazAuth(this.newAccountModel.type);
 			
@@ -570,8 +577,8 @@ var NewAccountDialogAssistant = Class.create({
 
 						var auth_pickle = auth.save();
 
-						sch.error('auth_pickle:');
-						sch.error(auth_pickle);
+						// sch.error('auth_pickle:');
+						// sch.error(auth_pickle);
 
 						jQuery('#new-account-errormsg').html('');
 						that.deactivateSpinner();
@@ -582,7 +589,8 @@ var NewAccountDialogAssistant = Class.create({
 							id:newaccid,
 							username:that.newAccountModel.username.toLowerCase(),
 							auth:auth_pickle,
-							type:that.newAccountModel.type
+							type:that.newAccountModel.type,
+							twitter_dm_access:true
 						};
 						// the list model
 						that.sceneAssistant.accountsModel.items.push(newItem);
@@ -591,6 +599,7 @@ var NewAccountDialogAssistant = Class.create({
 						App.accounts.setAll(that.sceneAssistant.accountsModel.items);
 						App.accounts.setMeta(newaccid, 'twitter-api-base-url', that.newAccountModel['twitter-api-base-url']);
 						App.accounts.setMeta(newaccid, 'twitter_dm_access', true);
+						// Mojo.Log.error('twitter_dm_access: %s', App.accounts.getMeta(newaccid, 'twitter_dm_access'));
 
 						jQuery('#accountList')[0].mojo.noticeAddedItems(that.sceneAssistant.accountsModel.items.length, [newItem]);
 						that.widget.mojo.close();

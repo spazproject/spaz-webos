@@ -136,7 +136,7 @@ GetTwitterPinAssistant.prototype.gotoNewPinUrl = function() {
 	
 	this.oauth.fetchRequestToken(function(url) {
 			//sch.openInBrowser(url, 'authorize');
-			this.controller.get('pinWebView').mojo.openURL(url);
+			this.controller.get('pinWebView').mojo.openURL(url+"&force_login=true");
 		}.bind(this),
 		function(data) {
 			//AppUtils.showBanner($L('Problem getting Request Token from Twitter'));
@@ -179,6 +179,7 @@ GetTwitterPinAssistant.prototype.handleVerifyPin = function(event) {
 			    
 			    App.accounts.setAll(accounts);
 				App.accounts.setMeta(newaccid, 'twitter-api-base-url', null);
+				App.accounts.setMeta(newaccid, 'twitter_dm_access', true);
                 that.Users.setAll(accounts);
                 
                 App.username = newItem.username;

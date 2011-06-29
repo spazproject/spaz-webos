@@ -328,9 +328,9 @@ Spaz.closeDashboard = function(name) {
 
 
 Spaz.setTheme = function(theme) {
-	Mojo.Log.error('AppThemes: %j', AppThemes);
-	Mojo.Log.error('theme: %s', theme);
-	Mojo.Log.error('AppThemes[theme]: %j', AppThemes[theme]);
+	// Mojo.Log.error('AppThemes: %j', AppThemes);
+	// Mojo.Log.error('theme: %s', theme);
+	// Mojo.Log.error('AppThemes[theme]: %j', AppThemes[theme]);
 
 	if (AppThemes && AppThemes[theme]) {
 		
@@ -511,17 +511,19 @@ Spaz.Prefs.getCurrentAccountId = function() {
 
 
 Spaz.Prefs.findOldTwitterAccounts = function() {
-	var users = new SpazAccounts(App.prefs);
-	var users.load();
+	var users = new SpazAccounts(Spaz.getAppObj().prefs);
+	users.load();
 	var accts = users.getAll();
 	var to_upgrade = [];
 	for (var i=0; i < accts.length; i++) {
-		if (accts[i].type === SPAZCORE_ACCOUNT_TWITTER && !this.Users.getMeta(accts[i].id, 'twitter_dm_access')) {
+		// Mojo.Log.error("accts[i]: %j", accts[i]);
+		if ( accts[i].type === SPAZCORE_ACCOUNT_TWITTER 
+			&& (!users.getMeta(accts[i].id, 'twitter_dm_access') && !users.twitter_dm_access) ) {
 			to_upgrade.push(accts[i].username+'@'+SPAZCORE_ACCOUNT_TWITTER);
 		}
 	}
 	return to_upgrade;
-}
+};
 
 
 
