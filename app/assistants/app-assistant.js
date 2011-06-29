@@ -374,14 +374,25 @@ AppAssistant.prototype.handleLaunch = function(launchParams) {
 				
 				var topscene = stageController.topScene();
 				
-				if (topscene) {
-					stageController.activate(); // just activate
-				} else if (appAssistant.App.prefs.get('always-go-to-my-timeline') && appAssistant.App.username) {
-					stageController.pushScene('my-timeline');
+				// check need to upgrade
+				var to_upgrade = Spaz.Prefs.findOldTwitterAccounts();
+				if (to_upgrade.length > 0) {
+					
+					stageController.pushScene('startlogin');
 					stageController.activate();
+
 				} else {
-					stageController.pushScene('start');
-					stageController.activate();
+
+					if (topscene) {
+						stageController.activate(); // just activate
+					} else if (appAssistant.App.prefs.get('always-go-to-my-timeline') && appAssistant.App.username) {
+						stageController.pushScene('my-timeline');
+						stageController.activate();
+					} else {
+						stageController.pushScene('start');
+						stageController.activate();
+					}
+				
 				}
 				break;
 				

@@ -195,6 +195,32 @@ StartloginAssistant.prototype.activate = function(event) {
 
 	this.model['always-go-to-my-timeline'] = App.prefs.get('always-go-to-my-timeline');
 	this.controller.modelChanged( this.model );
+	
+	
+	/**
+	 * check twitter accounts 
+	 */
+	var to_upgrade = Spaz.Prefs.findOldTwitterAccounts();
+	if (to_upgrade.length > 0) {
+		assistant.showAlert(
+			"To continue accessing direct messages, you should delete and re-create the following accounts:\n"+to_upgrade.join("\n"),
+			"Action Required",
+			function(choice) {
+				switch(choice) {
+					case 'more_info':
+						this.openInBrowser('http://j.mp/spazwebosshitsandwich');
+						break;
+					default:
+						break;
+				}
+				return true;
+			},
+			[
+				{label:$L('More info'), value:"more_info", type:'affirmative'},
+				{label:$L('Okay'), value:"okay", type:'dismiss'}
+			]
+		);
+	}
 
 };
 
@@ -564,6 +590,7 @@ var NewAccountDialogAssistant = Class.create({
 						// the accounts model
 						App.accounts.setAll(that.sceneAssistant.accountsModel.items);
 						App.accounts.setMeta(newaccid, 'twitter-api-base-url', that.newAccountModel['twitter-api-base-url']);
+						App.accounts.setMeta(newaccid, 'twitter_dm_access', true);
 
 						jQuery('#accountList')[0].mojo.noticeAddedItems(that.sceneAssistant.accountsModel.items.length, [newItem]);
 						that.widget.mojo.close();
