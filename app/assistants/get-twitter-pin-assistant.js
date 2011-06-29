@@ -96,7 +96,7 @@ GetTwitterPinAssistant.prototype.setup = function() {
 	    spinnerSize: "large"
 	}, this.pinWebViewSpinnerModel = {
 	    spinning: true
-	})
+	});
 	
 	this.controller.setupWidget('pinWebView', {});
 	
@@ -251,7 +251,7 @@ GetTwitterPinAssistant.prototype.handleLoadFailed = function(event) {
             that.controller.stageController.popScene();
         },
         title: $L("Error"),
-        message: $L("Error connecting to Twitter to authenticate, check your internet connection!"),
+        message: $L("Error connecting to Twitter to authenticate, check your internet connection! \"" + event.errorCode + " :: " + event.message + "\""),
         choices: [
             {label:$L("Okay")}
         ]
