@@ -63,7 +63,7 @@ AppAssistant.prototype.initialize = function() {
         authType: SPAZCORE_AUTHTYPE_OAUTH,
         consumerKey: SPAZCORE_CONSUMERKEY_TWITTER,
         consumerSecret: SPAZCORE_CONSUMERSECRET_TWITTER,
-        accessURL: 'http://twitter.com/oauth/access_token'
+        accessURL: 'https://twitter.com/oauth/access_token'
     });
 	
 	/*
