@@ -82,7 +82,8 @@ GetTwitterPinAssistant.prototype.setup = function() {
 		modelProperty: 'pin',
 		changeOnKeyPress: true, 
 		focusMode: Mojo.Widget.focusSelectMode,
-		multiline: false
+		multiline: false,
+		modifierState: Mojo.Widget.numLock
 	}, this.model);
 	
 	this.controller.setupWidget('verifyPin', this.verifyPinAttributes = {
@@ -133,14 +134,15 @@ GetTwitterPinAssistant.prototype.gotoNewPinUrl = function() {
 		'authorizationUrl':'https://twitter.com/oauth/authorize',
 		'accessTokenUrl':'https://twitter.com/oauth/access_token'
 	});
-	
+	var that = this;
 	this.oauth.fetchRequestToken(function(url) {
 			//sch.openInBrowser(url, 'authorize');
-			this.controller.get('pinWebView').mojo.openURL(url+"&force_login=true");
-		}.bind(this),
+			that.controller.get('pinWebView').mojo.openURL(url+"&force_login=true");
+		},
 		function(data) {
 			//AppUtils.showBanner($L('Problem getting Request Token from Twitter'));
-		}.bind(this)
+            Mojo.Controller.errorDialog("There was an error getting a request token from Twitter.");
+		}
 	);
 };
 
