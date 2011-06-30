@@ -126,7 +126,10 @@ GetTwitterPinAssistant.prototype.cleanup = function(event) {
 	   a result of being popped off the scene stack */
 };
 
-GetTwitterPinAssistant.prototype.gotoNewPinUrl = function() {
+GetTwitterPinAssistant.prototype.gotoNewPinUrl = function(newCard) {
+    if (!newCard)
+        this.controller.get('pinWebView').focus();
+    
     this.oauth = OAuth({
 		'consumerKey':SPAZCORE_CONSUMERKEY_TWITTER,
 		'consumerSecret':SPAZCORE_CONSUMERSECRET_TWITTER,
@@ -134,14 +137,27 @@ GetTwitterPinAssistant.prototype.gotoNewPinUrl = function() {
 		'authorizationUrl':'https://twitter.com/oauth/authorize',
 		'accessTokenUrl':'https://twitter.com/oauth/access_token'
 	});
+	
 	var that = this;
 	this.oauth.fetchRequestToken(function(url) {
 			//sch.openInBrowser(url, 'authorize');
-			that.controller.get('pinWebView').mojo.openURL(url+"&force_login=true");
+			if (newCard) {
+			    that.controller.serviceRequest("palm://com.palm.applicationManager", {
+                    method: "open",
+                    parameters: {
+                        id: 'com.palm.app.browser',
+                        params: {
+                            target: url+"&force_login=true"
+                        }
+                    }
+                });
+			} else {
+    			that.controller.get('pinWebView').mojo.openURL(url+"&force_login=true");
+			}
 		},
 		function(data) {
 			//AppUtils.showBanner($L('Problem getting Request Token from Twitter'));
-            Mojo.Controller.errorDialog("There was an error getting a request token from Twitter.");
+            Mojo.Controller.errorDialog("There was an error getting a request token from Twitter!!");
 		}
 	);
 };
@@ -249,11 +265,21 @@ GetTwitterPinAssistant.prototype.handleLoadFailed = function(event) {
     
     this.controller.showAlertDialog({
         onChoose: function(value) {
-            that.controller.stageController.popScene();
-            that.controller.stageController.popScene();
+            that.gotoNewPinUrl(true);
+            
+            that.controller.get('pinWebView').hide();
+            that.controller.get('info').show();
+            
+            that.commandMenuModel.visible = false;
+            that.controller.modelChanged(that.commandMenuModel);
+            
+            that.controller.get('inputDrawer').mojo.setOpenState(true);
+            that.controller.get('pin').mojo.focus();
+            //that.controller.stageController.popScene();
+            //that.controller.stageController.popScene();
         },
         title: $L("Error"),
-        message: $L("Error connecting to Twitter to authenticate, check your internet connection! \"" + event.errorCode + " :: " + event.message + "\""),
+        message: $L("There seems to be an error. We will now open a new browser card for you to re-attempt the authentication process. When Twitter displays a 7-digit PIN, please return this Spaz card and input it."),
         choices: [
             {label:$L("Okay")}
         ]
