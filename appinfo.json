@@ -1,6 +1,6 @@
 {
-	"title": "Spaz Beta",
-	"version": "2.0.13",
+	"title": "Spaz Special Edition",
+	"version": "2.0.14",
 	"type": "web",
 	"main": "index.html",
 	"id": "com.funkatron.app.spaz-sped",
@@ -33,7 +33,7 @@
 	
 	"universalSearch": {
 		"action" :  { 
-			"displayName" : "Post with Special Edition",
+			"displayName" : "Post with Spaz Special Edition",
 			"url"         : "com.funkatron.app.spaz-sped",
 			"launchParam" : {"action":"prepPost", "msg":"#{searchTerms}"}
 		},
