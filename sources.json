@@ -1,25 +1,25 @@
 [
-	{"source": "app/auth_config.js"},
-	{"source": "app/views/themes.js"},
-	{"source": "vendors/jquery.tinysort.js"},	
-	{"source": "vendors/tools.tabs-1.0.1.js"},
-	{"source": "spazcore/spazcore-webos.js"},
-	{"source": "vendors/jquery-ui-justfx-1.6rc6.js"},
-	{"source": "libs/view_methods.js"},
-	{"source": "vendors/jquery.scrollTo.js"},
-	{"source": "vendors/Lawnchair.js"},
-	{"source": "vendors/adaptors/LawnchairAdaptorHelpers.js"},
-	{"source": "vendors/adaptors/WebkitSQLiteAdaptor.js"},
-	{"source": "app/helpers/spaz.js"},
-	{"source": "app/helpers/depot.js"},
-	{"source": "app/helpers/scene.js"},
-	{"source": "app/models/tempcache.js"},
-	{"source": "app/models/users.js"},
-	{"source": "app/models/tweets.js"},
-	{"source": "app/models/versioncookie.js"},	
-	{"source": "libs/BackgroundNotifier.js"},
-
-	
+    {"source": "app/auth_config.js"},
+    {"source": "app/views/themes.js"},
+    {"source": "vendors/jquery.tinysort.js"},
+    {"source": "vendors/jquery.embedly.js"},
+    {"source": "vendors/tools.tabs-1.0.1.js"},
+    {"source": "vendors/jsOAuth-1.1.js"},
+    {"source": "spazcore/spazcore-webos.js"},
+    {"source": "vendors/jquery-ui-justfx-1.6rc6.js"},
+    {"source": "libs/view_methods.js"},
+    {"source": "vendors/jquery.scrollTo.js"},
+    {"source": "vendors/Lawnchair.js"},
+    {"source": "vendors/adaptors/LawnchairAdaptorHelpers.js"},
+    {"source": "vendors/adaptors/WebkitSQLiteAdaptor.js"},
+    {"source": "app/helpers/spaz.js"},
+    {"source": "app/helpers/depot.js"},
+    {"source": "app/helpers/scene.js"},
+    {"source": "app/models/tempcache.js"},
+    {"source": "app/models/users.js"},
+    {"source": "app/models/tweets.js"},
+    {"source": "app/models/versioncookie.js"},
+    {"source": "libs/BackgroundNotifier.js"},
     {"source": "app/assistants/app-assistant.js"},
     {"source": "app/assistants/stage-assistant.js"},
     {
@@ -85,5 +85,13 @@
     {
         "scenes": "view-image",
         "source": "app/assistants/view-image-assistant.js"
+    },
+    {
+        "scenes": "new-account",
+        "source": "app/assistants/new-account-assistant.js"
+    },
+    {
+        "scenes": "get-twitter-pin",
+        "source": "app/assistants/get-twitter-pin-assistant.js"
     }
 ]

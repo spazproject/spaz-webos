@@ -6,9 +6,6 @@
  * distribute it under our "New BSD"-stype license. The original license is
  * included for reference purposes.
  * 
- * Changes:
- * - I changed the capitalization to VersionControl to indicate it's a constructor
- *   function. Tuesday; December 21, 2010
  * 
  * 
  * LICENSE
@@ -357,69 +354,53 @@
  * 
  */
 
-function VersionCookie()
-{
-	this.cookie = false;
-	this.isFirst = false;
-	this.isNew = false;
-	this.runs = 0;
-	//this.init();
+function VersionCookie(prefsObj) {
+	if (!prefsObj) {
+		Mojo.Log.error('VersionCookie constructor must be passed a SpazPrefs object');
+	}
+
+	this.prefsObj = prefsObj;
 };
+
 VersionCookie.prototype.init = function()
 {
-	try
-	{
-		// reset these
-		this.cookie = false;
-		this.isFirst = false;
-		this.isNew = false;
-		this.runs = 0;
-		
-		this.cookie = new Mojo.Model.Cookie('version');
-		// uncomment to delete cookie for testing
-		// this.cookie.remove();
-		var data = this.cookie.get();
-		if (data)
-		{
-			
-			this.runs = data.runs||0;
-			Mojo.Log.error('Runs %s', this.runs);
-			
-			if (data.version == Mojo.appInfo.version)
-			{
-				Mojo.Log.error('Same Version %s', data.version, Mojo.appInfo.version);
-			}
-			else
-			{
-				Mojo.Log.error('New Version %s %s', data.version, Mojo.appInfo.version);
-				this.isNew = true;
-			}
-			this.put();
-		}
-		else
-		{
-			Mojo.Log.error('First Launch (no cookie data)');
-			this.isFirst = true;
-			this.isNew = true;
-			this.runs = 0;
-			this.put();
-		}
-		// uncomment to delete cookie for testing
-		// this.cookie.remove();
+	// load it
+	this.get();
+	
+	Mojo.Log.error('Runs %s', this.runs);
+	
+	if (this.lastVersion == Mojo.appInfo.version) {
+		Mojo.Log.info('Same Version %s', this.lastVersion, Mojo.appInfo.version);
+	} else {
+		Mojo.Log.info('New Version %s %s', this.lastVersion, Mojo.appInfo.version);
+		this.isNew = true;
 	}
-	catch (e) 
-	{
-		Mojo.Log.logException(e, 'VersionCookie#init');
-	}
+	
+	// save it
+	this.put();
+
+
 };
-VersionCookie.prototype.put = function()
-{
-	this.cookie.put({version: Mojo.appInfo.version, runs: (this.runs+1)});
-	// uncomment to set lower version for testing
-	// this.cookie.put({version: '0.0.1', runs:9});
+
+VersionCookie.prototype.get = function() {
+	this.lastVersion = this.prefsObj.get('run-lastVersion');
+	this.isFirst = this.prefsObj.get('run-isFirst');
+	this.runs = this.prefsObj.get('run-count');
+	Mojo.Log.info('VersionCookie.get: %s %s %s', this.lastVersion, this.isFirst, this.runs);
 };
-VersionCookie.prototype.showStartupScene = function()
-{
+
+VersionCookie.prototype.put = function() {
+	this.prefsObj.set('run-lastVersion', Mojo.appInfo.version);
+	this.prefsObj.set('run-isFirst', false);
+	this.prefsObj.set('run-count', (this.runs+1));
+	Mojo.Log.info('VersionCookie.put: %s %s %s',
+		this.prefsObj.get('run-lastVersion'),
+		this.prefsObj.get('run-isFirst'),
+		this.prefsObj.get('run-count')
+	);
+};
+
+VersionCookie.prototype.showStartupScene = function() {
 	if (this.isNew || this.isFirst) return true;
 	else return false;
 };

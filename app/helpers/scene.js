@@ -251,6 +251,26 @@ scene_helpers.addCommonSceneMethods = function(assistant) {
 			} else {
 				this.removeSearch(this.searchBoxModel.value);
 			}			
+		},
+		
+		//Post scene stuff
+		"sendPost": function(e){
+			this.sendPost();
+		},
+		"attachImage": function(e){
+			this.attachImage();
+		},
+		"shortenText": function(e){
+			this.shortenText();
+		},
+		"shortenURLs": function(e){
+			this.shortenURLs();
+		},
+		"getKotoData": function(e){
+			this.getKotoData();		
+		},
+		"addTextToPost": function(e){
+			this.addTextToPost(e.text);
 		}
 	};
 	
@@ -908,16 +928,16 @@ scene_helpers.addCommonSceneMethods = function(assistant) {
 		
 		switch(category) {
 			case 'newMessages':
-				title = 'New Message(s)';
-				msg	  = "You have "+count+" new message(s)";
+				title = $L('New Message(s)');
+				msg	  = $L("You have #{count} new message(s)").interpolate({count:count});
 				break;
 			case 'newMentions':
-				title = 'New @Mention(s)';
-				msg	  = "You have "+count+" new mention(s)";
+				title = $L('New @Mention(s)');
+				msg	  = $L("You have #{count} new mention(s)").interpolate({count:count});
 				break;
 			case 'newDirectMessages':
-				title = 'New Direct Message(s)';
-				msg	  = "You have "+count+" new direct message(s)";
+				title = $L('New Direct Message(s)');
+				msg	  = $L("You have #{count} new direct message(s)").interpolate({count:count});
 				break;
 		}
 		
@@ -936,7 +956,7 @@ scene_helpers.addCommonSceneMethods = function(assistant) {
 		var appController = Mojo.Controller.getAppController();
 		
 		appController.showBanner(bannerArgs, launchArgs, category);
-		this.showDashboard($L(title), bannerArgs.messageText, count, this.getStageName());
+		this.showDashboard(title, bannerArgs.messageText, count, this.getStageName());
 	};
 
 
@@ -952,13 +972,14 @@ scene_helpers.addCommonSceneMethods = function(assistant) {
 		var launchArgs = {
 			'fromstage':this.getStageName()
 		};
+		
 		var bannerArgs = {
-			'messageText':count+" new result(s) for '"+query+"'"
+			'messageText':$L("#{count} new result(s) for '#{query}'").interpolate({'count':count, 'query':query})
 		};
+
 		if (App.prefs.get('sound-enabled')) {
 			bannerArgs.soundClass = 'notification';
 		}
-		
 		
 		appController.showBanner(bannerArgs, launchArgs, category);
 		this.showDashboard($L('New Search Results'), bannerArgs.messageText, count, this.getStageName());
@@ -1542,8 +1563,8 @@ scene_helpers.addCommonSceneMethods = function(assistant) {
 		
 		this.controller.showAlertDialog({
 			'onChoose':onChoose,
-			'title':   $L(title),
-			'message': $L(msg),
+			'title':   title,
+			'message': msg,
 			'choices': choices
 		});
 	};
@@ -1673,10 +1694,17 @@ scene_helpers.addCommonSceneMethods = function(assistant) {
 
 
 	assistant.showFirstRunPopup = function() {
+	    
+	    if (Spaz.getAppObj().shownFirstRunPopup) { // only run once in a session
+	        return;
+	    }
+	    
+	    
 		// first run
 		if (Spaz.getAppObj().versionCookie.isFirst) {
+		    Spaz.getAppObj().shownFirstRunPopup = true;
 			this.showAlert(
-				$L("Remember to visit help.getspaz.com to get help and make suggestions\n\nThanks for supporting open source software!"),
+				$L("Remember to visit help.getspaz.com to get help and make suggestions.\n\nThanks for supporting open source software!"),
 				$L("Thanks for trying Spaz!"),
 				function(value) {
 					switch(value) {
@@ -1701,9 +1729,14 @@ scene_helpers.addCommonSceneMethods = function(assistant) {
 
 
 	assistant.showNewVersionPopup = function() {
+	    
+	    if (Spaz.getAppObj().shownNewVersionPopup) { // only run once in a session
+	        return;
+	    }
+	    
 		// new version
  		if (Spaz.getAppObj().versionCookie.isNew && !Spaz.getAppObj().versionCookie.isFirst) {
-
+            Spaz.getAppObj().shownNewVersionPopup = true;
 			this.showAlert(
 				$L("You're running a new version of Spaz. Read the Changelog to find out what's new."),
 				$L("New Version"),
@@ -1726,8 +1759,14 @@ scene_helpers.addCommonSceneMethods = function(assistant) {
 
 	
 	assistant.showFollowSpazPopup = function() {
+	    
+	    if (Spaz.getAppObj().shownFollowSpazPopup) { // only run once in a session
+	        return;
+	    }
+	    
 		// first run
 		if (Spaz.getAppObj().versionCookie.isFirst) {
+		    Spaz.getAppObj().shownFollowSpazPopup = true;
 			this.showAlert(
 				$L("To keep up with new info, make sure to follow @Spaz"),
 				$L("Follow @Spaz"),
@@ -1750,10 +1789,20 @@ scene_helpers.addCommonSceneMethods = function(assistant) {
 	
 	
 	assistant.showDonationPopup = function(force) {
+		
+		if (Spaz.getAppObj().showbDonationPopup) { // only run once in a session
+		    return;
+		}
+		
+		if (Mojo.appInfo.id == 'com.funkatron.app.spaz-sped') { // don't show this if they paid for the Special Ed.
+		    return;
+		}
+		
 		var runs = Spaz.getAppObj().versionCookie.runs;
 		
 		// bug them at certain run counts
 		if ( ([10,100,250,500,1000].indexOf(runs) !== -1 ) || force === true) {
+		    Spaz.getAppObj().showbDonationPopup = true;
 			this.showAlert(
 				$L("Spaz is free, open-source software, and relies on donations to support the work we do."),
 				$L("Help Support Spaz"),
