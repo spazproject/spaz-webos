@@ -12661,8 +12661,8 @@ SpazTwit.prototype.getAPIURL = function(key, urldata) {
 	urls.user_favorites     = "favorites/{{ID}}.json"; // use this to retrieve favs of a user other than yourself
 	urls.dm_timeline        = "direct_messages.json";
 	urls.dm_sent            = "direct_messages/sent.json";
-	urls.friendslist        = "statuses/friends.json";
-	urls.followerslist      = "statuses/followers.json";
+	urls.friendslist        = "friends/list.json";
+	urls.followerslist      = "followers/list.json";
 	urls.show_user			= "users/show.json";
 	urls.featuredlist       = "statuses/featured.json";
 
@@ -12689,7 +12689,7 @@ SpazTwit.prototype.getAPIURL = function(key, urldata) {
 	urls.verify_credentials = "account/verify_credentials.json";
 	urls.ratelimit_status   = "account/rate_limit_status.json";
 	urls.update_profile		= "account/update_profile.json";
-	urls.saved_searches		= "saved_searches.json";
+	urls.saved_searches		= "saved_searches/list.json";
 	urls.report_spam		= "report_spam.json";
 
     // User lists URLs
@@ -12716,7 +12716,7 @@ SpazTwit.prototype.getAPIURL = function(key, urldata) {
 	urls.retweeted_to_me	= "statuses/retweeted_to_me.json";
 	urls.retweets_of_me		= "statuses/retweets_of_me.json";
 
-	urls.search				= "search.json";
+	urls.search				= "search/tweets.json";
 
 	// misc
 	urls.test 			  	= "help/test.json";
@@ -13235,7 +13235,7 @@ SpazTwit.prototype.search = function(query, since_id, results_per_page, page, la
 
 	var data = {};
 	data['q']        = query;
-	data['rpp']      = results_per_page;
+	data['count']    = results_per_page;
 	if (since_id) {
 		if (since_id[0] == '-') {
 			data['max_id'] = since_id.replace('-', '');
@@ -13243,7 +13243,7 @@ SpazTwit.prototype.search = function(query, since_id, results_per_page, page, la
 			data['since_id'] = since_id;
 		}
 	}
-	data['page']     = page;
+	//data['page']     = page;
 	if (lang) {
 		data['lang'] = lang;
 	}
@@ -13252,6 +13252,7 @@ SpazTwit.prototype.search = function(query, since_id, results_per_page, page, la
 	}
 
 	var url = this.getAPIURL('search', data);
+	Mojo.Log.error(url);
 	this._getTimeline({
 		'url':url,
 		'process_callback'	: this._processSearchTimeline,
@@ -13286,7 +13287,7 @@ SpazTwit.prototype._processSearchTimeline = function(search_result, opts, proces
 	/*
 		grab the array of items
 	*/
-	var ret_items = search_result.results;
+	var ret_items = search_result.statuses;
 
 	if (ret_items && ret_items.length > 0){
 		/*
@@ -13323,15 +13324,22 @@ SpazTwit.prototype._processSearchTimeline = function(search_result, opts, proces
 		// this.data[SPAZCORE_SECTION_SEARCH].items = this.removeExtraElements(this.data[SPAZCORE_SECTION_SEARCH].items, this.data[SPAZCORE_SECTION_SEARCH].max);
 
 
+		var metadata = search_result.search_metadata;
+		if (metadata.next_results) {
+			var start = metadata.next_results.indexOf("max_id=");
+			metadata.next_results = metadata.next_results.substr(start + 7);
+			var end = metadata.next_results.indexOf("&");
+			metadata.next_results = metadata.next_results.substr(0, end);
+		}
 		var search_info = {
-			'since_id'         : search_result.since_id,
-			'max_id'           : search_result.max_id,
-			'refresh_url'      : search_result.refresh_url,
-			'results_per_page' : search_result.results_per_page,
-			'next_page'        : search_result.next_page,
-			'completed_in'     : search_result.completed_in,
-			'page'             : search_result.page,
-			'query'            : search_result.query
+			'since_id'         : metadata.since_id ? metadata.since_id : 0,
+			'max_id'           : metadata.next_results ? metadata.next_results : 0,
+			'refresh_url'      : metadata.refresh_url,
+			'results_per_page' : metadata.results_per_page ? metadata.results_per_page : metadata.count,
+			'next_page'        : '0',
+			'completed_in'     : metadata.completed_in,
+			'page'             : '0',
+			'query'            : metadata.query
 		};
 
 		if (opts.success_callback) {
@@ -13405,9 +13413,9 @@ SpazTwit.prototype._processSearchItem = function(item, section_name) {
 		normalize so we have as much user data in this object as possible
 	*/
 	item.user = {
-		'profile_image_url':item.profile_image_url,
-		'screen_name':item.from_user,
-		'id':item.from_user_id
+		'profile_image_url':item.user.profile_image_url,
+		'screen_name':item.user.screen_name,
+		'id':item.user.id
 	};
 
 	/*
@@ -14228,6 +14236,8 @@ SpazTwit.prototype._processUserList = function(section_name, ret_items, opts, pr
 	var users = [], next = -1, prev = -1;
 
 	if (!processing_opts) { processing_opts = {}; }
+
+	Mojo.Log.error("%j", ret_items);
 
     if (ret_items.users) {
         users = ret_items.users;
