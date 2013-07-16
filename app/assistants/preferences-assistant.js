@@ -1,11 +1,11 @@
 function PreferencesAssistant() {
-	/* this is the creator function for your scene assistant object. It will be passed all the 
+	/* this is the creator function for your scene assistant object. It will be passed all the
 	   additional parameters (after the scene name) that were passed to pushScene. The reference
 	   to the scene controller (this.controller) has not be established yet, so any initialization
 	   that needs the scene controller should be done in the setup function below. */
-	
+
 	scene_helpers.addCommonSceneMethods(this);
-	
+
 	/*
 		this connects App to this property of the appAssistant
 	*/
@@ -17,11 +17,11 @@ PreferencesAssistant.prototype.aboutToActivate = function(callback){
 };
 
 PreferencesAssistant.prototype.setup = function() {
-	
+
 	var thisA = this;
 
 	this.scroller = this.controller.getSceneScroller();
-	
+
 	this.initAppMenu({ 'items':[
 		Mojo.Menu.editItem,
 		{ label: $L('New Search Card'),	command: 'new-search-card' },
@@ -30,19 +30,19 @@ PreferencesAssistant.prototype.setup = function() {
 		{ label: $L('Help...'),			command:Mojo.Menu.helpCmd },
 		{ label: $L('Donate...'),		command:'donate' }
 	]});
-	
+
 	this.setupCommonMenus({
 		viewMenuItems: [
 			{
 				items:[
-					{label: $L("Preferences"), command:'scroll-top', 'class':"palm-header left", width:320}				
+					{label: $L("Preferences"), command:'scroll-top', 'class':"palm-header left", width:320}
 				]
 			}
 
 		]
 	});
-	
-	
+
+
 	/*
 		note that these property keys MUST match a preference key
 	*/
@@ -69,14 +69,14 @@ PreferencesAssistant.prototype.setup = function() {
 		'post-rt-cursor-position':  App.prefs.get('post-rt-cursor-position'),
 		'post-send-on-enter':       App.prefs.get('post-send-on-enter'),
 		'timeline-absolute-timestamps':  App.prefs.get('timeline-absolute-timestamps')
-		
+
 	};
-	
-	
+
+
 	/*
 		Setup checkboxes
 	*/
-	
+
 	/*
 		temporarily disabling sound and vibration prefs until we can sort out how to tell if sound is off
 	*/
@@ -115,7 +115,7 @@ PreferencesAssistant.prototype.setup = function() {
 		},
 		this.model
 	);
-	
+
 
 	/*
 		Notification preferences
@@ -168,7 +168,7 @@ PreferencesAssistant.prototype.setup = function() {
 		},
 		this.model
 	);
-	
+
 	this.controller.setupWidget("checkbox-post-send-on-enter",
 		this.soundEnabledAtts = {
 			fieldName: 'post-send-on-enter',
@@ -177,7 +177,7 @@ PreferencesAssistant.prototype.setup = function() {
 		},
 		this.model
 	);
-	
+
 	this.controller.setupWidget("checkbox-timeline-absolute-timestamps",
 		this.soundEnabledAtts = {
 			fieldName: 'timeline-absolute-timestamps',
@@ -186,7 +186,7 @@ PreferencesAssistant.prototype.setup = function() {
 		},
 		this.model
 	);
-	
+
 	/*
 		temporarily disabling sound and vibration prefs until we can sort out how to tell if sound is off
 	*/
@@ -204,7 +204,7 @@ PreferencesAssistant.prototype.setup = function() {
 
 
 	/*
-		Setup refresh rate widgets	
+		Setup refresh rate widgets
 	*/
 	this.setupChoices();
 
@@ -258,8 +258,8 @@ PreferencesAssistant.prototype.setup = function() {
 	this.controller.listen('timeline-friends-getcount', Mojo.Event.propertyChange, this.saveSettings.bindAsEventListener(this));
 	this.controller.listen('timeline-replies-getcount', Mojo.Event.propertyChange, this.saveSettings.bindAsEventListener(this));
 	this.controller.listen('timeline-dm-getcount', Mojo.Event.propertyChange, this.saveSettings.bindAsEventListener(this));
-	
-	
+
+
 	this.controller.setupWidget('timeline-text-size',
 		{
 			label: $L('Timeline Text Size'),
@@ -292,7 +292,7 @@ PreferencesAssistant.prototype.setup = function() {
 	this.controller.listen('post-rt-cursor-position', Mojo.Event.propertyChange, this.saveSettings.bindAsEventListener(this));
 
 
-	
+
 	this.controller.setupWidget('image-uploader',
 		{
 			label: $L('service'),
@@ -302,7 +302,7 @@ PreferencesAssistant.prototype.setup = function() {
 		this.model
 	);
 	this.controller.listen('image-uploader', Mojo.Event.propertyChange, this.saveSettings.bindAsEventListener(this));
-	
+
 	/*
 		clear cache button
 	*/
@@ -319,7 +319,7 @@ PreferencesAssistant.prototype.setup = function() {
  * saves the current values of the selectors
  */
 PreferencesAssistant.prototype.saveSettings = function(event) {
-	
+
 	for (var key in this.model) {
 		App.prefs.set(key, this.model[key]);
 		if (this.onSave[key]) {
@@ -329,7 +329,7 @@ PreferencesAssistant.prototype.saveSettings = function(event) {
 };
 
 /**
- * a hash of functions to call on save for certain prefs 
+ * a hash of functions to call on save for certain prefs
  */
 PreferencesAssistant.prototype.onSave = {
 	'network-refreshinterval' : function(e, val) {
@@ -354,11 +354,11 @@ PreferencesAssistant.prototype.onSave = {
 
 //function declares & initializes our choice arrays
 PreferencesAssistant.prototype.setupChoices = function(){
-		
+
 	// Options for list selector choices:
 	this.validTimes = [
-		{label:$L('Never'), value:0}, 
-		{label:$L('5min'),  value:300000}, 
+		{label:$L('Never'), value:0},
+		{label:$L('5min'),  value:300000},
 		{label:$L('10min'), value:600000},
 		{label:$L('15min'), value:900000},
 		{label:$L('30min'), value:1800000},
@@ -367,7 +367,7 @@ PreferencesAssistant.prototype.setupChoices = function(){
 		{label:$L('4hr'),   value:14400000},
 		{label:$L('8hr'),   value:28800000}
 	];
-	
+
 	this.validInitialLoads = [
 		{label:$L('2'), value:2},
 		{label:$L('5'), value:5},
@@ -378,7 +378,7 @@ PreferencesAssistant.prototype.setupChoices = function(){
 		{label:$L('100'), value:100},
 		{label:$L('200'), value:200}
 	];
-	
+
 	this.validInitialLoadsDmReply = [
 		{label:$L('2'), value:2},
 		{label:$L('5'), value:5},
@@ -387,25 +387,25 @@ PreferencesAssistant.prototype.setupChoices = function(){
 		{label:$L('40'), value:40},
 		{label:$L('60'), value:60},
 		{label:$L('100'), value:100},
-		{label:$L('200'), value:200}		
+		{label:$L('200'), value:200}
 	];
-	
+
 	this.validTimelineTextSizes = [
-		{label:$L('Tall'),  value:'tall'}, 
-		{label:$L('Grande'),value:'grande'}, 
-		{label:$L('Venti'), value:'venti'}		
+		{label:$L('Tall'),  value:'tall'},
+		{label:$L('Grande'),value:'grande'},
+		{label:$L('Venti'), value:'venti'}
 	];
-	
+
 	this.validAppThemes = [];
 	for(var tkey in AppThemes) {
 		this.validAppThemes.push({label:tkey, value:tkey});
 	}
-	
+
 	this.validRTCursorPositions = [
-		{label:$L('Beginning'),  value:'beginning'}, 
+		{label:$L('Beginning'),  value:'beginning'},
 		{label:$L('End'),value:'end'}
 	];
-	
+
 	var image_uploader = new SpazImageUploader();
 	this.validImageUploaders = [];
 	for (var key in image_uploader.services) {
@@ -414,6 +414,8 @@ PreferencesAssistant.prototype.setupChoices = function(){
     }
 };
 
+PreferencesAssistant.prototype.refresh = function() {
+};
 
 
 PreferencesAssistant.prototype.activate = function(event) {
@@ -428,10 +430,10 @@ PreferencesAssistant.prototype.deactivate = function(event) {
 };
 
 PreferencesAssistant.prototype.cleanup = function(event) {
-	/* this function should do any cleanup needed before the scene is destroyed as 
+	/* this function should do any cleanup needed before the scene is destroyed as
 	   a result of being popped off the scene stack */
-	
-	
+
+
 	this.controller.stopListening('network-refreshinterval', Mojo.Event.propertyChange, this.saveSettings);
 	this.controller.stopListening('network-searchrefreshinterval', Mojo.Event.propertyChange, this.saveSettings);
 	this.controller.stopListening('timeline-friends-getcount', Mojo.Event.propertyChange, this.saveSettings);
@@ -444,7 +446,7 @@ PreferencesAssistant.prototype.cleanup = function(event) {
 	Mojo.Event.stopListening(jQuery('#clear-cache-button')[0], Mojo.Event.tap, function(e) {
 		thisA.clearTimelineCache();
 	});
-	
+
 	/*
 		temporarily disabling sound and vibration prefs until we can sort out how to tell if sound is off
 	*/
@@ -457,12 +459,12 @@ PreferencesAssistant.prototype.cleanup = function(event) {
 	this.controller.stopListening('checkbox-notify-mentions', Mojo.Event.propertyChange, this.saveSettings);
 	this.controller.stopListening('checkbox-notify-dms', Mojo.Event.propertyChange, this.saveSettings);
 	this.controller.stopListening('checkbox-notify-searchresults', Mojo.Event.propertyChange, this.saveSettings);
-	
+
 };
 
 
-PreferencesAssistant.prototype.considerForNotification = function(params){   
+PreferencesAssistant.prototype.considerForNotification = function(params){
 	Mojo.Log.error('NOTIFICATION RECEIVED in PreferencesAssistant:%j', params);
-	
-	return params;   
+
+	return params;
 };
